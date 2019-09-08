@@ -1,0 +1,47 @@
+en:
+
+# page translations
+  accounts:
+    registration:
+      account_details:
+        title: "Sign up to file tax returns"
+        subtitle: "Your individual account details"
+      account_for:
+        title: "Sign up to file tax returns"
+        subtitle: ""
+        description: ""
+      company:
+        title: "Sign up to file tax returns"
+        subtitle: "Company"
+        description: "Details of the company you are registering for."
+        subtitle_org: "Organisation"
+        description_org: "Details of the organisation you are registering for."
+      address:
+        title: "Sign up to file tax returns"
+        subtitle_reg: "Contact address"
+        subtitle_org: "Organisation address"
+        subtitle_ind: "Your contact address"
+      taxes:
+        title: "Sign up to file tax returns"
+        subtitle: ""
+      user_details:
+        title: "Sign up to file tax returns"
+        subtitle: "Your individual account details"
+        description: "Enter user details here."
+        you_will_be_sent_confirmation_email: "After you register you will be sent a confirmation email with instructions on how to complete your registration."
+        confirm: "Confirm"
+      confirmation:
+        title: "Sign up to file tax returns"
+        subtitle: "Complete sign up"
+        description: "Your registration has been accepted. An email will be sent to you confirming what you need to do next to activate your account."
+      org_contact:
+        title: "Sign up to file tax returns"
+        subtitle: "Organisation contact details"
+      rep_address:
+        title: "Sign up to file tax returns"
+        subtitle: "Representatives address"
+
+  registered_organisation: "Companies House registered body"
+  other_organisation: "Non registered body"
+  individual: "Individual/Sole trader"
+  

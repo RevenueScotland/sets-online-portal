@@ -1,0 +1,12 @@
+<% content_for :page_title, t('returns.lbtt_ads.title') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for [@lbtt_return, @address_summary, @address_detail] %>
+  <%= f.collection_radio_buttons_fields(:ads_sell_residence_ind, @lbtt_return.list_ref_data(:ads_sell_residence_ind), :code, :value) %>
+  <div class='govuk-radios__conditional--hidden' id='hideable' >
+    <h3 class="govuk-fieldset__heading"><%= t('.address') %> </h3><br>
+    <%= render "/layouts/address" %>
+  </div>
+  <%= f.button 'next', { :name => 'submitted' }  %>
+<% end %>

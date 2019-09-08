@@ -1,0 +1,14 @@
+<% content_for :page_title, t('.title') %>
+<% content_for :page_subtitle, t('.subtitle') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
+   <%= form_errors_for @lbtt_return %>
+   <%= f.currency_field :total_consideration %>
+   <%= f.currency_field :total_vat %>
+   <% if @lbtt_return.linked_ind == 'Y' %>
+      <%= f.currency_field :linked_consideration %>
+   <% end %>
+   <%= f.currency_field :non_chargeable %>
+   <%= f.currency_field :remaining_chargeable %>
+   <%= f.button 'next', { :name => 'submitted' }  %>
+<% end %>

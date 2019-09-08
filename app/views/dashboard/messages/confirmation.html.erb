@@ -1,0 +1,21 @@
+<%= content_for :hide_back_link, true %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_for @message, url:dashboard_messages_confirmation_path, html: { multipart: true }, method: :post, local: true do |f| %>
+      <%= form_errors_for @message %>    
+      <p class="govuk-body"><%= t('.paragraph1') %></p>
+      <h2 class="govuk-heading-m"><%= t('.paragraph_heading') %></h2>
+      <p class="govuk-body"><%= t('.paragraph2').html_safe %></p>
+      <% if can? AuthorisationHelper::CREATE_ATTACHMENT %>
+        <%= f.collection_radio_buttons_fields(:additional_file, ReferenceData::ReferenceValue.list('YESNO', 'SYS', 'RSTU'), :code, :value) %>
+        <%= f.hidden_field :smsg_refno %>
+        <div class='govuk-radios__conditional--hidden' id="multiple-file-upload" >
+            <%= render "/layouts/file_upload_component", multiple: true, file_upload_label: t('.file_upload_label'), remove_remove: cannot?(AuthorisationHelper::DELETE_ATTACHMENT) %>
+        </div>
+      <% end %>
+    <%= f.button 'continue', { :name => 'continue', autofocus: @resource_items.length > 0 } %>
+    <% end %>
+  </div>
+</div>
+        

@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+	xmlns:ns="http://northgate-is.com/NAS/AddressSearchRequest-v1.0" 
+	xmlns:ns1="http://northgate-is.com/NAS/AddressSearchResponse-v1.0" 
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+	xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" 
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+	xmlns:wsdl1="http://www.northgateps.com/NASAddressSearch.wsdl" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="NASAddressSearch" targetNamespace="http://www.northgateps.com/NASAddressSearch.wsdl">
+	<wsdl:types>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core" 
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference fior the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+			xmlns="http://northgate-is.com/NAS/AddressSearchRequest-v1.0" 
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://northgate-is.com/NAS/AddressSearchRequest-v1.0" elementFormDefault="qualified">
+			<xsd:element name="AddressSearchRequest">
+				<xsd:annotation>
+					<xsd:documentation>Search NAS addresses request</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="RequestParameters" type="core:StandardRequestStructure"/>
+						<xsd:element name="SearchParameters">
+							<xsd:annotation>
+								<xsd:documentation>Return the addresses that match the supplied address line and postcode. If the postcode only is supplied then only addresses with the postcode are returned. If the postcode is not supplied then the value for the address line only is used. If both elements are empty no data will be returned.</xsd:documentation>
+							</xsd:annotation>
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="Postcode" type="PostCodeType" minOccurs="0"/>
+									<xsd:element name="AddressLine" type="xsd:string" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Any part of the address can be supplied in the address line element for matching.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="SelectionOptions">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="MaximumNumberOfRows" type="xsd:integer">
+										<xsd:annotation>
+											<xsd:documentation>The maximum number of rows to return. If more than the maximum number of rows match, the returned address list will include MaximumNumberOfRows + 1 addresses so that the calling process knows there are more than MaximumNumberOfRows that match.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="IncludeNonGeographicAddresses" type="xsd:boolean" default="true" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Include non geographic addresses in the result list.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="IncludeBFPOAddresses" type="xsd:boolean" default="false" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Include BFPO addresses in the result list.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="IncludeMultiResidenceAddresses" type="xsd:boolean" default="true" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Include Multiple residence addresses in the result list.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="IncludeNIAddresses" type="xsd:boolean" default="true" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Include Northen Ireland addresses in the result list.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<!--  PostCode Definition -->
+			<xsd:simpleType name="PostCodeType">
+				<xsd:annotation>
+					<xsd:documentation>complex pattern for postcode, which matches definition, accepted by some parsers is: "(GIR 0AA)|((([A-Z-[QVX]][0-9][0-9]?)|(([A-Z-[QVX]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVX]][0-9][A-HJKSTUW])|([A-Z-[QVX]][A-Z-[IJZ]][0-9][ABEHMNPRVWXY])))) [0-9][A-Z-[CIKMOV]]{2})"</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z-[CIKMOV]]{2}"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:schema>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+			xmlns="http://northgate-is.com/NAS/AddressSearchResponse-v1.0" 
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://northgate-is.com/NAS/AddressSearchResponse-v1.0" elementFormDefault="qualified">
+			<xsd:element name="AddressSearchResponse">
+				<xsd:annotation>
+					<xsd:documentation>List of addresses matched in a search</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:complexContent>
+						<xsd:extension base="core:StandardResponseStructure">
+							<xsd:sequence>
+								<xsd:element name="AddressList" minOccurs="1">
+									<xsd:complexType>
+										<xsd:sequence>
+											<xsd:element name="Address" minOccurs="0" maxOccurs="unbounded">
+												<xsd:complexType>
+													<xsd:annotation>
+														<xsd:documentation>Address</xsd:documentation>
+													</xsd:annotation>
+													<xsd:sequence>
+														<xsd:element name="AddressIdentifier">
+															<xsd:annotation>
+																<xsd:documentation>UDPRN + UMPRN, 8 characters each, UDPRN and UMPRN are space padded to 8 characters</xsd:documentation>
+															</xsd:annotation>
+															<xsd:simpleType>
+																<xsd:restriction base="xsd:string">
+																	<xsd:maxLength value="16"/>
+																</xsd:restriction>
+															</xsd:simpleType>
+														</xsd:element>
+														<xsd:element name="FormattedAddress">
+															<xsd:simpleType>
+																<xsd:restriction base="xsd:string">
+																	<xsd:maxLength value="1020"/>
+																</xsd:restriction>
+															</xsd:simpleType>
+														</xsd:element>
+														<xsd:element name="Score">
+															<xsd:simpleType>
+																<xsd:restriction base="xsd:string">
+																	<xsd:maxLength value="10"/>
+																</xsd:restriction>
+															</xsd:simpleType>
+														</xsd:element>
+													</xsd:sequence>
+												</xsd:complexType>
+											</xsd:element>
+										</xsd:sequence>
+									</xsd:complexType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:extension>
+					</xsd:complexContent>
+				</xsd:complexType>
+			</xsd:element>
+			<!--  PostCode Definition -->
+			<xsd:simpleType name="PostCodeType">
+				<xsd:annotation>
+					<xsd:documentation>complex pattern for postcode, which matches definition, accepted by some parsers is: "(GIR 0AA)|((([A-Z-[QVX]][0-9][0-9]?)|(([A-Z-[QVX]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVX]][0-9][A-HJKSTUW])|([A-Z-[QVX]][A-Z-[IJZ]][0-9][ABEHMNPRVWXY])))) [0-9][A-Z-[CIKMOV]]{2})"</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z-[CIKMOV]]{2}"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="NASAddressSearchRequest">
+		<wsdl:part name="parameters" element="ns:AddressSearchRequest" />
+	</wsdl:message>
+	<wsdl:message name="NASAddressSearchResponse">
+		<wsdl:part name="parameters" element="ns1:AddressSearchResponse" />
+	</wsdl:message>
+	<wsdl:portType name="NASAddressSearchWSDLPort">
+		<wsdl:operation name="NASAddressSearchWSDL">
+			<wsdl:input message="wsdl1:NASAddressSearchRequest" />
+			<wsdl:output message="wsdl1:NASAddressSearchResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="NASAddressSearchWSDLBinding" type="wsdl1:NASAddressSearchWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="NASAddressSearchWSDL">
+			<soap:operation soapAction="https://server/DATABASE/communication/AddressSearch" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="NASAddressSearchService">
+		<wsdl:port binding="wsdl1:NASAddressSearchWSDLBinding" name="NASAddressSearchWSDLPort">
+			<soap:address location="https://server/DATABASE/communication/AddressSearch" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

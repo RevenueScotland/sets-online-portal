@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 17-Oct-2013   Version 1.0  -->
+<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/LBTTTaxReturn" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.northgateps.com/RSTS/LBTTTaxReturn.wsdl" xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/LBTTTaxReturn.wsdl" name="LBTTTaxReturn">
+	<wsdl:types>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference for the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Service" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example service is the name of the requesting system, e.g. RB or the database from which the request is coming from, e.g. RBDEV</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example requestor is the name of the Local Authority from which the request is being sent</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/LBTTTaxReturn" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
+			<xs:element name="LBTTTaxReturn">
+				<xs:annotation>
+					<xs:documentation>Comment describing your root element</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="FormType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Draft, Latest</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="D"/>
+									<xs:enumeration value="L"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Authenticated" type="core:YesNoType" minOccurs="0"/>
+						<xs:element name="TareReference" type="xs:string" minOccurs="0"/>
+						<xs:element name="TareRefno" type="xs:integer" minOccurs="0"/>
+						<xs:element name="Version" type="xs:integer" minOccurs="0"/>
+						<xs:element name="Username" type="xs:string" minOccurs="0"/>
+						<xs:element name="ParRefno" type="xs:string" minOccurs="0"/>
+						<xs:element name="LBTTReturnDetails" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="FlbtType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Return Type -
+Conveyance Return
+Lease Return
+Lease Review
+Assignation
+Termination</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="TERMINATE"/>
+												<xs:enumeration value="ASSIGN"/>
+												<xs:enumeration value="CONVEY"/>
+												<xs:enumeration value="LEASEREV"/>
+												<xs:enumeration value="LEASERET"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="PropertyType" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>TODO - have enum constrained by domain</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="OrigReturnReference" type="xs:string" minOccurs="0"/>
+									<xs:element name="EffectiveDate" type="xs:date" minOccurs="0"/>
+									<xs:element name="RelevantDate" type="xs:date" minOccurs="0"/>
+									<xs:element name="ContractDate" type="xs:date" minOccurs="0"/>
+									<xs:element name="LeaseStartDate" type="xs:date" minOccurs="0"/>
+									<xs:element name="LeaseEndDate" type="xs:date" minOccurs="0"/>
+									<xs:element name="PreviousOptionInd" type="core:YesNoType" minOccurs="0"/>
+									<xs:element name="ExchangeInd" type="core:YesNoType" minOccurs="0"/>
+									<xs:element name="UKInd" type="core:YesNoType" minOccurs="0"/>
+									<xs:element name="AgentReference" type="xs:string" minOccurs="0"/>
+									<xs:element name="Parties" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="Party" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="PartyType">
+																<xs:annotation>
+																	<xs:documentation>TODO - Discussion point shouild be Buyer or Tenant, Seller or Landlord, Agent and New Tenant</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="LpltType" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Buyer Type</xs:documentation>
+																</xs:annotation>
+																<xs:simpleType>
+																	<xs:restriction base="xs:string">
+																		<xs:enumeration value="PRIVATE"/>
+																		<xs:enumeration value="REG_COM"/>
+																		<xs:enumeration value="PARTNER"/>
+																		<xs:enumeration value="TRUST"/>
+																		<xs:enumeration value="CHARITY"/>
+																		<xs:enumeration value="CLUB"/>
+																		<xs:enumeration value="COMPANYOTH"/>
+																		<xs:enumeration value="OTHER"/>
+																	</xs:restriction>
+																</xs:simpleType>
+															</xs:element>
+															<xs:element name="OtherTypeDescription" type="xs:string" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Description for Buyer Type OTHER</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="NumberOfPartners" type="xs:integer" minOccurs="0"/>
+															<xs:element name="FlptType" type="xs:string">
+																<xs:annotation>
+																	<xs:documentation>Type of Return Interest</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="ParRefno" type="xs:integer" minOccurs="0"/>
+															<xs:choice>
+																<xs:element name="ComCompanyName" type="xs:string">
+																	<xs:annotation>
+																		<xs:documentation>Organisation Name</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="PersonName">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="Title" type="xs:string" minOccurs="0"/>
+																			<xs:element name="Forename" type="xs:string" minOccurs="0"/>
+																			<xs:element name="Surname" type="xs:string" minOccurs="0"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:choice>
+															<xs:element name="ComRegno" type="xs:string" minOccurs="0"/>
+															<xs:element name="ComJurisdiction" type="xs:string" minOccurs="0"/>
+															<xs:element name="Address" type="core:AddressType" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Buyer,Seller,Agent</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="AgentDxNumber" type="xs:string" minOccurs="0"/>
+															<xs:element name="AuthorityInd" type="core:YesNoType" minOccurs="0"/>
+															<xs:element name="AuthorityDate" type="xs:date" minOccurs="0"/>
+															<xs:element name="TelNo" type="xs:string" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Telephone Number</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="EmailAddress" type="xs:string" minOccurs="0"/>
+															<xs:element name="CharityNumber" type="xs:string" minOccurs="0"/>
+															<xs:element name="ParPerNiNo" type="xs:string" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>National Insurance Number</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="AlternateReference" minOccurs="0">
+																<xs:complexType>
+																	<xs:sequence>
+																		<xs:element name="AlrtType" type="xs:string" minOccurs="0">
+																			<xs:annotation>
+																				<xs:documentation>Type of ID</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element name="RefCountry" type="xs:string" minOccurs="0"/>
+																		<xs:element name="Reference" type="xs:string" minOccurs="0"/>
+																	</xs:sequence>
+																</xs:complexType>
+															</xs:element>
+															<xs:element name="ContactTelNo" type="xs:string" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Telephone Number</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="ContactEmailAddress" type="xs:string" minOccurs="0"/>
+															<xs:choice>
+																<xs:element name="ContactAddress" type="core:AddressType" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Only for an Individual</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="OrganisationContact" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Only for an Organisation</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="ContactParRefno" type="xs:integer" minOccurs="0"/>
+																			<xs:element name="ContactJobTitle" type="xs:string" minOccurs="0"/>
+																			<xs:element name="ContactForename" type="xs:string"/>
+																			<xs:element name="ContactSurname" type="xs:string"/>
+																			<xs:element name="ContactAddress" type="core:AddressType" minOccurs="0"/>
+																			<xs:element name="ContactTelNo" type="xs:string" minOccurs="0"/>
+																			<xs:element name="ContactEmailAddress" type="xs:string" minOccurs="0"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:choice>
+															<xs:element name="BuyerSellerLinkedInd" type="core:YesNoType" minOccurs="0"/>
+															<xs:element name="BuyerSellerLinkedDesc" type="xs:string" minOccurs="0"/>
+															<xs:element name="ActingAsTrusteeInd" type="core:YesNoType" minOccurs="0"/>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="LinkedTransactions" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="LinkedTransaction" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="Reference" type="xs:string" minOccurs="0"/>
+															<xs:element name="ConsiderationAmount" type="xs:decimal" minOccurs="0"/>
+															<xs:element name="NetPresentValue" type="xs:decimal" minOccurs="0"/>
+															<xs:element name="LeasePremium" type="xs:decimal" minOccurs="0"/>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="LinkedConsideration" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="LinkedNPV" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="LinkedLeasePremium" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="AnnualRent" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="SameRentEachYearInd" type="core:YesNoType" minOccurs="0"/>
+									<xs:element name="Rent" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="YearlyRents" minOccurs="0" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="Year" type="xs:integer"/>
+															<xs:element name="RentAmount" type="xs:decimal"/>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="LeasePremium" type="xs:decimal" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Total Preminum Payable</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="RelevantRent" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="NetPresentValue" type="xs:decimal" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>NPV Tax Calculation</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="PremiumTaxDue" type="xs:decimal" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Total Tax Due Premium</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="NpvTaxDue" type="xs:decimal" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Total Tax Due NPV</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Properties" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="Property" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="LauCode" type="xs:string"/>
+															<xs:element name="Address" type="core:AddressType"/>
+															<xs:element name="FtpfCode">
+																<xs:annotation>
+																	<xs:documentation>Prefix Title Number</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="TitleNumber" type="xs:string"/>
+															<xs:element name="ParentFtpfCode" type="xs:string" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Prefix Parent Title Number</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="ParentTitleNumber" type="xs:string" minOccurs="0"/>
+															<xs:element name="AdsDueInd" type="core:YesNoType" minOccurs="0"/>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="IncludeInSale" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="StockInd" type="core:YesNoType" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Sale of business stock</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="GoodwillInd" type="core:YesNoType" minOccurs="0"/>
+												<xs:element name="MoveablesInd" type="core:YesNoType" minOccurs="0"/>
+												<xs:element name="OtherInd" type="core:YesNoType" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Sale of business other</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="TotalConsideration" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="TotalVat" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="NonChargeable" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="RemainingChargeable" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="Reliefs" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="Relief" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="Type" type="xs:string">
+																<xs:annotation>
+																	<xs:documentation>Relief Type</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="Amount" type="xs:decimal"/>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="Calculated" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="AdsDue" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="AdsDueInd" type="core:YesNoType" minOccurs="0"/>
+									<xs:element name="DueBeforeReliefs" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="TotalReliefs" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="TotalADSReliefs" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="TaxDue" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="AmountAlreadyPaid" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="TaxDueForReturn" type="xs:integer" minOccurs="0"/>
+									<xs:element name="OrigCalculated" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="OrigAdsDue" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="OrigDueBeforeReliefs" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="OrigTotalReliefs" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="OrigTaxDue" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="OrigNetPresentValue" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="OrigTotalADSReliefs" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="OrigPremiumTaxDue" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="OrigNpvTaxDue" type="xs:decimal" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Original Total Tax Due NPV</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="ContingentsEventInd" type="core:YesNoType" minOccurs="0"/>
+									<xs:element name="DeferralReference" type="xs:string" minOccurs="0"/>
+									<xs:element name="DeferralAgreedInd" type="core:YesNoType" minOccurs="0"/>
+									<xs:element name="FPAYMethod" type="xs:string" minOccurs="0"/>
+									<xs:element name="ClaimType" type="xs:string" minOccurs="0"/>
+									<xs:element name="ClaimReasonCode" type="xs:string" minOccurs="0"/>
+									<xs:element name="OtherClaimReason" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Free Text</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="RepaymentInd" type="core:YesNoType" minOccurs="0"/>
+									<xs:element name="RepayAccountHolder" type="xs:string" minOccurs="0"/>
+									<xs:element name="RepayBankAccountNo" type="xs:string" minOccurs="0"/>
+									<xs:element name="RepayBankSortCode" type="xs:string" minOccurs="0"/>
+									<xs:element name="RepaymentBankName" type="xs:string" minOccurs="0"/>
+									<xs:element name="RepayAmountClaimed" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="RepaymentAgentAuthInd" type="core:YesNoType" minOccurs="0"/>
+									<xs:element name="AdsSellResidenceInd" type="core:YesNoType" minOccurs="0"/>
+									<xs:element name="AdsAddress" type="core:AddressType" minOccurs="0"/>
+									<xs:element name="AdsConsideration" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="AdsAmountLiable" type="xs:decimal" minOccurs="0"/>
+									<xs:element name="AdsSoldAddress" type="core:AddressType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Captured ADS address</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="AdsSoldDate" type="xs:date" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>ADS Sale Date</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="PrintData" type="xs:string" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/LBTTTaxReturn" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
+			<xs:element name="LBTTTaxReturnResponse">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="core:StandardResponseStructure">
+							<xs:sequence>
+								<xs:element name="ReturnReference" type="xs:string" minOccurs="0"/>
+								<xs:element name="ReturnRefno" type="xs:integer" minOccurs="0"/>
+								<xs:element name="Version" type="xs:integer" minOccurs="0"/>
+								<xs:element name="PaymentDate" type="xs:date" minOccurs="0"/>
+								<xs:element name="FilingDate" type="xs:date" minOccurs="0"/>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="LBTTTaxReturnResponse">
+		<wsdl:part name="parameters" element="ns:LBTTTaxReturnResponse"/>
+	</wsdl:message>
+	<wsdl:message name="LBTTTaxReturn">
+		<wsdl:part name="parameters" element="ns:LBTTTaxReturn"/>
+	</wsdl:message>
+	<wsdl:portType name="LBTTTaxReturnWSDLPort">
+		<wsdl:operation name="LBTTTaxReturnWSDL">
+			<wsdl:output message="tns:LBTTTaxReturnResponse"/>
+			<wsdl:input message="tns:LBTTTaxReturn"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="LBTTTaxReturnWSDLBinding" type="tns:LBTTTaxReturnWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="LBTTTaxReturnWSDL">
+			<soap:operation soapAction="http://www.northgateps.com/RSTS/LBTTTaxReturn"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="LBTTTaxReturnWSDLService">
+		<documentation>northgateps.com Tax Return Service</documentation>
+		<wsdl:port name="LBTTTaxReturnWSDLPort" binding="tns:LBTTTaxReturnWSDLBinding">
+			<soap:address location="https://[server]/[port]/communication/createLBTTReturn"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

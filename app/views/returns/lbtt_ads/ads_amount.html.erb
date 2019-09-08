@@ -1,0 +1,9 @@
+<% content_for :page_title, t('returns.lbtt_ads.title') %>
+<% content_for :page_description, t('.description') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for @lbtt_return %>
+    <%= f.currency_field :ads_amount_liable %>
+    <%= f.currency_field :ads_consideration if @lbtt_return.ads_consideration_yes_no == 'Y' %>
+  <%= f.button 'next', { :name => 'submitted' }  %>
+<% end %>

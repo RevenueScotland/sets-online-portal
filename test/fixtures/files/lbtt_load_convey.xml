@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope
+	xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<soap:Body>
+		<LBTTTaxReturnResponse
+			xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:core="http://northgate-is.com/FL/Core">
+			<core:Success>true</core:Success>
+			<LBTTTaxReturn>
+				<FormType>F</FormType>
+				<TareReference>RS1000202XWQY</TareReference>
+				<TareRefno>251</TareRefno>
+				<Version>1</Version>
+				<Username>VALID.USER</Username>
+				<ParRefno>117</ParRefno>
+				<LBTTReturnDetails>
+					<FlbtType>CONVEY</FlbtType>
+					<PropertyType>1</PropertyType>
+					<EffectiveDate>2019-08-02</EffectiveDate>
+					<RelevantDate>2019-08-03</RelevantDate>
+					<ContractDate>2019-08-03</ContractDate>
+					<PreviousOptionInd>yes</PreviousOptionInd>
+					<ExchangeInd>yes</ExchangeInd>
+					<Parties>
+						<Party>
+							<PartyType>PER</PartyType>
+							<LpltType>PRIVATE</LpltType>
+							<FlptType>BUYER</FlptType>
+							<ParRefno>91</ParRefno>
+							<PersonName>
+								<Title>MR</Title>
+								<Forename>firstname</Forename>
+								<Surname>surname</Surname>
+							</PersonName>
+							<Address>
+								<core:AddressLine1>Royal Mail</core:AddressLine1>
+								<core:AddressLine2>Luton Delivery Office 9-11</core:AddressLine2>
+								<core:AddressLine3>Dunstable Road</core:AddressLine3>
+								<core:AddressTownOrCity>LUTON</core:AddressTownOrCity>
+								<core:AddressPostcodeOrZip>LU1 1AA</core:AddressPostcodeOrZip>
+								<core:AddressCountryCode>GB</core:AddressCountryCode>
+							</Address>
+							<AuthorityInd>no</AuthorityInd>
+							<TelNo>0123456789</TelNo>
+							<EmailAddress>noreply@northgateps.com</EmailAddress>
+							<BuyerSellerLinkedInd>yes</BuyerSellerLinkedInd>
+						</Party>
+						<Party>
+							<PartyType>PER</PartyType>
+							<LpltType>PRIVATE</LpltType>
+							<FlptType>SELLER</FlptType>
+							<ParRefno>92</ParRefno>
+							<PersonName>
+								<Title>MR</Title>
+								<Forename>seller firstname</Forename>
+								<Surname>seller surname</Surname>
+							</PersonName>
+							<Address>
+								<core:AddressLine1>Royal Mail</core:AddressLine1>
+								<core:AddressLine2>Luton
+Delivery Office 9-11</core:AddressLine2>
+								<core:AddressLine3>Dunstable Road</core:AddressLine3>
+								<core:AddressTownOrCity>LUTON</core:AddressTownOrCity>
+								<core:AddressPostcodeOrZip>LU1 1AA</core:AddressPostcodeOrZip>
+								<core:AddressCountryCode>GB</core:AddressCountryCode>
+							</Address>
+							<AuthorityInd>no</AuthorityInd>
+							<TelNo>0123456789</TelNo>
+							<EmailAddress>noreply@northgateps.com</EmailAddress>
+							<BuyerSellerLinkedInd>no</BuyerSellerLinkedInd>
+						</Party>
+						<Party>
+							<PartyType>PER</PartyType>
+							<LpltType>PRIVATE</LpltType>
+							<FlptType>AGENT</FlptType>
+							<ParRefno>93</ParRefno>
+							<PersonName>
+								<Title>MR</Title>
+								<Forename>Portal User</Forename>
+								<Surname>New Users</Surname>
+							</PersonName>
+							<Address>
+								<core:AddressLine1>Royal Mail</core:AddressLine1>
+								<core:AddressLine2>Luton Delivery Office 9-11</core:AddressLine2>
+								<core:AddressLine3>Dunstable Road</core:AddressLine3>
+								<core:AddressTownOrCity>LUTON</core:AddressTownOrCity>
+								<core:AddressPostcodeOrZip>LU1 1AA</core:AddressPostcodeOrZip>
+								<core:AddressCountryCode>GB</core:AddressCountryCode>
+							</Address>
+							<AuthorityInd>yes</AuthorityInd>
+							<AuthorityDate>2019-04-12</AuthorityDate>
+							<TelNo>0123456789</TelNo>
+							<EmailAddress>noreply@northgateps.com</EmailAddress>
+						</Party>
+					</Parties>
+					<LinkedTransactions>
+						<LinkedTransaction>
+							<Reference>1</Reference>
+							<ConsiderationAmount>10</ConsiderationAmount>
+						</LinkedTransaction>
+						<LinkedTransaction>
+							<Reference>2</Reference>
+							<ConsiderationAmount>20</ConsiderationAmount>
+						</LinkedTransaction>
+						<LinkedTransaction>
+							<Reference>3</Reference>
+							<ConsiderationAmount>30</ConsiderationAmount>
+						</LinkedTransaction>
+					</LinkedTransactions>
+					<LinkedConsideration>2345</LinkedConsideration>
+					<Properties>
+						<Property>
+							<LauCode>9051</LauCode>
+							<Address>
+								<core:AddressLine1>Royal Mail</core:AddressLine1>
+								<core:AddressLine2>Luton Delivery Office 9-11</core:AddressLine2>
+								<core:AddressLine3>Dunstable Road</core:AddressLine3>
+								<core:AddressTownOrCity>LUTON</core:AddressTownOrCity>
+								<core:AddressPostcodeOrZip>LU1 1AA</core:AddressPostcodeOrZip>
+								<core:AddressCountryCode>GB</core:AddressCountryCode>
+							</Address>
+							<FtpfCode>ABN</FtpfCode>
+							<TitleNumber>1234</TitleNumber>
+							<AdsDueInd>Y</AdsDueInd>
+						</Property>
+					</Properties>
+					<IncludeInSale>
+						<StockInd>yes</StockInd>
+						<GoodwillInd>yes</GoodwillInd>
+						<MoveablesInd>no</MoveablesInd>
+						<OtherInd>yes</OtherInd>
+					</IncludeInSale>
+					<TotalConsideration>1234567</TotalConsideration>
+					<TotalVat>1234</TotalVat>
+					<NonChargeable>3412</NonChargeable>
+					<RemainingChargeable>1234567</RemainingChargeable>
+					<Reliefs>
+						<Relief>
+							<Type>INCLLP</Type>
+							<Amount>10</Amount>
+						</Relief>
+						<Relief>
+							<Type>COMMRIGHT</Type>
+							<Amount>20</Amount>
+						</Relief>
+						<Relief>
+							<Type>HERITAGE</Type>
+							<Amount>30</Amount>
+						</Relief>
+						<Relief>
+							<Type>ADSFAMUNIT</Type>
+							<Amount>40</Amount>
+						</Relief>
+					</Reliefs>
+				    <Calculated>106090.82</Calculated>
+					<AdsDue>10</AdsDue>
+					<DueBeforeReliefs>106090.82</DueBeforeReliefs>
+					<TotalReliefs>60</TotalReliefs>
+					<TaxDue>106030</TaxDue>
+					<OrigCalculated>0</OrigCalculated>
+					<OrigAdsDue>0</OrigAdsDue>
+					<OrigDueBeforeReliefs>0</OrigDueBeforeReliefs>
+					<OrigTotalReliefs>0</OrigTotalReliefs>
+					<OrigTaxDue>0</OrigTaxDue>
+					<ContingentsEventInd>yes</ContingentsEventInd>
+					<DeferralReference>50</DeferralReference>
+					<DeferralAgreedInd>yes</DeferralAgreedInd>
+					<FPAYMethod>DDEBIT</FPAYMethod>
+					<RepaymentInd>yes</RepaymentInd>
+					<RepayAccountHolder>account holder name</RepayAccountHolder>
+					<RepayBankAccountNo>1234567</RepayBankAccountNo>
+					<RepayBankSortCode>10-10-10</RepayBankSortCode>
+					<RepaymentBankName>bank name</RepaymentBankName>
+					<RepaymentAmountClaimed>750</RepaymentAmountClaimed>
+					<RepaymentAgentAuthInd>no</RepaymentAgentAuthInd>
+					<AdsSellResidenceInd>no</AdsSellResidenceInd>
+					<AdsConsideration>750</AdsConsideration>
+					<AdsAmountLiable>460000</AdsAmountLiable>
+				</LBTTReturnDetails>
+			</LBTTTaxReturn>
+		</LBTTTaxReturnResponse>
+	</soap:Body>
+</soap:Envelope>

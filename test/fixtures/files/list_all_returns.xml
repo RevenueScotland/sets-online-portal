@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <ViewReturnsResponse xmlns="http://www.northgateps.com/RSTS/ViewAllReturns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+      <core:Success>true</core:Success>
+      <Returns>
+        <Pagination>
+          <MoreRowsExist>N</MoreRowsExist>
+          <TotalRows>0</TotalRows>
+        </Pagination>
+      </Returns>
+    </ViewReturnsResponse>
+  </soap:Body>
+</soap:Envelope>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <soap:Body>
+      <LBTTTaxReturnResponse xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn" xmlns:bbc="http://northgate-is.com/FL/Core" xmlns:core="http://northgate-is.com/FL/Core">
+         <core:Success>true</core:Success>
+         <ReturnReference>RS1000202XWQY</ReturnReference>
+         <ReturnRefno>251</ReturnRefno>
+         <Version>2</Version>
+         <PaymentDate>03-AUG-19</PaymentDate>
+         <FilingDate>02-SEP-19</FilingDate>
+      </LBTTTaxReturnResponse>
+   </soap:Body>
+</soap:Envelope>

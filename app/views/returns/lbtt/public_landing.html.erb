@@ -1,0 +1,10 @@
+<%= content_for :hide_back_link, true %>
+<%= content_for :public_landing_return_link, link_to(t('cancel'), Rails.configuration.x.external_links.public_landing_return_page, class: 'govuk-back-link') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<%= content_for :page_title, t('.title') %>
+<ul>
+    <%= t('.info_needed').html_safe %>
+</ul>
+<%= t('.start_warning') %>
+<br />
+<p><%= link_to(t('.public_lbtt_return'), returns_lbtt_public_return_type_path, class: 'scot-rev-button') %></p>

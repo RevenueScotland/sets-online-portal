@@ -1,0 +1,32 @@
+<table class="govuk-table">
+  <thead>
+    <tr class="govuk-table__row">
+      <th  class="govuk-table__header" id="h1"><%= table_headers[0] %></th>
+      <th class="govuk-table__header text_align_right" id="h2"><%= table_headers[1] %></th>
+      <th class="govuk-table__header"  id="h3"/>
+      <th class="govuk-table__header" id="h4"/>
+      <th class="govuk-table__header" id="h5"/>
+    </tr>
+    <tr>      
+      <th class="govuk-table__header"  id="b1" headers="blank1"/>
+      <th class="govuk-table__header " id="l1" headers="lower"><%= t('.net_lower_tonnage') %></th>
+      <th class="govuk-table__header" id="s1" headers="standard"><%= t('.net_standard_tonnage') %></th>
+      <th class="govuk-table__header" id="b2" headers="blank2"/>
+    </tr>
+  </thead>
+  <tbody>
+    <% unless data.nil? %>
+      <% data.each do |id, site| %>
+        <% unless site.blank? %>
+          <tr>            
+            <td headers="h1 b1"><%= site.site_name %></td>
+            <td headers="h2 l1"><%= site.net_lower_tonnage %></td>
+            <td headers="h3 s1" ><%= site.net_standard_tonnage %></td>
+            <% nav_link = navigational_links [{link: '.add_waste_details', path: "#{returns_slft_site_waste_summary_path}?site=#{site.lasi_refno}"}] %>
+            <td class="text_align_right" headers="h4 b2"><%= nav_link %></td>
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

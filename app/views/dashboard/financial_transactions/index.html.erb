@@ -1,0 +1,53 @@
+<% content_for :hide_back_link, true %>
+<% content_for :page_title, t('.title') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<h2><%= t('.heading') %> </h2>
+
+<%= form_for @transaction_filter, url: dashboard_financial_transactions_path, :method => 'get', local: true do |form| %>
+  <%= form_errors_for @transaction_filter %>
+  <% form.current_browser = application_browser %>
+  <%= form.text_field :related_reference %>
+  
+  <%= render '/layouts/hideable_details/', { clickable_text: [t('filter_show'), t('filter_hide')] } do %>
+    <%= form.currency_field :amount %>
+    <%= render '/layouts/fields_range/' do %>
+      <%= form.currency_field :minimum_amount, { width: 'full' } %>
+      <%= form.currency_field :maximum_amount, { width: 'full' } %>
+    <% end %>
+
+		<%= form.date_field :actual_date %>
+    <%= render '/layouts/fields_range/' do %>
+      <%= form.date_field :actual_date_from, { width: 'full' } %>
+      <%= form.date_field :actual_date_to, { width: 'full' } %>
+    <% end %>
+
+		<%= form.date_field :effective_date, value: @transaction_filter.effective_date %>
+    <%= render '/layouts/fields_range/' do %>
+      <%= form.date_field :effective_date_from, { width: 'full' } %>
+      <%= form.date_field :effective_date_to, { width: 'full' } %>
+    <% end %>
+  <% end %>
+
+
+  <br />
+
+  <%= form.button t('.find'), autofocus: @on_filter_find %>
+<% end %>
+<br />
+
+<%= display_table(@transactions,
+                  [:actual_date, :effective_date, :related_reference, :description, :amount, :outstanding_balance],
+                  [
+                    { label: t('.show'), action: :show }
+                  ],
+                  { actual_date: {format: :date},
+                    effective_date: {format: :date},
+                    amount: {format: :money},
+                    outstanding_balance: {format: :money} }) %>
+
+<%= paginate @pagination_collection %>
+
+<% if @transactions.nil? %>
+  <p> <%= t('.no_data_found') %> </p>
+<% end %>

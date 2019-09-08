@@ -1,0 +1,79 @@
+<% content_for :hide_back_link, true %>
+<% content_for :page_title, t('.title') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<%# <%= application_browser %>
+
+<% if account_has_service?(:lbtt) && can?(AuthorisationHelper::LBTT_SUMMARY) %>
+  <div class = "display-inline-text">
+    <%= link_to(t('.lbtt_return'), "#{returns_lbtt_return_type_path}?new=true", class: 'scot-rev-button') %>
+  </div>
+<% end %>
+<% if account_has_service?(:slft) && can?(AuthorisationHelper::SLFT_SUMMARY)%>
+  <div class = "display-inline-text">
+    <%= link_to(t('.slft_return'), "#{returns_slft_summary_path}?new=true", class: 'scot-rev-button') %>
+  </div>
+<% end %>
+<% if !account_has_service?(:slft) && !account_has_service?(:lbtt) %>
+  <p>
+    <%= t('.no_services') %>
+  </p>
+<% end %>
+<div class = "display-inline-text">
+  <%= link_to(t('.new_message'), new_dashboard_message_path, class: 'scot-rev-button', requires_action: AuthorisationHelper::CREATE_MESSAGE) %>
+</div>
+
+<br />
+
+<% if can? AuthorisationHelper::VIEW_MESSAGES %>
+  <h2> <%= t('.title_unread_messages') %> </h2>
+  <% if @messages.count >0 %>
+    <%= display_table(@messages,
+                      [:created_date, :full_name, :title, :reference, :subject_description, :has_attachment, :read_indicator],
+                      [
+                        { label: t('.show'), action: :show, link_options: { requires_action: AuthorisationHelper::VIEW_MESSAGE_DETAIL } }
+                      ],
+                      { created_date: {format: :datetime} }) %>
+
+    <%= paginate @messages_pagination, :message_page %>
+  <% end %>  
+  <%= navigational_links [{ link: :messages, path: dashboard_messages_path }] %>
+<% end %>
+<% if can? AuthorisationHelper::VIEW_RETURNS %>
+  <h3> <%= t('.title_draft_returns') %> </h3>
+  <%= display_table(@dashboard_returns,
+                    [:tare_reference, :description, :version, :return_status],
+                    [
+                      { label: t('.continue'), method_path: :continue_amend_path, link_options: { requires_action_path: :continue_action } },
+                      { label: t('.download'),  path: :dashboard_download_return_path,
+                                                parameter: :to_download_param,
+                                                options: { target: '_blank' } }
+                    ]) %>
+  <%= paginate @returns_pagination, :returns_page %>
+  <%= navigational_links [{ link: :dashboard_returns, path: dashboard_dashboard_returns_path }] %>
+<% end %>
+<h3> <%= t('.title_outstanding_transactions') %> </h3>
+<%= display_table(@outstanding,
+                  [:tare_reference, :return_date, :description, :version, :return_status, :return_balance, :balance_status],
+                  [
+                    { label: t('.transactions'), path: :dashboard_return_transactions_path, parameter: :tare_reference },
+                    { label: t('.download'),  path: :dashboard_download_return_path,
+                                              parameter: :to_download_param,
+                                              options: { target: '_blank' } },
+                    { label: t('.amend'), method_path: :continue_amend_path,
+                                          visible_for: :return_is_amendable,
+                                          link_options: { requires_action_path: :amend_action } },
+                    { label: t('.message'), path: :dashboard_return_messages_path, parameter: :tare_reference }
+                  ],
+                  { return_date: {format: :date},
+                    return_balance: {format: :money} }) %>
+<%= paginate @outstanding_pagination, :balance_page %>
+<%= navigational_links [{ link: :financial_transactions, path: dashboard_financial_transactions_path}] %>
+
+<br />
+<br />
+<br />
+
+<% links = [
+            { link: :lbtt_return, path: returns_lbtt_return_type_path },
+            { link: :slft_return_summary, path: returns_slft_summary_path }
+            ] %>

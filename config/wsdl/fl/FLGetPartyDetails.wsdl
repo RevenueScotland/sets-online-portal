@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns="http://northgateps.com/FL/GetPartyDetailsRequest" xmlns:ns1="http://northgateps.com/FL/GetPartyDetailsResponse" xmlns:wsdl1="http://www.northgateps.com/FLGetPartyDetails.wsdl" targetNamespace="http://www.northgateps.com/FLGetPartyDetails.wsdl" name="GetPartyDetails">
+	<wsdl:types>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://northgateps.com/FLCommonTypes" targetNamespace="http://northgateps.com/FLCommonTypes" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="Money">
+				<xsd:sequence>
+					<xsd:element name="Pounds" type="xsd:int"/>
+					<xsd:element name="Pence">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:int">
+								<xsd:maxInclusive value="99"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="AddressType">
+				<xsd:annotation>
+					<xsd:documentation>An address is composed of a number of structured elements such as Postcode, Post-Town, Street etc</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Line1" type="xsd:string"/>
+					<xsd:element name="Line2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Town" type="xsd:string"/>
+					<xsd:element name="County" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Postcode" type="PostcodeType" minOccurs="0"/>
+					<xsd:element name="Country" type="xsd:string"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="PostcodeType">
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="PhoneNumberType">
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[0-9\-\.\)\(\+ ]+"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:schema>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference for the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Service" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example service is the name of the requesting system, e.g. RB or the database from which the request is coming from, e.g. RBDEV</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example requestor is the name of the Local Authority from which the request is being sent</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+
+<xsd:schema xmlns="http://northgateps.com/FL/GetPartyDetailsRequest" xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+ xmlns:core="http://northgate-is.com/FL/Core"
+ targetNamespace="http://northgateps.com/FL/GetPartyDetailsRequest" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xsd:import namespace="http://northgate-is.com/FL/Core" />
+    <xsd:element name="GetPartyDetailsRequest">
+        <xsd:annotation>
+            <xsd:documentation>Message request containing party reference and return a user that is registered </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="core:StandardRequestStructure">
+                                <xsd:sequence>
+                                    <xsd:element name="PartyRef" type="xsd:integer">
+                                        <xsd:annotation>
+                                            <xsd:documentation>The users party ref</xsd:documentation>
+                                        </xsd:annotation>                                        
+                                   </xsd:element>   
+                             </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
+<xsd:schema xmlns="http://northgateps.com/FL/GetPartyDetailsResponse"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core"
+		xmlns:flc="http://northgateps.com/FLCommonTypes" targetNamespace="http://northgateps.com/FL/GetPartyDetailsResponse"
+		elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://northgate-is.com/FL/Core"
+			 />
+	<xsd:import namespace="http://northgateps.com/FLCommonTypes"
+			 />
+	<xsd:element name="GetPartyDetailsResponse">
+		<xsd:annotation>
+			<xsd:documentation>Message response containing party details
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="core:StandardResponseStructure">
+					<xsd:sequence>
+						<xsd:element name="Title" type="xsd:string" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>
+									The parties title if available
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Forename" type="xsd:string" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>
+									The parties forename if available
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Surname" type="xsd:string"  minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>
+									The parties surname if available
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="CompanyName" type="xsd:string" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>
+									The parties organisation name if available
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TradingName" type="xsd:string" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The users organisation trading name if
+									supplied
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="RegistrationNumber" type="xsd:string" minOccurs="0"><!-- Registered Number for registered companies only -->
+							<xsd:annotation>
+								<xsd:documentation>The users organisation registration number if
+									supplied
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="RegisteredAddress" type="core:AddressType" minOccurs="0"> <!-- Registered address for registered companies only -->
+							<xsd:annotation>
+								<xsd:documentation>The address moniker is provided when the
+									address has
+									been searched via the address search, otherwise it
+									is
+									a manual address
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="EmailAddress" type="xsd:string" minOccurs="0"> <!-- Party correspondence email -->
+							<xsd:annotation>
+								<xsd:documentation>
+									The parties email address
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="PhoneNumber" type="flc:PhoneNumberType" minOccurs="0"> <!-- Party correspondence phone -->
+							<xsd:annotation>
+								<xsd:documentation>
+									The parties phone number
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Address" type="core:AddressType"> <!-- Correspondence address for all parties -->
+							<xsd:annotation>
+								<xsd:documentation>
+									The parties address
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="MarketingIndicator" minOccurs="0" type="xsd:string" />
+						<xsd:element name="MarketingCommCode" minOccurs="0" type="xsd:string" />
+						<xsd:element name="Charity" minOccurs="0" type="xsd:string" />
+						<xsd:element name="CharityReference" minOccurs="0" type="xsd:string" />
+						
+				
+						<xsd:element name="PartyContactName" minOccurs="0" type="xsd:string" > <!--NEW Party Contact Name for Party captured for Orgs and Company -->
+							<xsd:annotation>
+								<xsd:documentation>Name of Primary Contact for Company and Organisations </xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="PartyNINO" minOccurs="0" type="xsd:string" > <!--NEW NINO for Party captured for Orgs and Individual -->
+							<xsd:annotation>
+								<xsd:documentation>NINO of Primary Contact captured for Organisations OR NINO of Individual Party. Not Companies</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="EmailDataIndicator" minOccurs="0" type="xsd:string" > <!--NEW Indicator to record if party have agreed to include content in Emails -->
+							<xsd:annotation>
+								<xsd:documentation>Indicator if Party has agreed to recieving Emails with Return details once conditions read.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="PartyAccountType" minOccurs="0" type="xsd:string" > <!--NEW Is the Party a TaxPayer or an Agent -->
+							<xsd:annotation>
+								<xsd:documentation>Is the Registered party an Agent or a Tax Payer?</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="CurrDDInstructionAvail" minOccurs="0" type="xsd:boolean" > <!--NEW Indicator to indicate if a Direct Debit has been defined for a Party -->
+							<xsd:annotation>
+								<xsd:documentation>IIndicator to indicate if a Direct Debit has been defined for a Party.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>	
+						<xsd:element name="UserServices" minOccurs="0" > 
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="UserService"	type="xsd:string" maxOccurs="unbounded" >
+										<xsd:annotation>
+											<xsd:documentation>The service to which the user/party can access. </xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>					
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="GetPartyDetailsRequest">
+		<wsdl:part name="parameters" element="ns:GetPartyDetailsRequest"/>
+	</wsdl:message>
+	<wsdl:message name="GetPartyDetailsResponse">
+		<wsdl:part name="parameters" element="ns1:GetPartyDetailsResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="GetPartyDetailsWSDLPort">
+		<wsdl:operation name="GetPartyDetailsWSDL">
+			<wsdl:input message="wsdl1:GetPartyDetailsRequest"/>
+			<wsdl:output message="wsdl1:GetPartyDetailsResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetPartyDetailsWSDLBinding" type="wsdl1:GetPartyDetailsWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="GetPartyDetailsWSDL">
+			<soap:operation soapAction="https://server/DATABASE/communication/GetPartyDetailsRequest"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetPartyDetailsService">
+		<wsdl:port name="GetPartyDetailsWSDLPort" binding="wsdl1:GetPartyDetailsWSDLBinding">
+			<soap:address location="https://server/DATABASE/communication/GetPartyDetailsRequest"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

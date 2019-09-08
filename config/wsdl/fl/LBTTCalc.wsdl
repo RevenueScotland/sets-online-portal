@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/GetLBTTCalc" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.northgateps.com/RSTS/GetLBTTCalc.wsdl" targetNamespace="http://www.northgateps.com/RSTS/GetLBTTCalc.wsdl">
+	<wsdl:types>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference for the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Service" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example service is the name of the requesting system, e.g. RB or the database from which the request is coming from, e.g. RBDEV</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example requestor is the name of the Local Authority from which the request is being sent</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/GetLBTTCalc" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/GetLBTTCalc" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
+			<xs:element name="LBTTCalcRequest">
+				<xs:annotation>
+					<xs:documentation>This webservice will provide a mechanism to return details of LBTT Tax liability.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Authenticated" type="core:YesNoType" minOccurs="0"/>
+						<xs:element name="Username">
+							<xs:annotation>
+								<xs:documentation>User identified to determine the associated Service and Workplaces and what transactions they can view. FL.PARTIES.USR_USERNAME</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="30"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="PartyRef">
+							<xs:annotation>
+								<xs:documentation>Used to verify the request is valid from a user and the correct party. FL.PARTIES.USR_PARTYREF</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:integer"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="LBTTReturnDetails">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="EffectiveDate">
+										<xs:annotation>
+											<xs:documentation>Filter responses to only include data with an Effective Date equal to that provided. LBTT_RETURNS.LBTT_EFFECTIVE_DATE</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:date"/>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="ContractDate">
+										<xs:annotation>
+											<xs:documentation>Filter responses to only include data with a Contract Date equal to that provided. LBTT_RETURNS.LBTT_CONTRACT_DATE</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:date"/>
+										</xs:simpleType>
+									</xs:element>
+									<xs:choice>
+										<xs:element name="ConvDetails">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="PropertyType">
+														<xs:annotation>
+															<xs:documentation>Filter responses to a particular Property Type e.g."Non-residential, Residential" (via LBTT_RETURNS.LBTT_FPTY_TYPE)</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:enumeration value="Non-residential"/>
+																<xs:enumeration value="Residential"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="TransactionDetails">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="ADSAmountLiable" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The amount of ADS considered. LBTT_RETURNS.LBTT_ADS_AMOUNT_LIABLE</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="SumofLinkedTrans" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The sum of the linked transactions. LBTT_RETURNS.LBTT_LINKED_CONSIDERATION (Sum of LBTT_TAX_RETURN_LINKS.LBTR_CONSIDERATION_AMOUNT)</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="SumofReliefs" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The sum of reliefs. LBTT_RETURNS.LBTT_TOTAL_RELIEFS (Sum of LBTT_RELIEFS.LBRL_AMOUNT)</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="SumofADSReliefs" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The sum of ADS reliefs. </xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="TotalConsideration">
+																	<xs:annotation>
+																		<xs:documentation>Total consideration of transaction. LBTT_RETURNS.LBTT_TOTAL_CONSIDERATION</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="NonChargeableConsideration" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Non chargeable consideration. LBTT_RETURNS.LBTT_NON_CHARGEABLE</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="TotalConsiderationRemaining">
+																	<xs:annotation>
+																		<xs:documentation>Consideration remaining. LBTT_RETURNS.LBTT_REMAINING_CHARGEABLE (LBTT_TOTAL_CONSIDERATION + LBBT_LINKED_CONSIDERATION - LBTT_NON_CHARGEABLE)</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="LeaseDetails">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="PropertyType">
+														<xs:annotation>
+															<xs:documentation>Filter responses to a particular Property Type e.g."Non-residential, Residential" (via LBTT_RETURNS.LBTT_FPTY_TYPE)</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:enumeration value="Non-residential"/>
+																<xs:enumeration value="Residential"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="LeaseStartDate">
+														<xs:annotation>
+															<xs:documentation>The start date of the lease. LBTT_RETURNS.LBTT_LEASE_START_DATE</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:date"/>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="LeaseEndDate">
+														<xs:annotation>
+															<xs:documentation>The end date of the lease. LBTT_RETURNS.LBTT_LEASE_END_DATE</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:date"/>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="AnnualRent" type="xs:decimal" minOccurs="0"/>
+													<xs:element name="RentalYears">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Years">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="RentYear"/>
+																			<xs:element name="RentAmount"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="TransactionDetails" minOccurs="0">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="SumofLinkedNPV" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The amount of ADS considered. LBTT_RETURNS.LBTT_ADS_AMOUNT_LIABLE</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="SumofLinkedPremium" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The sum of the linked transactions. LBTT_RETURNS.LBTT_LINKED_CONSIDERATION (Sum of LBTT_TAX_RETURN_LINKS.LBTR_CONSIDERATION_AMOUNT)</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="SumofReliefs" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>The sum of reliefs. LBTT_RETURNS.LBTT_TOTAL_RELIEFS (Sum of LBTT_RELIEFS.LBRL_AMOUNT)</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Premium">
+																	<xs:annotation>
+																		<xs:documentation>Total consideration of transaction. LBTT_RETURNS.LBTT_TOTAL_CONSIDERATION</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="RelevantRentalFigure">
+																	<xs:annotation>
+																		<xs:documentation>Consideration remaining. LBTT_RETURNS.LBTT_REMAINING_CHARGEABLE (LBTT_TOTAL_CONSIDERATION + LBBT_LINKED_CONSIDERATION - LBTT_NON_CHARGEABLE)</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="OverriddenNPV">
+																	<xs:annotation>
+																		<xs:documentation>Overridden NPV</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="LBTTCalcResponse">
+				<xs:annotation>
+					<xs:documentation>The Response will contain details of LBTT Tax liability relevant to the request criteria provided above.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="core:StandardResponseStructure">
+							<xs:sequence>
+								<xs:choice>
+									<xs:element name="ConvTaxPayable">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="LBTTCalculated">
+													<xs:annotation>
+														<xs:documentation>LBTT before any reliefs are deducted. LBTT_RETURNS.LBTT_CALCULATED</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="ADSPayable">
+													<xs:annotation>
+														<xs:documentation>Amount of ADS due. LBTT_RETURNS.LBTT_ADS_DUE</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TotalLiability">
+													<xs:annotation>
+														<xs:documentation>Amount liable for LBTT. LBTT_RETURNS.LBTT_DUE_BEFORE_RELIEFS</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TotalReliefsClaimed" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Total reliefs claimed. LBTT_RETURNS.LBTT_TOTAL_RELIEFS</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TotalADSReliefsClaimed" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Total ADS reliefs claimed. LBTT_RETURNS.LBTT_TOTAL_ADS_RELIEFS</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TotalLinkedTransactions" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Total of linked transactions. LBTT_RETURNS.LBTT_LINKED_CONSIDERATION</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TotalDue">
+													<xs:annotation>
+														<xs:documentation>Tax due. LBTT_RETURNS.LBTT_TAX_DUE</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="LeaseTaxPayable">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="NPV">
+													<xs:annotation>
+														<xs:documentation>LBTT before any reliefs are deducted. LBTT_RETURNS.LBTT_CALCULATED</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TaxLiabilityonNPV" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Amount of ADS due. LBTT_RETURNS.LBTT_ADS_DUE</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TaxLiabilityonPremium" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Total reliefs claimed. LBTT_RETURNS.LBTT_TOTAL_RELIEFS</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TotalReliefsClaimed" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Total of linked transactions. LBTT_RETURNS.LBTT_LINKED_CONSIDERATION</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TotalLinkedNPV" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Tax due. LBTT_RETURNS.LBTT_TAX_DUE</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TotalLinkedPremium" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Tax due. LBTT_RETURNS.LBTT_TAX_DUE</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="TotalDue" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Tax due. LBTT_RETURNS.LBTT_TAX_DUE</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:decimal"/>
+													</xs:simpleType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:choice>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="LBTTCalcRequest">
+		<wsdl:part name="parameters" element="ns:LBTTCalcRequest"/>
+	</wsdl:message>
+	<wsdl:message name="LBTTCalcResponse">
+		<wsdl:part name="parameters" element="ns:LBTTCalcResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="GetLBTTCalcWSDLPort">
+		<wsdl:operation name="GetLBTTCalcWSDL">
+			<wsdl:input message="tns:LBTTCalcRequest"/>
+			<wsdl:output message="tns:LBTTCalcResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetLBTTCalcWSDLBinding" type="tns:GetLBTTCalcWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<!-- Define document style -->
+		<!-- define literal -->
+		<wsdl:operation name="GetLBTTCalcWSDL">
+			<soap:operation soapAction="https://server/DATABASE/communication/GetLBTTCalc"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetLBTTCalcWSDLService">
+		<wsdl:port name="GetLBTTCalcWSDLPort" binding="tns:GetLBTTCalcWSDLBinding">
+			<soap:address location="https://server/DATABASE/communication/GetLBTTCalc"/>
+			<!-- give the binding an network address -->
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

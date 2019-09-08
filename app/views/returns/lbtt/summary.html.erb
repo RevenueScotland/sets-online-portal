@@ -1,0 +1,95 @@
+<% content_for :page_title, t('.title') %>
+<% content_for :page_subtitle, t('.subtitle') %>
+<% content_for :page_description, t('.description') %>
+<!-- Applies the CSS class 'external-link' to the navigation bar options, see return-form-dirty.js for details -->
+<% content_for :nav_bar_options, { class: 'external-link' } %>
+
+<% if @lbtt_return.show_repayment? %>
+  <div class='govuk-body'>
+    <%= t('.repayment_description') %>
+  </div>
+<% end %>
+<%= govuk_warning( t('.warning') ) if current_user %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<% if User.account_type(current_user) != 'PUBLIC' %>
+  <% nav_link = navigational_links [ { link: :amend, path: "#{returns_lbtt_agent_details_path}?party_id=new" } ] %>
+  <table class="govuk-table">
+    <thead>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header"><%= t('.add_agent_description') %></th>
+        <th class="govuk-table__header text_align_right"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+          <td>
+            <%= @agent.full_name unless @agent.nil?%>
+          </td>
+          <td class="text_align_right"><%= nav_link %></td>
+      </tr>
+    </tbody>
+  </table>
+<% end %>
+
+<% if @lbtt_return.flbt_type == 'CONVEY' %>
+  <% nav_link = navigational_links [ { link: :add_buyer, path: "#{returns_lbtt_about_the_party_path}?party_id=new&party_type=BUYER" } ] %>
+  <%= render '/layouts/summary_table', { table_headers: [ t('.add_buyer_description'), nav_link], table_help: nil, summary_data: @buyers } %>
+  <%= render 'party_summary_table', { data: @buyers } %>
+
+  <% nav_link = navigational_links [ { link: :add_seller, path: "#{returns_lbtt_about_the_party_path}?party_id=new&party_type=SELLER" } ] %>
+  <%= render '/layouts/summary_table' , { table_headers: [ t('.add_seller_description'), nav_link ], table_help: nil, summary_data: @sellers } %>
+  <%= render 'party_summary_table', { data: @sellers } %>
+  <% else %>
+  <% nav_link = navigational_links [ { link: :add_tenant, path: "#{returns_lbtt_about_the_party_path}?party_id=new&party_type=TENANT&new=true" } ] %>
+  <%= render '/layouts/summary_table', { table_headers: [ t('.add_tenant_description'), nav_link], table_help: nil, summary_data: @tenants } %>
+  <%= render 'party_summary_table', { data: @tenants } %>
+
+  <% if @lbtt_return.flbt_type == 'LEASERET' %>
+    <% nav_link = navigational_links [ { link: :add_landlord, path: "#{returns_lbtt_about_the_party_path}?party_id=new&party_type=LANDLORD" } ] %>
+    <%= render '/layouts/summary_table' , { table_headers: [ t('.add_landlord_description'), nav_link ], table_help: nil, summary_data: @landlords } %>
+    <%= render 'party_summary_table', { data: @landlords } %>
+  <% end %>
+
+  <% if @lbtt_return.flbt_type == 'ASSIGN' %>
+    <% nav_link = navigational_links [ { link: :add_new_tenant, path: "#{returns_lbtt_about_the_party_path}?party_id=new&party_type=NEWTENANT" } ] %>
+    <%= render '/layouts/summary_table', { table_headers: [ t('.add_new_tenant_description'), nav_link], table_help: nil, summary_data: @new_tenants } %>
+    <%= render 'party_summary_table', { data: @new_tenants } %>
+  <% end %>
+<% end %>
+
+<% nav_link = navigational_links [ { link: :add, path: "#{returns_lbtt_property_address_path}?property_id=new", link_options: {'id' => 'add_property' } } ] %>
+<%= render '/layouts/summary_table', { table_headers: [ t('.add_properties_description'), nav_link ], table_help: nil, summary_data: @properties } %>
+<%= render 'property_summary_table', { data: @properties } %>
+
+<% if @lbtt_return.show_ads? %>
+  <% @ads_link_text = @ads_summary.blank? ? :add : :edit %>
+
+  <% if @lbtt_return.amendment? %>
+    <% nav_link = navigational_links [ { link: @ads_link_text, path: returns_lbtt_ads_repay_reason_path, link_options: { 'id' => 'add_ads' } } ] %>
+  <% else %>
+    <% nav_link = navigational_links [ { link: @ads_link_text, path: returns_lbtt_ads_dwellings_path, link_options: { 'id' => 'add_ads' } } ] %>
+  <% end %>
+  <%= render '/layouts/summary_table', { table_headers: [ t('.add_additional_dwelling_supplements_description'), nav_link ], table_help: nil, summary_data: @ads_summary } %>
+<% end %>
+
+<% if @lbtt_return.flbt_type == 'CONVEY' || @lbtt_return.flbt_type == 'LEASERET' %>
+  <% transaction_nav_link = navigational_links [ { link: @transaction_summary.blank? ? :add : :edit , path: returns_lbtt_property_type_path, link_options: { 'id' => 'add_transaction_calculation' } } ] %>
+  <% calculation_nav_link = navigational_links [ { link: @lbtt_return&.tax.tax_due.blank? ? nil : :edit, path: returns_lbtt_tax_calculation_path, link_options: { 'id' => 'edit_calculation' } } ] %>
+<% else %>
+  <% transaction_nav_link = navigational_links [ { link: @transaction_summary.blank? ? :add : :edit, path: returns_lbtt_conveyance_dates_path, link_options: { 'id' => 'add_transaction_calculation' } } ] %>
+  <% calculation_nav_link = navigational_links [ { link: @lbtt_return&.tax.tax_due.blank? ? nil : :edit, path: returns_lbtt_tax_calc_already_paid_path, link_options: { 'id' => 'edit_calculation' } } ] %>
+<% end %>
+
+<%= render '/layouts/summary_table', { table_headers: [ t('.add_transaction_description'), transaction_nav_link ], table_help: nil, summary_data: @transaction_summary } %>
+<%= render '/layouts/summary_table', { table_headers: [ t('.edit_calculation'), calculation_nav_link ], table_help: t('.calculation_description'), summary_data: @calculation_summary } %>
+<!-- See return-form-dirty.js for details of the application of form-dirty-warning-message values of data property -->
+<%= form_for @lbtt_return, url: returns_lbtt_summary_path, method: :post, :data => { 'form-dirty-warning-message' => t('.form_dirty_warning_message') } , local: true do |f| %>
+  <%= form_errors_without_attributes @lbtt_return %>
+  <% if can? AuthorisationHelper::LBTT_SAVE %>
+    <%= f.button 'save_draft', { :name => 'save_draft' } if current_user %>
+  <% end %>
+  <% if can?(AuthorisationHelper::LBTT_SUBMIT) || public %>
+    <%= f.submit 'submit_return', { :name => 'submit_return' } %>
+  <% end %>
+<% end %>

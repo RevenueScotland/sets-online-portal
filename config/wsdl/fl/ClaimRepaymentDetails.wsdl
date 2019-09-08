@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/ClaimRepaymentDetails" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.northgateps.com/RSTS/ClaimRepaymentDetails.wsdl" targetNamespace="http://www.northgateps.com/RSTS/ClaimRepaymentDetails.wsdl">
+	<wsdl:types>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference for the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Service" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example service is the name of the requesting system, e.g. RB or the database from which the request is coming from, e.g. RBDEV</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example requestor is the name of the Local Authority from which the request is being sent</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/ClaimRepaymentDetails" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/ClaimRepaymentDetails" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
+			<xs:element name="ClaimRepaymentDetailsRequest">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ParRefNo" type="xs:integer">
+							<xs:annotation>
+								<xs:documentation>Portal Users Party Reference No (PBE)
+						</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Username" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Portal User name that submitted the claim
+						</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ClaimType" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Domain is CLAIMTYPE and for RSTS-709 value will
+							be POST</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="TareReference" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Return Reference for which the Claim is raised
+						</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Version" type="xs:integer">
+							<xs:annotation>
+								<xs:documentation>Return Reference Version for which the Claim is
+							raised</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ServiceCode" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>LBTT or SLFT</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ClaimReasonCode" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Code for the reason selected based on domain
+						</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="OtherClaimReasonDescription" type="xs:string" minOccurs="0"/>
+						<xs:element name="RepayAmountClaimed" type="xs:decimal">
+							<xs:annotation>
+								<xs:documentation>Claim Amount</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="RepayAccountHolder" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Bank Account Name for the repayment to be paid
+						</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="RepayBankAccountNo" type="xs:integer">
+							<xs:annotation>
+								<xs:documentation>Bank Account Number for the repayment to be paid
+						</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="RepayBankSortCode" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Bank Account Sort code for the repayment to be
+							paid</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="RepayBankName" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Bank Name for the repayment to be paid
+						</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ADSSoldAddress" type="core:AddressType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Captured ADS address</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ADSSoldDate" type="xs:date" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>ADS Sale Date</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ADSFamilyInd" type="core:YesNoType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Indicator if ADS Claim is about Family Unit
+							changes</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="PrintData" type="xs:string"/>
+						<xs:element name="TaxPayer" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="TaxPayerType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Individual or Organisation</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="Individual"/>
+												<xs:enumeration value="Organisation"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="FlptType" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Type of Return Interest</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="ContactAddress" type="core:AddressType">
+										<xs:annotation>
+											<xs:documentation>The address moniker is provided when the
+										address has
+										been searched via the address search, otherwise it is
+										a manual address
+									</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="ContactTelNo" type="xs:string"/>
+									<xs:element name="ContactEmailAddress" type="xs:string"/>
+									<xs:element name="ParPerNiNo" type="xs:string"/>
+									<xs:choice>
+										<xs:element name="Individual" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Only for an Individual</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ForeName" type="xs:string" minOccurs="0"/>
+													<xs:element name="Surname" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="OrganisationContact" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Only for an Organisation</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="CompanyName" type="xs:string" minOccurs="0"/>
+													<xs:element name="ContactName" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ClaimRepaymentDetailsResponse">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="core:StandardResponseStructure"/>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="ClaimRepaymentDetailsRequest">
+		<wsdl:part name="parameters" element="ns:ClaimRepaymentDetailsRequest"/>
+	</wsdl:message>
+	<wsdl:message name="ClaimRepaymentDetailsResponse">
+		<wsdl:part name="parameters" element="ns:ClaimRepaymentDetailsResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="ClaimRepaymentDetailsWSDLPort">
+		<wsdl:operation name="ClaimRepaymentDetailsWSDL">
+			<wsdl:input message="tns:ClaimRepaymentDetailsRequest"/>
+			<wsdl:output message="tns:ClaimRepaymentDetailsResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="ClaimRepaymentDetailsWSDLBinding" type="tns:ClaimRepaymentDetailsWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<!-- Define document style -->
+		<!-- define literal -->
+		<wsdl:operation name="ClaimRepaymentDetailsWSDL">
+			<soap:operation soapAction="https://server/DATABASE/communication/ClaimRepaymentDetails"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="ClaimRepaymentDetailsWSDLService">
+		<wsdl:port name="ClaimRepaymentDetailsWSDLPort" binding="tns:ClaimRepaymentDetailsWSDLBinding">
+			<soap:address location="https://server/DATABASE/communication/ClaimRepaymentDetails"/>
+			<!-- give the binding an network address -->
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

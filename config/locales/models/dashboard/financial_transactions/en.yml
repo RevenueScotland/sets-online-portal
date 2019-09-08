@@ -1,0 +1,102 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# The following keys must be escaped otherwise they will not be retrieved by
+# the default I18n backend:
+#
+# true, false, on, off, yes, no
+#
+# Instead, surround them with single quotes.
+#
+# en:
+#   'true': 'foo'
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+en:
+  activemodel:
+    attributes:
+      dashboard/financial_transaction:
+        actual_date: "Created date"
+        effective_date: "Effective date"
+        reference: "Reference"
+        related_reference: "Reference"
+        description: "Description"
+        amount: "Amount"
+        balance: "Balance"
+        outstanding_balance: "Balance"
+      
+      dashboard/related_transaction:
+        actual_date: "Created date"
+        effective_date: "Effective date"
+        description: "Description"
+        matched_amount: "Allocated\namount"
+        original_amount: "Original\namount"
+
+      dashboard/financial_transaction_filter:
+        actual_date: "Created date"
+        actual_date_to: "Created date to"
+        actual_date_from: "Created date from"
+        effective_date: "Effective date"
+        effective_date_to: "Effective date to"
+        effective_date_from: "Effective date from"
+        reference: "Reference"
+        related_reference: "Reference"
+        amount: "Amount"
+        maximum_amount: "Amount to (max)"
+        minimum_amount: "Amount from (min)"
+        
+        day: "Day"
+        month: "Month"
+        year: "Year"
+
+    hints:
+      dashboard/financial_transaction_filter:
+        reference: "Enter part or all of the reference"
+        amount: "Enter the exact amount"
+    errors:
+      models:
+        dashboard/financial_transaction_filter:
+          attributes:
+            actual_date_from:
+              before_date_error: "must be BEFORE the created date to"
+            actual_date_to:
+              after_date_error: "must be AFTER the created date from"
+            effective_date_from:
+              before_date_error: "must be BEFORE the effective date to"
+            effective_date_to:
+              after_date_error: "must be AFTER the effective date from"
+        
+  dashboard:
+    financial_transactions:
+      index:
+        title: "All transactions"
+        heading: "Filter transactions by:"
+        show: "View related"
+        find: "Find"
+        no_data_found: "There are no transactions to be shown..."
+      show:
+        title: "Financial transaction"
+        heading: "Related financial transactions"
+        link:
+          dashboard: "Dashboard"
+          financial_transactions: "Go to all financial transactions"
+
+        
+    

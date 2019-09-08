@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Body>
+<AddressDetailResponse xmlns="http://northgate-is.com/NAS/AddressDetailResponse-v1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core"><core:Success>true</core:Success><Address><AddressIdentifier>14174279        </AddressIdentifier><AddressLine1>10 Rydal Avenue</AddressLine1><AddressLine2>Tilehurst</AddressLine2><Town>READING</Town><Postcode>RG30 6XT</Postcode><Country>E92000001</Country><LocalEdAuthCode>821</LocalEdAuthCode><LocalAuthCode>E06000032</LocalAuthCode><UDPRN>14174279</UDPRN><DeliveryPointSuffix>1A</DeliveryPointSuffix></Address></AddressDetailResponse>
+</soap:Body>
+</soap:Envelope>

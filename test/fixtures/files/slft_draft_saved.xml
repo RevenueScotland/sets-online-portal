@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<soap:Body>
+<SLFTTaxReturnResponse xmlns="http://www.northgateps.com/RSTS/SLFTTaxReturn" xmlns:bbc="http://northgate-is.com/FL/Core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+<core:Success>true</core:Success>
+<ReturnReference>RS1000947STMD</ReturnReference>
+<ReturnRefno>196</ReturnRefno>
+<Version>1</Version>
+<PaymentDate/>
+<FilingDate>13-AUG-16</FilingDate>
+</SLFTTaxReturnResponse>
+</soap:Body>
+</soap:Envelope>

@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Body>
+<SLFTTaxReturnResponse xmlns="http://www.northgateps.com/RSTS/SLFTTaxReturnDetailsResponse" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+<core:Success>true</core:Success>
+<SLFTTaxReturn>
+<FormType>F</FormType>
+<TareReference>RS1000473CWBG</TareReference>
+<TareRefno>445</TareRefno>
+<Version>1</Version>
+<Username>RUCHITA27MAR</Username>
+<ParRefno>359</ParRefno>
+<SLFTReturnDetails>
+<Year>2018</Year>
+<FapePeriod>Q1</FapePeriod>
+<NDA/>
+<Sites>
+<Site>
+<SiteName>RK site1</SiteName>
+<LASIRefno>-1299</LASIRefno>
+<TotalLowerTonnage>0</TotalLowerTonnage>
+<TotalStandardTonnage>10000</TotalStandardTonnage>
+<TotalExemptTonnage>0</TotalExemptTonnage>
+<TotalWaterTonnage>20</TotalWaterTonnage>
+<Total>889500</Total>
+<SiteSpecificWastes>
+<SiteSpecificWaste>
+<EWCCode>01-04-11</EWCCode>
+<WasteDescription>
+<![CDATA[Desc waste]]>
+</WasteDescription>
+<FMMEMethod>RC</FMMEMethod>
+<GeographicalOrigin>9065</GeographicalOrigin>
+<PreTreatedInd>no</PreTreatedInd>
+<WasteMovement>no</WasteMovement>
+<StandardTonnage>10000</StandardTonnage>
+<LowerTonnage>0</LowerTonnage>
+<WaterTonnage>20</WaterTonnage>
+<ExemptTonnage>0</ExemptTonnage>
+<TotalTonnage>9980</TotalTonnage>
+</SiteSpecificWaste>
+</SiteSpecificWastes>
+</Site>
+</Sites>
+<CreditClaim>
+<SLCFContribution>200</SLCFContribution>
+<SLCFCreditClaimed>10</SLCFCreditClaimed>
+<BadDebtCredit>0</BadDebtCredit>
+<RemovalCredit>0</RemovalCredit>
+</CreditClaim>
+<TaxPayable>
+<TotalTaxDue>889500</TotalTaxDue>
+<TotalCredit>10</TotalCredit>
+<TaxPayable>889490</TaxPayable>
+<FPAYMethod>BACS</FPAYMethod>
+</TaxPayable>
+</SLFTReturnDetails>
+</SLFTTaxReturn>
+</SLFTTaxReturnResponse>
+</soap:Body>
+</soap:Envelope>

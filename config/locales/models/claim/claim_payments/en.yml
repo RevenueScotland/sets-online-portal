@@ -1,0 +1,67 @@
+en:
+  activemodel:
+    attributes:
+      claim/claim_payment:
+        tare_reference: "Return reference" # translation for print format
+        version: "Version" # translation for print format
+        reason: "What is the reason for your claim for payment from Revenue Scotland?"
+        date_of_sale: "What is the date of sale or disposal of the previous main residence?"
+        main_residence_address: "What is the address of the previous main residence that has been sold or disposed of"
+        # The address lines are only used when there is an error
+        address_line1: "Address line 1"
+        address_line2: "Address line 2"
+        address_line3: "Address line 3"
+        address_line4: "Address line 4"
+        town: "Town"
+        county: "County"
+        postcode: "Postcode"
+        further_claim_info: "Is the tax payer claiming repayment as a result of the changes to the ADS rules around family units and replacing main residences?"
+        claiming_amount: "How much are you claiming from Revenue scotland?"
+        slft_claim_amount: "How much are you claiming from Revenue scotland?"
+        email_address: "Email"
+        firstname: "First name"
+        surname: "Last name"
+        telephone: "Telephone number"
+        nino: "National Insurance Number (NINO)"
+        org_name: "Organisation Name (Optional)"
+        account_holder_name: "Name of the account holder"
+        account_number: "Bank / building society account number"
+        branch_code: "Branch sort code"
+        bank_name: "Name of bank / building society"
+        taxpayer: "I, the taxpayer(s), declare that this claim form is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed"
+        agent_declaration: "I, the agent for the taxpayers(s), confirm that the taxpayer(s) have authorised repayment to be made to these bank details"
+        agent_second_declaration: "I, the agent of the taxpayer(s), having been authorised to complete this claim form on behalf of the taxpayer(s), certify that the buyer(s) has/have declared that the information provided in the claim form is to the best of their knowledge, correct and complete, and confirm that the taxpayer(s) is/are eligible for the refund claimed"
+    hints:
+      claim/claim_payment:
+        account_number: "This should be 8 digits"
+        branch_code: "The sort code should be entered in the format 99-99-99"
+  claim:
+    claim_payments:
+      payment_after_year:
+        title: Claim payment
+      date_of_sale:
+        title: "Date of sale or disposal"
+      main_residence_address:
+        title: "Main residence address"
+        address: "What is the address of the previous main residence that has been sold or disposed of?"
+      further_claim_info:
+        title: "Further claim information"
+      claiming_amount:
+        title: "Details about your claim for payment"
+      slft_claim_amount:
+        title: "Details about your claim for payment"
+      confirm_individual_details:
+        title: "Confirm tax payer details"
+        subtitle: "Provide the details of the taxpayer that is making the claim"
+      taxpayer_address:
+        title: "Confirm tax payer address"
+      claim_payment_bank_details:
+        title: "Enter bank details"
+      taxpayer_declaration:
+        title: "Declarations"
+        warning: "If you give false information, you may face penalties and/or prosecution"
+      confirmation_of_payment:
+        title: "Your claim has been sent to Revenue Scotland"
+        secure_message: "Send evidence by %{ref_link} or by post."
+        ref_message: secure message
+        caution: "Your claim will be rejected if you do not give evidence to support it"

@@ -1,0 +1,8 @@
+
+<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for :page_title, t('.'+@party.party_type+ '_title') %>
+<%= form_for @party, url: @post_path, :method => 'post', local: true do |f| %>
+  <%= form_errors_for @party %>   
+  <%= f.collection_radio_buttons_fields(:buyer_seller_linked_ind, @party.list_ref_data(:buyer_seller_linked_ind), :code, :value ) %> 
+  <%= f.button 'next', { :name => 'submitted' }  %>
+<% end %>

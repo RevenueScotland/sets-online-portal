@@ -1,0 +1,21 @@
+<% if @lbtt_return.errors.blank? %>
+  <% content_for :page_title, t('.title') %>
+<% else %>
+  <% content_for :page_title, t('return_error') %>
+<% end%>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for @lbtt_return %>
+<% end %>
+
+<% if @lbtt_return.errors.blank? %>
+  <%= t('.information') %>
+  <p />
+  <b><%= t('.caution') %></b>
+  <p />
+  <%= t('.reference_html', ref: @lbtt_return.tare_reference) %>
+<% end %>
+<p />
+<%= navigational_links( [ { link: :back_to_return_summary, path: returns_lbtt_summary_path }, 
+                          { link: :go_to_dashboard, path: dashboard_path} ] ) %>

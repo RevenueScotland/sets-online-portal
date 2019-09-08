@@ -1,0 +1,7 @@
+<% content_for :page_title, t('.title') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<%= form_for @property, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for [@property, @address_summary, @address_detail] %>
+  <%= f.collection_radio_buttons_fields(:ads_due_ind, @property.list_ref_data(:ads_due_ind), :code, :value) %>
+  <%= f.button 'next', { :name => 'submitted' }  %>
+<% end %>

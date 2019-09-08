@@ -1,0 +1,67 @@
+<% content_for :hide_back_link, true %>
+<% content_for :page_title, t('.title') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<h2> <%= t('.heading') %> </h2>
+
+<%= form_for @dashboard_return_filter, url: dashboard_dashboard_returns_path, :method => 'get', local: true do |form| %>
+  <%= form_errors_for @dashboard_return_filter %>
+  <% form.current_browser = application_browser %>
+  <%= form.text_field :tare_reference %>
+  <%= form.date_field :return_date %>
+  
+  
+  <%= render '/layouts/hideable_details/', { clickable_text: [t('filter_show'), t('filter_hide')] } do %>
+    <div class = "display-inline-text govuk-!-width-one-third">
+      <%= form.date_field :from_return_date, { width: 'full' } %>
+    </div>
+    <div class = "display-inline-text govuk-input--width-2">
+    </div>
+    <div class = "display-inline-text govuk-!-width-one-third">
+      <%= form.date_field :to_return_date, { width: 'full' } %>
+    </div>
+
+    <%= form.text_field :description %>
+    <%= form.select :return_status, ReferenceData::ReferenceValue.list('RETURN_STATUS', 'SYS', 'RSTU'), { include_blank: true }, {} %>
+    <%= form.check_box_field :all_versions %>
+  <% end %>
+
+  <br />
+
+  <%= form.button t('.find'), autofocus: @on_filter_find %>
+<% end %>
+<br />
+
+<%= display_table(@dashboard_returns,
+                  [:tare_reference, :return_date, :description, :version, :return_status, :return_balance, :balance_status],
+                  [
+                    { label: t('.download'), path: :dashboard_download_return_path,
+                                             parameter: :to_download_param,
+                                             options: { target: '_blank' } },
+                    { label: t('.transactions'), path: :dashboard_return_transactions_path,
+                                                 visible_for: :indicator_is_latest,
+                                                 parameter: :tare_reference },
+                    { label: t('.amend'), method_path: :continue_amend_path,
+                                          visible_for: :return_is_amendable,
+                                          link_options: { requires_action_path: :amend_action } },
+
+                    { label: t('.claim'), path: :claim_claim_payments_payment_after_year_path, 
+                                          visible_for: :return_is_claimable, 
+                                          parameter: :to_claim_param,
+                                          link_options: { requires_action: AuthorisationHelper::CLAIM_REPAYMENT } },
+                                          
+                    { label: t('.message'), path: :dashboard_return_messages_path, 
+                                            visible_for: :indicator_is_latest,
+                                            parameter: :tare_reference },
+                    { label: t('.continue'), method_path: :continue_amend_path,
+                                             visible_for: :indicator_is_draft,
+                                             link_options: { requires_action_path: :continue_action } }
+                  ],
+                  { return_date: {format: :date},
+                    return_balance: {format: :money}}) %>
+
+<% if @dashboard_returns.blank? %>
+  <p> <%= t('.no_data_found') %> </p>
+<% end %>
+
+<%= paginate @pagination_collection %>

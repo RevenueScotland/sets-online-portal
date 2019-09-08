@@ -1,0 +1,78 @@
+<p class="govuk-body">
+    <% if return_type == 'SLFT' %>
+      <p class="govuk-body"><%= t('submit_text') %></p>
+    <% end %>
+    <% if return_type == 'LBTT_CONVEYANCE'|| return_type == 'LBTT_LEASE' || return_type == 'LBTT' %>
+      <p class="govuk-body"><%= t('lbtt_acknowledgment') %></p>
+      <p class="govuk-body"><%= t('lbtt_submit_text') %></p>
+    <% end %>
+    <% if return_type == 'AMEND_SLFT' %>
+      <p class="govuk-body"><%= t('amend_return_reference_text', return_reference: return_reference) %></p>
+    <% end %>
+
+    <% if return_type == 'AMEND_LBTT' %>
+      <p class="govuk-body"><%= t('lbtt_amend_acknowledgment') %></p>
+      <p class="govuk-body"><%= t('lbtt_amend_return_reference_text') %></p>
+
+    <% end %>
+
+    <p class="govuk-body"><%= t('submit_date_text', system_date: DateFormatting.to_display_date_format(Date.today)) %></p>
+
+    <% if return_type == 'AMEND_SLFT' %>
+      <p class="govuk-body"><%= t('amend_slft_submit_text') %> </p>
+    <% end %>
+    <% if return_type =='SLFT' %>
+      <p class="govuk-body"><%= t('submit_return_reference_text', return_reference: return_reference) %></p>
+      <p class="govuk-body"><%= t('submit_payment_generic_text') %></p>
+      <p class="govuk-body"><%= t('submit_payment_method_text', payment_method: payment_method).html_safe %> </p>
+      <p class="govuk-body"><%= t('slft_submit_text').html_safe %> </p>
+    <% end %>
+
+    <% if %w[LBTT_CONVEYANCE LBTT_LEASE LBTT AMEND_LBTT].include?(return_type) %>
+      <%= display_regions( [ {
+          data: [
+            { model: @lbtt_return, attributes: [ { attribute: :tare_reference, translation_options: 'submit_return_reference_text' } ] },
+            { model: @lbtt_return.primary_property, attributes: [ :full_title_number ] },
+            { model: @lbtt_return.primary_property.address, attributes: [ attribute: :full_address, translation_options: 'full_property_address' ] },
+            { model: @lbtt_return.primary_party,
+                        attributes: [ attribute: :full_name,
+                                      translation_options: @lbtt_return.primary_party.party_type + "_full_name" ] },
+            { model: @lbtt_return, attributes: [ { attribute: :cached_human_readable_flbt_type, translation_options: 'description_of_transaction' },
+                                                 :human_readable_effective_date ] },
+            { model: @lbtt_return.agent, attributes: [ attribute: :agent_reference, translation_options: 'agent_reference_if_provided' ], }
+          ]
+      } ] ) %>
+    <% end %>
+
+
+    <% if return_type == 'LBTT_CONVEYANCE' || return_type == 'LBTT_LEASE' || return_type == 'LBTT' %>
+      <p class="govuk-body"><%= t('lbtt_submit_payment_generic_text') %></p>
+      <p class="govuk-body"><%= t('submit_lbtt_payment_method_text', payment_method: payment_method).html_safe %></p>
+    <% end %>
+
+    <% if return_type == 'AMEND_LBTT' %>
+      <p class="govuk-body"><%= t('lbtt_amend_payment_method_text').html_safe %></p>
+    <% end %>
+
+    <% if %w[LBTT_CONVEYANCE LBTT_LEASE LBTT AMEND_LBTT].include?(return_type) %>
+      <p class="govuk-body"><%= t('lbtt_sumbit_penalties_text').html_safe %></p>
+    <% end %>
+
+    <% if %w[LBTT_LEASE LBTT].include?(return_type) %>
+      <p class="govuk-body"><%= t('lbtt_lease_text').html_safe %></p>
+      <p class="govuk-body"><%= t('lbtt_lease_further_information_text').html_safe %></p>
+    <% end %>
+
+    <% if return_type == 'AMEND_LBTT' %>
+      <p class="govuk-body"><%= t('submit_queries_contact_text_amend') %> </p>
+    <% else %>
+      <p class="govuk-body"><%= current_user ? t('submit_queries_contact_text') : t('submit_queries_contact_text_public') %> </p>
+    <% end %>
+
+    <% if %w[LBTT_CONVEYANCE LBTT_LEASE LBTT AMEND_LBTT].include?(return_type) %>
+      <p class="govuk-body"><%= t('include_transaction_ref').html_safe %></p>
+    <% end %>
+
+    <%= link_to t('print_confirmation_text'), nil, class: 'print' %><br/>
+    <%= link_to t('send_secure_message_text'), send(:new_dashboard_message_path, reference: return_reference) if current_user %>
+</p>

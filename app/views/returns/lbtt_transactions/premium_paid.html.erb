@@ -1,0 +1,17 @@
+<% content_for :page_title, t('.title') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
+  <%= form_errors_for @lbtt_return %>
+  <%= f.collection_radio_buttons_fields(:premium_paid, @lbtt_return.list_ref_data(:premium_paid), :code, :value) %>
+
+  <div class='govuk-radios__conditional--hidden' id='hideable'>
+    <%= f.currency_field :lease_premium %>
+  </div>
+
+  <% if @lbtt_return.linked_ind == 'Y' %>
+    <%= f.currency_field :linked_lease_premium %>
+  <% end %>
+
+  <%= f.button 'next', { :name => 'submitted' }  %>
+<% end %>

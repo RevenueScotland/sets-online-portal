@@ -1,0 +1,102 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# The following keys must be escaped otherwise they will not be retrieved by
+# the default I18n backend:
+#
+# true, false, on, off, yes, no
+#
+# Instead, surround them with single quotes.
+#
+# en:
+#   'true': 'foo'
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+#
+# We list translations based on the model name but after that, those that aren't model related are listed
+# in the same file under the view path (eg users/change_password or login/new)
+en:
+  activemodel:
+    attributes:
+      user:
+        username: "Username"
+        new_username: "Username"
+        password: "Password"
+        new_password: "New password"
+        new_password_confirmation: "Confirm new password"
+        user_is_current: "Current" 
+        forename: "First name" 
+        surname: "Last name"
+        email_address: "Email address"
+        email_address_confirmation: "Confirm email address"
+        full_name: "Full name"
+        old_password: "Old password"
+        contact_number: "Contact telephone number"
+        token: "Token"
+        user_is_signed_ta_cs: "I confirm that I have read and understood the terms & conditions"
+        user_roles: "User roles"
+      user_filter:
+        full_name: "Name"
+        user_is_current: "Current"
+    hints:
+      user:
+        username: "This is the username you first registered with" 
+        new_username: "The name to use to sign in to the account. This must be at least 5 characters and may contain A-Z, 1-9 or ._" 
+        user_is_current: "This is the current status of the user" 
+        new_password: "This must be a minimum of 9 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character, like, +, $, !"
+        new_password_confirmation: "Confirm new password"
+        token: "This is the token in the e-mail you have been sent"
+      user_filter:
+        full_name: "Enter part or all of the user's full name"
+    errors:
+      models:
+        user:
+          login_invalid: "Enter the correct username and password"
+          login_locked: "Your user is locked, use the forgotten password process to unlock it"
+          login_not_activated: "Activate your account using the token you were sent"
+          invalid_token: "Enter the correct username and token"
+          token_expired: "Your token has expired. Please sign in again to generate a new one"
+  users:
+    index:
+      title: "Account users"
+      find: "Find"
+      link:
+        new_user: "Create a new user for your account"
+        hint:
+          new_user: "You can create other users for your account and control the actions that they can take"
+    new:
+      title: "New User"
+      user_details: "User details"
+      contact_details: "Contact details"
+    edit:
+      title: "Update User"
+      
+    show:
+      title: "User"
+    change_password:
+      title: "Change Password"
+      change_password: "Change Password"
+      title_expired_password: "Password Expired"
+      description: "Your password has expired and must be changed to a new value. Once completed you will then need to login using your new password in order to access the system."    
+    change_password_confirmation:
+      title: "Change password confirmation"
+      description: "Your Password has been successfully changed."
+    update_tcs:
+      title: "Terms and Conditions"
+      description: "In order to proceed you must read and accept the terms and conditions."
