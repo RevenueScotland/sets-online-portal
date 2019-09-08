@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Body>
+<AuthenticateUserResponse xmlns="http://northgate-is.com/FL/AuthenticateUser" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core"><core:Success>true</core:Success><UserIsAuthenticated>true</UserIsAuthenticated><UserIsRegistered>true</UserIsRegistered><PasswordChangeRequired>false</PasswordChangeRequired><PasswordExpiryDate>2292-06-07</PasswordExpiryDate><WorkPlaceRefno>3</WorkPlaceRefno><PartyRefno>117</PartyRefno><UserLocked>false</UserLocked><UserRoles><UserRole>ACCADMN</UserRole><UserRole>ACCSECADMN</UserRole><UserRole>PWSAMEND</UserRole><UserRole>PWSCLAIM</UserRole><UserRole>PWSDASH</UserRole><UserRole>PWSDRNEW</UserRole><UserRole>PWSDRSUB</UserRole><UserRole>PWSDRUPD</UserRole><UserRole>PWSMESSAGE</UserRole></UserRoles></AuthenticateUserResponse>
+</soap:Body>
+</soap:Envelope>

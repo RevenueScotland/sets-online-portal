@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Body>
+<SLFTTaxReturnResponse xmlns="http://www.northgateps.com/RSTS/SLFTTaxReturnDetailsResponse" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+<core:Success>true</core:Success>
+<SLFTTaxReturn>
+<FormType>D</FormType>
+<TareReference>RS1000947STMD</TareReference>
+<Version>1</Version>
+<Username>VALID.USER</Username>
+<ParRefno>117</ParRefno>
+<CompanyName>Test Portal Company Waste</CompanyName>
+<CompanyRegistrationNumber>111</CompanyRegistrationNumber>
+<SLFTReturnDetails>
+<Year>2015</Year>
+<FapePeriod>Q1</FapePeriod>
+<NDA/>
+<Sites/>
+<CreditClaim>
+<SLCFContribution>200</SLCFContribution>
+<SLCFCreditClaimed>10</SLCFCreditClaimed>
+<BadDebtCredit>0</BadDebtCredit>
+<RemovalCredit>0</RemovalCredit>
+</CreditClaim>
+<TaxPayable>
+<TotalTaxDue>889500</TotalTaxDue>
+<TotalCredit>10</TotalCredit>
+<TaxPayable>889490</TaxPayable>
+<FPAYMethod>BACS</FPAYMethod>
+</TaxPayable>
+</SLFTReturnDetails>
+</SLFTTaxReturn>
+</SLFTTaxReturnResponse>
+</soap:Body>
+</soap:Envelope>

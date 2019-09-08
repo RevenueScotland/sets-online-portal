@@ -1,0 +1,45 @@
+<% content_for :hide_back_link, true %>
+<% content_for :page_title, t('.title') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<% if can? AuthorisationHelper::CREATE_MESSAGE %>
+  <%= form_with url: new_dashboard_message_path, method: :get, local: true do |f| %>
+      <%= hidden_field_tag :original_smsg_refno, @message_filter.reference %>
+       <%= hidden_field_tag :reference, @message_filter.reference %>
+      <%= f.button '.new' %>
+  <% end %>
+  <br />
+   
+<% end %>
+
+<%= form_for @message_filter, url: dashboard_messages_path, :method => 'get', local: true do |form| %>
+  <%= form_errors_for @message_filter %>
+  <% form.current_browser = application_browser %>
+  <%= form.date_field :from_datetime %>
+  <%= form.date_field :to_datetime %>
+  <%= form.text_field :reference %>
+  <%= render '/layouts/hideable_details/', { clickable_text: [t('filter_show'), t('filter_hide')] } do %>
+    <%= form.text_field :sent_by %>
+    <%= form.select :direction_code, @message_filter.list_ref_data(:direction_code), { include_blank: true }, {} %>
+    <%= form.select :subject_code, @message_filter.list_ref_data(:subject_code), { include_blank: true }, {} %>
+  <% end %>
+    
+  <%= form.button t('.find'), autofocus: @on_filter_find %>
+<% end %>
+<br />
+
+<%= display_table(@messages,
+                  [:created_date, :full_name, :title, :reference, :subject_description, :has_attachment, :read_indicator],
+                  [
+                    { label: t('.show'), action: :show, link_options: { requires_action: AuthorisationHelper::VIEW_MESSAGE_DETAIL } }
+                  ],
+                  {created_date: {format: :datetime}}) %>
+<% if @messages.nil? %>
+  <p> <%= t('.no_data_found') %> </p>
+<% end %>
+<%= paginate @pagination_collection %>
+
+<% link = [
+            { link: :dashboard, path: dashboard_path }
+            ] %>
+<%= navigational_links(link) %>

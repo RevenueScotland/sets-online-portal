@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Body>
+<GetPartyDetailsResponse xmlns="http://northgateps.com/FL/GetPartyDetailsResponse" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+<core:Success>true</core:Success>
+<Forename>Valid</Forename>
+<Surname>User</Surname>
+<EmailAddress>valid.user@northgateps.com</EmailAddress>
+<UserServices>
+    <UserService>LBTT</UserService>
+</UserServices>
+</GetPartyDetailsResponse>
+</soap:Body>
+</soap:Envelope>

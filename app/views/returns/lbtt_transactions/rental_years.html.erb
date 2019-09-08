@@ -1,0 +1,33 @@
+<% content_for :page_title, t('.title') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
+  <%= form_errors_for @lbtt_return %>
+  <%= f.collection_radio_buttons_fields(:rent_for_all_years, @lbtt_return.list_ref_data(:rent_for_all_years), :code, :value) %> 
+  <div class='govuk-radios__conditional--hidden' id='hideable'>
+    <table class="govuk-table">
+      <thead>
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header"><%= t(".year") %></th>
+          <th class="govuk-table__header"><%= t(".rent") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @lbtt_return.yearly_rents.each_with_index do |yearly_rent, i| %>                               
+          <%= f.fields_for :yearly_rents, yearly_rent do |u| %>    
+            <tr>
+              <td>  
+                <span><%=t('.year') + ' ' + (i+1).to_s() %></span>           
+                <%= u.hidden_field :year, {:value => (i+1).to_s() , width:'width-5', index: i} %>                           
+              </td>
+              <td>
+                <%= u.currency_field :rent , { width:'width-5', index: i}  %>
+              </td>  
+            </tr>  
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= f.button 'next', { :name => 'submitted' }  %>
+<% end %>

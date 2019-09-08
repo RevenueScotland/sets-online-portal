@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns="http://www.northgateps.com/FL/GetPWSTextRequest" xmlns:ns1="http://www.northgateps.com/FL/GetPWSTextResponse" xmlns:wsdl1="http://www.northgateps.com/PublicWebsiteText.wsdl" targetNamespace="http://www.northgateps.com/PublicWebsiteText.wsdl" name="PublicWebsiteText">
+	<wsdl:types>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference for the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Service" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example service is the name of the requesting system, e.g. RB or the database from which the request is coming from, e.g. RBDEV</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example requestor is the name of the Local Authority from which the request is being sent</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xs:schema xmlns="http://www.northgateps.com/FL/GetPWSTextRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/FL/GetPWSTextRequest" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:element name="GetPWSTextRequest">
+				<xs:annotation>
+					<xs:documentation>This API allows you to get the value of text to be displayed in pages on a public website</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="WorkplaceCode" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Where the system has multiple tenants (workplaces) the service to which this parameter belongs.  The details for the system workplace (workplace 1) are always returned</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="WorkplaceReference" type="xs:integer" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Workplace reference for the application.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ServiceCode" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Where the system has multiple services the service to which this text belongs, those for the 'SYS' service [common codes] are always returned</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="PWSTextTypeCode" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The PWS Text Type Code</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="LanguageCode" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Language Code</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+		<xs:schema xmlns="http://www.northgateps.com/FL/GetPWSTextResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:flc="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/FL/GetPWSTextResponse" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
+			<xs:element name="GetPWSTextResponse">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="flc:StandardResponseStructure">
+							<xs:sequence>
+								<xs:element name="PWSTextDetails" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="PWSTextDetail" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="WorkplaceCode">
+															<xs:annotation>
+																<xs:documentation>The Workplace code
+														</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="WorkplaceReference">
+															<xs:annotation>
+																<xs:documentation>The Workplace reference number
+														</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:integer"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="WorkplaceName">
+															<xs:annotation>
+																<xs:documentation>The Workplace Name </xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="ServiceCode">
+															<xs:annotation>
+																<xs:documentation>Where the system has multiple services
+															the service to which this parameter belongs. Those for
+															the
+															'SYS' service are valid for all services
+														</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="PWSTextTypeCode">
+															<xs:annotation>
+																<xs:documentation>The public website text type code
+														</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="LanguageCode">
+															<xs:annotation>
+																<xs:documentation>The language code</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="Source">
+															<xs:annotation>
+																<xs:documentation>Indicates the level where the text is
+															returned from.Values LA, Country or Default.
+														</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="PWSText" type="xs:string">
+															<xs:annotation>
+																<xs:documentation>The Public Website Text
+														</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="GetPWSTextRequest">
+		<wsdl:part name="parameters" element="ns:GetPWSTextRequest"/>
+	</wsdl:message>
+	<wsdl:message name="GetPWSTextReponse">
+		<wsdl:part name="parameters" element="ns1:GetPWSTextResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="PublicWebsiteTextWSDLPort">
+		<wsdl:operation name="PublicWebsiteTextWSDL">
+			<wsdl:input message="wsdl1:GetPWSTextRequest"/>
+			<wsdl:output message="wsdl1:GetPWSTextReponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="PublicWebsiteTextWSDLBinding" type="wsdl1:PublicWebsiteTextWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="PublicWebsiteTextWSDL">
+			<soap:operation soapAction="https://server/DATABASE/communication/getPWSText"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="PublicWebsiteTextWSDLService">
+		<wsdl:port name="PublicWebsiteTextWSDLPort" binding="wsdl1:PublicWebsiteTextWSDLBinding">
+			<soap:address location="https://server/DATABASE/communication/getPWSText"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

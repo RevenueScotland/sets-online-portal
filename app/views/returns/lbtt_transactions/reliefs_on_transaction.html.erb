@@ -1,0 +1,45 @@
+<% content_for :page_title, t('.title') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
+  <%= form_errors_for @lbtt_return %>
+  <%= f.collection_radio_buttons_fields(:non_ads_reliefclaim_option_ind, @lbtt_return.list_ref_data(:non_ads_reliefclaim_option_ind), :code, :value) %>
+  <div class='govuk-radios__conditional--hidden' id='hideable'>
+    <table class="govuk-table">
+      <thead>
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header"><%=t(".relief_type")%></th>
+          <th class="govuk-table__header"><%= t(".relief_amount") %></th>
+          <%# To match the table body's columns, we only need to show this header when we have a delete action link %>
+          <% if @lbtt_return.non_ads_relief_claims.size > 1 %>
+            <th class="govuk-table__header"><%= t("action") %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% @lbtt_return.non_ads_relief_claims.each_with_index do |relief_claim, i| %>
+          <%= f.fields_for :non_ads_relief_claims, relief_claim do |u| %>
+            <tr>
+              <td>
+                <%= u.select :relief_type, @relief_types, { include_blank: true }, { width:'two-thirds', index: i }  %>
+              </td>
+              <td>
+                <%= u.currency_field :relief_amount , { width:'two-thirds', index: i}  %>
+              </td>
+              <%# Don't show the delete button when we only have 1 row of data %>
+              <% if @lbtt_return.non_ads_relief_claims.size > 1 %>
+                <td>
+                  <%= button_tag t('delete_row'), { :name => 'delete_row', :class => 'scot-rev-button_link link_css', :value => i, :id => 'delete_row_' + i.to_s } %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+    <div class="govuk-form-group">
+      <%= f.button 'add_row', { :class => 'scot-rev-button_link manual_link govuk-details__summary-text', :name => 'add_row' } %>
+    </div>
+  </div>
+  <%= f.button 'next', { :name => 'submitted' }  %>
+<% end %>

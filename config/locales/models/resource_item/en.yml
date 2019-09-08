@@ -1,0 +1,14 @@
+en:
+  file: File
+  activemodel:
+    attributes:
+      resource_item:
+        file: File
+        original_filename: File
+    errors:
+      models:
+        resource_item:
+          attributes:
+            original_filename:
+              invalid_file_type: invalid file type
+              invalid_file_size: should be less than %{supported_max_size_mb} mb

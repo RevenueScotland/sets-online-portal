@@ -1,0 +1,21 @@
+en:
+  activemodel:
+    attributes:
+      returns/lbtt/property:
+        lau_code: "Local authority"
+        ads_due_ind: "Does Additional Dwelling Supplement (ADS) apply to this transaction?"
+        full_title_number: "Title number (if provided)"
+  returns:
+    lbtt_properties:
+      about_the_property:
+        title: "About the property"
+        subtitle: "Provide property details"
+        title_code: "Title number (optional)"
+        parent_title_code: "Parent title number (optional)"
+        parent_title_hint: "Not all properties will have a parent title"
+
+      property_address:
+        title: "Property address"
+        subtitle: "Provide property address"
+      property_ads_applies:
+        title: "About the property"

@@ -1,0 +1,32 @@
+<% content_for :hide_back_link, :remove_param_new %>
+<% content_for :page_title, t('.title') %>
+<% content_for :page_subtitle, t('.subtitle') %>
+<% content_for :page_description, t('.description') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<!-- Applies the CSS class 'external-link' to the navigation bar options, see return-form-dirty.js for details -->
+<% content_for :nav_bar_options, { class: 'external-link' } %>
+<!-- See return-form-dirty.js for details of the application of form-dirty-warning-message value of data property -->
+<%= form_for @slft_return, url: returns_slft_summary_path, method: :post, 
+            :data => { 'form-dirty-warning-message' => t('.form_dirty_warning_message') } , local: true do |f| %>
+  <%= form_errors_without_attributes @slft_return %>
+
+  <%= govuk_warning( t('.warning') ) %>
+  <!-- <%= @slft_return.tare_reference %> Version <%= @slft_return.version %> -->
+
+  <% transactions_link_text = @transaction_summary.blank? ? :add_transaction_details : :edit_transaction_details %>
+  <% nav_link = navigational_links [{link: transactions_link_text, path: returns_slft_transaction_period_path}] %>
+  <%= render '/layouts/summary_table', {table_headers: [ t('.transaction_subtitle'), nav_link], table_help: nil, summary_data: @transaction_summary} %>
+
+  <%= render 'site_summary_table', {table_headers: [ t('.sites_subtitle')], data: @slft_return.sites} %>
+
+  <% credits_link_text = @credit_summary.blank? ? :add_credits_details : :edit_credits_details %>
+  <% nav_link = navigational_links [{link: credits_link_text, path: returns_slft_credit_environmental_path}] %>
+  <%= render '/layouts/summary_table', {table_headers: [ t('.credits_subtitle'), nav_link], table_help: nil, summary_data: @credit_summary} %>
+
+  <% if can? AuthorisationHelper::SLFT_SAVE %>
+    <%= f.button 'save_draft', { :name => 'save_draft' }  %>
+  <% end %>
+  <% if can? AuthorisationHelper::SLFT_SUBMIT %>
+    <%= f.button 'calculate_return', { :name => 'calculate_return' }  %>
+  <% end %>
+<% end %>

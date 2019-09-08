@@ -1,0 +1,21 @@
+<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for :page_title, t('.'+@party.org_type+ '_title') %>
+<% content_for :page_subtitle, t('.'+@party.org_type+ '_subtitle') %>
+
+<%= form_for @party, url: @post_path, :method => 'post', local: true do |f| %>
+  <%= form_errors_for [@party, @address_summary, @address_detail] %>
+
+  <%= f.text_field :org_name %>
+  <% if @party.type == 'REG_COM' %>
+    <h3> <%= t('.registered_address') %> </h3>
+  <% else %>
+    <h3> <%= t('.address') %> </h3> 
+  <% end %>  
+
+  <%= render "/layouts/address" %>
+  <% if @party.org_type == 'CHARITY' %> 
+    <%= f.text_field :charity_number %>
+  <% end %>
+  <%= f.select :com_jurisdiction, @party.list_ref_data(:com_jurisdiction), {}, { text_auto_complete: true } %>
+  <%= f.button 'next', { :name => 'submitted' }  %>
+<% end %>

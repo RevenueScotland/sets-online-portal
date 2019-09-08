@@ -1,0 +1,11 @@
+<%= form_for @party, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for [@party, @address_summary, @address_detail] %>
+  <%= f.text_field :contact_firstname %>
+  <%= f.text_field :contact_surname %>
+  <%= f.text_field :job_title %>
+  <h3> <%= t('.address') %> </h3>
+  <%= render "/layouts/address" %>
+  <%= f.text_field :contact_email %>
+  <%= f.text_field :contact_tel_no %>
+  <%= f.button 'next', { :name => 'submitted' }  %>
+<% end %>

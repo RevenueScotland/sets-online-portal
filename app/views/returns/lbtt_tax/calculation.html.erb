@@ -1,0 +1,29 @@
+<% content_for :page_title, t('.title') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<%= form_for @tax, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for @tax %>
+
+  <% if @lbtt_return.flbt_type == 'CONVEY' %>
+    <%= f.currency_field :calculated %>
+    <%= f.currency_field :ads_due %>
+    <%= f.currency_field :due_before_reliefs %>
+    <%= f.currency_field :total_reliefs %>
+    <%= f.currency_field :total_ads_reliefs %>
+  <% else %>
+    <%= f.currency_field :npv_tax_due %>
+    <%= f.currency_field :premium_tax_due %>
+    <% if 'LEASERET' == @lbtt_return.flbt_type %>
+      <%= f.currency_field :total_reliefs %>
+    <% end %>
+  <% end %>
+
+  <%= f.currency_field :tax_due  %>
+
+  <% if %w[LEASEREV ASSIGN TERMINATE].include? @lbtt_return.flbt_type %>
+      <%= f.currency_field(:amount_already_paid, readonly:true) %>
+      <%= f.currency_field :tax_due_for_return %>
+  <% end %>
+
+  <%= f.button 'next', { :name => 'submitted' } %>
+<% end %>

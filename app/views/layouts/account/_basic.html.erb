@@ -1,0 +1,53 @@
+<%
+  # This layout requires the following locals assigned:
+  #   other_organisation   true if the form is displayed for an other organisation
+  #   reg_organisation     true if the form is displayed for a registered organisation
+  #   use_account_for_name true if the form should use account for the forename/surename, 
+  #                             otherwise use the current_user
+  #   inc_reg_type         true if the registration_type from account_type should be included as a hidden
+  #                             field on the form
+  #   confirm              true if the form should show a confirm button, otherwise show a next button
+  #   edit                 true if the form is for editing
+  #
+  # Note, ()_organisation can be override by the caller, rather than relying on @account.account_type
+%>
+<%= form_for @account, url: @post_path, html:{autocomplete: "on"} , local: true do |f| %>
+  <%= form_errors_for @account, translation_options: { company_name: @account.account_type } %>
+  <% if local_assigns[:inc_reg_type] %>
+    <%= f.fields_for @account.account_type do |at| %>
+      <%= at.hidden_field :registration_type %>
+    <% end %>
+  <% end %>
+  <%= f.fields_for @account.current_user do |u| %>
+    <% if local_assigns[:other_organisation] %>
+      <%= f.fields_for @account.company do |c| %>
+        <%= c.text_field :company_name, translation_options: @account.account_type %>
+      <% end %>
+    <% elsif !local_assigns[:reg_organisation] %>
+      <% if local_assigns[:use_account_for_name] %>
+        <%= f.text_field :forename %>
+        <%= f.text_field :surname %>
+      <% else %>
+        <%= u.text_field :forename %>
+        <%= u.text_field :surname %>
+        <% if AccountType.individual?(@account.account_type) %>
+          <%= f.text_field :nino %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= f.text_field :email_address %>
+    <%= f.text_field :email_address_confirmation %>
+    <%= f.text_field :contact_number %>
+    <% if local_assigns[:edit] %>
+      <% if AccountType.individual?(@account.account_type) || local_assigns[:other_organisation] %>
+        <%= f.text_field :nino %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <p/>
+  <% if local_assigns[:confirm] %>
+    <%= f.button '.confirm' , {:name => 'update-basic'}  %>
+  <% else %>
+    <%= f.button '.next', { :name => 'submitted' }  %>
+  <% end %>
+<% end %>

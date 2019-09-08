@@ -1,0 +1,158 @@
+.page-numbers-container {
+    margin-top: 0px;
+    overflow: hidden;
+}
+
+.page-numbers-container .next,
+.page-numbers-container .previous {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.page-numbers-container .next a,
+.page-numbers-container .previous a {
+    display: block;
+    background-repeat: no-repeat;
+    background-size: 17px 14px;
+}
+
+.page-numbers-container .next {
+    float: right;
+    text-align: right;
+}
+
+.page-numbers-container .next a {
+    padding-right: 30px;
+    background-image: image-url("arrow-pagination-right.png");
+    background-position: 100% 7px;
+}
+
+.lt-ie11 .page-numbers-container .next a,
+.lte-ie8 .page-numbers-container .next a {
+    background-image: image-url("arrow-pagination-right.png");
+}
+
+.page-numbers-container .previous {
+    float: left;
+    text-align: left;
+}
+
+.page-numbers-container .previous a {
+    padding-left: 30px;
+    background-image: image-url("arrow-pagination-left.png");
+    background-position: 0 7px;
+}
+
+.lte-ie11 .page-numbers-container .previous a,
+.lte-ie8 .page-numbers-container .previous a {
+    background-image: image-url("arrow-pagination-left.png");
+}
+
+.page-navigation .previous,
+.page-navigation .next {
+    width: 49%;
+}
+
+@media (max-width: 370px) {
+    .page-navigation .previous,
+    .page-navigation .next {
+        width: 100%;
+    }
+}
+
+.page-navigation .previous {
+    margin-right: 2%;
+}
+
+@media (max-width: 370px) {
+    .page-navigation .previous {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+}
+
+.pagination-container {
+    margin-bottom: 30px;
+}
+
+.pagination {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.pagination ul {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+@media (max-width: 370px) {
+    .pagination ul {
+        margin-top: 15px;
+    }
+}
+
+.pagination ul > li {
+    padding-left: 0;
+}
+
+.pagination ul > li:first-child > a {
+    border-left-width: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.pagination ul > li:last-child > a {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.pagination ul > li > a {
+    padding: 4px 12px;
+    line-height: 20px;
+    text-decoration: none;
+}
+
+.pagination ul > li > a:hover,
+.pagination ul > li > a:focus {
+    text-decoration: underline;
+    background: transparent;
+}
+
+.pagination ul > li > a:focus {
+    background: #ffbf47;
+    outline: 3px solid #ffbf47;
+    outline-offset: 0;
+}
+
+.pagination ul > .active span,
+.pagination ul > .active a {
+    color: #999;
+    cursor: default;
+    background: transparent;
+}
+
+.pagination ul > .active a:hover,
+.pagination ul > .active a:focus {
+    text-decoration: none;
+}
+
+ul.list-inline {
+    list-style: none;
+    padding-left: 0;
+}
+
+ul.list-inline li {
+    display: inline-block;
+}
+
+.visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}

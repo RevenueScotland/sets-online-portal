@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:ns="http://www.northgateps.com/FL/GetTransactions" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.northgateps.com/FL/GetTransactions.wsdl" targetNamespace="http://www.northgateps.com/FL/GetTransactions.wsdl">
+	<wsdl:types>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference for the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Service" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example service is the name of the requesting system, e.g. RB or the database from which the request is coming from, e.g. RBDEV</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example requestor is the name of the Local Authority from which the request is being sent</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xs:schema xmlns="http://www.northgateps.com/FL/GetTransactions" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/FL/GetTransactions" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
+			<xs:element name="GetTransactionsRequest">
+				<xs:annotation>
+					<xs:documentation>This webservice will provide a mechanism to return a list of matching transactions as stored in FL. Transactions will include a balance where liabilities are matched/reconciled with payments and vice/versa. 
+										Parameters inline with Transaction search in backoffice.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="RequestUser">
+							<xs:annotation>
+								<xs:documentation>User identified to determine the associated Service and Workplaces and what transactions they can view</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="20"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="ParRefno">
+							<xs:annotation>
+								<xs:documentation> Used to verify the request is valid from a user and the correct party. PAR_REF_NO</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:integer"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="TransactionReference" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation> Used to request a single Transaction record. TRA_REFNO</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:integer"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="CustomerReference" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Filter responses to tranactions that begin with customer payment reference provided TRA_CUSTOMER_REFERENCE</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="30"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="TransactionType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Filter responses to tranactions of a particular transaction type e.g. penalities . TRA_TTY_CODE</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="30"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="TransactionTypeGroup" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Filter responses to tranactions of a particlation type group e.g. liabilities or payments TRA_TTY_CODE -> TTY_TYPE -> TTY_TTGR_GROUP</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="RelatedReference" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Filter responses to tranactions that begin with related payment reference provided. TRA_RELATED_REFERENCE</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="30"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="includeOutstandingOnly" default="false">
+							<xs:annotation>
+								<xs:documentation>Filter responses to only include transactions which have not been matched/reconciled against correponding payments or liabilities i.e. are outstanding TRA_CASE_REFNO</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:boolean"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="excludeTransfers" default="true">
+							<xs:annotation>
+								<xs:documentation>Filter responses to exclude Transferred transactions. Exclude transactions where TRA_TRANSFER_IND = Y OR TRA_TRANSFER_FROM_TRA_REFNO is not NULL</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:boolean"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="excludeHolds" default="false">
+							<xs:annotation>
+								<xs:documentation>Filter responses to exclude Held transactions. exclude transaction where CURR_DATE is >= TRA_ONHOLD_START_DATE and less then or equal to TRA_ONHOLD_END_DATE</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:boolean"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="MinimumAmount" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Filter responses to only include transactions with an amount greater or equal to the value provided. TRA_AMOUNT</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="MaximumAmount" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Filter responses to only include transactions with an amount less than or equal to the value provided. TRA_AMOUNT</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:decimal"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="ActualDateFrom" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Filter responses to only include transactions with an actual date greater or equal to that provided. TRA_ACTUAL_DATE</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:date"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="ActualDateTo" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Filter responses to only include transactions with an actual date less than or equal to that provided. TRA_ACTUAL_DATE</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:date"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="EffectiveDateFrom" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Filter responses to only include transactions with an effective date greater or equal to that provided. TRA_EFFECTIVE_DATE</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:date"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="EffectiveDateTo" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Filter responses to only include transactions with an effective date less than or equal to that provided. TRA_AEFFECTIVE_DATE</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:date"/>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Pagination" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="StartRow" type="xs:int"/>
+									<xs:element name="NumRows" type="xs:int"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetTransactionsResponse">
+				<xs:annotation>
+					<xs:documentation>The Response will contain a list of Transactions that match the filter Request and also include any related transactions.
+			                  Related Transactions refer to matched transactions for Payments and Liabilities OR  for Contra'd/Transferred/Reversed transactions the corresponding transaction.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="core:StandardResponseStructure">
+							<xs:sequence>
+								<xs:element name="Pagination" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="MoreRowsExist" minOccurs="0"/>
+											<xs:element name="TotalRows" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Transactions" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Transaction" maxOccurs="unbounded">
+												<!-- do we want to create FL/Core Transaction !-->
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="TransactionReference">
+															<xs:annotation>
+																<xs:documentation>Unique key for Transaction </xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:integer"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="EffectiveDate">
+															<xs:annotation>
+																<xs:documentation>The effective date of the transaction, this is used to determine the accounting period the transaction applies to </xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:date"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="ActualDate">
+															<xs:annotation>
+																<xs:documentation>The date that the transaction was recorded this would normally be the same as the created date </xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:date"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="TransactionType">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="Description">
+																		<xs:annotation>
+																			<xs:documentation>The description of transaction type. TTY_DESCRIPTION</xs:documentation>
+																		</xs:annotation>
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:maxLength value="255"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:element>
+																	<xs:element name="TransactionTypeCode">
+																		<xs:annotation>
+																			<xs:documentation>The code for the transaction type TTY_TYPE</xs:documentation>
+																		</xs:annotation>
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:maxLength value="30"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:element>
+																	<xs:element name="TransactionTypeGroup">
+																		<xs:annotation>
+																			<xs:documentation>The group for the transaction type, this may represent liability, relief, or payment. TTY_TTGR_GROUP</xs:documentation>
+																		</xs:annotation>
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:maxLength value="10"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+														<xs:element name="TransferIndicator">
+															<xs:annotation>
+																<xs:documentation>Indicates that this transaction has been transferred. TTRA_TRANSFER_IND</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:boolean"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="HoldIndicator">
+															<xs:annotation>
+																<xs:documentation>Indicates that this transaction has been held. Where CURR_DATE is >= TRA_ONHOLD_START_DATE and less than or equal to TRA_ONHOLD_END_DATE</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:boolean"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="PaidByDD">
+															<xs:annotation>
+																<xs:documentation>Is this liability transaction proposed to be paid by direct debit. TRA_PAY_BY_DD_IND</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:boolean"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="OnHold" minOccurs="0">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="Reason">
+																		<xs:annotation>
+																			<xs:documentation>Reason for the Hold. Use TRA_FTHLD_REASON in Doamin Values to get the reason.</xs:documentation>
+																		</xs:annotation>
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:maxLength value="100"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:element>
+																	<xs:element name="Type">
+																		<xs:annotation>
+																			<xs:documentation>Domain for the Hold. (e.g SUSPEND, NONRECOVERABLE) .lookup TRA_FHLD_FRD_DOMAIN to get Domain Name</xs:documentation>
+																		</xs:annotation>
+																		<xs:simpleType>
+																			<xs:restriction base="xs:string">
+																				<xs:maxLength value="20"/>
+																			</xs:restriction>
+																		</xs:simpleType>
+																	</xs:element>
+																	<xs:element name="StartDate">
+																		<xs:annotation>
+																			<xs:documentation>The date this transaction was put on hold for whatever reason. TRA_ONHOLD_START_DATE</xs:documentation>
+																		</xs:annotation>
+																		<xs:simpleType>
+																			<xs:restriction base="xs:date"/>
+																		</xs:simpleType>
+																	</xs:element>
+																	<xs:element name="EndDate">
+																		<xs:annotation>
+																			<xs:documentation>Records the BACS processing date for a DD payment. TRA_BACS_PROCESS_DATEThe optional date this on hold comes to an end (no date means open ended). TRA_ONHOLD_END_DATE</xs:documentation>
+																		</xs:annotation>
+																		<xs:simpleType>
+																			<xs:restriction base="xs:date"/>
+																		</xs:simpleType>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+														<xs:element name="DirectDebit" minOccurs="0">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="ReferenceNumber">
+																		<xs:annotation>
+																			<xs:documentation>For a direct debit payment the instruction under which this payment was made. TRA_DIN_REFNO</xs:documentation>
+																		</xs:annotation>
+																		<xs:simpleType>
+																			<xs:restriction base="xs:integer"/>
+																		</xs:simpleType>
+																	</xs:element>
+																	<xs:element name="ProcessID">
+																		<xs:annotation>
+																			<xs:documentation>The process id of the job that extracted the DD payment. TRA_DD_PROCESS_ID</xs:documentation>
+																		</xs:annotation>
+																		<xs:simpleType>
+																			<xs:restriction base="xs:integer"/>
+																		</xs:simpleType>
+																	</xs:element>
+																	<xs:element name="BACSProcessDate">
+																		<xs:annotation>
+																			<xs:documentation>Records the BACS processing date for a DD payment. TRA_BACS_PROCESS_DATE</xs:documentation>
+																		</xs:annotation>
+																		<xs:simpleType>
+																			<xs:restriction base="xs:date"/>
+																		</xs:simpleType>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+														<xs:element name="RelatedReference">
+															<xs:annotation>
+																<xs:documentation>The related reference for this transaction, as given by the object type, it may be a return or could be something else e.g. Penalty. TRA_RELATED_REFERENCE </xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="30"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="RelatedSubReference">
+															<xs:annotation>
+																<xs:documentation>The related sub reference for this transaction. This will point towards the 'version' of the reference provided e.g. this penality is related to the 2nd version of the return. TRA_RELATED_SUBREFERENCE </xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="30"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="RelatedReferenceType">
+															<xs:annotation>
+																<xs:documentation>FRV forthe object for the type reference. TRA_FOBT_TYPE </xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="20"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="CustomerReference">
+															<xs:annotation>
+																<xs:documentation>This is the reference that has been quoted to the customerand can be used for matching incoming payments to the liability. For DD's payments it is the reference under which the payment was made. TRA_CUSTOMER_REFERENCE </xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="30"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="Amount">
+															<xs:annotation>
+																<xs:documentation>The amount of the transaction, can be positive [debit] or negative [credit, including payment]. TRA_AMOUNT </xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:decimal"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="OutstandingBalance">
+															<xs:annotation>
+																<xs:documentation>Calculated field. If Transferred or Contra'd transaction then amount is 0. For liabilities and payments this is dependent on matched transactions and if the original amount has been reconciled by matched transactions. </xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:decimal"/>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="RelatedTransactions" minOccurs="0">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="RelatedTransaction" minOccurs="0" maxOccurs="unbounded">
+																		<xs:complexType>
+																			<xs:sequence>
+																				<xs:element name="TransactionReference">
+																					<xs:annotation>
+																						<xs:documentation>Unique key for Transaction </xs:documentation>
+																					</xs:annotation>
+																					<xs:simpleType>
+																						<xs:restriction base="xs:integer"/>
+																					</xs:simpleType>
+																				</xs:element>
+																				<xs:element name="ParentTransactionReference">
+																					<xs:annotation>
+																						<xs:documentation>Unique key for Parent Transaction where the original transaction contr'd/transferred a transaction </xs:documentation>
+																					</xs:annotation>
+																					<xs:simpleType>
+																						<xs:restriction base="xs:integer"/>
+																					</xs:simpleType>
+																				</xs:element>
+																				<xs:element name="EffectiveDate">
+																					<xs:annotation>
+																						<xs:documentation>The effective date of the transaction, this is used to determine the accounting period the transaction applies to </xs:documentation>
+																					</xs:annotation>
+																					<xs:simpleType>
+																						<xs:restriction base="xs:date"/>
+																					</xs:simpleType>
+																				</xs:element>
+																				<xs:element name="ActualDate">
+																					<xs:annotation>
+																						<xs:documentation>The date that the transaction was recorded this would normally be the same as the created date </xs:documentation>
+																					</xs:annotation>
+																					<xs:simpleType>
+																						<xs:restriction base="xs:date"/>
+																					</xs:simpleType>
+																				</xs:element>
+																				<xs:element name="TransactionType">
+																					<xs:complexType>
+																						<xs:sequence>
+																							<xs:element name="Description">
+																								<xs:annotation>
+																									<xs:documentation>The description of transaction type. TTY_DESCRIPTION</xs:documentation>
+																								</xs:annotation>
+																								<xs:simpleType>
+																									<xs:restriction base="xs:string">
+																										<xs:maxLength value="255"/>
+																									</xs:restriction>
+																								</xs:simpleType>
+																							</xs:element>
+																							<xs:element name="TransactionTypeCode">
+																								<xs:annotation>
+																									<xs:documentation>The code for the transaction type TTY_TYPE</xs:documentation>
+																								</xs:annotation>
+																								<xs:simpleType>
+																									<xs:restriction base="xs:string">
+																										<xs:maxLength value="30"/>
+																									</xs:restriction>
+																								</xs:simpleType>
+																							</xs:element>
+																							<xs:element name="TransactionTypeGroup">
+																								<xs:annotation>
+																									<xs:documentation>The group for the transaction type, this may represent liability, relief, or payment. TTY_TTGR_GROUP</xs:documentation>
+																								</xs:annotation>
+																								<xs:simpleType>
+																									<xs:restriction base="xs:string">
+																										<xs:maxLength value="10"/>
+																									</xs:restriction>
+																								</xs:simpleType>
+																							</xs:element>
+																						</xs:sequence>
+																					</xs:complexType>
+																				</xs:element>
+																				<xs:element name="MatchedAmount">
+																					<xs:annotation>
+																						<xs:documentation>The amount of the transaction of the related transaction that has been matched with the original transaction</xs:documentation>
+																					</xs:annotation>
+																					<xs:simpleType>
+																						<xs:restriction base="xs:decimal"/>
+																					</xs:simpleType>
+																				</xs:element>
+																				<xs:element name="OriginalAmount">
+																					<xs:annotation>
+																						<xs:documentation>The original total amount of the related transaction. </xs:documentation>
+																					</xs:annotation>
+																					<xs:simpleType>
+																						<xs:restriction base="xs:decimal"/>
+																					</xs:simpleType>
+																				</xs:element>
+																			</xs:sequence>
+																		</xs:complexType>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="GetTransactionsRequest">
+		<wsdl:part name="parameters" element="ns:GetTransactionsRequest"/>
+	</wsdl:message>
+	<wsdl:message name="GetTransactionsResponse">
+		<wsdl:part name="parameters" element="ns:GetTransactionsResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="GetTransactionsWSDLPort">
+		<wsdl:operation name="GetTransactionsWSDL">
+			<wsdl:input message="tns:GetTransactionsRequest"/>
+			<wsdl:output message="tns:GetTransactionsResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetTransactionsWSDLBinding" type="tns:GetTransactionsWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<!-- Define document style -->
+		<!-- define literal -->
+		<wsdl:operation name="GetTransactionsWSDL">
+			<soap:operation soapAction="https://server/DATABASE/communication/getTransactions"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetTransactionsWSDLService">
+		<wsdl:port name="GetTransactionsWSDLPort" binding="tns:GetTransactionsWSDLBinding">
+			<soap:address location="https://server/DATABASE/communication/getTransactions"/>
+			<!-- give the binding an network address -->
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,10 @@
+en:
+  returns:
+    lbtt_agent:
+      agent_details:
+        title: Agent details
+        subtitle : Provide your details
+        description: Provide details of the agent dealing with this transaction        
+      agent_address:
+        title: Agent address
+        subtitle: Provide agent address

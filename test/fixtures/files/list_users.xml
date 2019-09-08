@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Body>
+<MaintainUserResponse xmlns="http://northgate-is.com/FL/MaintainUser" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core"><core:Success>true</core:Success><Users>
+<User><Username>VALID.USER</Username><UserIsCurrent>Yes</UserIsCurrent><Forename>Valid</Forename><Surname>User</Surname><EmailAddress>valid.user@northgateps.com</EmailAddress><UserRoles><UserRole>ACCADMN</UserRole><UserRole>ACCSECADMN</UserRole><UserRole>ACCPAYER</UserRole><UserRole>LEVY_REFUND</UserRole></UserRoles></User>
+<User><Username>DUE.PASSWORD</Username><UserIsCurrent>Yes</UserIsCurrent><Forename>Due</Forename><Surname>Password</Surname><EmailAddress>due.password@northgateps.com</EmailAddress><UserRoles><UserRole>ACCADMN</UserRole><UserRole>ACCSECADMN</UserRole><UserRole>ACCPAYER</UserRole><UserRole>LEVY_REFUND</UserRole></UserRoles></User>
+</Users></MaintainUserResponse>
+</soap:Body>
+</soap:Envelope>

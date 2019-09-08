@@ -1,0 +1,11 @@
+<%= content_for :hide_back_link, true %>
+<% content_for :page_title,  t('signin') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<%= form_for @user, url: login_path, local: true do |f| %>
+  <%= form_errors_for @user %>
+  <%= f.text_field  :username %>
+  <%= f.text_field :token, autocomplete: 'off' %>
+
+  <%= f.button 'signin'%> 
+<% end %>

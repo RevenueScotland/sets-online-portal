@@ -1,0 +1,37 @@
+ <% unless data.blank? %>  
+ 
+  <table class="govuk-table">
+    <thead>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" />
+        <th class="govuk-table__header" />       
+        <th class="govuk-table__header"><%= t('.name') %></th>       
+        <th class="govuk-table__header"><%= t('.type') %> </th>        
+        <th class="govuk-table__header"><%= t('.address') %> </th>       
+        <th class="govuk-table__header" />     
+      </tr>    
+    </thead>
+    <tbody>
+        <% data.each do |party| %>          
+            <tr>
+              <td/> 
+              <td/>
+              <td>
+                <%= party.full_name %>
+              </td>  
+              <td>
+                <%= party.display_type %>
+              </td>
+              <td>                
+                <%= party.display_address%>
+              </td>              
+              <td nowrap class="text_align_right">
+                <%= link_to t('edit_row'), path=returns_lbtt_about_the_party_path(party_id: party.party_id, party_type: party.party_type) %>
+                |
+                <%= link_to t('delete_row'), path=returns_lbtt_party_delete_path(party_id: party.party_id), data: { confirm: "Delete #{party.party_type&.downcase}?" } %>
+              </td>              
+            </tr>            
+        <% end %>   
+    </tbody>
+  </table>
+ <% end %>

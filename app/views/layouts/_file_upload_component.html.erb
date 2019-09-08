@@ -1,0 +1,95 @@
+    <!-- Allow to upload one file if one_file_upload is set to true-->
+    <% if local_variables.include?(:multiple)  %>
+        <% show_add_button = true %>
+    <% else %>
+        <% show_add_button = @resource_items.length < 1 || @resource_item.errors.any? %>
+    <% end %>
+    <% if show_add_button %>
+        <div class="file">
+            <label class="govuk-label" for="resource"><%= file_upload_label %></label>
+            <span class="form-hint">
+            <p><%= file_upload_label_hint if local_variables.include?(:file_upload_label_hint) %></p>
+            <% if @supported_types.nil? %>
+              <%= t('file_upload_hint_without_supported_item', supported_max_size_mb: @supported_max_size_mb.to_s ) %>
+		    <% else %>
+              <%= t('file_upload_hint', supported_types: @supported_types, supported_max_size_mb: @supported_max_size_mb.to_s ) %>
+            <% end %>    
+            </span>
+            <% css_class =  'govuk-file-upload'
+            if  @resource_item.errors.any? %>       
+                <% @resource_item.errors.messages.each do |attr, messages| %>
+                    <% messages.each do |msg|%>
+                        <span class="govuk-error-message"><%=  (error_attribute_name(@resource_item, attr, {}) + ' ' if attr != :base).to_s() + msg %></span>
+                    <% end %>    
+                <% end 
+               css_class = css_class + ' govuk-file-upload--error'
+            end %>    
+            <table class="govuk-table">
+                <tr>
+                    <td colspan='2'>
+                        <div class="govuk-form-group">
+                            <%= file_field_tag 'resource_item', { id:'resource', class:css_class, data: { max_file_size: @supported_max_size_mb.megabytes } } %>
+                        </div>    
+                    </td>
+                 </tr>    
+                 <tr>
+                    <td colspan='2'>
+                        <div class="govuk-form-group" >
+                            <label class="govuk-label" for="description"><%= t('file_description') %></label>
+                            <%= text_field_tag 'description', nil, class:'govuk-input govuk-!-width-two-thirds' %>
+                        </div>    
+                    </td>
+                 </tr>
+                 <tr>
+                    <td class="width-fixed" class="govuk-form-group">
+                        <%= button_tag t('AddResource'), { :name => 'add_resource', :class => 'scot-rev-button', :id => 'AddResource' } %>
+                    </td>
+                    <td class="hideline">
+                        <span class="uploadspinner"></span>
+                    </td>
+                 </tr>
+            </table>
+        </div>
+    <% end %>
+    <% if @resource_items.length > 0 %> 
+        <% if !@resource_items[0].file_name.nil? %>
+            <div class="removefile">
+                <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th class="govuk-table__header"><%= t('upload_column_filename') %></th>
+                            <th class="govuk-table__header"><%= t('upload_column_file_description') %></th>
+                            <th class="govuk-table__header"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        <% @resource_items.each do |resource_item| %>
+                            <% if resource_item && resource_item.original_filename %>
+                                <tr class="govuk-table__row">
+                                    <td>
+                                        <% if local_variables.include?(:file_control_name)  %>    
+                                          <%= link_to resource_item.original_filename, "../" + file_control_name + "/download-file/?file=" +  resource_item.file_name, { target:"_blank" } %>
+                                        <% else %>
+                                          <%= link_to resource_item.original_filename,  "download-file/?file=" +  resource_item.file_name , { target: "_blank" }%>
+                                        <% end %>    
+                                    </td>
+                                    <td>
+                                        <%= resource_item.description %>
+                                    </td>
+                                    <td class="hideline width-fixed">
+                                        <% if !local_assigns[:remove_remove] %>
+                                            <%= button_tag t('DeleteResource'), { :name => 'delete_resource', :class => 'scot-rev-button_link link_css', :id => 'DeleteResource', :value => resource_item.doc_refno } %>
+                                        <% end %>
+                                    </td>
+                                    <td class="hideline">
+                                        <span class="uploadspinner"></span>
+                                    </td>
+                                </tr>
+                            <% end %>     
+                        <% end %> 
+                    </tbody>    
+                </table>
+            </div>
+        <% end %>    
+    <% end %>
+    

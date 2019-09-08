@@ -1,0 +1,164 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# The following keys must be escaped otherwise they will not be retrieved by
+# the default I18n backend:
+#
+# true, false, on, off, yes, no
+#
+# Instead, surround them with single quotes.
+#
+# en:
+#   'true': 'foo'
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+en:
+  action: "Action"
+  this: "This"
+  working: "Working ..."
+  add_row: Add row
+  edit_row: Edit row
+  delete_row: Delete row
+  AddResource: Upload document
+  DeleteResource: Remove file
+  upload_column_filename: File uploaded
+  upload_column_file_description: Description
+  file_description: Description of the uploaded file (optional)
+  file_upload_hint: The file must be one of %{supported_types} with maximum size %{supported_max_size_mb} mb per file
+  file_upload_hint_without_supported_item: The file must be with maximum size %{supported_max_size_mb} mb per file
+  label_application/vnd:
+    ms-excel: xls
+    openxmlformats-officedocument:
+      wordprocessingml:
+        document: docx
+      spreadsheetml:
+        sheet: xlsx
+  label_image/gif: gif
+  label_image/jpeg: jpeg
+  label_image/jpg: jpg
+  label_image/png: png
+  label_image/tiff: tiff
+  label_application/msword: doc
+  label_application/rtf: rtf
+  label_application/pdf: pdf
+
+  back: "Back"
+  go_to_dashboard: "Go to dashboard"
+  back_to_return_summary: "Back to return summary"
+  filter_show: "Show more filter options"
+  filter_hide: "Hide options"
+  Find: "Find"
+  show: "Show"
+  signout: "Sign out"
+  signin: "Sign in"
+  account-details: "Account details"
+  select_prompt: "Choose from list"
+  continue: "Continue"
+  error_title: "Something has gone wrong."
+  error_advice: "Something has gone wrong. Please try again."
+  error_report: "To report this error quote :"
+  forbidden: "You are not authorised to view this page."
+  forbidden_text: "You may have mistyped the address or the page may have moved. If you are the application owner check the logs for more information."
+  optional: "optional"
+  no_address_search_results: "returns no address"
+  no_company_search_results: "returns no company"
+  no_address_find_results: "could not find address"
+  no_address_found: "can't be blank"
+  previous: "Previous"
+  next: "Next"
+  session_ttl_warning_message: "Your session is about to time out"
+  save_draft: "Save draft"
+  submit_return: "Submit return"
+  calculate_return: "Calculate"
+  return_error: "Return not saved"
+  term_and_cons: "terms & conditions"
+  sec_doc: "email communication policy"
+  property: " Property"
+  buyer: "Buyer"
+  seller: "Seller"
+  tenant: "Tenant"
+  new_tenant: "New Tenant"
+  landlord: "Landlord"
+  transaction: "Transaction"
+  return_period: "Return period"
+  credit_claimed: "Credits claimed"
+  print_confirmation_text: Print this confirmation
+  send_secure_message_text: Send secure message
+  submit_text: Your Scottish Landfill Tax return has now been submitted
+  submit_date_text: The submission date is %{system_date}.
+  submit_return_reference_text: "Transaction reference: %{return_reference}"
+  submit_payment_generic_text: Payment is due by the earlier of either 5 working days after submission of the return, or the last working day which is, or precedes, the 44th calendar day after the end of the SLFT quarter.
+  submit_payment_method_text: You have stated that you are going to pay by %{payment_method}. Details on how to make payments can be found <a href='https://www.revenue.scot/'>here</a>
+  slft_submit_text: If the return is submitted close to the filing date you must ensure that full payment reaches us no later than the filing date for the return. Interest is chargeable on any outstanding tax that is not paid by the filing date.<br>If the return is submitted late you may be liable to a penalty. If tax is paid late, interest is chargeable and you may also become liable to a penalty, depending on how late the tax is paid. Further guidance on interest and penalties is available on our website.
+  submit_queries_contact_text: If you have any queries about this return, you can contact Revenue Scotland by sending a secure message or by calling the support desk on 03000 200 310.
+  submit_queries_contact_text_amend: If you have any queries about this amendment, you can contact Revenue Scotland by sending a secure message or by calling the support desk on 03000 200 310.
+  submit_queries_contact_text_public: If you have any queries about this return, you can contact Revenue Scotland by calling the support desk on 03000 200 310.
+  amend_return_reference_text: Your amendment to your Scottish Landfill tax return %{return_reference} has now been submitted.
+  amend_slft_submit_text: If your amendment has resulted in a payment due to Revenue Scotland then your payment is due immediately.If tax is paid late, interest is chargeable and you may also become liable to a penalty, depending on how late the tax is paid. Further guidance on interest and penalties is available on our website.
+  lbtt_submit_text:  Your Land and Buildings Transaction Tax return has now been submitted.
+  lbtt_sumbit_penalties_text: If your return or payment is late, you may be <a href='http://www.revenue.scot/penalties'> liable to penalties</a> or <a href='http://www.revenue.scot/interest'>liable to interest.</a>
+  lbtt_submit_payment_generic_text: Payment is due by the earlier of either 5 working days after submission of the return OR the filing date of the return.
+  lbtt_lease_text: You may need to submit further returns at the following times:<br/>- every 3 years from the effective date of the lease <br/>- on assignation<br/>- on termination
+  lbtt_lease_further_information_text: Further <a href="http://www.revenue.scot/leases"> information on leases </a> is available.
+  submit_lbtt_payment_method_text: You are paying by %{payment_method}. Help and advice on <a href="https://www.revenue.scot/land-buildings-transaction-tax/guidance/how-to/pay-lbtt">how to pay LBTT</a> is available.
+  lbtt_amend_return_reference_text: Your amendment to your Land and Buildings Transaction Tax return has now been submitted.
+  lbtt_amend_payment_method_text:  If you need to pay additional tax, you must arrange to make your payment now. Help and advice on <a href='https://www.revenue.scot/land-buildings-transaction-tax/guidance/how-to/pay-lbtt'>how to pay LBTT</a> is available.
+  public_landing_heading: "To complete this return, you will need the following information:"
+  lbtt_acknowledgment: "Acknowledgment of validated LBTT return"
+  lbtt_amend_acknowledgment: "Acknowledgment of LBTT return amendment"
+  include_transaction_ref: "The transaction ID must be included with any payment submitted or in any correspondence regarding this transaction. This acknowledgment should <b>not</b> be sent to Registers of Scotland as part of the land registration process."
+
+  notification:
+    one: "Your password expires in 1 day"
+    other: "Your password expires in %{count} days"
+  link:
+    edit: "Hello"
+    add: "Add"
+  layouts:
+    footer:
+      link:
+        accessibility: "Accessibility"
+        legal_notices: "Legal Notices"
+        site_map: "Site Map"
+        foi: "FOI"
+        cookies: "Cookies"
+    address:
+      search: "Find Address"
+      select: "Select"
+      select_blank: "Pick an address"
+    company_search:
+      search: "Find Company"
+  activemodel:
+    attributes:
+      address:
+        full_address: "Address"
+        full_property_address: "Property address"
+    errors:
+      messages:
+        is_invalid: "is invalid"
+        format_is_invalid: "format is invalid"
+        postcode_format_invalid: "must be in Scotland for LBTT"
+        invalid_2dp: "must be a number to 2 decimal places"
+        one_must_be_chosen: "must have one option ticked"
+        cant_be_blank: "can't be blank"
+        not_an_integer: "must be a whole number"
+        company_not_chosen: "A company must be chosen"
+        address_not_chosen: "search should be used, or the address should be entered manually"
+        cannot_be_greater_than_contribution: "cannot be greater than the contribution to environmental bodies"
+        section_not_complete: "%{attr} has errors that need to be corrected, please edit it"

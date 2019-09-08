@@ -1,0 +1,109 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# The following keys must be escaped otherwise they will not be retrieved by
+# the default I18n backend:
+#
+# true, false, on, off, yes, no
+#
+# Instead, surround them with single quotes.
+#
+# en:
+#   'true': 'foo'
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+en:
+  activemodel:
+    attributes:
+      dashboard/message:
+        created_date: "Date & time"
+        title: "Message title"
+        body: "Message body"
+        read_indicator: "Read"
+        show: "View message"
+        new: "Create a new one"
+        submit: "Send message"
+        direction_code: "Type"
+        reference: "Reference"
+        sent_by: "Sent by"
+        created_by: "Sent by"
+        from: "Account (Sent by)"
+        attachment: Attachment
+        has_attachment: Attachment
+        subject_code: "Subject"
+        subject_description: "Subject"
+        additional_file: Do you want to upload any more documents?
+        full_name: Name
+        original_filename: File
+      dashboard/message_filter:
+        from_datetime: "Created date from"
+        to_datetime: "Created date to"
+        reference: "Reference"
+        subject_code: "Subject"
+        subject_description: "Subject"
+        sent_by: "Sent by"
+        direction_code: "Type"
+        day: "Day"
+        month: "Month"
+        year: "Year"
+    hints:
+      dashboard/message_filter:
+        reference: "Enter part or all of the reference"
+        sent_by: "Enter part or all of the sender name"
+    errors:
+      models:
+        dashboard/message_filter:
+          attributes:
+            from_datetime:
+              before_date_error: "must be BEFORE the created date to"
+            to_datetime:
+              after_date_error: "must be AFTER the created date from"
+  dashboard:
+    messages:
+      index:
+        title: "Messages"
+        show: "view"
+        new: "Create New Message"
+        link:
+          new: "New Message"
+          dashboard: "Dashboard"
+        find: "Find"
+        no_data_found: "There are no messages to be shown..."
+      show:
+        title: "Message full details"
+        heading: "Related Messages:"
+        show: "view"
+        reply: "Reply"
+        link:
+          dashboard: "Dashboard"
+          messages: "Go to all messages"
+      new:
+        title: "New message"
+        created_datetime: "Date & Time"
+        send: "Send Message"
+        cancel: "Cancel"
+        file_upload_label: Upload a supporting file (optional)
+        file_upload_label_hint: You will be able to upload more documents on the next page
+      confirmation:
+        title: Confirmation
+        paragraph_heading: What happens next
+        paragraph1: Thank you for your secure message.
+        paragraph2: We aim to respond as quickly as possible. In the meantime, full information and guidance is available on the Revenue Scotland <a target="_blank" href='http://www.revenue.scot/'>website (opens in a new window)</a>.
+        file_upload_label: Upload a document to support your secure message

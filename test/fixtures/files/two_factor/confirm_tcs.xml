@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<soap:Body>
+		<AuthenticateUserResponse xmlns="http://northgate-is.com/FL/AuthenticateUser" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+			<core:Success>true</core:Success>
+			<UserIsAuthenticated>true</UserIsAuthenticated>
+			<UserIsRegistered>true</UserIsRegistered>
+			<UserIs2FA>true</UserIs2FA>
+			<TokenValid2FA>VALID</TokenValid2FA>
+			<PasswordChangeRequired>false</PasswordChangeRequired>
+			<PasswordExpiryDate>2029-06-26</PasswordExpiryDate>
+			<UserIsSignedTaCs>false</UserIsSignedTaCs>
+			<WorkPlaceRefno>3</WorkPlaceRefno>
+			<PartyRefno>117</PartyRefno>
+			<UserLocked>false</UserLocked>
+			<UserRoles>
+				<UserRole>ACCADMN</UserRole>
+				<UserRole>PWSDASH</UserRole>
+				<UserRole>PWSCLAIM</UserRole>
+				<UserRole>PWSDRNEW</UserRole>
+				<UserRole>PWSDRSUB</UserRole>
+				<UserRole>PWSMESSAGE</UserRole>
+				<UserRole>PWSDRUPD</UserRole>
+				<UserRole>PWSAMEND</UserRole>
+				<UserRole>ACCSECADMN</UserRole>
+			</UserRoles>
+		</AuthenticateUserResponse>
+	</soap:Body>
+</soap:Envelope>

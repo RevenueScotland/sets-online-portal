@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Body>
+<AddressDetailResponse xmlns="http://northgate-is.com/NAS/AddressDetailResponse-v1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core"><core:Success>true</core:Success><Address><AddressIdentifier>14174279        </AddressIdentifier><AddressLine1>Royal Mail</AddressLine1><AddressLine2>Luton Delivery Office 9-11</AddressLine2><AddressLine3>Dunstable Road</AddressLine3><Town>LUTON</Town><Postcode>LU1 1AA</Postcode><Country>E92000001</Country><LocalEdAuthCode>821</LocalEdAuthCode><LocalAuthCode>E06000032</LocalAuthCode><UDPRN>14174279</UDPRN><DeliveryPointSuffix>1A</DeliveryPointSuffix></Address></AddressDetailResponse>
+</soap:Body>
+</soap:Envelope>

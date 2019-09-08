@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+<LBTTCalcResponse xmlns="http://www.northgateps.com/RSTS/GetLBTTCalc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core"><core:Success>true</core:Success><ConvTaxPayable><LBTTCalculated>78134.34</LBTTCalculated><ADSPayable>18455</ADSPayable><TotalLiability>96534.34</TotalLiability><TotalReliefsClaimed>3158</TotalReliefsClaimed><TotalADSReliefsClaimed>55</TotalADSReliefsClaimed><TotalLinkedTransactions>579</TotalLinkedTransactions><TotalDue>93431</TotalDue></ConvTaxPayable></LBTTCalcResponse>
+  </soap:Body>
+</soap:Envelope>

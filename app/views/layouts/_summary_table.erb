@@ -1,0 +1,25 @@
+<table class="govuk-table">
+  <thead>
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header"><%= table_headers[0] %></th>
+      <th class="govuk-table__header text_align_right"><%= table_headers[1] %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% unless table_help.nil? %>
+    <tr>      
+      <td colspan="2"><div class="govuk-body"><%= table_help %></div></td>
+    </tr>
+    <% end %>
+    <% unless summary_data.nil? %>
+      <% summary_data.each do |key, value| %>
+        <% unless value.blank? %>
+          <tr>            
+            <td><%= t(key) %></td>
+            <td class="text_align_right"><%= value %></td>
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

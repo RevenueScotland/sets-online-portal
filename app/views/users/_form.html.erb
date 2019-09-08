@@ -1,0 +1,23 @@
+<%= form_for @user do |form| %>
+  <%= form_errors_for @user %>
+  <% if %w(edit update).include?(params[:action]) %>
+    <%= display_field @user,:username %>
+  <% else %>
+    <%= form.text_field :new_username %> 
+  <% end %> 
+  <%= form.collection_radio_buttons_fields(:user_is_current, @user.list_ref_data(:user_is_current), :code, :value) %>
+  <h1><%= t('.user_details') %></h1>
+  <%= form.text_field :forename %>
+  <%= form.text_field :surname %>
+   <h1><%= t('.contact_details') %></h1>
+  <%= form.text_field :email_address %>
+  <%= form.text_field :email_address_confirmation %>
+  <%= form.password_field :new_password, option={optional: %w(edit update).include?(params[:action])? true:false} %>
+  <%= form.password_field :new_password_confirmation, option={optional: %w(edit update).include?(params[:action])? true:false} %>
+
+   <% if %w(edit update new create).include?(params[:action]) %>
+     <%= form.collection_check_boxes_fields(:user_roles, @user.list_ref_data(:user_roles), :code, :value) %>
+   <% end %>
+
+  <%= form.submit %>  
+<% end %>

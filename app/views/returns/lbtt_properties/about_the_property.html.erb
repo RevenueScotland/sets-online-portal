@@ -1,0 +1,36 @@
+<% content_for :page_title, t('.title') %>
+<% content_for :page_subtitle, t('.subtitle') %>
+
+<% content_for :page_view, render_page_view(__FILE__) %>
+<%= form_for @property, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for [@property, @address_summary, @address_detail] %>
+  <%= f.select :lau_code, @property.list_ref_data(:lau_code), {}, {} %>
+  <table class="about_the_property">
+    <thead>
+      <tr>
+        <th colspan="2"><%= t('.title_code') %></th>
+      </tr>
+    </thead>
+    <tr>
+      <td><%= f.select :title_code, @property.list_ref_data(:title_code), { }, { width:'full' } %></td>
+      <td><%= f.text_field :title_number, { width:'full' } %></td>
+    </tr>
+  </table>  
+  <div>    
+    <table class="about_the_property">
+      <thead>
+        <tr>
+          <th colspan="2"><%= t('.parent_title_code') %></th>
+        </tr>
+        <tr>
+         <td colspan="2"><%= t('.parent_title_hint') %></td>
+        </tr>
+      <thead>
+      <tr>
+        <td><%= f.select :parent_title_code, @property.list_ref_data(:parent_title_code), { }, { width:'full' } %></td>
+        <td><%= f.text_field :parent_title_number, { width:'full' } %></td>
+      </tr>
+    </table>
+  </div>
+  <%= f.button 'next', { :name => 'submitted' } %>
+<% end %>
