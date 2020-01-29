@@ -1,0 +1,101 @@
+{
+    "section": [
+        {
+            "sectioncode": "return_type",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "tare_reference",
+                    "itemformat": null,
+                    "itemlabel": "Return reference",
+                    "itemdata": "\u003c%TARE_REFERENCE%\u003e"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "property_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the property",
+            "listitem": [
+                {
+                    "itemcode": "full_title_number",
+                    "itemformat": null,
+                    "itemlabel": "Title number (if provided)",
+                    "itemdata": "LAN 8808"
+                },
+                {
+                    "itemcode": "full_address",
+                    "itemformat": null,
+                    "itemlabel": "Property address",
+                    "itemdata": "First Scotrail Ltd, Excess Office, Waverley Railway Station, EDINBURGH, EH1 1BB"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "party_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "full_name",
+                    "itemformat": null,
+                    "itemlabel": "Buyer",
+                    "itemdata": "Dunder Mifflin"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "return_type",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "flbt_type",
+                    "itemformat": null,
+                    "itemlabel": "Description of transaction",
+                    "itemdata": "Conveyance or transfer"
+                },
+                {
+                    "itemcode": "effective_date",
+                    "itemformat": "date",
+                    "itemlabel": "Effective date of transaction",
+                    "itemdata": "07 November 2019"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "party_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "agent_reference",
+                    "itemformat": null,
+                    "itemlabel": "Agent reference (if provided)",
+                    "itemdata": "Electronics"
+                }
+            ],
+            "itemcount": 1
+        }
+    ]
+}

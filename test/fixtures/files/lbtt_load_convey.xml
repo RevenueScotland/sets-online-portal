@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope
-	xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<soap:Body>
-		<LBTTTaxReturnResponse
-			xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn"
-			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		<LBTTTaxReturnResponse xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn" 
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 			xmlns:core="http://northgate-is.com/FL/Core">
 			<core:Success>true</core:Success>
 			<LBTTTaxReturn>
@@ -24,6 +22,7 @@
 					<ContractDate>2019-08-03</ContractDate>
 					<PreviousOptionInd>yes</PreviousOptionInd>
 					<ExchangeInd>yes</ExchangeInd>
+					<UKInd>yes</UKInd>
 					<Parties>
 						<Party>
 							<PartyType>PER</PartyType>
@@ -47,6 +46,7 @@
 							<TelNo>0123456789</TelNo>
 							<EmailAddress>noreply@northgateps.com</EmailAddress>
 							<BuyerSellerLinkedInd>yes</BuyerSellerLinkedInd>
+							<ActingAsTrusteeInd>yes</ActingAsTrusteeInd>
 						</Party>
 						<Party>
 							<PartyType>PER</PartyType>
@@ -60,8 +60,7 @@
 							</PersonName>
 							<Address>
 								<core:AddressLine1>Royal Mail</core:AddressLine1>
-								<core:AddressLine2>Luton
-Delivery Office 9-11</core:AddressLine2>
+								<core:AddressLine2>Luton Delivery Office 9-11</core:AddressLine2>
 								<core:AddressLine3>Dunstable Road</core:AddressLine3>
 								<core:AddressTownOrCity>LUTON</core:AddressTownOrCity>
 								<core:AddressPostcodeOrZip>LU1 1AA</core:AddressPostcodeOrZip>
@@ -98,15 +97,15 @@ Delivery Office 9-11</core:AddressLine2>
 					</Parties>
 					<LinkedTransactions>
 						<LinkedTransaction>
-							<Reference>1</Reference>
+							<Reference>RS1234567ABCD</Reference>
 							<ConsiderationAmount>10</ConsiderationAmount>
 						</LinkedTransaction>
 						<LinkedTransaction>
-							<Reference>2</Reference>
+							<Reference>RS1234568EFGH</Reference>
 							<ConsiderationAmount>20</ConsiderationAmount>
 						</LinkedTransaction>
 						<LinkedTransaction>
-							<Reference>3</Reference>
+							<Reference>RS1234569IJKL</Reference>
 							<ConsiderationAmount>30</ConsiderationAmount>
 						</LinkedTransaction>
 					</LinkedTransactions>
@@ -155,7 +154,7 @@ Delivery Office 9-11</core:AddressLine2>
 							<Amount>40</Amount>
 						</Relief>
 					</Reliefs>
-				    <Calculated>106090.82</Calculated>
+					<Calculated>106090.82</Calculated>
 					<AdsDue>10</AdsDue>
 					<DueBeforeReliefs>106090.82</DueBeforeReliefs>
 					<TotalReliefs>60</TotalReliefs>

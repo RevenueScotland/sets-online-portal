@@ -25,9 +25,9 @@ module RegistrationAccountsCommon
   # to users
   def register_user_params
     filtered_params = {}
-    if params[:account] && params[:account][:user]
+    if params[:account] && params[:account][:current_user]
       filtered_params.merge!(params.require(:account)
-                                    .require(:user).permit(User.attribute_list))
+                                    .require(:current_user).permit(User.attribute_list))
     end
     filtered_params
   end
@@ -47,7 +47,7 @@ module RegistrationAccountsCommon
   def copy_account_to_user(account)
     return account if account.current_user.nil?
 
-    account.current_user.contact_number = account.contact_number
+    account.current_user.phone_number = account.contact_number
     account.current_user.email_address = account.email_address
     account.current_user.email_address_confirmation = account.email_address_confirmation
     account

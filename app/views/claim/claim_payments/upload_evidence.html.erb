@@ -1,0 +1,7 @@
+<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for :page_title, t('.title') %>
+<%= form_for @claim_payment, url: @post_path,html: { multipart: true }, method: :post, local: true do |f| %>
+  <%= form_errors_for [@claim_payment, @resource_item] %> 
+    <%= render "/layouts/file_upload_component", file_upload_label: t('.file_upload_label') %>
+    <%= f.button 'next', { :name => 'submitted' , :class => 'scot-rev-button file-upload-check'}  %>
+<% end %>

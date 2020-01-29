@@ -1,17 +1,12 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 <% content_for :page_title, t('.title') %>
 <%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @claim_payment %> 
+  <%= form_errors_for @claim_payment %>
   <div id='hideable'>
    <%= govuk_warning( t('.warning') ) %>
    <% account_type = User.account_type(current_user) %>
-   <%= f.hidden_field :taxpayer, :value => false  %>   
-   <%= f.check_box_field :taxpayer if account_type != 'AGENT' %>
-   <%= f.hidden_field :account_type, :value => account_type %>
-   <%= f.hidden_field :agent_declaration, :value => false %>   
-   <%= f.check_box_field :agent_declaration if account_type == 'AGENT' %>
-   <%= f.hidden_field :agent_second_declaration, :value => false %>   
-   <%= f.check_box_field :agent_second_declaration if account_type == 'AGENT' %>
+    <%= f.check_box_field(:declaration_public, { translation_options: account_type } ) %>
+    <%= f.check_box_field(:declaration, { translation_options: account_type } ) %>
   </div>
   <%= f.button 'next', { :name => 'submitted' }  %>
 <% end %>

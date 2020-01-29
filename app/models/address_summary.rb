@@ -2,7 +2,7 @@
 
 # Model for address summary records used to store data return from  NASAddressSearch service
 # These only contain the address identifier and summary address line
-# Example : NASAddressSearch serice responce is
+# Example : NASAddressSearch service response is
 #           <AddressSearchResponse>
 #               <AddressList>
 #                 <Address>

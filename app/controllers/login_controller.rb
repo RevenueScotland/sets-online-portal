@@ -58,7 +58,7 @@ class LoginController < ApplicationController
       render 'token'
     else
       Rails.logger.debug("User #{@user.username} was unauthenticated and the message was : #{reason}")
-      @user.errors.add(:base, reason)
+      @user.errors.add(error_attribute(reason), reason)
       render reason == :invalid_token ? 'token' : 'new'
     end
     false # make sure we don't do anything else login related
@@ -153,5 +153,15 @@ class LoginController < ApplicationController
   # @return true if the user has just entered a two factor token
   def two_factor?(params)
     params.key?(:token)
+  end
+
+  # Associate the symbol for login failure to the correct attribute
+  # @param reason [Symbol] the reason for failure
+  # @return [Symbol] the attribute to associate the error with
+  def error_attribute(reason)
+    return :password if %i[login_invalid].include?(reason)
+    return :token if %i[invalid_token token_expired token_required].include?(reason)
+
+    :base
   end
 end

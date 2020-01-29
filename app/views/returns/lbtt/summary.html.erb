@@ -2,7 +2,7 @@
 <% content_for :page_subtitle, t('.subtitle') %>
 <% content_for :page_description, t('.description') %>
 <!-- Applies the CSS class 'external-link' to the navigation bar options, see return-form-dirty.js for details -->
-<% content_for :nav_bar_options, { class: 'external-link' } %>
+<% content_for :nav_bar_html_options, { class: 'external-link' } %>
 
 <% if @lbtt_return.show_repayment? %>
   <div class='govuk-body'>
@@ -13,79 +13,163 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 
 <% if User.account_type(current_user) != 'PUBLIC' %>
-  <% nav_link = navigational_links [ { link: :amend, path: "#{returns_lbtt_agent_details_path}?party_id=new" } ] %>
-  <table class="govuk-table">
-    <thead>
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header"><%= t('.add_agent_description') %></th>
-        <th class="govuk-table__header text_align_right"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-          <td>
-            <%= @agent.full_name unless @agent.nil?%>
-          </td>
-          <td class="text_align_right"><%= nav_link %></td>
-      </tr>
-    </tbody>
-  </table>
+  <%= display_table_region( {
+      header: { label: t('.add_agent_description'), link: :edit_agent_details,  path: returns_lbtt_agent_details_path(party_id: 'new'), options: { id: 'amend_details' } }, 
+      table: {models: [@agent], attributes: [:full_name, :agent_reference_or_not_provided] }
+      },
+      { header: { link_cell_class: 'text_align_right' } } ) %>
 <% end %>
 
 <% if @lbtt_return.flbt_type == 'CONVEY' %>
-  <% nav_link = navigational_links [ { link: :add_buyer, path: "#{returns_lbtt_about_the_party_path}?party_id=new&party_type=BUYER" } ] %>
-  <%= render '/layouts/summary_table', { table_headers: [ t('.add_buyer_description'), nav_link], table_help: nil, summary_data: @buyers } %>
-  <%= render 'party_summary_table', { data: @buyers } %>
+  <%= display_table_region( {
+      header: { label: t('.add_buyer_description'), link: :add_buyer, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'BUYER'), link_options: { id: 'add_buyer' } }, 
+      table: { models: @lbtt_return.buyers&.values, attributes: [:full_name, :display_type, :display_address], 
+              actions: [{ label: t('edit_row'), path: :returns_lbtt_about_the_party_path },
+                        { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete buyer?" } } }] }
+      }, 
+      { header: { link_cell_class: 'text_align_right' } } ) %>
 
-  <% nav_link = navigational_links [ { link: :add_seller, path: "#{returns_lbtt_about_the_party_path}?party_id=new&party_type=SELLER" } ] %>
-  <%= render '/layouts/summary_table' , { table_headers: [ t('.add_seller_description'), nav_link ], table_help: nil, summary_data: @sellers } %>
-  <%= render 'party_summary_table', { data: @sellers } %>
-  <% else %>
-  <% nav_link = navigational_links [ { link: :add_tenant, path: "#{returns_lbtt_about_the_party_path}?party_id=new&party_type=TENANT&new=true" } ] %>
-  <%= render '/layouts/summary_table', { table_headers: [ t('.add_tenant_description'), nav_link], table_help: nil, summary_data: @tenants } %>
-  <%= render 'party_summary_table', { data: @tenants } %>
 
+  <%= display_table_region( {
+      header: { label: t('.add_seller_description'), link: :add_seller, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'SELLER'), link_options: { id: 'add_seller' } }, 
+      table: { models: @lbtt_return.sellers&.values, attributes: [:full_name, :display_type, :display_address], 
+              actions: [{ label: t('edit_row'), path: :returns_lbtt_about_the_party_path },
+                        { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete seller?" } } }] }
+      }, 
+      { header: { link_cell_class: 'text_align_right' } } ) %>
+<% else %>
+  <%= display_table_region( { 
+      header: { label: t('.add_tenant_description'), link: :add_tenant, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'TENANT'), link_options: { id: 'add_tenant' } }, 
+      table: { models: @lbtt_return.tenants&.values, attributes: [:full_name, :display_type, :display_address], 
+              actions: [{ label: t('edit_row'), path: :returns_lbtt_about_the_party_path },
+                        { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete tenant?" } } }] }
+      }, 
+      { header: { link_cell_class: 'text_align_right' } } ) %>
+  
   <% if @lbtt_return.flbt_type == 'LEASERET' %>
-    <% nav_link = navigational_links [ { link: :add_landlord, path: "#{returns_lbtt_about_the_party_path}?party_id=new&party_type=LANDLORD" } ] %>
-    <%= render '/layouts/summary_table' , { table_headers: [ t('.add_landlord_description'), nav_link ], table_help: nil, summary_data: @landlords } %>
-    <%= render 'party_summary_table', { data: @landlords } %>
+    <%= display_table_region( { 
+      header: { label: t('.add_landlord_description'), link: :add_landlord, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'LANDLORD'), link_options: { id: 'add_landlord' } }, 
+      table: { models: @lbtt_return.landlords&.values, attributes: [:full_name, :display_type, :display_address], 
+              actions: [{ label: t('edit_row'), path: :returns_lbtt_about_the_party_path },
+                        { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete landlord?" } } }] }
+      }, 
+      { header: { link_cell_class: 'text_align_right' } } ) %>
   <% end %>
 
   <% if @lbtt_return.flbt_type == 'ASSIGN' %>
-    <% nav_link = navigational_links [ { link: :add_new_tenant, path: "#{returns_lbtt_about_the_party_path}?party_id=new&party_type=NEWTENANT" } ] %>
-    <%= render '/layouts/summary_table', { table_headers: [ t('.add_new_tenant_description'), nav_link], table_help: nil, summary_data: @new_tenants } %>
-    <%= render 'party_summary_table', { data: @new_tenants } %>
+    <%= display_table_region( { 
+      header: { label: t('.add_new_tenant_description'), link: :add_new_tenant, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'NEWTENANT'), link_options: { id: 'add_new_tenant' } }, 
+      table: { models: @lbtt_return.new_tenants&.values, attributes: [:full_name, :display_type, :display_address], 
+              actions: [{ label: t('edit_row'), path: :returns_lbtt_about_the_party_path },
+                        { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete new tenant?" } } }] }
+      }, 
+      { header: { link_cell_class: 'text_align_right' } } ) %>
   <% end %>
 <% end %>
 
-<% nav_link = navigational_links [ { link: :add, path: "#{returns_lbtt_property_address_path}?property_id=new", link_options: {'id' => 'add_property' } } ] %>
-<%= render '/layouts/summary_table', { table_headers: [ t('.add_properties_description'), nav_link ], table_help: nil, summary_data: @properties } %>
-<%= render 'property_summary_table', { data: @properties } %>
-
+<%= display_table_region( { 
+      header: { label: t('.add_properties_description'), link: :add_property, path: returns_lbtt_property_address_path(property_id: 'new'), link_options: { id: 'add_property' } }, 
+      table: { models: @lbtt_return.properties&.values, attributes: [:address, :ads_due_ind], 
+               actions: [{ label: t('edit_row'), path: :returns_lbtt_property_address_path },
+                         { label: t('delete_row'), path: :returns_property_path, action: :destroy, options: { data: { confirm: "Delete property?" } } }],
+               options: { ads_due_ind: { skip: @lbtt_return.flbt_type != 'CONVEY', label: t('activemodel.attributes.returns/lbtt/property.ads'), format: :lookup_ref } }
+             } 
+      }, 
+      { header: { link_cell_class: 'text_align_right' } } ) %>
 <% if @lbtt_return.show_ads? %>
-  <% @ads_link_text = @ads_summary.blank? ? :add : :edit %>
-
-  <% if @lbtt_return.amendment? %>
-    <% nav_link = navigational_links [ { link: @ads_link_text, path: returns_lbtt_ads_repay_reason_path, link_options: { 'id' => 'add_ads' } } ] %>
-  <% else %>
-    <% nav_link = navigational_links [ { link: @ads_link_text, path: returns_lbtt_ads_dwellings_path, link_options: { 'id' => 'add_ads' } } ] %>
-  <% end %>
-  <%= render '/layouts/summary_table', { table_headers: [ t('.add_additional_dwelling_supplements_description'), nav_link ], table_help: nil, summary_data: @ads_summary } %>
+  <%= display_region( {
+    header: { label: t('.add_additional_dwelling_supplements_description'),
+              link: %w[Y N].include?(@lbtt_return.ads.ads_sold_main_yes_no) || %w[Y N].include?(@lbtt_return.ads.ads_consideration_yes_no) ? :edit_ads : :add_ads,
+              path: @lbtt_return.amendment? ? returns_lbtt_ads_repay_reason_path : returns_lbtt_ads_dwellings_path,
+              link_options: { 'id' => 'returns_lbtt_lbtt_return_tax_ads_due' } },
+    data: [ { model: @lbtt_return.ads,
+              attributes: [
+               { attribute: :ads_sell_residence_ind, format: :lookup_ref, skip: :if_blank },
+               { attribute: :ads_main_address, skip: :if_blank },
+               { attribute: :ads_consideration, format: :money, skip: :if_blank },
+               { attribute: :ads_amount_liable, format: :money, skip: :if_blank },
+               { attribute: :ads_reliefclaim_option_ind, format: :lookup_ref, skip: :if_blank } ],
+             } ]
+  },
+  { header: { link_cell_class: 'text_align_right' },
+    data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } ) %>
 <% end %>
 
-<% if @lbtt_return.flbt_type == 'CONVEY' || @lbtt_return.flbt_type == 'LEASERET' %>
-  <% transaction_nav_link = navigational_links [ { link: @transaction_summary.blank? ? :add : :edit , path: returns_lbtt_property_type_path, link_options: { 'id' => 'add_transaction_calculation' } } ] %>
-  <% calculation_nav_link = navigational_links [ { link: @lbtt_return&.tax.tax_due.blank? ? nil : :edit, path: returns_lbtt_tax_calculation_path, link_options: { 'id' => 'edit_calculation' } } ] %>
-<% else %>
-  <% transaction_nav_link = navigational_links [ { link: @transaction_summary.blank? ? :add : :edit, path: returns_lbtt_conveyance_dates_path, link_options: { 'id' => 'add_transaction_calculation' } } ] %>
-  <% calculation_nav_link = navigational_links [ { link: @lbtt_return&.tax.tax_due.blank? ? nil : :edit, path: returns_lbtt_tax_calc_already_paid_path, link_options: { 'id' => 'edit_calculation' } } ] %>
+<%= display_region( {
+  header: { label: t('.add_transaction_description'),
+            link: (@lbtt_return.property_type.blank? && @lbtt_return.linked_ind.nil?) ? :add_transaction : :edit_transaction, 
+            path: %w[CONVEY LEASERET].include?(@lbtt_return.flbt_type) ? returns_lbtt_property_type_path : returns_lbtt_transaction_dates_path,
+            link_options: { id: 'add_transaction' } },
+	data: [ { model: @lbtt_return, 
+            attributes: [ { attribute: :property_type, format: :lookup_ref, skip: @lbtt_return.lease_review? || @lbtt_return.property_type.blank?},
+                          { attribute: :effective_date, format: :full_month_date, skip: :if_blank },
+                          { attribute: :relevant_date, format: :full_month_date, skip: :if_blank } ] },
+          { model: @lbtt_return,
+            attributes: [ { attribute: :linked_ind, format: :lookup_ref, skip: :if_blank },
+                          { attribute: :business_ind, format: :lookup_ref, skip: :if_blank },
+                          { attribute: :non_ads_reliefclaim_option_ind, format: :lookup_ref, skip: :if_blank },
+                          { attribute: :remaining_chargeable, format: :money, skip: :if_blank } ], 
+            skip: @lbtt_return.flbt_type != 'CONVEY' },
+          { model: @lbtt_return,
+            attributes: [ { attribute: :lease_start_date, format: :full_month_date, skip: :if_blank },
+                          { attribute: :lease_end_date, format: :full_month_date, skip: :if_blank },
+                          { attribute: :linked_ind, format: :lookup_ref, skip: :if_blank },
+                          { attribute: :non_ads_reliefclaim_option_ind, format: :lookup_ref, skip: :if_blank },
+                          { attribute: :premium_paid, format: :lookup_ref, skip: :if_blank },
+                          { attribute: :lease_premium, format: :money, skip: :if_blank },
+                          { attribute: :relevant_rent, format: :money, skip: :if_blank } ],
+            skip: @lbtt_return.flbt_type == 'CONVEY' },
+          { model: @lbtt_return.tax,
+            attributes: [ { attribute: :npv, format: :money, skip: :if_blank } ],
+            skip: @lbtt_return.flbt_type == 'CONVEY' } ]
+  }, 
+  { header: { link_cell_class: 'text_align_right' },
+    data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
+%>
+<% if @lbtt_return.show_relief_calc? %>
+  <%= display_table_region( {
+      header: { label: t('.edit_relief'), 
+            link: :edit_relief,
+            path: returns_lbtt_reliefs_calculation_path
+            },
+      table: { models: @lbtt_return.relief_claims, 
+              attributes: [ :relief_type_description ,:relief_override_amount ],
+              options: { relief_override_amount: {format: :money } },
+      }},
+      { header: { link_cell_class: 'text_align_right' },
+        data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } ) %>
 <% end %>
+<%= display_region( {
+  header: { label: t('.edit_calculation'), link: @lbtt_return.tax&.tax_due.blank? ? nil : :edit_calculation,
+            path: %w[CONVEY LEASERET].include?(@lbtt_return.flbt_type) ? returns_lbtt_tax_calculation_path : returns_lbtt_tax_calc_already_paid_path,
+            link_options: { id: 'edit_calculation' } },
+  description: { region_description: t('.calculation_description') },
+	data: [ { model: @lbtt_return.tax, 
+	          attributes: [ { attribute: :calculated },
+                            { attribute: :ads_due, skip: !@lbtt_return.show_ads? },
+                            { attribute: :due_before_reliefs, skip: !@lbtt_return.show_ads? },
+                            { attribute: :total_reliefs },
+                            { attribute: :total_ads_reliefs, skip: !@lbtt_return.show_ads? },
+                            { attribute: :tax_due } ],
+            skip: @lbtt_return.flbt_type != 'CONVEY',
+            format: :money },
+          { model: @lbtt_return.tax,
+            attributes: [ { attribute: :npv_tax_due },
+                          { attribute: :premium_tax_due },
+                          { attribute: :total_reliefs, skip: %w[LEASEREV ASSIGN TERMINATE].include?(@lbtt_return.flbt_type) },
+                          { attribute: :tax_due },
+                          { attribute: :amount_already_paid, skip: !%w[LEASEREV ASSIGN TERMINATE].include?(@lbtt_return.flbt_type) },
+                          { attribute: :tax_due_for_return, skip: !%w[LEASEREV ASSIGN TERMINATE].include?(@lbtt_return.flbt_type) } ],
+            skip: @lbtt_return.flbt_type == 'CONVEY',
+            format: :money } ]
+  }, 
+  { header: { link_cell_class: 'text_align_right' },
+    data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
+%>
 
-<%= render '/layouts/summary_table', { table_headers: [ t('.add_transaction_description'), transaction_nav_link ], table_help: nil, summary_data: @transaction_summary } %>
-<%= render '/layouts/summary_table', { table_headers: [ t('.edit_calculation'), calculation_nav_link ], table_help: t('.calculation_description'), summary_data: @calculation_summary } %>
 <!-- See return-form-dirty.js for details of the application of form-dirty-warning-message values of data property -->
 <%= form_for @lbtt_return, url: returns_lbtt_summary_path, method: :post, :data => { 'form-dirty-warning-message' => t('.form_dirty_warning_message') } , local: true do |f| %>
-  <%= form_errors_without_attributes @lbtt_return %>
+  <%= form_errors_for @lbtt_return %>
   <% if can? AuthorisationHelper::LBTT_SAVE %>
     <%= f.button 'save_draft', { :name => 'save_draft' } if current_user %>
   <% end %>

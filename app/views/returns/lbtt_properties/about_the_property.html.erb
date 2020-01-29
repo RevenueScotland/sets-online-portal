@@ -3,34 +3,18 @@
 
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @property, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for [@property, @address_summary, @address_detail] %>
+  <%= form_errors_for @property %>
   <%= f.select :lau_code, @property.list_ref_data(:lau_code), {}, {} %>
-  <table class="about_the_property">
-    <thead>
-      <tr>
-        <th colspan="2"><%= t('.title_code') %></th>
-      </tr>
-    </thead>
-    <tr>
-      <td><%= f.select :title_code, @property.list_ref_data(:title_code), { }, { width:'full' } %></td>
-      <td><%= f.text_field :title_number, { width:'full' } %></td>
-    </tr>
-  </table>  
-  <div>    
-    <table class="about_the_property">
-      <thead>
-        <tr>
-          <th colspan="2"><%= t('.parent_title_code') %></th>
-        </tr>
-        <tr>
-         <td colspan="2"><%= t('.parent_title_hint') %></td>
-        </tr>
-      <thead>
-      <tr>
-        <td><%= f.select :parent_title_code, @property.list_ref_data(:parent_title_code), { }, { width:'full' } %></td>
-        <td><%= f.text_field :parent_title_number, { width:'full' } %></td>
-      </tr>
-    </table>
-  </div>
+
+  <%= f.fieldset_fields({ label: t('.title_code') }) do |field_set| %>
+    <% field_set.select(:title_code, @property.list_ref_data(:title_code)) + %>
+    <% field_set.text_field(:title_number) %>
+  <% end %>
+
+  <%= f.fieldset_fields({ label: t('.parent_title_code'), hint: t('.parent_title_hint') }) do |field_set| %>
+    <% field_set.select(:parent_title_code, @property.list_ref_data(:parent_title_code)) + %>
+    <% field_set.text_field(:parent_title_number) %>
+  <% end %>
+
   <%= f.button 'next', { :name => 'submitted' } %>
 <% end %>

@@ -1,78 +1,101 @@
 <p class="govuk-body">
     <% if return_type == 'SLFT' %>
-      <p class="govuk-body"><%= t('submit_text') %></p>
+      <p class="govuk-body"><%= t('return.submit.slft.heading_text') %></p>
     <% end %>
     <% if return_type == 'LBTT_CONVEYANCE'|| return_type == 'LBTT_LEASE' || return_type == 'LBTT' %>
-      <p class="govuk-body"><%= t('lbtt_acknowledgment') %></p>
-      <p class="govuk-body"><%= t('lbtt_submit_text') %></p>
+      <p class="govuk-body"><%= t('return.submit.lbtt.heading_text') %></p>
     <% end %>
     <% if return_type == 'AMEND_SLFT' %>
-      <p class="govuk-body"><%= t('amend_return_reference_text', return_reference: return_reference) %></p>
+      <p class="govuk-body"><%= t('return.submit.slft.amend_return_reference_text', return_reference: return_reference) %></p>
     <% end %>
 
     <% if return_type == 'AMEND_LBTT' %>
-      <p class="govuk-body"><%= t('lbtt_amend_acknowledgment') %></p>
-      <p class="govuk-body"><%= t('lbtt_amend_return_reference_text') %></p>
-
+      <p class="govuk-body"><%= t('return.submit.lbtt.amend_return_reference_text').html_safe %></p>
     <% end %>
 
-    <p class="govuk-body"><%= t('submit_date_text', system_date: DateFormatting.to_display_date_format(Date.today)) %></p>
+    <p class="govuk-body"><%= t('return.submit.common.date_text', system_date: DateFormatting.to_display_date_format(Date.today)) %></p>
 
     <% if return_type == 'AMEND_SLFT' %>
-      <p class="govuk-body"><%= t('amend_slft_submit_text') %> </p>
+      <p class="govuk-body"><%= t('return.submit.slft.amend_submit_text') %> </p>
     <% end %>
     <% if return_type =='SLFT' %>
-      <p class="govuk-body"><%= t('submit_return_reference_text', return_reference: return_reference) %></p>
-      <p class="govuk-body"><%= t('submit_payment_generic_text') %></p>
-      <p class="govuk-body"><%= t('submit_payment_method_text', payment_method: payment_method).html_safe %> </p>
-      <p class="govuk-body"><%= t('slft_submit_text').html_safe %> </p>
+      <p class="govuk-body"><%= t('return.submit.common.return_reference_text', return_reference: return_reference) %></p>
+      <p class="govuk-body"><%= t('return.submit.slft.payment_due_text') %></p>
+      <p class="govuk-body"><%= UtilityHelper.swap_texts(t('return.submit.slft.payment_method_text', payment_method: payment_method),
+                                                         text_link: { t('return.submit.slft.payment_method_link_text') => 
+                                                                        link_to(t('return.submit.slft.payment_method_link_text'), 'https://www.revenue.scot/') }) %> </p>
+      <p class="govuk-body"><%= t('return.submit.slft.submit_text').html_safe %> </p>
     <% end %>
 
     <% if %w[LBTT_CONVEYANCE LBTT_LEASE LBTT AMEND_LBTT].include?(return_type) %>
-      <%= display_regions( [ {
+      <%= display_region( {
           data: [
-            { model: @lbtt_return, attributes: [ { attribute: :tare_reference, translation_options: 'submit_return_reference_text' } ] },
+            { model: @lbtt_return, attributes: [ { attribute: :tare_reference, label: t('return.submit.lbtt.submit_return_reference_text') } ] },
             { model: @lbtt_return.primary_property, attributes: [ :full_title_number ] },
-            { model: @lbtt_return.primary_property.address, attributes: [ attribute: :full_address, translation_options: 'full_property_address' ] },
+            { model: @lbtt_return.primary_property.address, attributes: [ { attribute: :full_address, label: t('activemodel.attributes.address.full_property_address') } ] },
             { model: @lbtt_return.primary_party,
                         attributes: [ attribute: :full_name,
-                                      translation_options: @lbtt_return.primary_party.party_type + "_full_name" ] },
-            { model: @lbtt_return, attributes: [ { attribute: :cached_human_readable_flbt_type, translation_options: 'description_of_transaction' },
-                                                 :human_readable_effective_date ] },
-            { model: @lbtt_return.agent, attributes: [ attribute: :agent_reference, translation_options: 'agent_reference_if_provided' ], }
+                                      label: t("activemodel.attributes.returns/lbtt/party.#{@lbtt_return.primary_party.party_type}_full_name") ] },
+            { model: @lbtt_return, attributes: [ { attribute: :flbt_type, label: t('return.submit.lbtt.description_of_transaction'), format: :lookup_ref },
+                                                 { attribute: :effective_date, label: t('return.submit.lbtt.effective_date'), format: :date } ] },
+            { model: @lbtt_return.agent, attributes: [ attribute: :agent_reference, label: t('return.submit.lbtt.agent_reference_if_provided') ], }
           ]
-      } ] ) %>
+      } ) %>
     <% end %>
 
 
     <% if return_type == 'LBTT_CONVEYANCE' || return_type == 'LBTT_LEASE' || return_type == 'LBTT' %>
-      <p class="govuk-body"><%= t('lbtt_submit_payment_generic_text') %></p>
-      <p class="govuk-body"><%= t('submit_lbtt_payment_method_text', payment_method: payment_method).html_safe %></p>
+      <p class="govuk-body"><%= t('return.submit.lbtt.payment_due_text') %></p>
+      <p class="govuk-body">
+        <%= UtilityHelper.swap_texts(t('return.submit.lbtt.payment_method_text', payment_method: payment_method),
+                                     text_link: { t('return.submit.lbtt.payment_method_link_text') =>
+                                                    link_to(t('return.submit.lbtt.payment_method_link_text'), 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/how-to/pay-lbtt') }) %>
+      </p>
     <% end %>
 
     <% if return_type == 'AMEND_LBTT' %>
-      <p class="govuk-body"><%= t('lbtt_amend_payment_method_text').html_safe %></p>
+      <p class="govuk-body">
+        <%= UtilityHelper.swap_texts(t('return.submit.lbtt.amend_payment_method_text', payment_method: payment_method),
+                                     text_link: { t('return.submit.lbtt.payment_method_link_text') =>
+                                                    link_to(t('return.submit.lbtt.payment_method_link_text'), 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/how-to/pay-lbtt') }) %>
+      </p>
     <% end %>
 
-    <% if %w[LBTT_CONVEYANCE LBTT_LEASE LBTT AMEND_LBTT].include?(return_type) %>
-      <p class="govuk-body"><%= t('lbtt_sumbit_penalties_text').html_safe %></p>
+    <% if return_type == 'LBTT_CONVEYANCE' || return_type == 'LBTT_LEASE' || return_type == 'LBTT' || return_type == 'AMEND_LBTT' %>
+      <p class="govuk-body">
+        <%= UtilityHelper.swap_texts(t('return.submit.lbtt.penalties_text'),
+                                     text_link: { t('return.submit.lbtt.liable_to_penalties_link_text') =>
+                                                    link_to(t('return.submit.lbtt.liable_to_penalties_link_text'), 'http://www.revenue.scot/penalties'),
+                                                  t('return.submit.lbtt.liable_to_interest_link_text') => 
+                                                    link_to(t('return.submit.lbtt.liable_to_interest_link_text'), 'http://www.revenue.scot/interest') }) %>
+      </p>
     <% end %>
 
     <% if %w[LBTT_LEASE LBTT].include?(return_type) %>
-      <p class="govuk-body"><%= t('lbtt_lease_text').html_safe %></p>
-      <p class="govuk-body"><%= t('lbtt_lease_further_information_text').html_safe %></p>
+      <p class="govuk-body"><%= t('return.submit.lbtt.lease_text').html_safe %></p>
+      <p class="govuk-body">
+        <%= UtilityHelper.swap_texts(t('return.submit.lbtt.lease_further_information_text'), 
+                                     text_link: { t('return.submit.lbtt.lease_further_information_link_text') =>
+                                                    link_to(t('return.submit.lbtt.lease_further_information_link_text'), 'http://www.revenue.scot/leases') }) %>
+      </p>
     <% end %>
 
     <% if return_type == 'AMEND_LBTT' %>
-      <p class="govuk-body"><%= t('submit_queries_contact_text_amend') %> </p>
+      <p class="govuk-body"><%= t('return.submit.common.queries_contact_text_amend') %> </p>
     <% else %>
-      <p class="govuk-body"><%= current_user ? t('submit_queries_contact_text') : t('submit_queries_contact_text_public') %> </p>
+      <p class="govuk-body"><%= current_user ? t('return.submit.common.queries_contact_text') : t('return.submit.common.queries_contact_text_public') %> </p>
     <% end %>
 
     <% if %w[LBTT_CONVEYANCE LBTT_LEASE LBTT AMEND_LBTT].include?(return_type) %>
       <p class="govuk-body"><%= t('include_transaction_ref').html_safe %></p>
     <% end %>
 
-    <%= link_to t('print_confirmation_text'), nil, class: 'print' %><br/>
+    <% if can? AuthorisationHelper::DOWNLOAD_RECEIPT %>
+      <% if return_type.include?('SLFT') %>
+        <%= link_to t('print_confirmation_text'), send(:returns_slft_download_receipt_path), target: "_blank" %><br/>
+      <% else %>
+        <%= link_to t('print_confirmation_text'), send(:returns_lbtt_download_receipt_path), target: "_blank" %><br/>
+      <% end %>
+    <% end %>
     <%= link_to t('send_secure_message_text'), send(:new_dashboard_message_path, reference: return_reference) if current_user %>
 </p>

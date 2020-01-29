@@ -8,7 +8,6 @@ module Returns
     # They may include buyer seller or agent.
     # Every tax return should have information about all the involved party members.
     class Party < FLApplicationRecord # rubocop:disable Metrics/ClassLength
-      include CommonValidation
       include NumberFormatting
       include PrintData
 
@@ -22,7 +21,7 @@ module Returns
           org_name job_title company org_type other_type_description
           contact_surname contact_firstname org_contact_address is_acting_as_trustee agent_dx_number
           contact_email contact_tel_no com_jurisdiction agent_reference
-          party_refno authority_date
+          party_refno authority_date hash_for_nino
         ]
       end
 
@@ -33,29 +32,38 @@ module Returns
       validates :firstname, presence: true, length: { maximum: 50 }, on: %i[title], if: :individual?
       validates :agent_dx_number, length: { maximum: 200 }, on: %i[title]
       validates :agent_reference, length: { maximum: 30 }, on: %i[title]
-      validate  :valid_email_address?, on: %i[title], if: :individual_but_not_seller_landlord?
-      validate  :phone_format_valid?, on: %i[title], if: :individual_but_not_seller_landlord?
+      validates :email_address, presence: true, email_address: true, on: %i[title],
+                                if: :individual_but_not_seller_landlord?
+      validates :telephone, presence: true, phone_number: true, on: %i[title],
+                            if: :individual_but_not_seller_landlord?
       validates :buyer_seller_linked_ind, presence: true, on: :buyer_seller_linked_ind,
                                           if: proc { |p| !%w[SELLER LANDLORD].include?(p.party_type) }
       validates :is_contact_address_different, presence: true, on: :is_contact_address_different,
                                                if: :individual_but_not_seller_landlord?
       validates :org_type, presence: true, on: :org_type, if: proc { |p| p.type == 'OTHERORG' }
       validates :other_type_description, presence: true, on: :org_type, if: proc { |w| w.org_type == 'OTHER' }
-      validates :com_jurisdiction, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
-      validates :org_name, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
+      validates :com_jurisdiction, :org_name, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
       validates :charity_number, presence: true, on: :org_name, if: proc { |w| w.org_type == 'CHARITY' }
 
-      validates :contact_firstname, presence: true, on: :contact_firstname, if: :not_private_and_not_seller_landlord?
-      validates :contact_surname, presence: true, on: :contact_firstname, if: :not_private_and_not_seller_landlord?
-      validate  :contact_email_valid?, on: :contact_firstname, if: :not_private_and_not_seller_landlord?
-      validates :contact_tel_no, presence: true, on: :contact_firstname, if: :not_private_and_not_seller_landlord?
-      validate  :contact_phone_number_valid?, on: :contact_firstname, if: :not_private_and_not_seller_landlord?
+      validates :job_title, presence: true, on: :contact_firstname, if: :not_private_and_not_seller_landlord?
+      validates :contact_firstname, presence: true, length: { maximum: 50 },
+                                    on: :contact_firstname,
+                                    if: :not_private_and_not_seller_landlord?
+      validates :contact_surname, presence: true, length: { maximum: 100 },
+                                  on: :contact_firstname,
+                                  if: :not_private_and_not_seller_landlord?
+      validates :contact_tel_no, presence: true,
+                                 on: :contact_firstname,
+                                 if: :not_private_and_not_seller_landlord?
+      validates :contact_email, presence: true, email_address: true, on: :contact_firstname,
+                                if: :not_private_and_not_seller_landlord?
+      validates :contact_tel_no, on: :contact_firstname, phone_number: true, if: :not_private_and_not_seller_landlord?
 
       validates :is_acting_as_trustee, presence: true, on: :is_acting_as_trustee,
                                        if: proc { |p| !%w[SELLER LANDLORD].include?(p.party_type) }
-      validates :job_title, presence: true, on: :contact_firstname, if: :not_private_and_not_seller_landlord?
       # National insurance number and alternate related validation
-      validate :no_nino_or_alternate?, :valid_nino?, if: :individual_but_not_seller_landlord?, on: :nino
+      validate :no_nino_or_alternate?, on: :nino, if: :individual_but_not_seller_landlord?
+      validates :nino, nino: true, on: :nino, if: :individual_but_not_seller_landlord?
       validates :alrt_type, :ref_country, :alrt_reference,
                 presence: true, on: :alrt_type, if: :incomplete_alternate?
 
@@ -68,20 +76,23 @@ module Returns
                                       if: proc { |p|
                                         p.lplt_type != 'PRIVATE' && !%w[LANDLORD SELLER].include?(p.party_type)
                                       }
+      validate :validation_for_duplicate_nino?, on: :nino, if: :individual_but_not_seller_landlord?
 
       # Define the ref data codes associated with the attributes to be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
       def cached_ref_data_codes
-        { alrt_type: 'PARALTREFTYPES.LBTT.RSTU', ref_country: 'COUNTRIES.SYS.RSTU',
-          title: 'TITLES.SYS.RSTU', type: 'BUYER TYPES.SYS.RSTU', org_type: 'ORGANISATION TYPE.SYS.RSTU',
-          com_jurisdiction: 'COUNTRIES.SYS.RSTU' }
+        { alrt_type: comp_key('PARALTREFTYPES', 'LBTT', 'RSTU'), ref_country: comp_key('COUNTRIES', 'SYS', 'RSTU'),
+          title: comp_key('TITLES', 'SYS', 'RSTU'), type: comp_key('BUYER TYPES', 'SYS', 'RSTU'),
+          org_type: comp_key('ORGANISATION TYPE', 'SYS', 'RSTU'),
+          com_jurisdiction: comp_key('COUNTRIES', 'SYS', 'RSTU') }
       end
 
       # Define the ref data codes associated with the attributes not cached in this model
       # long lists or special yes no case
       def uncached_ref_data_codes
-        { is_contact_address_different: 'YESNO.SYS.RSTU', buyer_seller_linked_ind: 'YESNO.SYS.RSTU',
-          is_acting_as_trustee: 'YESNO.SYS.RSTU' }
+        { is_contact_address_different: comp_key('YESNO', 'SYS', 'RSTU'),
+          buyer_seller_linked_ind: comp_key('YESNO', 'SYS', 'RSTU'),
+          is_acting_as_trustee: comp_key('YESNO', 'SYS', 'RSTU') }
       end
 
       # Layout to print the data in this model
@@ -220,14 +231,15 @@ module Returns
                         { code: :is_acting_as_trustee, lookup: true }] }]
       end
 
-      # Check if telephone number is valid
-      def contact_phone_number_valid?
-        phone_number_format_valid? :contact_tel_no
-      end
-
-      # Check if email address is valid
-      def contact_email_valid?
-        email_address_valid? :contact_email
+      # Layout to print the receipt data in this model
+      def print_layout_receipt
+        [{ code: :party_details,
+           divider: true, # should we have a section divider
+           display_title: false, # Is the title to be displayed
+           type: :list, # type list = the list of attributes to follow
+           list_items: [{ code: :full_name, when: :party_type, is_not: ['AGENT'], translation_extra: :receipt },
+                        { code: :agent_reference, when: :party_type, is: ['AGENT'],
+                          key_scope: %i[return submit lbtt] }] }]
       end
 
       # National insurance number and alternate related validation
@@ -236,17 +248,20 @@ module Returns
         errors.add(:nino, :no_nino_or_alternate) if nino.blank? && alrt_type.blank? && alrt_reference.blank?
       end
 
-      # National insurance number and alternate related validation
-      # Nino provided but at least key parts of alternate is filled in.
-      def valid_nino?
-        national_insurance_number_valid? :nino
+      # Validation for NINO if same NINO used more than once.
+      def validation_for_duplicate_nino?
+        return true if nino.blank? || hash_for_nino.blank?
+
+        nino_items = hash_for_nino.select { |u| u == nino }
+        # we get the party_name at the index[1] & get the party_id at the index[0]
+        errors.add(:nino, :duplicate_nino, party_name: nino_items.values[0][1]) unless nino_items.blank?
       end
 
       # If the key alternate data has been started but not completed.
       # Only used for validating the nino and it's alternate related fields.
       def incomplete_alternate?
         # This converts to !alrt_type.blank? || !alrt_reference.blank?
-        !(alrt_type.blank? && alrt_reference.blank?)
+        !(alrt_type.blank? && alrt_reference.blank?) && lplt_type == 'PRIVATE' && @party_type != 'AGENT'
       end
 
       # return true if contact address is different
@@ -284,9 +299,11 @@ module Returns
         @address = account.address
       end
 
-      # override string output to help with debugging.
-      def to_s
-        party_id
+      # Overrides the param value passed into the id of the path when the instance of the object is used
+      # as the parameter value of a path.
+      # This will be the :party_id of the returns_lbtt_about_the_party_path or returns_lbtt_party_delete_path.
+      def to_param
+        @party_id
       end
 
       # @return [String] the formatted name of the party.
@@ -295,6 +312,14 @@ module Returns
         return company.company_name if type == 'REG_COM'
 
         org_name
+      end
+
+      # Custom getter to return the agent reference or text saying not provided
+      # @return [String] the formatted name of the party.
+      def agent_reference_or_not_provided
+        return @agent_reference unless @agent_reference.blank?
+
+        I18n.t('.none_provided')
       end
 
       # return unique information about party while displaying error for section
@@ -317,14 +342,20 @@ module Returns
         address&.short_address
       end
 
+      # @return [String] the location of this party type in the lbtt return
+      def lbtt_return_attribute
+        "#{@party_type.downcase}s" == 'newtenants' ? 'new_tenants' : "#{@party_type.downcase}s"
+      end
+
       # Returns a translation attribute where a given attribute may have more than one name based on e.g. a type
       # it also allows for a different attribute name for the error region for e.g. long labels
       # @param attribute [Symbol] the name of the attribute to translate
-      # @param _extra [Object] extra information passed from the page
-      # @param _error_attribute [Boolean] is the translation being called for the error region
+      # @param translation_options [Object] extra information passed from the page or the print layout
       # @return [Symbol] the name of the translation attribute
-      def translation_attribute(attribute, _extra = nil, _error_attribute = false)
+      def translation_attribute(attribute, translation_options = nil)
         return :registered_company_name if attribute == :org_name && type == 'REG_COM'
+
+        return translation_attribute_full_name(attribute, translation_options) if attribute == :full_name
 
         if %i[is_acting_as_trustee type buyer_seller_linked_ind].include?(attribute) && !party_type.nil?
           return translation_attribute_for_party_type(attribute)
@@ -340,7 +371,7 @@ module Returns
         output['ins1:OtherTypeDescription'] = other_type_description unless other_type_description.blank?
         output['ins1:FlptType'] = flpt_type # Party Type
         output['ins1:ParRefno'] = @party_refno unless @party_refno.blank?
-        if lplt_type == 'PRIVATE'
+        if individual?
           output['ins1:PersonName'] = { 'ins1:Title': @title,
                                         'ins1:Forename': @firstname,
                                         'ins1:Surname': @surname }
@@ -392,9 +423,9 @@ module Returns
             }.compact
           end
         end
-        output['ins1:BuyerSellerLinkedInd'] = @buyer_seller_linked_ind == 'Y' ? 'yes' : 'no'
+        output['ins1:BuyerSellerLinkedInd'] = convert_to_backoffice_yes_no_value(@buyer_seller_linked_ind)
         output['ins1:BuyerSellerLinkedDesc'] = ''
-        output['ins1:ActingAsTrusteeInd'] = @is_acting_as_trustee == 'Y' ? 'yes' : 'no'
+        output['ins1:ActingAsTrusteeInd'] = convert_to_backoffice_yes_no_value(@is_acting_as_trustee)
         output
       end
 
@@ -525,13 +556,18 @@ module Returns
 
       private
 
+      # Convert the full name if this is being run for the receipt print layout
+      def translation_attribute_full_name(attribute, translation_options)
+        return (party_type + '_full_name').to_sym if translation_options == :receipt
+
+        attribute
+      end
+
       # handle the translations based on party type which may be nil
       def translation_attribute_for_party_type(attribute)
         return ('type_' + party_type).to_sym if attribute == :type
         return ('is_acting_as_trustee_' + party_type).to_sym if attribute == :is_acting_as_trustee
-        if attribute == :buyer_seller_linked_ind && %w[TENANT NEWTENANT].include?(party_type)
-          return (party_type + '_landlord_linked_ind').to_sym
-        end
+        return (party_type + '_buyer_seller_linked_ind').to_sym if attribute == :buyer_seller_linked_ind
 
         attribute
       end

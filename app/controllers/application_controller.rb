@@ -4,6 +4,7 @@
 # forgery and also locale handling and security checking function
 class ApplicationController < ActionController::Base
   include Error::ErrorHandler
+  include Error::WizardRedirectHandler
   include Authorise
   include AuthorisationHelper
 
@@ -14,6 +15,22 @@ class ApplicationController < ActionController::Base
   before_action :set_no_cache
   before_action :check_session_expiry
   default_form_builder FormBuilderHelper::LabellingFormBuilder
+
+  helper_method :account_has_service?, :account_has_no_service?
+
+  # Check if the current account has the supplied service
+  # @return [Boolean] returns true if the account has the service otherwise false
+  def account_has_service?(service)
+    account = Account.find(current_user)
+    account.service?(service)
+  end
+
+  # Check if the current account has the supplied service
+  # @return [Boolean] returns true if the account does not have service otherwise false
+  def account_has_no_service?
+    account = Account.find(current_user)
+    account.no_services?
+  end
 
   # sets the local to the parameter URL or the default if not present
   def set_locale
@@ -71,8 +88,8 @@ class ApplicationController < ActionController::Base
     sys_params = {}
     begin
       sys_params = ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU')
-    rescue StandardError => ex
-      Rails.logger.error(ex)
+    rescue StandardError => e
+      Rails.logger.error(e)
     end
     sys_params
   end

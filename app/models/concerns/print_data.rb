@@ -230,29 +230,33 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # The translation options enables extra values to be passed in to assist in
   # looking up the translation keys
   # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
+  # @param layout [Symbol] The method to call on the model for the layout, the default is :print_layout
   # @return [Json] The json format of the wrapped sections for the printing
-  def print_data(extra_data = nil)
-    PrintData.new(sections(nil, extra_data)).to_json
+  def print_data(layout = :print_layout, extra_data = nil)
+    PrintData.new(sections(nil, layout, extra_data)).to_json
   end
 
   # This is the main routine is loops through the sections defined on the underlying object from
   # the #print_layout method and then builds the sections and the items/tables that make it up.
   # @param parent_section [Hash] The options for the parent section used when processing objects
+  # @param layout [Symbol] The method to call on the model for the layout, the default is :print_layout
   # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
   # @return [hash] the sections to be printed; may be merged into a parent object
-  def sections(parent_section, extra_data)
-    raise Error::AppError.new('sections', 'print_layout not defined') unless respond_to?(:print_layout)
+  def sections(parent_section, layout, extra_data)
+    # raise Error::AppError.new('sections', 'print_layout not defined') unless respond_to?(:print_layout)
+
+    layout_print = send(layout)
 
     section_list = []
 
     # loop around each section rendering it in turn
-    print_layout.each do |section|
+    layout_print.each do |section|
       next if section.nil?
 
       Rails.logger.debug("Section #{section[:code]} Type #{section[:type]} Extra Data #{extra_data.inspect}}")
       next if skip_section(section, parent_section, extra_data)
 
-      section_list += process_section(section, parent_section, extra_data)
+      section_list += process_section(layout, section, parent_section, extra_data)
     end
     section_list # return the section list
   end
@@ -315,13 +319,14 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param extra_data [Hash] a hash of extra translation options keyed on a value
   # @return [string] the label for this item
   def this_label(code, key_scope, translation_extra, extra_data)
-    if respond_to?(:translation_attribute)
-      extra = extra_data[translation_extra] unless translation_extra.nil? || extra_data.nil?
-      label = I18n.t(translation_attribute(code, extra), scope: i18n_item_scope(key_scope))
-    else
-      label = I18n.t(code, scope: i18n_item_scope(key_scope))
-    end
-    label.gsub('<br/>', "\n") # replace breaks in label with CR
+    extra = extra_data[translation_extra] unless translation_extra.nil? || extra_data.nil?
+
+    label = UtilityHelper.label_text(self, code, key_scope: i18n_item_scope(key_scope), translation_options: extra)
+    # Make sure breaks turn into returns for printing
+    label = label.gsub('<br/>', "\n")
+    # strip any other HTML out of the labels
+    sanitizer = Rails::Html::FullSanitizer.new
+    sanitizer.sanitize(label)
   end
 
   # Derives the value for this item either the value or the lookup value where there is a linked code value.
@@ -402,7 +407,8 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param key_scope [Array] The key scope passed in from the config
   # @return [string] the key scope that will be used
   def i18n_item_scope(key_scope)
-    key_scope || [i18n_scope, :attributes, model_name.i18n_key]
+    key_scopes = key_scope || [i18n_scope, :attributes, model_name.i18n_key]
+    key_scopes
   end
 
   # Processes an individual section based on the options passed in
@@ -412,7 +418,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param parent_section_options [Hash] The options for the parent section when this is an object
   # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
   # @return [Array] the sections rendered
-  def process_section(section_options, parent_section_options, extra_data)
+  def process_section(layout, section_options, parent_section_options, extra_data)
     # for table and object types get the list of objects
     # skip if there are none
     if %i[object table].include?(section_options[:type])
@@ -424,7 +430,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     if %i[list table].include?(section_options[:type])
       [SectionData.new(self, section_options, objects, parent_section_options, extra_data)] # always return an array
     else # object
-      process_objects_section(replace_section_name(section_options), objects, extra_data)
+      process_objects_section(replace_section_name(section_options), layout, objects, extra_data)
     end
   end
 
@@ -446,12 +452,12 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param objects [Array] the array of objects to be iterated around
   # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
   # @return [Array] the sections rendered
-  def process_objects_section(parent_section, objects, extra_data)
+  def process_objects_section(parent_section, layout, objects, extra_data)
     return if objects.nil?
 
     section_list = []
     objects.each do |object|
-      section_list += object.sections(parent_section, extra_data)
+      section_list += object.sections(parent_section, layout, extra_data)
     end
     section_list
   end
@@ -476,7 +482,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param format [Symbol] The format of the value drives any formatting, this is normally passed to the template
   # @return [string] the expanded value for this item
   def expand_value(code, value, lookup, boolean_lookup, format)
-    return nil if value.nil?
+    return nil if value.blank?
     return lookup_ref_data_value(code, value) if lookup
     return boolean_lookup(code, value) if boolean_lookup
     return value.to_date.strftime('%d %B %Y') if format == :date
@@ -489,7 +495,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param extra_data [Hash] a hash of extra translation options keyed on a value
   # @return [Object] The value to be checked
   def include_item_or_section_value(when_method, extra_data)
-    Rails.logger.debug("When Method #{when_method} (#{respond_to?(when_method)}) Extra Data #{extra_data.inspect}}")
+    Rails.logger.debug("When Method #{when_method} (#{respond_to?(when_method)}) Extra Data #{extra_data.inspect}")
 
     if !extra_data.nil? && extra_data.key?(when_method)
       extra_data[when_method]

@@ -9,7 +9,7 @@
 # nicely with the normal wizard code (which is what this concern provides).
 #
 # The fixed list must be initialised in the setup_step method :
-# @example @lbtt_return.ads_relief_claims ||= Array.new(3) { Lbtt::ReliefClaim.new }
+# @example @lbtt_return.ads.ads_relief_claims ||= Array.new(3) { Lbtt::ReliefClaim.new }
 #
 # You also need a #merge_list_data method which will take the list from the params and put
 # it into the right place in your model.  If your list isn't a fixed size, you can probably still
@@ -20,16 +20,15 @@
 # @example
 #  Html page change
 # <%= f.button 'add_row',
-#              {:class => 'scot-rev-button_link manual_link govuk-details__summary-text', :name => 'add_row'} %>
+#              { :class => 'scot-rev-button_link govuk-link', :name => 'add_row' } %>
 #  Controller change
-#  wizard_list_step(nil, params: :filter_params,
-#                        next_step: :calculate_next_step, cache_index: LbttController,
+#  wizard_list_step(nil, next_step: :calculate_next_step, cache_index: LbttController,
 #                        merge_list: :merge_linked_transactions, add_row_handler: :add_linked_transactions_row)
 module WizardListHelper
   extend ActiveSupport::Concern
 
   # Edge-case wizard-step to merge data as normal in a model but also merge in a list of another class.
-  # Requires implementing classes have a setup_step method which returns the model (ie normal Wizard stuff).
+  # Requires implementing classes have specified a setup method which returns the model (ie normal Wizard stuff).
   #
   # You need to override "add_row_handler" to handle add row functionality on page.
   # and override "delete_row_handler" to handle delete row functionality on page.
@@ -39,7 +38,13 @@ module WizardListHelper
   # @param overrides [Hash] @see Wizard#wizard_step
   def wizard_list_step(steps, overrides)
     # first half
-    model = setup_step
+    wizard_handle_clear_cache(overrides)
+    model = wizard_setup_step(overrides)
+
+    # Handle the main model to make sure it is up to date
+    wizard_params = resolve_params(overrides)
+    model.assign_attributes(wizard_params) unless wizard_params.nil?
+    return unless wizard_valid?(model, wizard_params, overrides)
 
     handle_add_delete_rows(overrides)
 
@@ -50,30 +55,38 @@ module WizardListHelper
 
   private
 
-  # Method handle sequence of action after submittion
+  # Method handle sequence of action after submitting
   # @param steps [Object] if it's an array then it's the list of steps follow otherwise it _is_ the next step
   # @param overrides [Hash] @see Wizard#wizard_step
   def handle_submit_method(steps, model, overrides)
-    # second half
-    # merge normal fields - won't include the list (ignore message saying they're unpermitted)
-    wizard_params = resolve_params(overrides)
-    model.assign_attributes(wizard_params)
+    # merges in the child object and validates it
+    # The merge list procedure returns true or false if it fails e.g. validation error
+    # at which point return and don't move off the page
+    # The below is saying if there is an override call it and then if it fails exit this routine
+    return if overrides[:merge_list] && !send(overrides[:merge_list])
 
-    # call the override method to merge the list _before_ validate & save
-    send(overrides[:merge_list]) if overrides[:merge_list]
+    success = run_after_merge(overrides)
 
-    # validate and save if valid
-    wizard_save(model, overrides[:cache_index]) if wizard_valid?(model, wizard_params)
+    # if the after merge fails then also stay on the page and don't save
+    return if model.errors.any? || success == false
 
-    # custom method to run after successful merge
-    send(overrides[:after_merge]) if overrides[:after_merge]
+    wizard_save(model, overrides[:cache_index])
+    wizard_navigation_step(steps, overrides)
+  end
 
-    # navigate to the next page if validation passed
-    wizard_navigation_step(steps, overrides) unless model.errors.any?
+  # Method handle after merge action after submitting
+  # @param overrides [Hash] @see Wizard#wizard_step
+  def run_after_merge(overrides)
+    after_merge = overrides[:after_merge]
+    return true unless after_merge
+
+    success = send(after_merge)
+    Rails.logger.debug "After merge call failed: #{after_merge}" unless success
+    success
   end
 
   # Adds or removes a row when the user presses the add or delete button
-  # Implmenting classes need to have an :add_row_handler and a :delete_row_handler method specified in the overrides.
+  # Implementing classes need to have an :add_row_handler and a :delete_row_handler method specified in the overrides.
   # @param overrides [Hash] @see Wizard#wizard_step
   def handle_add_delete_rows(overrides)
     # handle add row functionality of array object

@@ -1,10 +1,10 @@
 # README
 
-Northgate Public Services Revenue Scotland Application
+Revenue Scotland Application
 
 * Ruby version
 
-Built with Ruby version 2.5.3p105
+Built with Ruby version 2.6.4
 
 * System dependencies
 
@@ -15,6 +15,8 @@ rails dev:cache
 ```
 
 A Jenkinsfile is provided for Jenkins pipeline builds. This requires Jenkins version 2.164 or later. The application is delivered through [docker](https://www.docker.com/) at least version 18.09. Autotests also use docker, as well as the [selenium](https://github.com/SeleniumHQ/docker-selenium) provided Selenium Hub and Selenium Firefox images.
+
+The application is also dependent on third party gems that are listed in the gemfile and gemfile.lock. These are available under their own licenses.
 
 * Configuration
 
@@ -44,7 +46,7 @@ Check that the code passes linting:
 rake rubocop
 ```
 
-Check that the code documentation is created succesfully:
+Check that the code documentation is created successfully:
 
 ```
 rake yard

@@ -1,22 +1,25 @@
 <%= form_for @user do |form| %>
-  <%= form_errors_for @user %>
-  <% if %w(edit update).include?(params[:action]) %>
+  <% new_user =  (%w(edit update).include?(params[:action]) ? false : true ) %>
+  <% translation_options_value = (new_user ? :new_user : nil )%>
+  <%= form_errors_for @user, translation_options: { new_password: translation_options_value, new_password_confirmation: translation_options_value } %>
+  <% if !new_user %>
     <%= display_field @user,:username %>
   <% else %>
     <%= form.text_field :new_username %> 
   <% end %> 
-  <%= form.collection_radio_buttons_fields(:user_is_current, @user.list_ref_data(:user_is_current), :code, :value) %>
+  <%= form.collection_radio_buttons_fields(:user_is_current, @user.list_ref_data(:user_is_current)) %>
   <h1><%= t('.user_details') %></h1>
   <%= form.text_field :forename %>
   <%= form.text_field :surname %>
    <h1><%= t('.contact_details') %></h1>
   <%= form.text_field :email_address %>
   <%= form.text_field :email_address_confirmation %>
-  <%= form.password_field :new_password, option={optional: %w(edit update).include?(params[:action])? true:false} %>
-  <%= form.password_field :new_password_confirmation, option={optional: %w(edit update).include?(params[:action])? true:false} %>
+  <%= form.text_field :phone_number, { optional:true } %>
+  <%= form.password_field :new_password, option={optional: (new_user ? false : true), translation_options: translation_options_value  } %>
+  <%= form.password_field :new_password_confirmation, option={optional: (new_user ? false : true),  translation_options: translation_options_value } %>
 
    <% if %w(edit update new create).include?(params[:action]) %>
-     <%= form.collection_check_boxes_fields(:user_roles, @user.list_ref_data(:user_roles), :code, :value) %>
+     <%= form.collection_check_boxes_fields(:user_roles, @user.list_ref_data(:user_roles)) %>
    <% end %>
 
   <%= form.submit %>  

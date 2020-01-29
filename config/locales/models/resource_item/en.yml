@@ -1,14 +1,20 @@
 en:
-  file: File
   activemodel:
     attributes:
       resource_item:
-        file: File
-        original_filename: File
+        original_filename: "File"
+        file_data: "File"
+        description: "Description of the uploaded file"            
     errors:
       models:
         resource_item:
           attributes:
+            base:
+              reimport_file: "Imported file contains validation errors. Correct these in the file, and the import the file again"
+            file_data:
+              invalid_file_type: Invalid file type
+              invalid_file_size: File should be less than %{supported_max_size_mb} mb
             original_filename:
-              invalid_file_type: invalid file type
-              invalid_file_size: should be less than %{supported_max_size_mb} mb
+              too_long:
+                one: "Filename is too long (maximum is 1 character)"
+                other: "Filename is too long (maximum is %{count} characters)"

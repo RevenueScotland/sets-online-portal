@@ -10,11 +10,11 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require jquery-3.3.1.min
+//= require jquery3
 //= require jquery-ui
 //= require rails-ujs
 //= require turbolinks
-//= require govuk-frontend-1.3.0.min
+//= require govuk-frontend-3.0.0.min
 //= require application-ui
 //= require address_search
 //= require ga
@@ -25,7 +25,7 @@
 //= require auto-complete
 //= require date-picker
 //= require details.polyfill
-
+//= require relief-claim-amount-ui-handler
 $(function () {
     document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
 
@@ -33,5 +33,11 @@ $(function () {
     $('.print').on("click", function () {
         window.print();
     })
+
+    // This method will close current window
+    $('.close').on("click", function () {
+        window.close();
+    })
+
 })
 

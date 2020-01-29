@@ -8,7 +8,7 @@ module Returns
 
     # Validate params[ref_no] is a number and not some kind of attack.
     def validate_load_param
-      return if params[:ref_no] =~ /\d+/
+      return if params[:id] =~ /\d+/
 
       raise Error::AppError.new('Return Load', 'Invalid return number for loading')
     end

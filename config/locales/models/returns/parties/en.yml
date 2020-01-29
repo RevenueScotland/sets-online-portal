@@ -2,24 +2,20 @@ en:
   activemodel:
     attributes:
       returns/lbtt/party:
+        # Top three are used in the lbtt's summary page
+        full_name: "Name"
+        display_type: "Type"
+        display_address: "Address"
         email_address: "Email"
         firstname: "First name"
         surname: "Last name"
         title: "Title"
         telephone: "Telephone number"
         nino: "National Insurance Number (NINO)"
-        # The address lines are only used when there is an error
-        address_line1: "Address line 1"
-        address_line2: "Address line 2"
-        address_line3: "Address line 3"
-        address_line4: "Address line 4"
-        town: "Town"
-        county: "County"
-        postcode: "Postcode"
         alrt_type: "Type of ID"
         ref_country: "Country where ID was issued"
         alrt_reference: "Reference number of the ID"
-        is_contact_address_different: "Should we use a different address for future correspondence in relation to this return?"
+        is_contact_address_different: "Should we use a different address for future correspondence in relation to this return"
         company_number: "Company number"
         country_registered_company_outside_uk: "Country"
         contact_address: "Contact address"
@@ -32,36 +28,44 @@ en:
         charity_number: "Charity number"
         org_name: "Name"
         agent_dx_number: "DX number and exchange"
-        agent_reference: "Agent reference"
-        agent_reference_if_provided: "Agent reference (if provided)"
+        agent_reference: "Your reference"
+        agent_reference_or_not_provided: "Your reference"
         registered_company_name: "Registered name"
-        type: "Type of buyer"
         org_type: "Type of organisation"
         other_type_description: "Organisation description"
-        type_LANDLORD: "Who is the landlord?"
-        type_TENANT: "Who is the tenant?"
-        type_SELLER: "Who is the seller?"
-        type_NEWTENANT: "Who is the new tenant?"
-        buyer_seller_linked_ind: "Is the buyer connected to the seller?"
-        TENANT_landlord_linked_ind: "Is the tenant connected to the landlord?"
-        NEWTENANT_landlord_linked_ind: "Is the new tenant connected to the landlord?"
-        com_jurisdiction: "What country's law is the organisation governed by?"
-        is_acting_as_trustee_BUYER: "Is the buyer acting as a trustee or representative partner for tax purposes?"
-        is_acting_as_trustee_TENANT: "Is the tenant acting as a trustee or representative partner for tax purposes?"
-        is_acting_as_trustee_NEWTENANT: "Is the new tenant acting as a trustee or representative partner for tax purposes?"
-        type_BUYER: "Who is the buyer?"
+        type_LANDLORD: "Who is the landlord"
+        type_TENANT: "Who is the tenant"
+        type_SELLER: "Who is the seller"
+        type_NEWTENANT: "Who is the new tenant"
+        type_BUYER: "Who is the buyer"
+        type: "Who they are"
+        BUYER_buyer_seller_linked_ind: "Is the buyer connected to the seller"
+        TENANT_buyer_seller_linked_ind: "Is the tenant connected to the landlord"
+        NEWTENANT_buyer_seller_linked_ind: "Is the new tenant connected to the landlord"
+        buyer_seller_linked_ind: "If they are linked"
+        com_jurisdiction: "What country's law is the organisation governed by"
+        is_acting_as_trustee_BUYER: "Is the buyer acting as a trustee or representative partner for tax purposes"
+        is_acting_as_trustee_TENANT: "Is the tenant acting as a trustee or representative partner for tax purposes"
+        is_acting_as_trustee_NEWTENANT: "Is the new tenant acting as a trustee or representative partner for tax purposes"
+        is_acting_as_trustee: "If they are acting as a trustee or representative partner for tax purposes"
         BUYER_full_name: "Buyer"
         TENANT_full_name: "Tenant"
 
     hints:
       returns/lbtt/party:
         agent_reference: "This is your reference for this return"
+        BUYER_buyer_seller_linked_ind: "The buyer and seller are connected if they have an existing personal or business relationship. See Section 1122 of the Corporation Tax Act 2010 (opens in a new window) for further details"
+        TENANT_buyer_seller_linked_ind: "The tenant and landlord are connected if they have an existing personal or business relationship. See Section 1122 of the Corporation Tax Act 2010 (opens in a new window) for further details."
+        is_acting_as_trustee_BUYER: "See guidance LBTT7001 - Partnerships (opens in a new window) and LBTT8001 - Trusts (opens in a new window) for further details."
+        is_acting_as_trustee_TENANT: "See guidance LBTT7001 - Partnerships (opens in a new window) and LBTT8001 - Trusts (opens in a new window) for further details."
+
     errors:
       models:
         returns/lbtt/party:
           attributes:
             nino:
-              no_nino_or_alternate: "or an alternate reference must be provided"
+              duplicate_nino: "%{attribute} is a duplicate of that for %{party_name}"
+              no_nino_or_alternate: "Provide a NINO or an alternate reference"
   returns:
     lbtt_parties:
       about_the_party:
@@ -100,12 +104,15 @@ en:
         NEWTENANT_title: "New tenant's contact address"
       parties_relation:
         BUYER_title: "Buyer details"
+        buyer_seller_linked_ind: "Section 1122 of the Corporation Tax Act 2010 (opens in a new window)"
         SELLER_title: "Seller details"
         LANDLORD_title: "Landlord details"
         TENANT_title: "Tenant details"
         NEWTENANT_title: "New tenant details"
       acting_as_trustee:
         BUYER_title: "Buyer details"
+        is_acting_as_trustee_partnership: "LBTT7001 - Partnerships (opens in a new window)"
+        is_acting_as_trustee_trust: "LBTT8001 - Trusts (opens in a new window)"
         TENANT_title: "Tenant details"
         NEWTENANT_title: "New tenant details"
       company_number:

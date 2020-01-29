@@ -13,9 +13,10 @@
   <%= t('.information') %>
   <p/>
   <b><%= t('.caution') %></b>
-  <p/>
-  <%= t('.reference_html', ref: @slft_return.tare_reference) %>
+  <p />
+  <%= t('.return_html') %>
+  <b><span id= "ret_ref_val"><%= @slft_return.tare_reference%></span>.</b>
+  <%= t('.reference_html') %>
 <% end %>
-<p/>
 <%= navigational_links( [ { link: :back_to_return_summary, path: returns_slft_summary_path }, 
                           { link: :go_to_dashboard, path: dashboard_path} ] ) %>

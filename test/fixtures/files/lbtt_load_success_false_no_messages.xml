@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+        <LBTTTaxReturnResponse
+            xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:core="http://northgate-is.com/FL/Core">
+            <core:Success>false</core:Success>
+        </LBTTTaxReturnResponse>
+    </soap:Body>
+</soap:Envelope>

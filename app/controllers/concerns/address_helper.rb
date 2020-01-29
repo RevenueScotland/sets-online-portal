@@ -5,14 +5,14 @@
 module AddressHelper
   extend ActiveSupport::Concern
 
-  # Returns the validation context for address validation based on whether the address read only flag is set or not
-  # @return [Array] validation context
-  def address_validation_context
-    # Checking if address_read_only is true or EMPTY then selected_validation_contexts
+  # Returns the validation contexts for address validation based on whether the address read only flag is set or not
+  # @return [Array] validation contexts
+  def address_validation_contexts
+    # Checking if address_read_only is true or EMPTY
     if ActiveModel::Type::Boolean.new.cast(params[:address_read_only]) || params[:address_read_only].empty?
-      Address.selected_validation_contexts
+      %i[address_selected]
     else
-      Address.save_validation_contexts
+      %i[save]
     end
   end
 
@@ -24,53 +24,52 @@ module AddressHelper
   private
 
   # Initialize address required variables for the address view to use.
-  # If search_postcode is present and errors exist in address_detail, they will be moved to the @address_summary
-  # object as that's the one which shows the postcode search box (@see #move_postcode_search_errors).
+  # If error are present on address_detail and we are not showing the manual address
+  # then move to the address summary as that is shown, functionally this would be
+  # the 'you haven't chosen and address' message
   # @param address_detail[Object] parameter use to view exiting address details on address view
   # @param search_postcode[String] the postcode used in the search
-  def initialize_address_variables(address_detail = nil, search_postcode = nil)
+  # @param default_country[String] the default country to be used for the address
+  def initialize_address_variables(address_detail = nil, search_postcode = nil, default_country = nil)
     @address_summary = AddressSummary.new
     @address_summary.postcode = search_postcode
     @address_read_only = true
     @show_manual_address = true unless address_detail.blank?
-    # Address has it's own blank? method which doesn't include the errors so don't use that here (using .nil? instead)
-    @address_detail = address_detail.nil? ? Address.new : address_detail
+    @address_detail = address_detail || Address.new(default_country: default_country)
 
-    move_postcode_search_errors(address_detail, search_postcode)
+    move_postcode_search_errors(address_detail) unless params[:show_manual_address] == 'true'
   end
 
-  # @HACK: If search_postcode is present and errors exist in address_detail, they will be moved to the @address_summary
+  # If search_postcode is present and errors exist in address_detail, they will be moved to the @address_summary
   # object as that's the one which shows the postcode search box.
   # Called by #initialize_address_variables only.
-  def move_postcode_search_errors(address_detail, search_postcode)
-    return if search_postcode.nil? || address_detail.nil? || address_detail&.errors.blank?
+  def move_postcode_search_errors(address_detail)
+    return if address_detail.nil?
 
     @address_summary.errors.merge!(address_detail.errors)
     address_detail.errors.clear
   end
 
+  # Is the form submit for an address search?
+  def address_search?
+    params[:search] || params[:select] || params[:manual_address] || params[:change_postcode]
+  end
+
   # Performs an address search based on the search parameters and displays the results (if any)
   def address_search
-    return unless params[:search] || params[:search_results] || params[:manual_address]
-
-    # # An search here is an initial search based on postcode, whereas a find is
+    # A search here is an initial search based on postcode, whereas a find is
     # a detailed search based on the address identifier
     if params[:search]
-      do_address_identifier_search
+      # Carry forward the default country otherwise it gets lost
+      do_address_identifier_search(params[:address][:default_country])
     elsif params[:manual_address]
-      @show_manual_address = true
-      @address_read_only = false
-    else
+      set_for_manual_address
+    elsif params[:change_postcode]
+      @address_summary.postcode = ''
+    elsif params[:search_results]
       # user has selected address from the drop down list, get the full details for them
       find_address_details
     end
-  end
-
-  # validate address details and put any address detail errors into parent
-  def validate_address_detail
-    return true if @address_detail.nil?
-
-    @address_detail.valid?
   end
 
   # re-populate address summary and address details data from request param
@@ -79,17 +78,14 @@ module AddressHelper
     @address_detail = Address.new(address_params) unless params[:address].nil?
   end
 
-  # Is the form submit for an address search?
-  def address_search?
-    params[:search] || params[:select] || params[:manual_address]
-  end
-
   # Performs an address search based on the search parameters
   # and displays the results (if any)
-  def do_address_identifier_search
+  # @param default_country [String] the default country to carry forward
+  def do_address_identifier_search(default_country)
     @address_summary = AddressSummary.new(search_params)
     @search_results = @address_summary.search
-    @address_detail = Address.new
+    # We need to carry the default country set up forward as the address currently
+    @address_detail = Address.new(default_country: default_country)
   end
 
   # Given an address identifier get the detail of that address
@@ -105,6 +101,14 @@ module AddressHelper
     end
     @address_read_only = true
     [@address_detail, @address_summary, @address_read_only, @show_manual_address]
+  end
+
+  # Sets the address search up for a manual search
+  def set_for_manual_address
+    @show_manual_address = true
+    @address_read_only = false
+    # clear the identifier as this address is no longer from the search
+    @address_detail.address_identifier = nil
   end
 
   # controls the permitted parameters to this controller to perform

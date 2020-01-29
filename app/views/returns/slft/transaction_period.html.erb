@@ -5,7 +5,7 @@
   <%= form_errors_for @slft_return %>
 
   <%= f.select(:year, @slft_return.list_ref_data(:year)) %>
-  <%= f.collection_radio_buttons_fields(:fape_period, @slft_return.list_ref_data(:fape_period), :code, :value, alignment: 'vertical') %>
+  <%= f.collection_radio_buttons_fields(:fape_period, @slft_return.list_ref_data(:fape_period), alignment: 'vertical') %>
   
   <%= f.button 'next', { :name => 'submitted' }  %>
 <% end %>

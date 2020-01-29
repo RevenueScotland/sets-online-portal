@@ -1,11 +1,11 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :hide_back_link, :lbtt_about_the_party_url %>
+<% content_for :hide_back_link, :lbtt_agent_details_url %>
 <%= form_for @agent, url:returns_lbtt_agent_details_path, method: :post, html:{autocomplete: "on"} ,local: true do |f| %>
   <%= form_errors_for @agent %>  
   <% content_for :page_title, t('.title') %>
   <% content_for :page_subtitle, t('.subtitle') %>
   <% content_for :page_description, t('.description') %>
-  <%= f.select :title, @agent.list_ref_data(:title), { optional:true }, { width:'width-10' } %>
+  <%= f.select :title, @agent.list_ref_data(:title), { optional: true, width: 'width-10' } %>
   <%= f.text_field :firstname %> 
   <%= f.text_field :surname %>
   <%= f.text_field :agent_reference, { optional:true } %>

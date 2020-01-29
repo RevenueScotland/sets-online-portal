@@ -180,6 +180,11 @@
 						<xs:element name="Username" type="xs:string"/>
 						<xs:element name="TAREReference" type="xs:string" minOccurs="0"/>
 						<xs:element name="TARERefno" type="xs:string" minOccurs="0"/>
+						<xs:element name="AgentReference" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Reference for the buyers agent for LBTT service only</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 						<xs:element name="DescriptionSearch" type="xs:string" minOccurs="0"/>
 						<xs:element name="AllVersions" type="core:YesNoType" minOccurs="0">
 							<xs:annotation>
@@ -250,9 +255,10 @@
 																			<xs:documentation>Return Version</xs:documentation>
 																		</xs:annotation>
 																	</xs:element>
+																	<xs:element name="AgentReference" type="xs:string" minOccurs="0"/>
 																	<xs:element name="Description" type="xs:string" minOccurs="0">
 																		<xs:annotation>
-																			<xs:documentation> For SLFT this is Period and Year For LBTT this is the buyer and property address(es)</xs:documentation>
+																			<xs:documentation>For SLFT this is Period and Year For LBTT this is the buyer and property address(es)</xs:documentation>
 																		</xs:annotation>
 																	</xs:element>
 																	<xs:element name="ReturnStatus" type="xs:string" minOccurs="0"/>
@@ -262,6 +268,21 @@
 																	<xs:element name="ReturnBalance" type="xs:decimal" minOccurs="0"/>
 																	<xs:element name="PaymentDate" type="xs:date" minOccurs="0"/>
 																	<xs:element name="FilingDate" type="xs:date" minOccurs="0"/>
+																	<xs:element name="EnquiryOpen" type="xs:boolean" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>Returns True if an open ENQUIRY case is linked to the return</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="DraftPresent" type="xs:boolean" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>Returns True if there is a draft return</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
+																	<xs:element name="ReceiptAvailable" type="xs:boolean" minOccurs="0">
+																		<xs:annotation>
+																			<xs:documentation>Returns True if there is a receipt available for return</xs:documentation>
+																		</xs:annotation>
+																	</xs:element>
 																</xs:sequence>
 															</xs:complexType>
 														</xs:element>

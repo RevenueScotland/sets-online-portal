@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="2.5.5"
+def RUBY_VERSION="2.6.4"
 
 /*
 	* Back office names
@@ -15,8 +15,8 @@ def RUBY_VERSION="2.5.5"
 	* Notes: No def or final here otherwise the constants get bound to just the main part of the program
 	* 	and aren't available to the functions
 	*/
-MAN_BACKOFFICE = "RSTSMAP"
-REL_BACKOFFICE = "RSTSTST1"
+MAN_BACKOFFICE = "RSTSTST3"
+REL_BACKOFFICE = "RSTSMAP"
 BOT_BACKOFFICE = "RSTSSMOK"
 
 properties ([
@@ -38,6 +38,9 @@ timestamps {
 					runUnitTests()
 					generateDocumentation()
 					lintCode()
+                    checkCVEs()
+					codeStaticAnalysis()
+                    checkGemLicenses()
 					precompileAssets()
 					stashDeployables()
 				}
@@ -48,13 +51,13 @@ timestamps {
 			envGitCheckout()
 			dockerImageBuild()
 		}
-		node ('revscot-docker-auto-run') {
-			milestone(3)
-			(deployed, host, port, seleniumPort) = deployDockeredEnvironment("autotest")
-		}
 
-		if (deployed) {
-			lock (resource: "${this.getAppName()}-${env.BRANCH_NAME}-autotest", inversePrecedence: true) {
+		lock (resource: "${this.getAppName()}-${env.BRANCH_NAME}-autotest", inversePrecedence: true) {
+			node ('revscot-docker-auto-run') {
+				milestone(3)
+				(deployed, host, port, seleniumPort) = deployDockeredEnvironment("autotest")
+			}
+			if (deployed) {
 				stage ('Auto Testing') {
 					node('revscot-docker-auto-run') {
 						runAutotest(host, port, seleniumPort)
@@ -248,7 +251,7 @@ def envGitCheckout () {
  */
 def prepareBuildEnvironment() {
 	stage ('Prepare Build Environment') {
-		sh 'gem install bundler rake yard rubocop' 
+		sh 'gem install bundler rake yard rubocop brakeman bundle-audit gemsurance licensed' 
 		sh 'bundle install'
 		milestone(1)
 	}
@@ -288,6 +291,65 @@ def lintCode() {
 }
 
 /*
+ * Check any included GEMs for being out of date, and for any CVEs
+ *
+ */
+
+def checkCVEs() {
+	stage ('Gem CVE Check') {
+		try {
+            // ignore errors from gemsurance - but catch those from bundle-audit, so that we can stash the
+            // results from gemsurance, and put the html page up on the documentation server later
+			sh 'set +e ; gemsurance --output tmp/gemsurance_report.html ; echo'
+            stash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-report", includes: 'tmp/gemsurance_report.html'
+            sh 'bundle-audit update && bundle-audit check > tmp/bunde-audit.txt'
+		} catch (err) {
+			emailext attachmentsPattern: "tmp/bunde-audit.txt", 
+				subject: "Gem CVE check in ${this.getAppName()}", 
+				body: "Some GEMs have CVEs in ${this.getAppName()}. Please see attached for more information.", 
+				to: "${REVSCOT_DEVELOPERS}"
+/* Don't fail the build for now
+			currentBuild.result = "FAILURE"
+            throw err
+*/
+		}
+	}
+
+}
+
+def checkGemLicenses() {
+    stage ('Check Gem Licenses') {
+        // ignore errors from the license checks for now
+        sh '''
+            set +e
+            licensed cache
+            licensed status > tmp/licensed.txt
+            echo
+        '''
+        stash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-licenses", includes: 'tmp/licensed.txt'
+    }
+}
+
+/*
+ * Perform security based static analysis on the code base
+ *
+ */
+def codeStaticAnalysis() {
+	stage ('Static Analysis') {
+		try {
+			sh 'brakeman -A -x CheckForceSSL -w2 -q -o tmp/analysis.txt'
+		} catch (err) {
+			emailext attachmentsPattern: "tmp/analysis.txt", 
+				subject: "Static Analysis Failures in ${this.getAppName()}", 
+				body: "brakeman found some security issues after scanninng the code base for ${this.getAppName()}. Please see attached for more information, along with the brakeman website: https://brakemanscanner.org/", 
+				to: "${REVSCOT_DEVELOPERS}"
+			currentBuild.result = "FAILURE"
+       throw err
+		}
+	}
+}
+
+/*
  * Precompile the assets into /public - these will be deployed
  * into the reverse proxy, rather then getting rails to serve
  * them up
@@ -295,7 +357,7 @@ def lintCode() {
  */
 def precompileAssets() {
 	stage ('Precompile Assets') {
-		sh 'bundle exec rake assets:precompile'
+		sh 'RAILS_ENV=production bundle exec rake assets:precompile'
 	}
 }
 
@@ -537,8 +599,11 @@ def runAutotest(String host, String port, String seleniumPort, String environmen
 				sh '''
 					#!/bin/bash
 					export DOCKER_HOST=tcp://$(hostname -i):2376
+					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} mkdir -p /var/tmp/share/upload /var/tmp/share/download
+					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} chmod 777 -R /var/tmp/share/
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
 						CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} CAPYBARA_SAVE_PATH=${CAPYBARA_SAVE_PATH}\
+						TEST_FILE_UPLOAD_PATH=/var/tmp/share/upload TEST_FILE_DOWNLOAD_PATH=/var/tmp/share/download \
 						RAILS_ENV=test cucumber
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} chmod -R u+w ${COVERAGE_DIR}
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} mv log/test.log log/${ENVIRONMENT}.log
@@ -565,8 +630,11 @@ def runAutotest(String host, String port, String seleniumPort, String environmen
  */
 def postAutotestSuccess(String environment = "autotest") {
 
+	stopEnvironment(environment)
 	deleteEnvironment(environment)
 	dir ('code') {
+        unstash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-report"
+        unstash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-licenses"
 		withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 			sh '''
 				ssh rsdocs@vm-rstp-bld01.global.internal "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
@@ -574,6 +642,13 @@ def postAutotestSuccess(String environment = "autotest") {
 				scp -r coverage rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
 				ssh rsdocs@vm-rstp-bld01.global.internal "unlink /var/www/html/${APPLICATION}/coverage ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/coverage /var/www/html/${APPLICATION}/coverage"
 				popd
+
+                scp tmp/gemsurance_report.html rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				ssh rsdocs@vm-rstp-bld01.global.internal "[ -L "/var/www/html/${APPLICATION}/gemsurance_report.html" ] && unlink /var/www/html/${APPLICATION}/gemsurance_report.html ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/gemsurance_report.html /var/www/html/${APPLICATION}/gemsurance_report.html"
+
+                scp tmp/licensed.txt rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				ssh rsdocs@vm-rstp-bld01.global.internal "[ -L "/var/www/html/${APPLICATION}/licensed.txt" ] && unlink /var/www/html/${APPLICATION}/licensed.txt ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/licensed.txt /var/www/html/${APPLICATION}/licensed.txt"
+
 			'''
 		}
 	}
@@ -658,7 +733,7 @@ def emailModSecFailures(String environment) {
 			emailext attachmentsPattern: "${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/modsec_issues.txt", 
 				body: "mod_security failures in ${this.appLabel}", 
 				subject: "mod_security failures in ${this.appLabel}", 
-				to: "${REFAPP_DEVOPS}"
+				to: "${REVSCOT_DEVOPS}"
 		}
 	}
 }

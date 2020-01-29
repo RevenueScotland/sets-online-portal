@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
     <soap:Body>
-        <SLFTTaxReturnResponse xmlns="http://www.northgateps.com/RSTS/SLFTTaxReturnDetailsResponse"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        <SLFTTaxReturnResponse xmlns="http://www.northgateps.com/RSTS/SLFTTaxReturnDetailsResponse" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
             xmlns:core="http://northgate-is.com/FL/Core">
             <core:Success>true</core:Success>
             <SLFTTaxReturn>
@@ -35,7 +35,7 @@
                             <TotalWaterTonnage>1</TotalWaterTonnage>
                             <SiteSpecificWastes>
                                 <SiteSpecificWaste>
-                                    <EWCCode>03-02-02</EWCCode>
+                                    <EWCCode>03 02 02</EWCCode>
                                     <WasteDescription>
                                         <![CDATA[Aciiiiiiid]]>
                                     </WasteDescription>
@@ -58,7 +58,7 @@
                                     <TotalTonnage>-18</TotalTonnage>
                                 </SiteSpecificWaste>
                                 <SiteSpecificWaste>
-                                    <EWCCode>01-03-04</EWCCode>
+                                    <EWCCode>01 03 04</EWCCode>
                                     <WasteDescription>
                                         <![CDATA[er batteries]]>
                                     </WasteDescription>
@@ -91,7 +91,7 @@
                             <TotalWaterTonnage>1</TotalWaterTonnage>
                             <SiteSpecificWastes>
                                 <SiteSpecificWaste>
-                                    <EWCCode>01-03-07</EWCCode>
+                                    <EWCCode>01 03 07</EWCCode>
                                     <WasteDescription>
                                         <![CDATA[Aciiiiiiid]]>
                                     </WasteDescription>
@@ -117,17 +117,17 @@
                         </Site>
                     </Sites>
                     <CreditClaim>
-						<SLCFContribution>10000</SLCFContribution>
-						<SLCFCreditClaimed>8000</SLCFCreditClaimed>
-						<BadDebtCredit>200</BadDebtCredit>
-						<RemovalCredit>500</RemovalCredit>
+                        <SLCFContribution>10000</SLCFContribution>
+                        <SLCFCreditClaimed>8000</SLCFCreditClaimed>
+                        <BadDebtCredit>200</BadDebtCredit>
+                        <RemovalCredit>500</RemovalCredit>
                     </CreditClaim>
-					<TaxPayable>
-						<TotalTaxDue>234000</TotalTaxDue>
-						<TotalCredit>8700</TotalCredit>
-						<TaxPayable>225300</TaxPayable>
-                    	<FPAYMethod>BACS</FPAYMethod>
-					</TaxPayable>
+                    <TaxPayable>
+                        <TotalTaxDue>234000</TotalTaxDue>
+                        <TotalCredit>8700</TotalCredit>
+                        <TaxPayable>225300</TaxPayable>
+                        <FPAYMethod>BACS</FPAYMethod>
+                    </TaxPayable>
                 </SLFTReturnDetails>
             </SLFTTaxReturn>
         </SLFTTaxReturnResponse>

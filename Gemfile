@@ -3,10 +3,10 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '>= 2.4.4'
+ruby '>= 2.5.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.1'
+gem 'rails', '~> 5.2.3'
 # Use Puma as the app server
 gem 'puma', '~> 3.11'
 # Use SASSC rails for stylesheets replaces sass
@@ -21,17 +21,11 @@ gem 'coffee-rails', '~> 4.2'
 gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
-# Jquery can be used to create spcific things. Read more: https://github.com/jquery-ui-rails/jquery-ui-rails
+gem 'jquery-rails'
+# @see Read more: https://github.com/jquery-ui-rails/jquery-ui-rails
 gem 'jquery-ui-rails'
 # Use Redis for caching and session storage
 gem 'redis', '~> 4.0'
-gem 'redis-store'
-
-# Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
-
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
@@ -61,7 +55,7 @@ end
 
 group :test do
   # Adds support for Capybara system testing and selenium driver
-  gem 'capybara', '>= 2.15'
+  gem 'capybara', '>= 3.26.0'
   gem 'selenium-webdriver'
   # add code coverage
   gem 'simplecov', require: false
@@ -70,4 +64,11 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
-gem 'ruby-prof'
+# Latest version prevents app from starting on windows at least, on next upgrade remove this restriction and try again
+gem 'ruby-prof', '0.17.0'
+
+# Ruby ZIP utils
+gem 'rubyzip', '>= 1.3.0'
+
+# Ruby/ClamAV wrapper
+gem 'clamby'

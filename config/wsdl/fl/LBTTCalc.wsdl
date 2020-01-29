@@ -175,7 +175,7 @@
 											<xs:restriction base="xs:date"/>
 										</xs:simpleType>
 									</xs:element>
-									<xs:element name="ContractDate">
+									<xs:element name="ContractDate" minOccurs="0">
 										<xs:annotation>
 											<xs:documentation>Filter responses to only include data with a Contract Date equal to that provided. LBTT_RETURNS.LBTT_CONTRACT_DATE</xs:documentation>
 										</xs:annotation>
@@ -198,6 +198,7 @@
 															</xs:restriction>
 														</xs:simpleType>
 													</xs:element>
+													<xs:element ref="Reliefs" minOccurs="0"/>
 													<xs:element name="TransactionDetails">
 														<xs:complexType>
 															<xs:sequence>
@@ -212,22 +213,6 @@
 																<xs:element name="SumofLinkedTrans" minOccurs="0">
 																	<xs:annotation>
 																		<xs:documentation>The sum of the linked transactions. LBTT_RETURNS.LBTT_LINKED_CONSIDERATION (Sum of LBTT_TAX_RETURN_LINKS.LBTR_CONSIDERATION_AMOUNT)</xs:documentation>
-																	</xs:annotation>
-																	<xs:simpleType>
-																		<xs:restriction base="xs:decimal"/>
-																	</xs:simpleType>
-																</xs:element>
-																<xs:element name="SumofReliefs" minOccurs="0">
-																	<xs:annotation>
-																		<xs:documentation>The sum of reliefs. LBTT_RETURNS.LBTT_TOTAL_RELIEFS (Sum of LBTT_RELIEFS.LBRL_AMOUNT)</xs:documentation>
-																	</xs:annotation>
-																	<xs:simpleType>
-																		<xs:restriction base="xs:decimal"/>
-																	</xs:simpleType>
-																</xs:element>
-																<xs:element name="SumofADSReliefs" minOccurs="0">
-																	<xs:annotation>
-																		<xs:documentation>The sum of ADS reliefs. </xs:documentation>
 																	</xs:annotation>
 																	<xs:simpleType>
 																		<xs:restriction base="xs:decimal"/>
@@ -277,6 +262,7 @@
 															</xs:restriction>
 														</xs:simpleType>
 													</xs:element>
+													<xs:element ref="Reliefs" minOccurs="0"/>
 													<xs:element name="LeaseStartDate">
 														<xs:annotation>
 															<xs:documentation>The start date of the lease. LBTT_RETURNS.LBTT_LEASE_START_DATE</xs:documentation>
@@ -322,14 +308,6 @@
 																<xs:element name="SumofLinkedPremium" minOccurs="0">
 																	<xs:annotation>
 																		<xs:documentation>The sum of the linked transactions. LBTT_RETURNS.LBTT_LINKED_CONSIDERATION (Sum of LBTT_TAX_RETURN_LINKS.LBTR_CONSIDERATION_AMOUNT)</xs:documentation>
-																	</xs:annotation>
-																	<xs:simpleType>
-																		<xs:restriction base="xs:decimal"/>
-																	</xs:simpleType>
-																</xs:element>
-																<xs:element name="SumofReliefs" minOccurs="0">
-																	<xs:annotation>
-																		<xs:documentation>The sum of reliefs. LBTT_RETURNS.LBTT_TOTAL_RELIEFS (Sum of LBTT_RELIEFS.LBRL_AMOUNT)</xs:documentation>
 																	</xs:annotation>
 																	<xs:simpleType>
 																		<xs:restriction base="xs:decimal"/>
@@ -384,6 +362,7 @@
 									<xs:element name="ConvTaxPayable">
 										<xs:complexType>
 											<xs:sequence>
+												<xs:element ref="Reliefs" minOccurs="0"/>
 												<xs:element name="LBTTCalculated">
 													<xs:annotation>
 														<xs:documentation>LBTT before any reliefs are deducted. LBTT_RETURNS.LBTT_CALCULATED</xs:documentation>
@@ -446,9 +425,12 @@
 									<xs:element name="LeaseTaxPayable">
 										<xs:complexType>
 											<xs:sequence>
+												<xs:element ref="Reliefs" minOccurs="0"/>
 												<xs:element name="NPV">
 													<xs:annotation>
-														<xs:documentation>LBTT before any reliefs are deducted. LBTT_RETURNS.LBTT_CALCULATED</xs:documentation>
+														<xs:documentation>
+             LBTT before any reliefs are deducted. LBTT_RETURNS.LBTT_CALCULATED
+            </xs:documentation>
 													</xs:annotation>
 													<xs:simpleType>
 														<xs:restriction base="xs:decimal"/>
@@ -509,6 +491,42 @@
 							</xs:sequence>
 						</xs:extension>
 					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Reliefs">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Relief" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ReliefType">
+										<xs:annotation>
+											<xs:documentation>Type of relief - ADS or STANDARD. LBTT_RELIEFS.LBRL_TXRT_TYPE</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string"/>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="ReliefAmount" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Original Relief amount. LBTT_RELIEFS.LBRL_ORIG_AMOUNT</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:decimal"/>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="ReliefOverrideAmount" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>overridden relief amount. LBTT_RELIEFS.LBRL_AMOUNT</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:decimal"/>
+										</xs:simpleType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 		</xs:schema>

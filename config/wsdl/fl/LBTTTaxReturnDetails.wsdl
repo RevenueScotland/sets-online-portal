@@ -448,6 +448,7 @@ Termination</xs:documentation>
 											</xs:sequence>
 										</xs:complexType>
 									</xs:element>
+									<xs:element name="BusinessInd" type="core:YesNoType" minOccurs="0"/>
 									<xs:element name="IncludeInSale" minOccurs="0">
 										<xs:complexType>
 											<xs:sequence>
@@ -481,7 +482,8 @@ Termination</xs:documentation>
 																	<xs:documentation>Relief Type</xs:documentation>
 																</xs:annotation>
 															</xs:element>
-															<xs:element name="Amount" type="xs:decimal"/>
+															<xs:element name="Amount" type="xs:decimal" minOccurs="0"/>
+															<xs:element name="OrigAmount" type="xs:decimal" minOccurs="0"/>
 														</xs:sequence>
 													</xs:complexType>
 												</xs:element>
@@ -546,6 +548,7 @@ Termination</xs:documentation>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="PrintData" type="xs:string" minOccurs="0"/>
+						<xs:element name="PrintDataReceipt" type="xs:string" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

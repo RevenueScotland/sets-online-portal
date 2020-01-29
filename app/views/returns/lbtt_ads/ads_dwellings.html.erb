@@ -1,8 +1,8 @@
 <% content_for :page_title, t('returns.lbtt_ads.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 
-<%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
-  <%= f.collection_radio_buttons_fields(:ads_consideration_yes_no, @lbtt_return.list_ref_data(:ads_consideration_yes_no), :code, :value) %>
+<%= form_for @ads, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for @ads %>
+  <%= f.collection_radio_buttons_fields(:ads_consideration_yes_no, @ads.list_ref_data(:ads_consideration_yes_no)) %>
   <%= f.button 'next', { :name => 'submitted' }  %>
 <% end %>

@@ -138,7 +138,8 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
-		<xs:schema xmlns="http://www.northgateps.com/RSTS/ViewReturnPDF" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.northgateps.com/RSTS/ViewReturnPDF" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/ViewReturnPDF" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/ViewReturnPDF" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
 			<xs:element name="ViewReturnPDFRequest">
 				<xs:annotation>
 					<xs:documentation>Request PDF for a Tax Return</xs:documentation>
@@ -153,6 +154,17 @@
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="ReturnVersion" type="xs:string"/>
+						<xs:element name="RequestType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Request type of return or receipt</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="Receipt"/>
+									<xs:enumeration value="Return"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -173,7 +185,9 @@
 												<xs:simpleType>
 													<xs:restriction base="xs:string">
 														<xs:enumeration value="LBTT Return"/>
+														<xs:enumeration value="LBTT Receipt"/>
 														<xs:enumeration value="SLFT Return"/>
+														<xs:enumeration value="SLFT Receipt"/>
 													</xs:restriction>
 												</xs:simpleType>
 											</xs:element>

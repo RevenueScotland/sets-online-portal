@@ -17,11 +17,15 @@ module Dashboard
     attribute_list.each { |attr| attr_accessor attr }
 
     validates :related_reference, length: { maximum: 30 }
-    validate :all_dates_valid?
+    validates :actual_date, :actual_date_from, :actual_date_to, :effective_date, :effective_date_from,
+              :effective_date_to, custom_date: true
+    validates :effective_date_from, compare_date: { end_date_attr: :effective_date_to }
+    validates :actual_date_from, compare_date: { end_date_attr: :actual_date_to }
+
     # validates all the attributes that are currency data-types
     validates :amount, :minimum_amount, :maximum_amount,
               format: { with: /(?=.*?\d)\A-?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?\z/ },
-              allow_blank: true, length: { maximum: 20 }, allow_nil: true
+              allow_blank: true, length: { maximum: 20 }, allow_nil: true, two_dp_pattern: true
 
     # Provides permitted filter request params
     def self.params(params)
@@ -30,28 +34,6 @@ module Dashboard
            minimum_amount maximum_amount amount
            actual_date actual_date_from actual_date_to
            effective_date effective_date_from effective_date_to])[:dashboard_financial_transaction_filter]
-    end
-
-    # Validates all the attributes that date data-types
-    def all_dates_valid?
-      actual_date_validation
-      effective_date_validation
-    end
-
-    # Does the validation for the all the dates that are related to the actual date
-    def actual_date_validation
-      date_format_valid? :actual_date unless actual_date.blank?
-      date_format_valid? :actual_date_from unless actual_date_from.blank?
-      date_format_valid? :actual_date_to unless actual_date_to.blank?
-      date_start_before_end? :actual_date_from, :actual_date_to
-    end
-
-    # Does the validation for the all the dates that are related to the effective date
-    def effective_date_validation
-      date_format_valid? :effective_date unless effective_date.blank?
-      date_format_valid? :effective_date_from unless effective_date_from.blank?
-      date_format_valid? :effective_date_to unless effective_date_to.blank?
-      date_start_before_end? :effective_date_from, :effective_date_to
     end
 
     # Custom override setter for include_outstanding_only to default of false if it's not been set.
@@ -123,15 +105,6 @@ module Dashboard
       return @amount unless @amount.blank?
 
       @minimum_amount
-    end
-
-    # Checks if the date or amount contains valid data when filtering the table
-    def validate_fields
-      return true if actual_date.nil? && effective_date.nil? && amount.nil?
-
-      return false unless valid?
-
-      true
     end
   end
 end

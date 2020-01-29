@@ -23,12 +23,23 @@
     margin: 0;
 }
 
+.scot-rev-footer__link,
+.scot-rev-footer__link:visited,
+.scot-rev-footer__link:link,
+.scot-rev-footer__link:active {
+    color: #fff;
+}
+
 .zone-footer p,
 .zone-footer li a,
 .zone-footer li a:active {
     color: #fff;
     text-decoration: none;
     font-weight: 700;
+}
+
+.scot-rev-footer__link:focus {
+    color: #0b0c0c;
 }
 
 .copyright_text {

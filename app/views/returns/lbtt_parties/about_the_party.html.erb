@@ -3,6 +3,6 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @party, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @party %>  
-  <%= f.collection_radio_buttons_fields(:type, @party.list_ref_data(:type), :code, :value, { alignment: 'vertical' }) %>  
+  <%= f.collection_radio_buttons_fields(:type, @party.list_ref_data(:type), { alignment: 'vertical' }) %>  
 <%= f.button 'next', { :name => 'submitted' }  %>
 <% end %>

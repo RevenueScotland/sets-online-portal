@@ -3,14 +3,10 @@
 
 <%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
-  <%# TODO: RSTP-242 If you submit a wizard page that only has a checkbox on it and you don't tick the checkbox, rails doesn't setup a params object and the wizard_code chokes and raises an error. Added hidden field %>
   <% account_type = User.account_type(current_user) %>
-  <%= f.hidden_field :repayment_declaration, :value => false %>
-  <%= f.hidden_field :repayment_agent_declaration, :value => false %>
-  <%= f.hidden_field :account_type, :value => account_type %>
+  <%= f.hidden_field :account_type, {}, { :value => account_type } %>
   <%= f.check_box_field :repayment_agent_declaration if account_type == 'AGENT' %>
   <%= f.check_box_field(:repayment_declaration, { translation_options: account_type } ) %>
-
-  <br />
+  <br/>
   <%= f.button 'next', { :name => 'submitted' }  %>
 <% end %>

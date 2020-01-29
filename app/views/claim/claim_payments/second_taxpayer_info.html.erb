@@ -1,0 +1,15 @@
+
+<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for :page_title, t('.title') %>
+<% content_for :page_subtitle, t('.subtitle') %>
+
+<%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
+<%= form_errors_for @claim_payment %>
+  <%= f.text_field :s_org_name, optional: true if @claim_payment.reason != 'ADS'%> 
+  <%= f.text_field :s_firstname %> 
+  <%= f.text_field :s_surname %>  
+  <%= f.text_field :s_telephone %>
+  <%= f.text_field :s_email_address %>
+  <%= f.text_field :s_nino, { optional:true } %> 
+  <%= f.button 'next', { :name => 'submitted' }  %>
+<% end %>

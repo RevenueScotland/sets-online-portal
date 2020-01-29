@@ -1,0 +1,244 @@
+{
+    "json_class": "Returns::Lbtt::LbttReturn",
+    "is_public": false,
+    "new_record": true,
+    "tax": {
+        "json_class": "Returns::Lbtt::Tax",
+        "new_record": true,
+        "flbt_type": "CONVEY",
+        "linked_ind": "Y",
+        "total_reliefs": "16930",
+        "orig_total_reliefs": "16930",
+        "calculated": "17880",
+        "orig_calculated": "0",
+        "ads_due": "6375",
+        "orig_ads_due": "0",
+        "total_ads_reliefs": "950",
+        "orig_total_ads_reliefs": "950",
+        "linked_npv": 0,
+        "orig_linked_npv": 0
+    },
+    "ads": {
+        "json_class": "Returns::Lbtt::Ads",
+        "new_record": true,
+        "flbt_type": "CONVEY",
+        "ads_consideration_yes_no": "Y",
+        "ads_amount_liable": "1500",
+        "ads_consideration": "1140",
+        "ads_sell_residence_ind": "Y",
+        "ads_relief_claims": [
+            {
+                "json_class": "Returns::Lbtt::ReliefClaim",
+                "new_record": false,
+                "relief_type": "ADSRELIEF",
+                "relief_amount": "0",
+                "relief_override_amount": "500"
+            },
+            {
+                "json_class": "Returns::Lbtt::ReliefClaim",
+                "new_record": false,
+                "relief_type": "ADSFAMUNIT",
+                "relief_amount": "0",
+                "relief_override_amount": "450"
+            }
+        ],
+        "ads_reliefclaim_option_ind": "Y",
+        "ads_main_address": {
+            "json_class": "Address",
+            "address_line1": "Fruition Partners Ltd",
+            "address_line2": "Unit 7",
+            "town": "BRACKNELL",
+            "postcode": "RG12 7BW",
+            "country": "EN",
+            "new_record": true,
+            "address_identifier": "50255881",
+            "address_line3": "Bracknell Beeches",
+            "address_line4": "Old Bracknell Lane West"
+        }
+    },
+    "flbt_type": "CONVEY",
+    "deferral_reference": "RS10001002HALO",
+    "deferral_agreed_ind": "Y",
+    "agent": {
+        "json_class": "Returns::Lbtt::Party",
+        "party_type": "AGENT",
+        "new_record": true,
+        "firstname": "Portal User",
+        "surname": "New Users",
+        "email_address": "noreply@northgateps.com",
+        "telephone": "07700900321",
+        "address": {
+            "json_class": "Address",
+            "address_line1": "2 Park Lane",
+            "address_line2": "Garden Village",
+            "town": "NORTHTOWN",
+            "county": "Northshire",
+            "postcode": "RG1 1PB",
+            "country": "GB",
+            "new_record": true
+        },
+        "agent_dx_number": "4982",
+        "agent_reference": "Electronics"
+    },
+    "properties": {
+        "a1987393-6eac-4e57-8f34-80191df5f08f": {
+            "json_class": "Returns::Lbtt::Property",
+            "property_id": "a1987393-6eac-4e57-8f34-80191df5f08f",
+            "flbt_type": "CONVEY",
+            "new_record": true,
+            "address": {
+                "json_class": "Address",
+                "address_line1": "First Scotrail Ltd",
+                "address_line2": "Excess Office",
+                "town": "EDINBURGH",
+                "postcode": "EH1 1BB",
+                "country": "SCO",
+                "new_record": true,
+                "address_identifier": "8194307",
+                "address_line3": "Waverley Railway Station",
+                "default_country": "SCO"
+            },
+            "lau_code": "9059",
+            "title_code": "LAN",
+            "title_number": "8808",
+            "parent_title_code": "KRK",
+            "ads_due_ind": "Y",
+            "parent_title_number": "7907"
+        }
+    },
+    "effective_date": "2019-11-07",
+    "relevant_date": "2019-11-07",
+    "contract_date": "2019-11-07",
+    "linked_ind": "Y",
+    "non_ads_relief_claims": [
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false,
+            "relief_type": "MULTIPLE",
+            "relief_amount": "0",
+            "relief_override_amount": "9000"
+        },
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false,
+            "relief_type": "CHARITIES",
+            "relief_amount": "0",
+            "relief_override_amount": "880"
+        },
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false,
+            "relief_type": "CHARITIESP",
+            "relief_amount": "0",
+            "relief_override_amount": "7050"
+        }
+    ],
+    "fpay_method": "BACS",
+    "form_type": "L",
+    "tare_reference": "RS1000480NTWR",
+    "tare_refno": "628",
+    "version": "1",
+    "property_type": "3",
+    "exchange_ind": "Y",
+    "previous_option_ind": "Y",
+    "uk_ind": "Y",
+    "non_ads_reliefclaim_option_ind": "Y",
+    "buyers": {
+        "2ad9f4f7-bd14-4546-95ce-0c6b3026448e": {
+            "json_class": "Returns::Lbtt::Party",
+            "party_type": "BUYER",
+            "new_record": true,
+            "address": {
+                "json_class": "Address",
+                "address_line1": "1 Gipsy Lane",
+                "address_line2": "Headington",
+                "town": "OXFORD",
+                "county": "Oxfordshire",
+                "postcode": "OX3 7PT",
+                "country": "EN",
+                "new_record": true,
+                "address_identifier": "18074175"
+            },
+            "party_id": "2ad9f4f7-bd14-4546-95ce-0c6b3026448e",
+            "type": "OTHERORG",
+            "is_acting_as_trustee": "Y",
+            "buyer_seller_linked_ind": "Y",
+            "job_title": "Manager",
+            "contact_surname": "Scott",
+            "contact_firstname": "Michael",
+            "contact_email": "michael.scott@dudnermifflin.com",
+            "contact_tel_no": "0134411111",
+            "org_contact_address": {
+                "json_class": "Address",
+                "address_line1": "3 Gipsy Lane",
+                "address_line2": "Headington",
+                "town": "OXFORD",
+                "county": "Oxfordshire",
+                "postcode": "OX3 7PT",
+                "country": "EN",
+                "new_record": true,
+                "address_identifier": "18074186"
+            },
+            "org_name": "Dunder Mifflin",
+            "org_type": "TRUST",
+            "com_jurisdiction": "EN"
+        }
+    },
+    "sellers": {
+        "f8f9bc0a-af43-42dd-9bea-3ddf4f491194": {
+            "json_class": "Returns::Lbtt::Party",
+            "party_type": "SELLER",
+            "new_record": true,
+            "party_id": "f8f9bc0a-af43-42dd-9bea-3ddf4f491194",
+            "type": "REG_COM",
+            "company": {
+                "json_class": "Company",
+                "company_number": "09338960",
+                "company_name": "NORTHGATE PUBLIC SERVICES LIMITED",
+                "address_line1": "Peoplebuilding 2 Peoplebuilding Estate",
+                "address_line2": "Maylands Avenue",
+                "locality": "Hemel Hempstead",
+                "county": "Hertfordshire",
+                "postcode": "HP2 4NW",
+                "country": "GB"
+            }
+        }
+    },
+    "business_ind": "Y",
+    "total_consideration": "12500",
+    "total_vat": "790",
+    "non_chargeable": "6670",
+    "remaining_chargeable": "30",
+    "contingents_event_ind": "Y",
+    "declaration": "true",
+    "lease_declaration": false,
+    "authority_ind": "Y",
+    "payment_date": "14/11/2019",
+    "account_type": "AGENT",
+    "link_transactions": [
+        {
+            "json_class": "Returns::Lbtt::LinkTransactions",
+            "new_record": true,
+            "return_reference": "RS10001001HALO",
+            "consideration_amount": "750"
+        },
+        {
+            "json_class": "Returns::Lbtt::LinkTransactions",
+            "new_record": true,
+            "return_reference": "RS10001002SEAT",
+            "consideration_amount": "280"
+        },
+        {
+            "json_class": "Returns::Lbtt::LinkTransactions",
+            "new_record": true,
+            "return_reference": "RS10001003AHOY",
+            "consideration_amount": "340"
+        }
+    ],
+    "sale_include_option": [
+        "",
+        "GOODWILL",
+        "MOVEABLES"
+    ],
+    "linked_consideration": "1370"
+}

@@ -7,31 +7,45 @@ module Returns
     extend ActiveSupport::Concern
 
     # Call the back office to update the calculations based on the latest data
-    # Doesn't run if there's not enough data (ie validation fails).
-    # Doesn't update the orig_ fields since we're just updating the data
     # Requires @lbtt_return be set up (which it usually is).
+    # @return [Boolean] true if this was successful
     def update_tax_calculations
-      Rails.logger.debug('Checking if valid enough for a call to lbtt_transactions')
-      return unless @lbtt_return.valid_for_tax_calc?
+      process_tax_calculation
+    end
 
-      @lbtt_return.tax.calculate_tax(current_user, @lbtt_return, false)
+    # Call the back office to update the npv calculations based on the latest data
+    # Requires @lbtt_return be set up (which it usually is).
+    # @return [Boolean] true if this was successful
+    def update_npv_calculation
+      process_tax_calculation(:npv)
+    end
 
-      store_calculated_tax
+    # Call the back office to update the calculations based on the relief_type changeds
+    # Requires @lbtt_return be set up (which it usually is).
+    # @return [Boolean] true if this was successful
+    def update_relief_type_calculation
+      process_tax_calculation(:relief_type)
     end
 
     private
 
-    # If there's no errors reported, updates/saves @lbtt_return in the LbttController wizard cache.
-    def store_calculated_tax
-      # don't store anything if back office sent errors
-      if @lbtt_return.errors.any? || @lbtt_return.tax.errors&.any?
-        Rails.logger.debug("Not updating wizard_cache with tax calculations this time - #{@lbtt_return.errors}")
-        false
-      else
-        Rails.logger.debug("Updating wizard_cache with tax calculations - #{@lbtt_return.tax}")
-        wizard_save(@lbtt_return, LbttController)
-        true
+    # Does the actual processing for the tax calculation
+    # @param calc_type [Symbol] the type of calculation npv or main
+    # @return [Boolean] true if this was successful
+    def process_tax_calculation(calc_type = :main)
+      Rails.logger.debug("Checking if ready to call for tax #{calc_type} calculation")
+      # if haven't enough information for tax calculation then consider successful.i.e. call
+      # hasn't failed.
+      return true unless @lbtt_return.ready_for_tax_calc?
+
+      success = @lbtt_return.tax.calculate_tax(current_user, @lbtt_return, calc_type)
+      if success
+        Rails.logger.debug("Updating wizard_cache with tax #{calc_type} calculations - #{@lbtt_return.tax}")
+        success = @lbtt_return.tax.valid?(%i[total_reliefs])
+        Rails.logger.debug("Tax model validation for tax #{calc_type} success - #{success}")
+        wizard_save(@lbtt_return, LbttController) if success
       end
+      success
     end
   end
 end

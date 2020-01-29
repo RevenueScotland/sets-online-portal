@@ -1,0 +1,164 @@
+{
+    "json_class": "Returns::Lbtt::LbttReturn",
+    "is_public": false,
+    "new_record": true,
+    "tax": {
+        "json_class": "Returns::Lbtt::Tax",
+        "new_record": true,
+        "flbt_type": "CONVEY",
+        "linked_ind": "N",
+        "linked_npv": 0,
+        "orig_linked_npv": 0,
+        "total_reliefs": "0",
+        "total_ads_reliefs": "0",
+        "calculated": "2250",
+        "ads_due": "0",
+        "orig_total_reliefs": "0",
+        "orig_total_ads_reliefs": "0",
+        "orig_calculated": "0",
+        "orig_ads_due": "0"
+    },
+    "ads": {
+        "json_class": "Returns::Lbtt::Ads",
+        "new_record": true,
+        "flbt_type": "CONVEY"
+    },
+    "flbt_type": "CONVEY",
+    "agent": {
+        "json_class": "Returns::Lbtt::Party",
+        "party_type": "AGENT",
+        "new_record": true,
+        "firstname": "Portal User",
+        "surname": "New Users",
+        "email_address": "noreply@northgateps.com",
+        "telephone": "07700900321",
+        "address": {
+            "json_class": "Address",
+            "address_line1": "2 Park Lane",
+            "address_line2": "Garden Village",
+            "town": "NORTHTOWN",
+            "county": "Northshire",
+            "postcode": "RG1 1PB",
+            "country": "GB",
+            "new_record": true
+        }
+    },
+    "buyers": {
+        "cbcde02d-ac69-47b8-84da-1eb52330af54": {
+            "json_class": "Returns::Lbtt::Party",
+            "party_type": "BUYER",
+            "new_record": true,
+            "firstname": "Michael",
+            "surname": "Scott",
+            "email_address": "michael.scott@dudnermifflin.com",
+            "telephone": "0134411111",
+            "address": {
+                "json_class": "Address",
+                "address_line1": "1 Gipsy Lane",
+                "address_line2": "Headington",
+                "town": "OXFORD",
+                "county": "Oxfordshire",
+                "postcode": "OX3 7PT",
+                "country": "EN",
+                "new_record": true,
+                "address_identifier": "18074175"
+            },
+            "party_id": "cbcde02d-ac69-47b8-84da-1eb52330af54",
+            "type": "PRIVATE",
+            "title": "MR",
+            "nino": "AB303030C",
+            "is_contact_address_different": "N",
+            "buyer_seller_linked_ind": "N",
+            "is_acting_as_trustee": "N"
+        }
+    },
+    "sellers": {
+        "63dd4bf5-7607-499a-98c0-05a43a312888": {
+            "json_class": "Returns::Lbtt::Party",
+            "party_type": "SELLER",
+            "new_record": true,
+            "firstname": "Jan",
+            "surname": "Levinson",
+            "address": {
+                "json_class": "Address",
+                "address_line1": "Flat 1",
+                "address_line2": "Saxon Court",
+                "address_line3": "2 Stephen Road",
+                "address_line4": "Headington",
+                "town": "OXFORD",
+                "county": "Oxfordshire",
+                "postcode": "OX3 9FA",
+                "country": "EN",
+                "new_record": true,
+                "address_identifier": "27542710"
+            },
+            "party_id": "63dd4bf5-7607-499a-98c0-05a43a312888",
+            "hash_for_nino": {
+                "AB303030C": [
+                    "cbcde02d-ac69-47b8-84da-1eb52330af54",
+                    "Mr Michael Scott"
+                ]
+            },
+            "type": "PRIVATE",
+            "title": "MISS"
+        }
+    },
+    "properties": {
+        "cc5a937a-cab4-4a88-8084-97836fa5b133": {
+            "json_class": "Returns::Lbtt::Property",
+            "property_id": "cc5a937a-cab4-4a88-8084-97836fa5b133",
+            "flbt_type": "CONVEY",
+            "new_record": true,
+            "address": {
+                "json_class": "Address",
+                "address_line1": "First Scotrail Ltd",
+                "address_line2": "Waverley Railway Station",
+                "town": "EDINBURGH",
+                "postcode": "EH1 1BE",
+                "country": "SCO",
+                "new_record": true,
+                "default_country": "SCO",
+                "address_identifier": "8194315"
+            },
+            "lau_code": "9059",
+            "ads_due_ind": "N"
+        }
+    },
+    "property_type": "1",
+    "effective_date": "2019-11-07",
+    "relevant_date": "2019-11-07",
+    "contract_date": "2019-11-07",
+    "exchange_ind": "N",
+    "previous_option_ind": "N",
+    "uk_ind": "N",
+    "link_transactions": [
+        {
+            "json_class": "Returns::Lbtt::LinkTransactions",
+            "new_record": true
+        }
+    ],
+    "linked_ind": "N",
+    "business_ind": "N",
+    "sale_include_option": [
+        ""
+    ],
+    "non_ads_relief_claims": [
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false
+        }
+    ],
+    "non_ads_reliefclaim_option_ind": "N",
+    "contingents_event_ind": "N",
+    "total_consideration": "1500",
+    "declaration": "true",
+    "lease_declaration": false,
+    "fpay_method": "CHEQUE",
+    "authority_ind": "Y",
+    "form_type": "L",
+    "tare_reference": "RS1000037VDQQ",
+    "tare_refno": "146",
+    "payment_date": "14/11/2019",
+    "version": "1",
+    "account_type": "AGENT"
+}

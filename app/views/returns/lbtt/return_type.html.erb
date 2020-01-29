@@ -4,7 +4,7 @@
 
 <%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
-    <%= f.hidden_field :current_flbt_type, value: @lbtt_return.flbt_type %>
-    <%= f.collection_radio_buttons_fields(:flbt_type, @lbtt_return.list_ref_data(:flbt_type), :code, :value ,alignment: 'vertical') %>    
+    <%= f.hidden_field :current_flbt_type, {}, { value: @lbtt_return.flbt_type } %>
+    <%= f.collection_radio_buttons_fields(:flbt_type, @lbtt_return.list_ref_data(:flbt_type), alignment: 'vertical') %>    
     <%= f.button 'next', { :name => 'submitted' } %>
 <% end %>

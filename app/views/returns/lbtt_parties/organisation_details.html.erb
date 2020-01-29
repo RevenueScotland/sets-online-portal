@@ -16,6 +16,6 @@
   <% if @party.org_type == 'CHARITY' %> 
     <%= f.text_field :charity_number %>
   <% end %>
-  <%= f.select :com_jurisdiction, @party.list_ref_data(:com_jurisdiction), {}, { text_auto_complete: true } %>
+  <%= f.select :com_jurisdiction, @party.list_ref_data(:com_jurisdiction), { text_auto_complete: true }, { } %>
   <%= f.button 'next', { :name => 'submitted' }  %>
 <% end %>

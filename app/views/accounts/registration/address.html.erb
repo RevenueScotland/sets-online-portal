@@ -14,7 +14,7 @@
   <%= form_errors_for [@account, @address_summary, @address_detail] %>
 
   <% if AccountType.registered_organisation?(@account.account_type) %>
-    <%= f.collection_radio_buttons_fields(:reg_company_contact_address_yes_no, ReferenceData::ReferenceValue.list('YESNO', 'SYS', 'RSTU'), :code, :value) %>
+    <%= f.collection_radio_buttons_fields(:reg_company_contact_address_yes_no, ReferenceData::ReferenceValue.list('YESNO', 'SYS', 'RSTU')) %>
   <% end %>
   <div id='hideable' >
     <%= render "/layouts/address" %>

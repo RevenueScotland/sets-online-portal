@@ -27,7 +27,7 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
 
   # Attributes for this class, in list so can re-use as permitted params list in the controller
   def self.attribute_list
-    %i[party_refno user_roles work_place_refno forename surname email_address contact_number preferred_language
+    %i[party_refno user_roles work_place_refno forename surname email_address phone_number preferred_language
        email_address_confirmation old_password new_password new_password_confirmation password password_change_required
        password_expiry_date user_is_authenticated user_is_registered user_locked user_is_current username new_username
        token user_is2_fa token_valid2_fa user_is_signed_ta_cs]
@@ -39,7 +39,7 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   # Define the ref data codes associated with the attributes to be cached in this model
   # @return [Hash] <attribute> => <ref data composite key>
   def cached_ref_data_codes
-    { user_roles: 'PORTALROLES.SYS.RSTU', user_is_current: 'CURRENT_INACTIVE.SYS.RSTU' }
+    { user_roles: comp_key('PORTALROLES', 'SYS', 'RSTU'), user_is_current: comp_key('CURRENT_INACTIVE', 'SYS', 'RSTU') }
   end
 
   # Custom override getter for user_is_current to return default of 'Y' if not set (important for validation of new
@@ -160,6 +160,18 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     save_or_update(requested_by)
   end
 
+  # Returns a alternative translation key where necessary.
+  # "new password" and "new password confirmation" fields are "password" and "password confirmation" for new user.
+  # @param attribute [Symbol] the name of the attribute to translate
+  # @param translation_options [Object] in this case the party type being processed passed from the page
+  # @return [Symbol] the name of the translation attribute
+  def translation_attribute(attribute, translation_options = nil)
+    return attribute unless %i[new_password new_password_confirmation].include?(attribute)
+    return ('CREATE_' + attribute.to_s).to_sym if translation_options == :new_user
+
+    ('UPDATE_' + attribute.to_s).to_sym
+  end
+
   private
 
   # Do the save processing for either update or create as long as validation passes
@@ -173,13 +185,16 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
 
   # @return [Hash] request to save a user object using the authority of requested_by
   def save_request(requested_by)
-    action = 'UPDATE'
-    self.username = new_username if new_record? # "self." to make it clear to RoR want the field not a local variable
-    action = 'CREATE' if new_record?
+    if new_record?
+      action = 'CREATE'
+      self.username = new_username
+    else
+      action = 'UPDATE'
+    end
     { Requestor: requested_by.username, Username: username, Action: action, Forename: forename, Surname: surname,
       EmailAddress: email_address, UserIsCurrent: user_is_current, WorkplaceCode: requested_by.work_place_refno,
       PartyReference: requested_by.party_refno, Password: new_password, ServiceCode: 'SYS',
-      UserRolesType: { 'ins2:UserRole' => user_roles.reject(&:empty?) } }
+      UserPhoneNumber: phone_number, UserRolesType: { 'ins2:UserRole' => user_roles.reject(&:empty?) } }
   end
 
   # @return [Hash] request to update the password of this user using the authority of this user
@@ -203,9 +218,7 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     users = {}
     call_ok?(:maintain_user, Action: 'ListUsers', Requestor: requested_by.username) do |body|
       ServiceClient.iterate_element(body[:users]) do |user|
-        users[user[:username]] = User.new_from_fl(user) do |this_user|
-          convert_back_office_data(this_user)
-        end
+        users[user[:username]] = User.new_from_fl(convert_back_office_data(user))
       end
     end
     users
@@ -214,10 +227,18 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   # Converts back office response data format to format we can use to create an object.
   private_class_method def self.convert_back_office_data(user)
     # Fiddle as FL gives yes and no but expect Y and N to be passed back so make the change on load
-    user.user_is_current = user.user_is_current[0..0]
+    yes_nos_to_yns(user, %i[user_is_current])
+
     # Set the confirm e-mail to be the same as the original e-mail
-    user.email_address_confirmation = user.email_address
-    # Fiddle as FL gives user roles inside a hash and to populate checkbox we just want the array
-    user.user_roles = user.user_roles[:user_role] unless user.user_roles.nil?
+    user[:email_address_confirmation] = user[:email_address]
+    # Fiddle as FL gives user roles inside a hash and to populate check box we just want the array
+    user[:user_roles] = user[:user_roles][:user_role] unless user[:user_roles].nil?
+    user
+  end
+
+  # Hash to translate back office logical data item into an attribute
+  def back_office_attributes
+    { PASSWORD: { attribute: :new_password },
+      OLD_PASSWORD: { attribute: :old_password } }
   end
 end

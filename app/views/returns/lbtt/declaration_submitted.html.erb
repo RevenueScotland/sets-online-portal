@@ -24,10 +24,10 @@
         %>
         <%= render "/layouts/tax_return_submit_text", return_type: return_type,
                                                       return_reference: @lbtt_return.tare_reference,
-                                                      payment_method: @lbtt_return.payment_description,
+                                                      payment_method: @lbtt_return.lookup_ref_data_value(:fpay_method),
                                                       payment_due_date: @lbtt_return.payment_date %>
         <p class="govuk-body">
-          <%= link_to t('go_to_dashboard'), dashboard_path if current_user %> <br>
+          <%= link_to t('go_to_dashboard'), dashboard_path if current_user %> <br/>
           <% link = [
             { link: :public_landing_return_page, path: Rails.configuration.x.external_links.public_landing_return_page }
             ] %>

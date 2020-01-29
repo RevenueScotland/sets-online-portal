@@ -18,13 +18,33 @@ class BaseFormBuilder < ActionView::Helpers::FormBuilder # rubocop:disable Metri
   protected
 
   # gets the hint text for the given attribute using the key active_model.hints.[model]
+  #
+  # When a hint is found, then the hint's id will be added to the aria-describedby of html_options.
   # @param attribute [Object] the symbol to be translated to a string
-  # @param css_class_name [Class] the class of the content
   # @return [HTML block element] the standard hint text; consists of span (with the translated text)
-  def hint_text(attribute, css_class_name)
-    hint = @template.t(get_attribute_key(attribute),
+  def hint_text(attribute, options = {}, html_options = {})
+    hint_html_options = { class: 'govuk-hint', id: "#{field_id(attribute, options, html_options)}-hint" }
+    hint = @template.t(UtilityHelper.get_attribute_key(@object, attribute),
                        default: '', scope: [@object.i18n_scope, :hints, @object.model_name.i18n_key])
-    @template.content_tag(:span, hint, class: css_class_name) unless hint == ''
+    hint = options[:hint] unless options[:hint].nil?
+    hint = UtilityHelper.swap_texts(hint, options)
+    return '' if hint == ''
+
+    set_aria_describedby(hint_html_options[:id], html_options)
+    @template.content_tag(:span, hint, hint_html_options)
+  end
+
+  # Creates the standard GDS value for the hint's "id" property.
+  # @return [String] This is the "<object>_<attribute>-hint" or the "<label-for>-hint"
+  def field_id(attribute, options = {}, html_options = {})
+    # Looking at the created label html block, that will be converted into a string, then the string will be scanning
+    # until it gets the string which is containing 'for="<value>"' where <value> is the string that is needed.
+    # @note Overriding the text of the label is done by adding a :label to the html_options,
+    #   in some areas the :label key of the html_options hash is an empty string,
+    #   having an empty string would mean that we're not creating the label wrapper,
+    #   which will not generate the 'id's needed for the hint and error.
+    #   The label: 'ignore' is needed so that we can always generate the id.
+    field_label_wrapper(attribute, options.merge(label: 'ignore'), html_options).to_s.scan(/for="([^"]*)"/).last.first
   end
 
   # Gets the hidden label for those input where no label on screen.
@@ -33,24 +53,31 @@ class BaseFormBuilder < ActionView::Helpers::FormBuilder # rubocop:disable Metri
   # The given attribute using the key active_model.hidden_label.[model]
   # @param attribute [Object] the symbol to be translated to a string
   # @return [HTML block element] the standard hint text; consists of span (with the translated text)
-  def visually_hidden_label(attribute, options)
-    hidden_label = @template.t(get_attribute_key(attribute, options),
+  def visually_hidden_label(attribute, options, html_options)
+    hidden_label = @template.t(UtilityHelper.get_attribute_key(@object, attribute, options),
                                default: '', scope: [@object.i18n_scope, :hidden_label, @object.model_name.i18n_key])
-    @template.content_tag(:span, hidden_label, class: 'govuk-visually-hidden') unless hidden_label == ''
+    return if hidden_label == ''
+
+    # The index option is used for table_fields.
+    index = html_options[:index]
+    hidden_label = table_fields_cell_hidden_label(hidden_label, index) unless index.nil?
+    @template.content_tag(:span, hidden_label, class: 'govuk-visually-hidden')
   end
 
   # Extracts and displays errors for the given attribute for the object that is being processed
   # by the rails rendering engine
+  #
+  # When an error is found, then the hint's id will be added to the aria-describedby of html_options.
   # @param attribute [Object] the symbol to be translated to a string
-  # @return [HTML block element] the standard error text; consists of span (with the translated text)
-  def error_text(attribute)
-    error_html = ''
-    unless @object.nil?
-      error_text = @object.errors[attribute].join('<br>' + @template.t('this') + ' ')
-      error_text = @template.t('this') + ' ' + error_text if error_text != ''
-      error_html = @template.content_tag(:span, error_text.html_safe, class: 'govuk-error-message')
-    end
-    error_html
+  # @return [HTML block element] the standard error text; consists of span (with the translated text),
+  #   must return a blank string if there are no errors
+  def error_text(attribute, options = {}, html_options = {})
+    return ''.html_safe if @object.nil? || @object.errors[attribute].empty?
+
+    error_html_options = { id: "#{field_id(attribute, options, html_options)}-error", class: 'govuk-error-message' }
+    set_aria_describedby(error_html_options[:id], html_options)
+
+    @template.content_tag(:span, error_content(attribute), error_html_options)
   end
 
   # Wrapper for generic label, hint text, error text structure for collection field.
@@ -59,13 +86,13 @@ class BaseFormBuilder < ActionView::Helpers::FormBuilder # rubocop:disable Metri
   # @return [HTML block element] returns the generic label, hint text and error text for a field
   def collection_field_wrapper(attribute, options)
     legend_tag = collection_legend_wrapper(attribute, options)
-    hint_text = hint_text(attribute, 'govuk-hint')
-    error_text = error_text(attribute)
+    hint_text = hint_text(attribute, options)
+    error_text = error_text(attribute, options)
     fieldset_tag = @template.content_tag(:fieldset,
                                          legend_tag + hint_text + error_text + yield,
                                          class: 'govuk-fieldset')
-    css_class = 'govuk-form-group' + add_css_class(attribute, options)
-    @template.content_tag(:div, fieldset_tag, class: css_class)
+
+    @template.content_tag(:div, fieldset_tag, class: field_wrapper_class(field_wrapper_error_class(attribute)))
   end
 
   # Wrapper for generic label, hint text, error text structure and input field.
@@ -73,94 +100,204 @@ class BaseFormBuilder < ActionView::Helpers::FormBuilder # rubocop:disable Metri
   # @param options [Array] an array of options
   # @return [HTML block element] generic field wrapper which consists of label, hint text,
   #   error text and the input field tag
-  def field_wrapper(attribute, options = {}, html_options = nil, gds_input_class_name = 'govuk-input')
-    label_tag = field_label_wrapper(attribute, options)
-    error_text = error_text(attribute)
+  def field_wrapper(attribute, options = {}, html_options = {}, input_class = 'govuk-input')
+    label_tag = field_wrapper_label(attribute, options, html_options)
     symbol = symbol_label_wrapper(options)
-    css_class = UtilityHelper.form_group_class(options) + add_css_class(attribute, options, html_options,
-                                                                        gds_input_class_name)
-    @template.content_tag(:div, label_tag + hint_text(attribute, 'govuk-hint') + error_text + symbol + yield,
-                          class: css_class)
+
+    error_class = field_wrapper_error_class(attribute)
+    # Adds the error class to the input before it's yielded in.
+    set_input_class_to_error(html_options, input_class) unless error_class.blank?
+    # set_aria_describedby(attribute, options, html_options)
+    output = @template.content_tag(:div, label_tag + hint_text(attribute, options, html_options) +
+                                           error_text(attribute, options, html_options) + symbol + yield,
+                                   class: field_wrapper_class(error_class))
+
+    # Wraps the multiple field wrapper depending on the type of multiple field it's using.
+    multiple_fields_wrapper(output)
+  end
+
+  # The label created specifically for the field_wrapper using the standard label.
+  # @note this has to be separated from the field_wrapper method to fit rubocop standards, and
+  #   instead of overriding the field_label_wrapper only the data needed are passed into the parameter
+  #   as the html_options may contain key(s)/data that shouldn't be passed into the label.
+  def field_wrapper_label(attribute, options, html_options)
+    # We only need to pass in the index if it exists, as this is used for the table_fields.
+    # @note adding a :value or blank :index in the html_options of the label will mess up the 'for' property
+    label_html_options = html_options[:index].nil? ? {} : { index: html_options[:index] }
+    field_label_wrapper(attribute, options, label_html_options)
   end
 
   # Wrapper for generic field label
   # @param attribute [Object] symbol to be translated to string related to the content
   # @param options [Array] an array of options use to add optional keyword
   # @return [HTML block element] generic field label tag consisting of label contents and specific classes
-  def field_label_wrapper(attribute, options = {})
-    label = label_text(attribute, options)
-    # swaps the texts mainly used for changing a text to a hyper link
-    UtilityHelper.swap_texts(label, options)
-    label = append_optional_keyword(label, options)
-    hidden_label = visually_hidden_label(attribute, options)
+  def field_label_wrapper(attribute, options = {}, html_options = {})
+    # The :value html_option is messing up the generated 'for' property, it ends up creating it with the value.
+    # As this is also being used to get the 'id's of the hint and error, this will prevent adding the :value
+    # to generate the id.
+    html_options = html_options.dup.reject { |key| key == :value }
+    label = UtilityHelper.label_text(@object, attribute, options)
+
+    label_options = field_label_html_options(options, html_options)
+    hidden_label = visually_hidden_label(attribute, options, label_options)
     label += hidden_label unless hidden_label.nil?
-    label_options = { class: UtilityHelper.field_label_class(options) }
-    label_options[:index] = options[:index] if options[:index]
+    # If we're creating an empty label then we don't create it.
+    return ''.html_safe if label.blank?
+
     @template.label(@object_name, attribute, label_options) do
       label.html_safe
     end
   end
 
-  # get the label text for a field
-  # @param attribute [Object] symbol to be translated to string related to the content
-  # @param options [Array] an array of options that is use to determine if :label is present and to use that
-  # @return [String] returns the label
-  def label_text(attribute, options = {})
-    return options[:label] unless options[:label].nil?
+  # Depending on the contents of the global options @table_options and @fieldset_options that comes from
+  # the form_builder_helper, this will wrap another layer on the output if the field is being used as part of a
+  # fieldset or a table of fields.
+  def multiple_fields_wrapper(output)
+    unless @fieldset_options.nil? || @fieldset_options[:direction] == :vertical
+      return @template.content_tag(:div, output, class: 'fieldset-input__item')
+    end
+    return table_data_tag(output, class: 'remove_border_bottom_line') unless @table_options.nil?
 
-    @template.t(get_attribute_key(attribute, options),
-                default: '',
-                scope: [@object.i18n_scope, :attributes, @object.model_name.i18n_key])
+    output
   end
 
-  # add optional keyword if optional: true is send from view
-  # @param label [String] the label of the optional item
-  # @param options [Array] an array of options to look for the symbol :optional to determine whether its optional or not
-  # @return [String] returns the label with the standard optional keyword if the content is an optional field
-  def append_optional_keyword(label, options = {})
-    optional = options[:optional] unless options[:optional] == nil?
-    label = label + ' (' + @template.t('optional') + ')' if optional == true
-    label
+  # Wrapper for the group of fields, which is creating a single label, hint and the fields without their separate label
+  # @param heading [Hash] should contain the title of the fieldset, may contain other data related to the heading.
+  # @param fields [HTML block element] Contains the html block of each of the fields, which is to be placed into a div
+  #   container.
+  def fieldset_wrapper(heading, fields)
+    output = field_label_wrapper(heading[:attribute], label: heading[:label])
+    output += hint_text(heading[:attribute], hint: heading[:hint])
+    output += @template.content_tag(:div, fields.html_safe, class: 'fieldset-input')
+
+    @template.content_tag(:div,
+                          @template.content_tag(:fieldset, output, class: 'govuk-fieldset'),
+                          class: 'govuk-form-group')
   end
 
-  # set default class and div to radio buttons used in
-  # {FormBuilderHelper.LabellingFormBuilder#collection_radio_buttons_fields}
-  # @param method [Object] symbol to be translated to string for the label, hint and error texts
-  # @param collection [Array] a collection of data that is directly linked to
-  #   the parameter values of value_method and text_method
-  # @param value_method [Object] the value of the passed method, shown as a radio button
-  # @param text_method [Object] the text of the passed method, to be displayed
-  # @param options [Array] an array of options to override the radio button outer div css
+  # Used for initially setting up the table_options of the table_fields form.
+  # @note only used in table_fields method of form_builder_helper.
+  # Here is a list of possible options that can be added to the options when the table_fields method is called:
+  # 1. :exclude_delete_button [Boolean] partly used for determining if the delete row button should be added.
+  # 2. :exclude_add_button [Boolean] used for determining if the add row button should be added.
+  def table_fields_options_setup(form, index, options)
+    # The key :attributes [Array] will be used to store a list of attributes used when the fields are created
+    # so that it can be used to display the table headings for each columns.
+    form.table_options = { attributes: [], options: { width: 'two-thirds', label: '' },
+                           html_options: { index: index } }.merge(options)
+  end
+
+  # Wraps the fields in a table_row <tr> element, which may also include the delete row button.
+  # @note only used in table_fields method of form_builder_helper.
+  # @param fields [HTML block element] By the time this method is called, the row of fields have already been created,
+  #   and this is what it consists.
+  def table_fields_row_wrapper(objects, fields, form, index, options)
+    delete_button = ''
+    # Normally where we have more than one row of object, we want to default the 'delete row' button to be shown.
+    if objects.size > 1 && !options[:exclude_delete_button]
+      delete_text = @template.t('delete_row')
+      button_html_options = { name: 'delete_row', class: 'scot-rev-button_link govuk-link', id: "delete_row_#{index}",
+                              value: index, 'aria-label' => table_fields_cell_hidden_label(delete_text, index) }
+      delete_button = table_data_tag(@template.button_tag(delete_text, button_html_options),
+                                     class: 'remove_border_bottom_line')
+      # Adds the table_heading for the 'delete row' button
+      form.table_options[:attributes] << :action
+    end
+    table_row_tag(fields + delete_button)
+  end
+
+  # Generates the text to be used for the visually-hidden labels of a field of table_fields
+  # @return [String] the text with the row index
+  def table_fields_cell_hidden_label(text, index)
+    return text if index.nil? || !index.is_a?(Integer)
+
+    @template.t('row', title: text, row: (index + 1))
+  end
+
+  # Creates the add row button of the table_fields if certain conditions are met. See code below for conditions.
+  # @note only used in {#table_fields_wrapper}.
+  def table_fields_add_row_button(options)
+    # Normally we want to have an 'add row' button, so we will look for the :exclude_add_button.
+    return ''.html_safe if options[:exclude_add_button]
+
+    add_row = button('add_row', class: 'scot-rev-button_link govuk-link', name: 'add_row')
+    @template.content_tag(:div, add_row, class: 'govuk-form-group')
+  end
+
+  # Creates the table_fields's row of table headings.
+  # @note only used in {#table_fields_wrapper}.
+  # @param attributes [Array] see table_fields's local variable attributes
+  def table_fields_head_wrapper(attributes)
+    head = ''
+    return head if attributes.blank?
+
+    attributes.each do |attribute|
+      translatable_text = attribute == :action ? attribute.to_s : '.' + attribute.to_s
+      head += table_heading_tag(@template.t(translatable_text))
+    end
+
+    table_head_tag(table_row_tag(head))
+  end
+
+  # Creates the standard table of fields output which may also have an add row button.
+  # For the description of the param attributes and body see the local variable attributes and body of
+  # {FormBuilderHelper.LabellingFormBuilder#table_fields}.
+  # @param attributes [Array] see comment above.
+  # @param body [HTML block element] see comment above.
+  # @param options [Hash] see table_fields_options_setup for some of the contents
+  def table_fields_wrapper(attributes, body, options)
+    table_tag(table_fields_head_wrapper(attributes) + table_body_tag(body)) + table_fields_add_row_button(options)
+  end
+
+  # Merges all the contents of the passed options with the fieldset_options or table_options hash of
+  # html_options or options.
+  # @note currently in fields like text_field, date_field etc. it only requires the options hash which also includes
+  #   the html_options hash of fields. In fields like a select, the html_options is separated from the options, so
+  #   this should handle both type of options.
+  # @param type [Symbol] when used, this should either be :options or :html_options.
+  # @param options [Hash] the field's initial options (or html_options) to be merged.
+  # @return [Hash] options (or html_options) merged with the fieldset_option or table_options options
+  #   (or html_options) hash.
+  def form_options(type, options = {})
+    return options if @fieldset_options.nil? && @table_options.nil?
+
+    # If the fieldset_options[type] has data then the table_options should be nil, and the other way around too.
+    options.merge!(@fieldset_options[type]) unless @fieldset_options.nil?
+    options.merge!(@table_options[type]) unless @table_options.nil?
+    options
+  end
+
+  # Appends the attribute used to the @table_options attributes list when a field is created using the table_fields
+  # method in the form_builder_helper.
+  # @note this is needed on each fields that we want to include in the table_fields method of form_builder_helper.
+  def append_table_fields_attribute(attribute)
+    @table_options[:attributes] << attribute unless @table_options.nil? || @table_options[:attributes].nil?
+  end
+
+  # Creates the standard wrapper for a collection of radio buttons.
+  # See {FormBuilderHelper.LabellingFormBuilder#collection_radio_buttons_fields} for information about the parameters.
   # @return [HTML block element] the standard radio buttons collection wrapper with the appropriate classes
-  def collection_radio_buttons_wrapper(method, collection, value_method, text_method,
-                                       options)
-    radio_buttons = collection_radio_buttons(method, collection, value_method, text_method) do |b|
+  def collection_radio_buttons_wrapper(method, collection, options, html_options)
+    radio_buttons = collection_radio_buttons(method, collection, options[:value_method], options[:text_method]) do |b|
       @template.content_tag(:div,
                             b.radio_button(class: 'govuk-radios__input') +
                             b.label(class: 'govuk-label govuk-radios__label'),
                             class: 'govuk-radios__item')
     end
-    radio_div_inline_tag = @template.content_tag(:div, radio_buttons, options)
-    radio_div_inline_tag
+    @template.content_tag(:div, radio_buttons, html_options)
   end
 
-  # set default class and div to checkbox used in {FormBuilderHelper.LabellingFormBuilder#collection_check_boxes_fields}
-  # @param method [Object] symbol to be translated to string for the label, hint and error texts
-  # @param collection [Array] a collection of data that is directly linked to
-  #   the parameter values of value_method and text_method
-  # @param value_method [Object] the value of the passed method, shown as a check box
-  # @param text_method [Object] the text of the passed method, to be displayed
+  # Creates the standard wrapper for a collection of checkboxes.
+  # See {FormBuilderHelper.LabellingFormBuilder#collection_check_boxes_fields} for information about the parameters.
   # @return [HTML block element] the standard checkbox wrapper collection with the appropriate classes
-  def collection_checkbox_wrapper(method, collection, value_method, text_method)
-    checkbox = collection_check_boxes(method, collection, value_method, text_method) do |b|
+  def collection_checkbox_wrapper(method, collection, options, html_options)
+    checkbox = collection_check_boxes(method, collection, options[:value_method], options[:text_method]) do |b|
       @template.content_tag(:div,
                             b.check_box(class: 'govuk-checkboxes__input') +
                             b.label(class: 'govuk-label govuk-checkboxes__label'),
                             class: 'govuk-checkboxes__item')
     end
-    radio_div_inline_tag = @template.content_tag(:div, checkbox,
-                                                 class: 'govuk-checkboxes')
-    radio_div_inline_tag
+    @template.content_tag(:div, checkbox, html_options)
   end
 
   # set default class and div to legend used in {FormBuilderHelper.LabellingFormBuilder#collection_check_boxes_fields}
@@ -168,12 +305,7 @@ class BaseFormBuilder < ActionView::Helpers::FormBuilder # rubocop:disable Metri
   # @param attribute [Object] the symbol to be translated to a string
   # @return [HTML block element] the standard legend wrapper; consists of the headings of the content.
   def collection_legend_wrapper(attribute, options)
-    attribute_key = get_attribute_key(attribute, options)
-    legend = @template.t(attribute_key,
-                         default: '', scope: [@object.i18n_scope, :attributes, @object.model_name.i18n_key])
-    legend = append_optional_keyword(legend, options)
-    # swaps the texts mainly used for changing a text to a hyper link
-    UtilityHelper.swap_texts(legend, options)
+    legend = UtilityHelper.label_text(@object, attribute, options)
     h1_tag = @template.content_tag(:h1, legend.html_safe, class: 'govuk-fieldset__heading')
     legend_tag = @template.content_tag(:legend, h1_tag,
                                        class: 'govuk-fieldset__legend govuk-fieldset__legend',
@@ -200,68 +332,85 @@ class BaseFormBuilder < ActionView::Helpers::FormBuilder # rubocop:disable Metri
     end
   end
 
-  # Get attribute key require to translate label,legend or hint text of a form control.
-  # User can override default attribute key by providing a translation_attribute on the underlying model
-  # @param attribute [Object] the symbol to be translated to a string
-  # @param options [Hash] if :translation_options is defined in the options, then it's passed to translation_attribute
-  # @return [Symbol] translation key use for translation
-  # @note only use :translation_options if there's no other way of avoiding it.
-  def get_attribute_key(attribute, options = {})
-    return attribute unless @object.respond_to?(:translation_attribute)
-
-    @object.translation_attribute(attribute, options[:translation_options])
-  end
-
   private
 
-  # this method add gds class to html control
-  # @param attribute [Object] the symbol to be translated to a string
-  # @param options [Array] an array of options
-  # @param html_options [Array] an array of html options mainly for select tag
-  # @param gds_input_class_name gds input css class
-  def add_css_class(attribute, options, html_options = nil, gds_input_class_name = 'govuk-input')
-    input_css_class, div_css_class = gds_html_error_class(attribute, gds_input_class_name)
-    # for select html control css class is part html option
-    if html_options.nil?
-      option_css_class(options, input_css_class)
-    else
-      html_option_css_class(html_options, input_css_class)
+  # The standard class for a form's field wrapper, which is 'govuk-form-group'.
+  # @return standard field wrapper class with additional class if it exists
+  def field_wrapper_class(additional_class = nil)
+    standard_gds_class = 'govuk-form-group'
+    return standard_gds_class if additional_class.blank?
+
+    "#{standard_gds_class} #{additional_class}"
+  end
+
+  # Builds the html options of the field label with some default options.
+  def field_label_html_options(options, html_options)
+    label_class = 'govuk-label'
+    label_class += " #{html_options[:class]}" unless html_options[:class].nil?
+    html_options[:class] = label_class
+    html_options[:index] = options[:index] if options[:index]
+    html_options
+  end
+
+  # Outputs the form field wrapper's standard class for a field with error.
+  def field_wrapper_error_class(attribute, override_error_check = false)
+    error_class = "#{field_wrapper_class}--error"
+    return error_class if override_error_check
+
+    error_class unless @object.errors[attribute].empty?
+  end
+
+  # Sets the input's class to include the standard error class.
+  # This is normally only done while the input field is being wrapped with the field wrapper.
+  def set_input_class_to_error(html_options = {}, input_class = 'govuk-input')
+    html_options[:class] =
+      html_options[:class].blank? ? "#{input_class}--error" : "#{html_options[:class]} #{input_class}--error"
+  end
+
+  # Sets the id of the aria-describedby property of an element's html options, this can also be used
+  # to add another id to the aria-describedby property.
+  def set_aria_describedby(id, html_options)
+    describedby = html_options['aria-describedby']
+    html_options['aria-describedby'] = describedby.nil? ? id : "#{describedby} #{id}"
+  end
+
+  # The date field html options if we're using a browser that's incompatble with the standard date field.
+  def ie_date_field_html_options(html_options)
+    html_options[:placeholder] = 'dd/mm/yyyy'
+    html_options[:class] = 'datepicker '
+    if date_parsable?(html_options[:value])
+      html_options[:value] = DateFormatting.to_display_date_format(html_options[:value])
     end
-    div_css_class
+    html_options
   end
 
-  # This method return gds input error related html css class  classes if there if input validation failed
-  # and outer div.
-  # @param attribute [Object] symbol to be translated to string related to the content
-  # @param input_class_name html input control css class
-  # @return [Input control error css class, Div error css class] error specific classes
-  def gds_html_error_class(attribute, input_class_name)
-    return ['', ''] if @object.errors[attribute].empty?
-
-    [input_class_name + '--error ', ' govuk-form-group--error']
+  # Creates the functional options of select, which also includes our own custom functional options.
+  # It currently adds the id 'combobox' used for converting the select field into an autocomplete input field.
+  # See https://api.rubyonrails.org/classes/ActionView/Helpers/FormOptionsHelper.html
+  def select_options(options)
+    default_option = options[:include_blank] ? :include_blank : :prompt
+    options = form_options(:options, options).merge(default_option => @template.t('select_prompt'))
+    options
   end
 
-  # This method assign css class to html_option of input control
-  # @param html_options [Array] an array of html options mainly for select tag
-  # @param input_css_class html input control css class
-  def html_option_css_class(html_options, input_css_class)
-    html_options[:class] = if html_options[:class].blank?
-                             input_css_class
-                           else
-                             html_options[:class] + input_css_class
-                           end
-    UtilityHelper.add_css_classes(html_options)
+  # Creates the html options of select.
+  def select_html_options(options, html_options)
+    html_options = form_options(:html_options, html_options)
+    html_options = UtilityHelper.field_html_options(options, html_options, 'govuk-select')
+    html_options[:class] = "#{html_options[:class]} combobox" if options[:text_auto_complete]
+    # The :index can only be filled after calling the form_options.
+    # Also the :index for a normal select should be in the html_options.
+    options[:index] = html_options[:index] if options[:text_auto_complete]
+
+    html_options
   end
 
-  # This method assign css class to options of input control
-  # @param options [Array] an array of options
-  # @param input_css_class html input control css class
-  def option_css_class(options, input_css_class)
-    options[:class] = if options[:class].blank?
-                        input_css_class
-                      else
-                        options[:class] + input_css_class
-                      end
-    UtilityHelper.add_css_classes(options)
+  # Creates the error message
+  # @return [HTML block element] the text for the start of an inline message
+  def error_content(attribute)
+    # The hidden error tag for the start of an error message
+    error_start = '<span class="govuk-visually-hidden">' + I18n.t('.error') + ':</span>'
+
+    (error_start + @object.errors[attribute].join('<br/>' + error_start)).html_safe
   end
 end

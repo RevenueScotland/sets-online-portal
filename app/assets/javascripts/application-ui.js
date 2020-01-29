@@ -60,10 +60,14 @@ $.fn.extend({
     //   fields with id deferral_reference_details.
     //     $.fn.hideRadioFields("returns_lbtt_lbtt_return[deferral_agreed_ind]", 'X', 'deferral_reference_details');
     hideRadioFields: function (radioGroupName, matchValue, id) {
+        radioGroupName = "input[name = '" + radioGroupName + "']";
+        // We're escaping the method when we can't find the element with this name, so that we don't go through
+        // the whole method.
+        if ($(radioGroupName).length == 0) return;
+
         // sets the default value for each variables - allows both id and matchValue to be null
         id = typeof id !== 'undefined' ? '#' + id : '#hideable';
         matchValue = typeof matchValue !== 'undefined' ? matchValue : 'Y';
-        radioGroupName = "input[name = '" + radioGroupName + "']";
         className = "govuk-radios__conditional--hidden";
 
         // update visibility on change
@@ -85,6 +89,13 @@ $(function () {
     // See the if statement below where it's being used to learn more about it.
     var form_dirty_warning_message = $('form').attr('data-form-dirty-warning-message');
 
+    // The heading can now be focused as it has a property of tabindex. This is added so that we don't see the
+    // heading 1 with an outline when it's focused.
+    $('h1').css('outline', 'none');
+
+    // Focuses on the error summary if it exists. Normally the error summary isn't shown unless the form has been
+    // submitted and the page reloads.
+    $('.govuk-error-summary').focus();
 
     // As the .endsWith is only introduced in ECMAScript6 (ES6), this polyfill is done to deal with it.
     // Most things in ES6 aren't supported in IE11 and this is one of it. See https://kangax.github.io/compat-table/es6/
@@ -124,79 +135,42 @@ $(function () {
         });
     }
 
-    // Contains the class for the hideable group fields
-    // var hideableGroupClass = '.govuk-details__text';
-
-    // // Don't do the check for hidden fields for each pages that doesn't have any show/hide details
-    // // @example This applies to the layout hideable_details,
-    // //   <%= render '/layouts/hideable_details/', { clickable_text: [t('filter_show'), t('filter_hide')] } do % > %>
-    // // @see _hideable_details.html.erb for more information
-    // if ($(hideableGroupClass).length > 0) {
-    //     // This is used to determine if the text is toggle-able - mainly used on the clickable filter text.
-    //     var filterTextClass = '.filter_text';
-    //     // Base class of the clickable text
-    //     var clickableTextClass = '.govuk-details__summary-text';
-    //     // The details class that can normally be opened/closed (hideable) on the browsers Chrome and Firefox
-    //     var openableGroupClass = '.govuk-details';
-
-    //     KEY_ENTER: 13;
-    //     KEY_SPACE: 32;
-    //     // Show/hide fields when text is clicked. It also works for all browsers.
-    //     $(filterTextClass).click(function () {
-    //         $.fn.hideField(null, filterTextClass, 'js-hidden');
-    //     });
-
-    //     // As the normal GDS standard of the details is not working for either IE11 or Edge,
-    //     // this is done so that the clickable texts can be toggled to show/hide the 
-    //     // hideable group fields.
-    //     if (isIE || isEdge) {
-    //         $(clickableTextClass).click(function () {
-    //             $(hideableGroupClass).toggle();
-    //         });
-
-    //         $('.govuk - details__summary').keypress(function (e) {
-    //             if ($.fn.charCode(e) == KEY_ENTER || $.fn.charCode(e) === KEY_SPACE) {
-    //                 $(hideableGroupClass).toggle();
-    //             }
-    //         });
-
-    //     }
-
-    //     // As the page loads, determines whether to keep the hideable group fields open or closed.
-    //     if ($.fn.checkHiddenFieldHasValues(hideableGroupClass) > 0) {
-    //         // Opens the hideable group
-    //         $(openableGroupClass).prop({ open: true });
-    //         // This handles the toggle text change
-    //         $.fn.hideField(null, filterTextClass, 'js-hidden');
-    //     } else {
-    //         // Closes the hideable group
-    //         $(openableGroupClass).removeAttr("open");
-    //         // As the normal toggle of hide and show of the hideable group fields doesn't work
-    //         // on both IE11 and Edge, this is done to make sure that it works for them too.
-    //         if (isIE || isEdge) {
-    //             $(hideableGroupClass).hide();
-    //         }
-    //     }
-    // }
-
-
-
     $("#menu").on("click", function () {
         $("#navigation").toggleClass('govuk-header__navigation--open');
         $("#menu").toggleClass('govuk-header__menu-button--open');
     });
+
+
+    // If the page is the session expired page then clear the turbolinks cache on load
+    const expiredURL = '/logout-session-expired';
+    if (window.location.pathname.endsWith(expiredURL)) {
+        Turbolinks.clearCache();
+        // The above leaves the current page in the cache so kick of a timer really clear the cache
+        setTimeout(function () { Turbolinks.clearCache() }, 500);
+    }
 })
 
-// Add event listener to clear the turbolinks cache on logout
 document.addEventListener('turbolinks:click', function (event) {
-    // console.log("event.data.url: " + event.data.url);
-    if (event.data.url.endsWith('/logout')) {
-        // console.log("clearing cache");
+    // Add event listener to clear the turbolinks cache on logout
+    const logoutURL = '/logout';
+    if (event.data.url.endsWith(logoutURL)) {
         Turbolinks.clearCache();
         // Prevent turbolinks firing on this link 
         // otherwise it still caches the current page
         event.preventDefault();
     }
+
+    // This allows the screen reader to read at least the heading parts of the page when we click on 
+    // a (turbo)link.
+    // It focuses on the header first as some page load already focuses on the h1, which would not
+    // notify the screen reader that the focus has changed.
+    // In most (turbo)link click, the screen reader should read out the contents of the header and then
+    // it always read the heading 1 <h1>.
+    // This is also defined here as we don't want the focus to change on any button clicks which the
+    // screen reader should read the full page normally.
+    document.addEventListener('turbolinks:load', function () {
+        $('.govuk-header').attr("tabindex", "-1").css('outline', 'none');
+        $('.govuk-header').focus();
+        setTimeout(function () { $('h1').focus() }, 0);
+    });
 });
-
-

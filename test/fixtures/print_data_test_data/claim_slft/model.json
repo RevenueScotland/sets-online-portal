@@ -1,0 +1,55 @@
+{
+    "json_class": "Claim::ClaimPayment",
+    "srv_code": "SLFT",
+    "tare_reference": "RS1000072CXTC",
+    "version": "2",
+    "current_user": {
+        "json_class": "User",
+        "username": "PORTAL.WASTE.NEW",
+        "work_place_refno": "3",
+        "party_refno": "192",
+        "user_roles": {
+            "user_role": [
+                "ACCADMN",
+                "ACCSECADMN",
+                "PWSAMEND",
+                "PWSCLAIM",
+                "PWSDASH",
+                "PWSDRNEW",
+                "PWSDRSUB",
+                "PWSDRUPD",
+                "PWSMESSAGE"
+            ]
+        },
+        "password_change_required": false,
+        "password_expiry_date": "2020-02-05",
+        "new_record": true
+    },
+    "new_record": true,
+    "cached_ref_data": {
+        "reason": {
+            "CLAIM": {
+                "json_class": "ReferenceData::ReferenceValue",
+                "domain_code": "CLAIMREASONS",
+                "service_code": "SLFT",
+                "workplace_code": "RSTU",
+                "code": "CLAIM",
+                "value": "Claim for Repayment",
+                "default": "yes",
+                "sequence": "40",
+                "new_record": true
+            }
+        }
+    },
+    "reason": "CLAIM",
+    "claiming_amount": "1170",
+    "account_holder_name": "MR MICHAEL SCOTT",
+    "account_number": "24262810",
+    "branch_code": "78-92-35",
+    "bank_name": "Tesco",
+    "declaration_public": "true",
+    "declaration": "true",
+    "case_reference": "CMSS00000140",
+    "repayment_ref_no": "36",
+    "account_type": "TAXPAYER"
+}

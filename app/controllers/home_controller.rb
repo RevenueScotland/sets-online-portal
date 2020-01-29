@@ -13,4 +13,7 @@ class HomeController < ApplicationController
 
   # Standalone authorisation failure page
   def forbidden; end
+
+  # handle file download error
+  def file_download_error; end
 end

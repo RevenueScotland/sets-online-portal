@@ -3,11 +3,12 @@
 # Sub-directory to organise the different tax returns.
 module Returns
   # ADS = Additional Dwelling Supplements.  Wizard for collecting ADS information and putting it
-  # into the main LbttController wizard (rather than creating separate ones then having to do a merge process).
+  # into the main LbttController wizard (rather than creating separate ones then having to do a merge process)
+  # See tax wizard for a similar example
   class LbttAdsController < ApplicationController
     include Wizard
     include WizardListHelper
-    include AddressHelper
+    include WizardAddressHelper
     include LbttTaxHelper
     include LbttControllerHelper
 
@@ -19,43 +20,49 @@ module Returns
     # wizard steps for the repayment ADS wizard, @see LbttTaxController for the last step
     REPAYMENT_STEPS = %w[ads_repay_reason ads_repay_date ads_repay_address ads_repay_details].freeze
 
-    # Define simple wizard actions that all have the same config
-    standard_wizard_step_actions(STEPS, %i[ads_dwellings ads_amount],
-                                 params: :filter_params, cache_index: LbttController)
+    # First step in ADS repayment wizard, chooses whether to continue with the REPAYMENT_STEPS or to switch to STEPS.
+    def ads_repay_reason
+      wizard_step(nil) { { next_step: :ads_repay_reason_next_steps } }
+    end
+
+    # Step in the ADS repayment wizard
+    def ads_repay_date
+      wizard_step(REPAYMENT_STEPS)
+    end
+
+    # Step in the ADS repayment wizard
+    def ads_repay_address
+      wizard_address_step(REPAYMENT_STEPS, address_attribute: :rrep_ads_sold_address)
+    end
+
+    # Last step in the ADS repayment wizard, redirects to the LBTT summary page afterwards
+    def ads_repay_details
+      wizard_step(returns_lbtt_summary_url)
+    end
+
+    # First step in the normal ADS wizard
+    def ads_dwellings
+      wizard_step(STEPS)
+    end
+
+    # returns/lbtt/ads_amount - step in the ADS wizard
+    def ads_amount
+      wizard_step(STEPS)
+    end
 
     # returns/lbtt/ads_intending_sell - step in the ADS wizard
     def ads_intending_sell
-      wizard_address_step(STEPS, :store_sell_address,
-                          load_address: :load_sell_address, pre_search: :pre_address_search)
+      wizard_address_step(STEPS, address_attribute: :ads_main_address, address_required: :ads_sell_residence_ind)
     end
 
     # returns/lbtt/ads_reliefs - custom step in the ADS wizard to handle the list of reliefs without them being in
     # their own special controller/wizard cache.
     # Navigates to the LBTT summary page after submitted.
     def ads_reliefs
-      wizard_list_step(returns_lbtt_summary_url, params: :filter_params, cache_index: LbttController,
+      wizard_list_step(returns_lbtt_summary_url, setup_step: :setup_ads_reliefs_step,
                                                  add_row_handler: :add_relief_data_row,
                                                  delete_row_handler: :delete_relief_data_row,
                                                  merge_list: :merge_list_data, after_merge: :update_tax_calculations)
-    end
-
-    # First step in ADS repayment wizard, chooses whether to continue with the REPAYMENT_STEPS or to switch to STEPS.
-    def ads_repay_reason
-      wizard_step(nil) do
-        { next_step: :ads_repay_reason_next_steps, params: :filter_params, cache_index: LbttController }
-      end
-    end
-
-    # Step in the ADS repayment wizard
-    def ads_repay_date
-      wizard_step(REPAYMENT_STEPS) { { params: :filter_params, cache_index: LbttController } }
-    end
-
-    # Step in the ADS repayment wizard, redirects to the Tax controller for the last step.
-    # @see LbttTaxController#ads_repay_details
-    def ads_repay_address
-      wizard_address_step(returns_lbtt_tax_ads_repay_details_url, :store_repay_address,
-                          load_address: :load_repay_address)
     end
 
     private
@@ -63,8 +70,7 @@ module Returns
     # Decides the next step based on the user input on the ads_repay_reason step.
     # @return [array] either STEPS (plus the current page so the wizard navigation finds it) or REPAYMENT_STEPS.
     def ads_repay_reason_next_steps
-      # @see Tax validation which has a copy of this
-      return REPAYMENT_STEPS if @lbtt_return.ads_sold_main_yes_no == 'Y'
+      return REPAYMENT_STEPS if @ads.ads_repayment?
 
       ['ads_repay_reason', STEPS.first]
     end
@@ -72,10 +78,11 @@ module Returns
     # Add new ReliefClaim object in its array
     def add_relief_data_row
       # need to save data in cache before adding new object otherwise we'll lose any new data on the form
-      merge_list_data
-      @lbtt_return.ads_reliefclaim_option_ind = 'Y'
-      @lbtt_return.ads_relief_claims.push(Lbtt::ReliefClaim.new)
-      wizard_save(@lbtt_return, Returns::LbttController)
+      # but don't add row if there are errors
+      return unless merge_list_data
+
+      @ads.ads_relief_claims.push(Lbtt::ReliefClaim.new)
+      wizard_save(@lbtt_return)
     end
 
     # Remove ReliefClaim object in its array
@@ -83,99 +90,72 @@ module Returns
       # need to save data in cache before adding new object otherwise we'll lose any new data on the form
       merge_list_data
 
-      @lbtt_return.ads_relief_claims.delete_at(index)
-      wizard_save(@lbtt_return, Returns::LbttController)
-    end
-
-    # Sets up variables for the form to use based on the main LBTT controller which is
-    # the basis for the ADS routes, model, wizard cache etc.
-    # @return [LbttReturn] the model for wizard saving originally setup by LbttController#setup_step
-    def setup_step
-      @post_path = wizard_post_path(LbttController.name)
-      @lbtt_return = wizard_load(LbttController)
-
-      # ads_reliefs specific setup follows
-      return @lbtt_return unless action_name == 'ads_reliefs'
-
-      # ensure the form/model is populated with a list of ReliefClaim objects
-      @lbtt_return.ads_relief_claims ||= Array.new(1) { Lbtt::ReliefClaim.new }
-
-      # drop down list filtered to ADS reliefs
-      @relief_types = @lbtt_return.ads_relief_claims[0].list_ref_data(:relief_type).keep_if { |r| r.code =~ /ADS.*/ }
-
-      @lbtt_return
-    end
-
-    # Merge relief array hash data submitted in the params into the right ReliefClaim objects in the model
-    def merge_list_data # rubocop:disable Metrics/AbcSize
-      return unless params[:returns_lbtt_lbtt_return][:ads_relief_claims]
-
-      relief_data = params[:returns_lbtt_lbtt_return][:ads_relief_claims].to_unsafe_h&.values
-
-      (0..relief_data.length - 1).each do |i|
-        # @lbtt_return is created and returned by #setup_step
-        @lbtt_return.ads_relief_claims[i].relief_type = relief_data[i][:relief_type]
-        @lbtt_return.ads_relief_claims[i].relief_amount = relief_data[i][:relief_amount]
-      end
-    end
-
-    # Initialises address datastructures
-    def load_sell_address
-      initialize_address_variables(@lbtt_return.ads_main_address)
-    end
-
-    # Initialises address datastructures
-    def load_repay_address
-      initialize_address_variables(@lbtt_return.ads_sold_address)
-    end
-
-    # Stores the address and the ads_sell_residence_ind radio button value (needed to re-show the address on editing)
-    # in the LbttController wizard
-    # Stores the address details within the lbtt_return
-    def store_sell_address
-      @lbtt_return.ads_sell_residence_ind = filter_params[:ads_sell_residence_ind]
-      @lbtt_return.ads_main_address = Address.new(address_params)
-      unless address_valid?
-        initialize_address_variables(@lbtt_return.ads_main_address, search_postcode)
-        return false
-      end
-      wizard_save(@lbtt_return, LbttController)
-      true
-    end
-
-    # Stores the sold/disposed of address
-    def store_repay_address
-      @lbtt_return.ads_sold_address = Address.new(address_params)
-
-      unless @lbtt_return.ads_sold_address.valid?(address_validation_context)
-        initialize_address_variables(@lbtt_return.ads_sold_address, search_postcode)
-        return false
-      end
-
-      wizard_save(@lbtt_return, LbttController)
-      true
-    end
-
-    # Called before an address search to store value of radio button ads_sell_residence_ind
-    def pre_address_search
-      return if filter_params.nil?
-
-      @lbtt_return.ads_sell_residence_ind = filter_params['ads_sell_residence_ind']
+      @ads.ads_relief_claims.delete_at(index)
       wizard_save(@lbtt_return)
     end
 
-    # This method basically checks addeess is valid or not.
-    # As this address submission is depend on parameter, so also checking value of that paramter and validation.
-    # As logic is same while making changes also copy changes in @see LbttPartiesController#address_valid?
-    def address_valid?
-      # verify the radio button was selected before checking address
-      return false unless @lbtt_return.valid?(:ads_sell_residence_ind)
+    # Merge relief array hash data submitted in the params into the right ReliefClaim objects in the model
+    # @return [Boolean] if the merge was successful and the models are valid
+    def merge_list_data
+      return true unless @ads.ads_reliefclaim_option_ind == 'Y'
 
-      # if radio button was N then don't check address
-      return true if @lbtt_return.ads_sell_residence_ind == 'N'
+      record_array = filter_params_ads_relief_claims[:ads_relief_claims].values
+      record_array&.each_with_index do |record, i|
+        relief = Lbtt::ReliefClaim.new(record)
+        relief.valid?
+        @ads.ads_relief_claims[i] = relief
+      end
+      # Special case we need to validated that we don't have duplicated now we can only do this once
+      # they are all loaded then trigger validation again on the model
+      @ads.valid?(:ads_reliefclaim_option_ind)
+      # Now we need to check if there are errors on the reliefs
+      @ads.ads_relief_claims.all? { |obj| obj.errors.none? }
+    end
 
-      # check addrss
-      @lbtt_return.ads_main_address.valid?(address_validation_context)
+    # Overwrites the wizard_save method to save @lbtt_return instead of @tax (which is why we don't need cache_index
+    # overrides in the steps)  @see #setup_step where @tax is found inside @lbtt_return
+    def wizard_save(_master_object, _cache_index = self.class.name)
+      key = wizard_cache_key(LbttController)
+      Rails.logger.debug "Saving tax in wizard params for #{key}"
+      Rails.cache.write(key, @lbtt_return, expires_in: wizard_cache_expiry_time)
+    end
+
+    # Loads existing wizard models (@lbtt_return and @ads) from the wizard cache or redirects to the summary page
+    # @return [Tax] the model for wizard saving
+    def load_step
+      @post_path = wizard_post_path(LbttController.name)
+      @lbtt_return = wizard_load(Returns::LbttController)
+      Lbtt::Ads.setup_ads(@lbtt_return)
+      @ads = @lbtt_return.ads
+    end
+
+    # Custom setup for the ads_reliefs step
+    # @return [LbttReturn] the model for wizard saving
+    def setup_ads_reliefs_step
+      model = load_step
+
+      # ensure the form/model is populated with a list of ReliefClaim objects
+      @ads.ads_relief_claims ||= Array.new(1) { Lbtt::ReliefClaim.new }
+
+      # drop down list filtered to ADS reliefs
+      @relief_types = ReferenceData::TaxReliefType.list_ads(@lbtt_return.flbt_type, true)
+
+      model
+    end
+
+    # Return the parameter list filtered for the attributes of the Calculate model
+    def filter_params
+      required = :returns_lbtt_ads
+      output = params.require(required).permit(Lbtt::Ads.attribute_list) if params[required]
+      output
+    end
+
+    # Return the parameter list filtered for the attributes of the non ads relief claims model
+    # note we have to permit everything because we get a hash of the records returned e.g. "0" => details
+    def filter_params_ads_relief_claims
+      return unless params[:returns_lbtt_ads] && params[:returns_lbtt_ads][:ads_relief_claims]
+
+      params.require(:returns_lbtt_ads).permit(ads_relief_claims: {})
     end
   end
 end

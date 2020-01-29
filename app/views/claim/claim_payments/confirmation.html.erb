@@ -1,0 +1,9 @@
+<% content_for :hide_back_link, true %>
+<% content_for :page_title, t('.title') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for @claim_payment %> 
+  <%= render "/layouts/tax_return_submit_text", return_reference: @claim_payment.tare_reference, 
+                                                payment_due_date: @claim_payment.payment_date %>
+<% end %>
+<%= link_to t('go_to_dashboard'), dashboard_path %>

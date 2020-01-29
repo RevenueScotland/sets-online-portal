@@ -34,15 +34,18 @@ en:
     attributes:
       dashboard/dashboard_return:
         tare_reference: "Return reference"
+        agent_reference: "Your reference"
         return_date: "Submitted date"
         description: "Description"
         return_status: "Return status"
-        return_balance: "Return balance"
+        return_balance: "Balance"
         balance_status: "Balance status"
+        summary_status: "Status"
         version: "Version"
 
       dashboard/dashboard_return_filter:
         tare_reference: "Return reference"
+        agent_reference: "Your reference"
         return_date: "Submitted date"
         from_return_date: "Submitted from date"
         to_return_date: "Submitted to date"
@@ -51,23 +54,25 @@ en:
         all_versions: "Include previous versions"
     hints:
       dashboard/dashboard_return_filter:
-        tare_reference: "Enter part or all of the reference"
-        description: "Enter part or all of the description"
+        tare_reference: "Enter part or all of the Revenue Scotland return reference"
+        agent_reference: "Enter part or all of your reference"
+        description: "Enter part or all of the description to search by property address, buyer/landlord name or return type"
     errors:
       models:
         dashboard/dashboard_return_filter:
           attributes:
             from_return_date:
-              before_date_error: "must be BEFORE the submitted to return date"
+              before_date_error: "%{attribute} must be before the submitted to return date"
             to_return_date:
-              after_date_error: "must be AFTER the submitted from return date"
+              after_date_error: "%{attribute} must be after the submitted from return date"
   dashboard:
     dashboard_returns:
       index:
         title: "All returns"
         heading: "List of all submitted returns"
         transactions: "Transactions"
-        download: "Download"
+        download_pdf: "Download PDF"
+        download_waste: "Download waste details"
         amend: "Amend"
         claim: "Claim"
         message: "Message"
@@ -75,3 +80,6 @@ en:
         delete: "Delete"
         find: "Find"
         no_data_found: "There are no returns to be shown..."
+        enquiry_open: "Ongoing Enquiry"
+        draft_present: "Draft Present"
+        receipt: "Receipt"

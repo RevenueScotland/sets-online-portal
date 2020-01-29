@@ -29,15 +29,16 @@ module Returns
       save(requested_by)
     end
 
+    # @!method self.abstract_find(operation, id, requested_by, response_element)
     # Load a return from the back office.
     # Calls a #convert_back_office_hash method on the model.
     # @param operation [Symbol] the service client operation to call eg :slft_tax_return_details
-    # @param refno_version [String] The tare_refno combined with version and separated by '-', ie unique, ID to load
+    # @param id [Hash] The tare_refno, version, srv_code and tare_reference used for finding a return.
     # @param requested_by [User] user requesting the operation
     # @param response_element [Symbol] expected element in the response body eg. :slft_tax_return
-    def self.find(operation, refno_version, requested_by, response_element)
-      ref_no, version = refno_version.include?('-') ? refno_version.split('-') : refno_version
-      load_request = { 'ins1:TareRefno': ref_no, Version: version, Username: requested_by.username,
+    def self.abstract_find(operation, id, requested_by, response_element)
+      ref_no = id[:tare_refno]
+      load_request = { 'ins1:TareRefno': ref_no, Version: id[:version], Username: requested_by.username,
                        ParRefno: requested_by.party_refno }
       call_ok?(operation, load_request) do |body|
         refined_hash = convert_back_office_hash(body[response_element])
@@ -49,7 +50,7 @@ module Returns
     end
 
     # Send the return to the back office to save.  Stores the save reference in tare_reference.
-    # Calls #save_operation to get the right type of save (ie new or update) and set any required fields approprately.
+    # Calls #save_operation to get the right type of save (ie new or update) and set any required fields appropriately.
     # @param requested_by [User] the user saving the return (ie current_user, public requests will pass nil)
     def save(requested_by) # rubocop:disable Metrics/AbcSize
       call_ok?(save_operation, additional_save_parameters(requested_by).merge!(request_save(requested_by))) do |body|
@@ -73,9 +74,11 @@ module Returns
 
       output[:TareReference] = @tare_reference unless @tare_reference.nil?
       output[:TareRefno] = @tare_refno unless @tare_refno.nil?
-      output[:Version] = @version
-      output[:Username] = requested_by.username unless requested_by.nil?
-      output[:ParRefno] = requested_by.party_refno unless requested_by.nil?
+      output[:Version] = @version || '1' # if no version set (i.e creating the first version) then set to 1
+      unless requested_by.nil?
+        output[:Username] = requested_by.username
+        output[:ParRefno] = requested_by.party_refno
+      end
 
       output
     end
@@ -90,6 +93,15 @@ module Returns
       else
         lookup_ref_data(:fpay_method).delete_if { |k, _v| k == 'DDEBIT' }.values.sort_by(&:sort_key)
       end
+    end
+
+    # returns [hash] which contains return reference number and version of the return
+    def back_office_receipt_request
+      hash = {}
+      hash[:tare_reference] = @tare_reference
+      hash[:version] = @version
+
+      hash
     end
   end
 end

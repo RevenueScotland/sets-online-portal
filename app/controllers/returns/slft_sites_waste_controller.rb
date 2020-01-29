@@ -2,8 +2,9 @@
 
 module Returns
   # Provides sites/waste specific controller functionality.
-  class SlftSitesWasteController < ApplicationController
+  class SlftSitesWasteController < ApplicationController # rubocop:disable Metrics/ClassLength
     include Wizard
+    include FileUploadHandler
 
     authorise requires: AuthorisationHelper::SLFT_SUMMARY
 
@@ -13,6 +14,9 @@ module Returns
     # waste summary for a given [single] site
     # If the site is passed in with the params, that is used, otherwise we get the site id from the session.
     def site_waste_summary
+      # @note Whenever we want to go to this page, we should always make sure to pass an instance of the loaded Site
+      #   object into the path that loads this page. Example: returns_slft_site_waste_summary_path(@site)
+      #   So that the page will get loaded properly with the correct :site number.
       site_id = params[:site]
       site_id ||= selected_site
 
@@ -23,49 +27,37 @@ module Returns
       load_site
       @wastes = @site.wastes
 
+      csv_upload
+      delete_all
       manage_save_draft
     end
 
     # waste wizard step, next step is waste_exemption if waste_tonnage > 0 else go straight back to summary
     def waste_tonnage
-      wizard_step(nil) { { params: :filter_params, next_step: :waste_exemption_or_summary } }
+      wizard_step(nil) { { next_step: :waste_exemption_or_summary } }
     end
 
     # last waste wizard step, on submit, merges waste data into site data @see #dump_waste_into_slft_wizard
     def waste_exemption
-      wizard_step(SITE_STEPS) { { params: :filter_params, after_merge: :dump_waste_into_slft_wizard } }
+      wizard_step(nil) { { next_step: :waste_summary_after_adding_waste, after_merge: :dump_waste_into_slft_wizard } }
     end
 
     # Delete the waste entry specified by ewc_code params[:waste]
-    def delete
+    def destroy
       load_site
       delete_waste_entry(params[:waste])
-      redirect_to returns_slft_site_waste_summary_path
+      redirect_to waste_summary_after_adding_waste
     end
 
-    # First step in waste wizard.  This is a custom wizard step (code adapted from #wizard_step).
-    # After clearing the cache of previous waste data, the first part loads the site information and optionally loads
-    # selected waste data (for editing).
-    # Second part submits the data to the normal wizard code but if that produces validation errors then it re-runs the
-    # first part (to repopulate the EWC list).
-    #
-    # NB if params[:waste] is set, @see #load_waste_for_edit will load an existing Waste object into the wizard cache.
+    # First step in waste wizard.
+    # If the params include a waste id then this wizard's cache is cleared and that entry loaded.
+    # @raise [Error::AppError] if the waste id is missing (provided as a param)
+    # @return [Waste] the model for wizard saving
     def waste_description
-      # first part - initial view
-      unless params[:submitted]
-        # clears cache before loading any variables (ie clear previous waste details)
-        # checks for params[:new] so that pressing back on subsequent page will NOT clear cache
-        wizard_end if params[:new]
+      clear_cache = waste_new?
+      Rails.logger.debug('New Waste entry') if clear_cache
 
-        load_site
-        setup_step
-        load_waste
-        return
-      end
-
-      # Second part - when step is submitted
-      # On success, clears the edit_waste from the session (used for editing)
-      wizard_step_submitted(SITE_STEPS, params: :filter_params)
+      wizard_step(SITE_STEPS) { { setup_step: :setup_step, clear_cache: clear_cache } }
     end
 
     private
@@ -79,15 +71,24 @@ module Returns
       return unless @slft_return.valid?(:draft)
 
       Rails.logger.debug('  validation passed')
-      @slft_return.clean_up_yes_nos
-      Rails.logger.debug('  about to Save')
       @slft_return.save_draft(current_user)
 
       # save it so we keep the reference numbers rather than generating copies each time save draft is pressed
       wizard_save(@slft_return, SlftController)
 
-      # store the reference number so we can confirm saving worked
+      # store the reference number in a temporary variable so we can confirm saving worked this time (only)
       @site_summary_save_reference = @slft_return.tare_reference
+    end
+
+    # This method handles when the user clicks the delete all link to remove all waste types. Also deletes any errors
+    # on the site, as these may have come from imported rows.
+    def delete_all
+      return unless params[:delete_all]
+
+      load_site if @site.nil?
+      @wastes = @site.wastes = {}
+      wizard_save(@slft_return, SlftController)
+      wizard_end
     end
 
     # Remove a waste entry from the current site
@@ -111,20 +112,6 @@ module Returns
       wizard_end
     end
 
-    # The first part of the waste_description wizard step. @see #waste_description
-    # When @param[:waste] is set, will copy that value into the wizard so the entry can be edited.
-    def load_waste
-      # do nothing if not clicked link for editing an existing waste entry
-      uuid = params[:waste]
-      return if uuid.nil?
-
-      raise Error::AppError.new('WASTE', "Can't find index #{uuid}") unless @site.wastes.key?(uuid)
-
-      # save in waste wizard
-      @waste = @site.wastes[uuid]
-      wizard_save(@waste)
-    end
-
     # Sets up @site (and @slft_return) ie gets the site id from the @see #selected_site method and the Site from the
     # SlftController's wizard cache.
     def load_site
@@ -132,18 +119,6 @@ module Returns
       Rails.logger.debug("Loading site #{site_id}")
       @slft_return = wizard_load(SlftController)
       @site = @slft_return.sites[site_id]
-    end
-
-    # Sets up variables for the form to use (where to post the form to).
-    # Loads existing waste info (into @waste) if available in the wizard cache.
-    # @return [Waste] the model for wizard saving
-    def setup_step
-      # Our routes are all based on the SLfT main controller
-      @post_path = wizard_post_path(SlftController.name)
-
-      # get waste from wizard cache if not done above or if that's empty, start a new one
-      @waste ||= wizard_load || Slft::Waste.new
-      @waste
     end
 
     # @return [Integer] the selected lasi_refno from the session
@@ -157,6 +132,7 @@ module Returns
 
     # Puts the SlftSitesWasteController wizard data (ie @waste @see #setup_step)
     # into the main SLfT Wizard cache
+    # @return [Boolean] true if successful
     def dump_waste_into_slft_wizard
       # make sure we have the site set up
       load_site
@@ -164,18 +140,154 @@ module Returns
 
       # insert the waste into @site and save @slft_return (@site is part of @slft_return)
       @site.wastes[@waste.uuid] = @waste
+
       wizard_save(@slft_return, SlftController)
+      wizard_end # clear the waste cache
+      true
     end
 
     # Decides what the next step should be and calls @see #dump_waste_into_slft_wizard if going to waste summary page.
     # @return either :waste_exemption if waste_tonnage > 0 else :site_waste_summary
     def waste_exemption_or_summary
-      # exempt tonnage so show next page in wizard @see Waste validation rules which duplicates this
-      return returns_slft_waste_exemption_path unless @waste.exempt_tonnage.nil? || @waste.exempt_tonnage.to_f <= 0
+      # exempt tonnage so show next page in wizard @see Waste validation rules
+      return returns_slft_waste_exemption_path if @waste.exempt_breakdown_needed?
 
       # must save details before going to the summary page
       dump_waste_into_slft_wizard
-      returns_slft_site_waste_summary_path
+      waste_summary_after_adding_waste
+    end
+
+    # The standard way of using the path of the waste summary details, which is used after adding a new waste type.
+    def waste_summary_after_adding_waste
+      returns_slft_site_waste_summary_path(@site)
+    end
+
+    # Handles where a user has uploaded a CSV file
+    def csv_upload
+      if params[:csv_upload]
+        @imported_wastes = []
+        handle_file_upload(nil, post_upload_process: :validate_and_import_waste_file)
+        handle_import_errors
+        copy_import_into_site unless @resource_item&.errors&.any?
+
+        wizard_save(@slft_return, Returns::SlftController)
+        clear_resource_items
+      end
+      initialize_fileupload_variables unless @resource_item&.errors&.any?
+    end
+
+    # Callback from the file upload component. Validates and imports the waste file. If the file isn't a well
+    # formed CSV file, the file isn't imported and a validation message attached to the file_data element of
+    # the @resource_item. If there are errors on the individual rows the file is imported, with errors attached
+    # to the individual wastes that are created
+    # @return [Boolean] indicator if the file has been imported correctly
+    def validate_and_import_waste_file
+      return if @resource_item.nil?
+
+      @imported_wastes = @site.import_waste_csv_data @resource_item
+      @resource_item.errors.none?
+    end
+
+    # If there are import errors, and some are validation errors on the wastes then add another error
+    # so that the user understands they need to correct and re-upload the file. If there any errors then
+    # clear any imported records
+    def handle_import_errors
+      duplicate_waste_errors_into_resource_item unless @imported_wastes.nil? || @imported_wastes.empty?
+      return if @resource_item.errors.none?
+
+      @resource_item.errors.add(:base, :reimport_file) if @imported_wastes.any? { |w| w.errors.any? }
+    end
+
+    # As the controller doesn't handle correcting validation errors on the wastes, we copy the waste error
+    # messages into the resource_item so that they can be displayed to the user, when the wastes are cleared
+    def duplicate_waste_errors_into_resource_item
+      @imported_wastes.each do |w|
+        next if w.errors.none?
+
+        messages = w.errors.full_messages.join(', ')
+        @resource_item.errors.add(:base, t(:import_row_error, description: w.ewc_code_and_description,
+                                                              count: w.errors.full_messages.count,
+                                                              messages: messages))
+      end
+    end
+
+    # Copy the imported wastes into the site
+    def copy_import_into_site
+      @imported_wastes.each { |w| @site.wastes[w.uuid] = w }
+      @wastes = @site.wastes
+      @imported_wastes = []
+    end
+
+    # Call back from FileUploadHandler, which returns file types are allowed to be uploaded.
+    def content_type_whitelist
+      Rails.configuration.x.slft_waste_file_upload_content_type_whitelist.split(/\s*,\s*/)
+    end
+
+    # Call back from FileUploadHandler, which returns additional/alias content types are allowed
+    # i.e. CSV mime type should be text/csv, but with a machine with Excel on it, the
+    # type would be application/vnd.ms-excel
+    def alias_content_type
+      Rails.configuration.x.slft_waste_file_upload_alias_content_type_whitelist.split(/\s*,\s*/)
+    end
+
+    # Call back from FileUploadHandler, which returns valid file extensions - used when the content
+    # type is unknown
+    def file_extension_whitelist
+      Rails.configuration.x.slft_waste_file_upload_file_extension_whitelist.split(/\s*,\s*/)
+    end
+
+    # Sets up wizard model if it doesn't already exist in the cache
+    # Wastes are indexed by UUID so we don't get the wrong one when editing or deleting them.
+    # Follows the same pattern as @see LbttPartiesController#setup_step
+    # @note This method is very similar to the setup_step method of lbtt_parties_controller.rb
+    # @raise [Error::AppError] if the waste id is missing (provided as a param)
+    # @return [Waste] the model for wizard saving
+    def setup_step
+      # these routes are all based on the SLfT main controller
+      @post_path = wizard_post_path(SlftController.name)
+
+      load_site
+
+      # load existing or setup new Waste on first entering the step
+      unless params[:submitted]
+
+        # load existing waste entry and save to the wizard cache for use
+        unless params[:waste].nil? || waste_new?
+          @waste = load_waste
+          return @waste
+        end
+      end
+
+      # reload existing waste entry from the wizard or create a new one
+      @waste = wizard_load || Slft::Waste.new(site_name: @site.site_name)
+    end
+
+    # Extract waste object from the site's waste list and save it in the wizard cache.
+    # @return [Waste] loaded object
+    # @raise [Error::AppError] if the waste doesn't exist
+    def load_waste
+      # ID of the object to load
+      uuid = params[:waste]
+      raise Error::AppError.new('WASTE', "Can't find index #{uuid}") unless @site.wastes.key?(uuid)
+
+      waste = @site.wastes[uuid]
+      wizard_save(waste)
+
+      waste
+    end
+
+    # Determines if the param id :waste consists of the value 'new'.
+    # Normally used in the creation of a new waste type or editing an existing waste.
+    # @return [Boolean] does the waste param consist of value 'new'?
+    def waste_new?
+      params[:waste] == 'new'
+    end
+
+    # Loads existing wizard models from the wizard cache or redirects to the first step.
+    # @return [Waste] the model for wizard saving
+    def load_step
+      @post_path = wizard_post_path(SlftController.name)
+      @waste = wizard_load_or_redirect(returns_slft_summary_url)
     end
 
     # Return the parameter list filtered for the attributes of the SlftReturn model.

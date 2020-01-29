@@ -1,0 +1,216 @@
+{
+    "json_class": "Returns::Lbtt::LbttReturn",
+    "is_public": false,
+    "new_record": true,
+    "tax": {
+        "json_class": "Returns::Lbtt::Tax",
+        "new_record": true,
+        "flbt_type": "ASSIGN",
+        "linked_ind": "N",
+        "linked_npv": 0,
+        "orig_linked_npv": 0,
+        "total_reliefs": "0",
+        "orig_total_reliefs": "0",
+        "npv": "6060.58",
+        "npv_tax_due": "2202",
+        "premium_tax_due": "77",
+        "orig_npv": "6060.58",
+        "orig_npv_tax_due": "0",
+        "orig_premium_tax_due": "77",
+        "amount_already_paid": "1650"
+    },
+    "ads": {
+        "json_class": "Returns::Lbtt::Ads",
+        "new_record": true,
+        "flbt_type": "ASSIGN"
+    },
+    "flbt_type": "ASSIGN",
+    "lease_premium": "7710",
+    "agent": {
+        "json_class": "Returns::Lbtt::Party",
+        "party_type": "AGENT",
+        "new_record": true,
+        "firstname": "Portal User",
+        "surname": "New Users",
+        "email_address": "noreply@northgateps.com",
+        "telephone": "07700900321",
+        "address": {
+            "json_class": "Address",
+            "address_line1": "2 Park Lane",
+            "address_line2": "Garden Village",
+            "town": "NORTHTOWN",
+            "county": "Northshire",
+            "postcode": "RG1 1PB",
+            "country": "GB",
+            "new_record": true
+        }
+    },
+    "properties": {
+        "36ccf5fe-cdf2-46f8-ae0a-0fe31776c257": {
+            "json_class": "Returns::Lbtt::Property",
+            "property_id": "36ccf5fe-cdf2-46f8-ae0a-0fe31776c257",
+            "flbt_type": "ASSIGN",
+            "new_record": true,
+            "address": {
+                "json_class": "Address",
+                "address_line1": "Underground Solution",
+                "address_line2": "9 Cockburn Street",
+                "town": "EDINBURGH",
+                "postcode": "EH1 1BP",
+                "country": "SCO",
+                "new_record": true,
+                "default_country": "SCO",
+                "address_identifier": "8194332"
+            },
+            "lau_code": "9059",
+            "parent_title_code": "FFE",
+            "parent_title_number": "129083"
+        }
+    },
+    "effective_date": "2019-11-07",
+    "relevant_date": "2019-11-07",
+    "contract_date": "2019-11-07",
+    "link_transactions": [
+        {
+            "json_class": "Returns::Lbtt::LinkTransactions",
+            "new_record": true
+        }
+    ],
+    "linked_ind": "N",
+    "non_ads_relief_claims": [
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false
+        }
+    ],
+    "declaration": "true",
+    "lease_declaration": false,
+    "fpay_method": "BACS",
+    "authority_ind": "Y",
+    "form_type": "L",
+    "tare_reference": "RS1000039QXMK",
+    "tare_refno": "148",
+    "payment_date": "14/11/2019",
+    "version": "1",
+    "account_type": "AGENT",
+    "tenants": {
+        "6f9f4ccc-c562-4742-a4e2-d4aa7c74eab4": {
+            "json_class": "Returns::Lbtt::Party",
+            "party_type": "TENANT",
+            "new_record": true,
+            "address": {
+                "json_class": "Address",
+                "address_line1": "5 Gipsy Lane",
+                "address_line2": "Headington",
+                "town": "OXFORD",
+                "county": "Oxfordshire",
+                "postcode": "OX3 7PT",
+                "country": "EN",
+                "new_record": true,
+                "address_identifier": "18074197"
+            },
+            "party_id": "6f9f4ccc-c562-4742-a4e2-d4aa7c74eab4",
+            "type": "OTHERORG",
+            "buyer_seller_linked_ind": "N",
+            "is_acting_as_trustee": "Y",
+            "org_type": "PARTNER",
+            "org_name": "Dunder Mifflin",
+            "com_jurisdiction": "EN",
+            "job_title": "Regional Manager",
+            "contact_surname": "Scott",
+            "contact_firstname": "Michael",
+            "contact_email": "michael.scott@dudnermifflin.com",
+            "contact_tel_no": "0134411111",
+            "org_contact_address": {
+                "json_class": "Address",
+                "address_line1": "7 Gipsy Lane",
+                "address_line2": "Headington",
+                "town": "OXFORD",
+                "county": "Oxfordshire",
+                "postcode": "OX3 7PT",
+                "country": "EN",
+                "new_record": true,
+                "address_identifier": "18074198"
+            }
+        }
+    },
+    "lease_start_date": "2019-11-07",
+    "lease_end_date": "2022-11-07",
+    "yearly_rents": [
+        {
+            "json_class": "Returns::Lbtt::YearlyRent",
+            "year": 1,
+            "new_record": true,
+            "rent": "1650"
+        },
+        {
+            "json_class": "Returns::Lbtt::YearlyRent",
+            "year": 2,
+            "new_record": true,
+            "rent": "1650"
+        },
+        {
+            "json_class": "Returns::Lbtt::YearlyRent",
+            "year": 3,
+            "new_record": true,
+            "rent": "1650"
+        },
+        {
+            "json_class": "Returns::Lbtt::YearlyRent",
+            "year": 4,
+            "new_record": true,
+            "rent": "1650"
+        }
+    ],
+    "annual_rent": "1650",
+    "rent_for_all_years": "Y",
+    "premium_paid": "Y",
+    "relevant_rent": "2500",
+    "orig_return_reference": "RS1234567AABB",
+    "new_tenants": {
+        "31eb4fe9-5d9e-44e4-a680-5d720aa510f0": {
+            "json_class": "Returns::Lbtt::Party",
+            "party_type": "NEWTENANT",
+            "new_record": true,
+            "address": {
+                "json_class": "Address",
+                "address_line1": "Flat 1",
+                "address_line2": "Saxon Court",
+                "address_line3": "2 Stephen Road",
+                "address_line4": "Headington",
+                "town": "OXFORD",
+                "county": "Oxfordshire",
+                "postcode": "OX3 9FA",
+                "country": "EN",
+                "new_record": true,
+                "address_identifier": "27542710"
+            },
+            "party_id": "31eb4fe9-5d9e-44e4-a680-5d720aa510f0",
+            "type": "OTHERORG",
+            "buyer_seller_linked_ind": "N",
+            "is_acting_as_trustee": "Y",
+            "org_type": "COMPANYOTH",
+            "org_name": "Saber Industry",
+            "com_jurisdiction": "EN",
+            "job_title": "Director",
+            "contact_surname": "Levinson",
+            "contact_firstname": "Jan",
+            "contact_email": "jan.levinson@saber.com",
+            "contact_tel_no": "0134422222",
+            "org_contact_address": {
+                "json_class": "Address",
+                "address_line1": "Flat 4",
+                "address_line2": "Saxon Court",
+                "address_line3": "2 Stephen Road",
+                "address_line4": "Headington",
+                "town": "OXFORD",
+                "county": "Oxfordshire",
+                "postcode": "OX3 9FA",
+                "country": "EN",
+                "new_record": true,
+                "address_identifier": "27542713"
+            }
+        }
+    },
+    "repayment_ind": "N"
+}

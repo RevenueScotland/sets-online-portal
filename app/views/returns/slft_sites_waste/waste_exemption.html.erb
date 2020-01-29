@@ -1,4 +1,4 @@
-<% content_for :page_title, t('.title') %>
+<% content_for :page_title, t('.title' , waste: @waste.ewc_code, site_name: @waste.site_name )  %>
 <% content_for :page_subtitle, t('.subtitle') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 
@@ -6,19 +6,20 @@
 <%= form_for @waste, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @waste %>
   
-  <%= f.collection_radio_buttons_fields(:nda_ex_yes_no, @waste.list_ref_data(:nda_ex_yes_no), :code, :value) %>
+  <%= f.collection_radio_buttons_fields(:nda_ex_yes_no, @waste.list_ref_data(:nda_ex_yes_no)) %>
   <div id='hide_nda'>
     <%= f.text_field :nda_ex_tonnage %>
   </div>
 
-  <%= f.collection_radio_buttons_fields(:restoration_ex_yes_no,  @waste.list_ref_data(:restoration_ex_yes_no), :code, :value) %>
+  <%= f.collection_radio_buttons_fields(:restoration_ex_yes_no,  @waste.list_ref_data(:restoration_ex_yes_no)) %>
   <div id='hide_restoration'>
     <%= f.text_field :restoration_ex_tonnage %>
   </div>
 
-  <%= f.collection_radio_buttons_fields(:other_ex_yes_no, @waste.list_ref_data(:other_ex_yes_no), :code, :value) %>
+  <%= f.collection_radio_buttons_fields(:other_ex_yes_no, @waste.list_ref_data(:other_ex_yes_no)) %>
   <div id='hide_other'>
     <%= f.text_field :other_ex_tonnage %>
+    <%= f.text_field :other_ex_description %>
   </div>
   
   <%= f.button 'next', { :name => 'submitted' }  %>

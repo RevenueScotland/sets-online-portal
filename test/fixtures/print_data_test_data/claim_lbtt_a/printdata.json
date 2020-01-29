@@ -1,0 +1,356 @@
+{
+    "section": [
+        {
+            "sectioncode": "claim_reason",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Claim repayment",
+            "listitem": [
+                {
+                    "itemcode": "tare_reference",
+                    "itemformat": null,
+                    "itemlabel": "What was the original reference of the return that you are requesting an ADS repayment or claim for ?",
+                    "itemdata": "RS1000071TJYV"
+                },
+                {
+                    "itemcode": "version",
+                    "itemformat": null,
+                    "itemlabel": "Version",
+                    "itemdata": "2"
+                },
+                {
+                    "itemcode": "reason",
+                    "itemformat": null,
+                    "itemlabel": "What is the reason for your claim for payment from Revenue Scotland?",
+                    "itemdata": "ADS repayment following a sale or disposal of previous main residence"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "date_of_sale",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "ADS repayment - date of sale or disposal",
+            "listitem": [
+                {
+                    "itemcode": "date_of_sale",
+                    "itemformat": "date",
+                    "itemlabel": "What is the date of sale or disposal of the previous main residence?",
+                    "itemdata": "12 November 2019"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "ADS repayment - previous main residence address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "27 Gipsy Lane"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Headington"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "OXFORD"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Oxfordshire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "OX3 7PT"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "further_claim_info",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "ADS repayment - further claim information",
+            "listitem": [
+                {
+                    "itemcode": "further_claim_info",
+                    "itemformat": null,
+                    "itemlabel": "Is the tax payer claiming repayment as a result of the changes to the ADS rules around family units and replacing main residences?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "claiming_amount",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Details about your claim for repayment",
+            "listitem": [
+                {
+                    "itemcode": "claiming_amount",
+                    "itemformat": "money",
+                    "itemlabel": "How much are you claiming from Revenue Scotland?",
+                    "itemdata": "1750"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "taxpayer_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Tax payer details",
+            "listitem": [
+                {
+                    "itemcode": "firstname",
+                    "itemformat": null,
+                    "itemlabel": "First name",
+                    "itemdata": "Michael"
+                },
+                {
+                    "itemcode": "surname",
+                    "itemformat": null,
+                    "itemlabel": "Last name",
+                    "itemdata": "Scott"
+                },
+                {
+                    "itemcode": "telephone",
+                    "itemformat": null,
+                    "itemlabel": "Telephone number",
+                    "itemdata": "0134411111"
+                },
+                {
+                    "itemcode": "email_address",
+                    "itemformat": null,
+                    "itemlabel": "Email",
+                    "itemdata": "michael.scott@dudnermifflin.com"
+                },
+                {
+                    "itemcode": "nino",
+                    "itemformat": null,
+                    "itemlabel": "National Insurance Number (NINO)",
+                    "itemdata": "AA252525C"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Tax payer address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "3 Gipsy Lane"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Headington"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "OXFORD"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Oxfordshire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "OX3 7PT"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "additional_tax_payer",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Additional tax payer",
+            "listitem": [
+                {
+                    "itemcode": "additional_tax_payer",
+                    "itemformat": null,
+                    "itemlabel": "Is there an additional tax payer included in the original return that is subject to the ADS repayment or claim request?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "taxpayer_details",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Tax payer details",
+            "listitem": [
+                {
+                    "itemcode": "s_firstname",
+                    "itemformat": null,
+                    "itemlabel": "First name",
+                    "itemdata": "Willmart"
+                },
+                {
+                    "itemcode": "s_surname",
+                    "itemformat": null,
+                    "itemlabel": "Last name",
+                    "itemdata": "Shakeyspire"
+                },
+                {
+                    "itemcode": "s_telephone",
+                    "itemformat": null,
+                    "itemlabel": "Telephone number",
+                    "itemdata": "01344491479"
+                },
+                {
+                    "itemcode": "s_email_address",
+                    "itemformat": null,
+                    "itemlabel": "Email",
+                    "itemdata": "testing@an.email.com"
+                },
+                {
+                    "itemcode": "s_nino",
+                    "itemformat": null,
+                    "itemlabel": "National Insurance Number (NINO)",
+                    "itemdata": "SP123456B"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Tax payer address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "27/3 Cockburn Street"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "EDINBURGH"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "EH1 1BP"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "bank_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Enter bank details",
+            "listitem": [
+                {
+                    "itemcode": "account_holder_name",
+                    "itemformat": null,
+                    "itemlabel": "Name of the account holder",
+                    "itemdata": "MR MICHAEL SCOTT"
+                },
+                {
+                    "itemcode": "account_number",
+                    "itemformat": null,
+                    "itemlabel": "Bank / building society account number",
+                    "itemdata": "20406080"
+                },
+                {
+                    "itemcode": "branch_code",
+                    "itemformat": null,
+                    "itemlabel": "Branch sort code",
+                    "itemdata": "20-40-60"
+                },
+                {
+                    "itemcode": "bank_name",
+                    "itemformat": null,
+                    "itemlabel": "Name of bank / building society",
+                    "itemdata": "NatEast"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "taxpayer_declaration",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Declarations",
+            "listitem": [
+                {
+                    "itemcode": "declaration_public",
+                    "itemformat": null,
+                    "itemlabel": "I, the agent for the buyer(s), confirm that the buyer(s) have authorised repayment to be made to these bank details",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "declaration",
+                    "itemformat": null,
+                    "itemlabel": "I, the agent of the buyer(s), having been authorised to complete this repayment or claim request on behalf of the buyer(s), certify that the buyer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the buyer(s) is/are eligible for the refund claimed",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 2
+        }
+    ]
+}

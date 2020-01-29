@@ -1,21 +1,12 @@
 <% content_for :page_title, t('.title') %>
-<% if AccountType.registered_organisation?(@account.account_type) %>
-  <% content_for :page_subtitle, t('.subtitle') %>  
-  <% content_for :page_description, t('.description') %>
-<% else %>
-  <% content_for :page_subtitle, t('.subtitle_org') %>  
-  <% content_for :page_description, t('.description_org') %>
-<% end %>
+<% content_for :page_subtitle, t('.subtitle_org') %>
+<% content_for :page_description, t('.description_org') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 
 <%= form_for @account, url: @post_path, method: :post, html:{autocomplete: "on"} , local: true do |f| %>
   <%= form_errors_for @account, translation_options: { company_name: @account.account_type } %>
-  <% if AccountType.registered_organisation?(@account.account_type) %>
-    <%= render "/layouts/company_search" %>
-  <% else %>
-    <%= f.fields_for @account.company do |c| %>
-      <%= c.text_field :company_name, translation_options: @account.account_type %>
-    <% end %>
+  <%= f.fields_for @account.company do |c| %>
+    <%= c.text_field :company_name, translation_options: @account.account_type %>
   <% end %>
   <%= f.button 'next', { :name => 'submitted' }  %>
 <% end %>

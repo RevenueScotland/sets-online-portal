@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'zip'
+require 'securerandom'
+
 # Models an All return object
 module Dashboard
   # This is the all return for the dashboard
@@ -7,39 +10,34 @@ module Dashboard
   #   these values are 'L' means it's the latest return, 'D' means its a draft return, '' means that
   #   it is not the latest version or a draft and lastly, 'Y' means it's disregarded.
   #   It's been named this way to be consistent with the back office.
-  class DashboardReturn < FLApplicationRecord
+  class DashboardReturn < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     include NumberFormatting
     include Pagination
-    attr_accessor :srv_code, :tare_refno,
+    attr_accessor :srv_code, :tare_refno, :tare_reference, :agent_reference,
                   :version, :return_status, :return_balance, :balance_status,
-                  :tare_reference, :return_date, :description, :latest_draft_dis_ind,
-                  :filing_date, :payment_date,
-                  :document_return
+                  :return_date, :description, :latest_draft_dis_ind,
+                  :filing_date, :payment_date, :enquiry_open, :draft_present,
+                  :document_return, :receipt_available
 
     # Define the ref data codes associated with the attributes to be cached in this model
     # @return [Hash] <attribute> => <ref data composite key>
     def cached_ref_data_codes
-      { latest_draft_dis_ind: 'RETURN_STATUS.SYS.RSTU' }
+      { latest_draft_dis_ind: comp_key('RETURN_STATUS', 'SYS', 'RSTU') }
     end
 
     # Instead of using the default 'id' attribute for the value, it is now using this.
     def to_param
-      CGI.escape(tare_refno.to_s + '-' + version.to_s)
+      CGI.escape("#{tare_refno}-#{version}-#{srv_code}-#{tare_reference}")
     end
 
-    # Sets the params for downloading a pdf file of a return.
-    def to_download_param
-      'reference=' + tare_reference.to_s + '&version=' + version.to_s
-    end
-
-    # Creates the path used for amending or continuing a return
-    def continue_amend_path
-      "returns_#{srv_code.downcase}_load_path".to_sym
-    end
-
-    # Sets the params for  a pdf file of a return.
-    def to_claim_param
-      'reference=' + tare_reference.to_s + '&version=' + version.to_s + '&srv_code=' + srv_code.to_s + '&new= true'
+    # Used for splitting up the values of params[:id] of a dashboard_return.
+    # To use this outside the model, you'll need to do Dashboard::DashboardReturn.split_param_values(param_id)
+    # @see to_param to see where the values are coming from
+    # @return [Hash] contains the split values that's assigned to the same name before it was joined in the to_param
+    def self.split_param_values(param_id)
+      hash = {}
+      hash[:tare_refno], hash[:version], hash[:srv_code], hash[:tare_reference] = param_id.split('-')
+      hash
     end
 
     # The amend action code(s)
@@ -50,6 +48,18 @@ module Dashboard
     # The continue action code(s)
     def continue_action
       AuthorisationHelper.const_get("#{srv_code}_CONTINUE")
+    end
+
+    # The delete action code(s)
+    def delete_action
+      AuthorisationHelper.const_get("#{srv_code}_DELETE")
+    end
+
+    # Used to display a summary status
+    def summary_status
+      return @return_status if balance_status.nil?
+
+      "#{@return_status} (#{@balance_status})"
     end
 
     # Used for determining whether to show an action link when return latest_draft_dis_ind is 'L'.
@@ -66,11 +76,61 @@ module Dashboard
       latest_draft_dis_ind == 'D'
     end
 
+    # Used for determining whether to show an "Ongoing Enquiry" text among action link when return enquiry_open is true
+    # @see TableHelper#include_action? this is used as value for :visible_for symbol
+    # @return [Boolean] when the return enquiry_open is true then true (then it will be visible)
+    def enquiry_indicator?
+      return true if enquiry_open == true
+
+      false
+    end
+
+    # Used for determining whether to show an "Receipt" text among action link when return receipt_available is true
+    # and the return should not be draft
+    # @see TableHelper#include_action? this is used as value for :visible_for symbol
+    # @return [Boolean] when the return receipt_available is true then true (then it will be visible)
+    def receipt_indicator?
+      return false unless indicator_is_latest
+
+      return true if receipt_available == true
+
+      false
+    end
+
+    # Used for determining whether to show an "Draft Present" text among action link when return draft_present is true
+    # unless this is a draft version or is there an ongoing enquiry
+    # @see TableHelper#include_action? this is used as value for :visible_for symbol
+    # @return [Boolean] when the return draft_present is true then true (then it will be visible)
+    def draft_present?
+      return true if draft_present == true && !indicator_is_draft && !enquiry_indicator?
+
+      false
+    end
+
+    # Used for determining whether to show an action link to continue a draft return
+    # this is not shown if there is an enquiry open or it isn't draft
+    # @see TableHelper#include_action? this is used as value for :visible_for symbol
+    def return_is_continuable?
+      return false if enquiry_open == true
+
+      latest_draft_dis_ind == 'D'
+    end
+
+    # Used for determining whether to show the Download waste details link.
+    # @see TableHelper#include_action? this is used as value for :visible_for symbol
+    def return_has_waste?
+      srv_code == 'SLFT'
+    end
+
     # Used for determining whether to show an action link when the return date is 12 months old or older
     # for a return that is Filed.
     # @see TableHelper#include_action? this is used as value for :visible_for symbol
-    def return_is_amendable
+    def return_is_amendable?
       return false unless indicator_is_latest
+
+      return false if enquiry_open == true
+
+      return false if draft_present == true
 
       # Deducts today's date amendable_days with the filing date. Normally when a return has been filed, that shouldn't
       # be in the future.
@@ -79,7 +139,27 @@ module Dashboard
       (filing_days_old < Rails.configuration.x.returns.amendable_days)
     end
 
-    # returns true or false to display claim link or not forreturns
+    # delete draft return from back office
+    # @param requested_by [Object] is the user who is requesting for the data.
+    # @param id [String] this includes the data that we need to pass in to the request to delete the data we want
+    #   from the back office. It must include the version, srv_code, tare_refno within the string that's joined
+    #   with '-'s.
+    # @return [Boolean] true if document delete successfully from back office else false
+    def self.delete_return(requested_by, id)
+      success = call_ok?(:delete_draft_tax_return, request_delete_return(requested_by, id))
+      success
+    end
+
+    # @return a hash suitable for use in a delete drafted return to the back office
+    def self.request_delete_return(requested_by, id)
+      { 'ins1:TareRefno': id[:tare_refno],
+        Version: id[:version],
+        SRVCode: id[:srv_code],
+        ParRefno: requested_by.party_refno,
+        Username: requested_by.username }
+    end
+
+    # returns true or false to display claim link or not for returns
     def return_is_claimable
       return false unless indicator_is_latest
 
@@ -116,10 +196,52 @@ module Dashboard
       [all_returns, pagination]
     end
 
-    # Gets the return's pdf ready to be downloaded.
+    # Gets the return pdf ready to be downloaded.
     # @see back_office_pdf_data
-    def self.return_pdf(requested_by, return_data)
-      back_office_pdf_data(requested_by, return_data)
+    def self.return_pdf(requested_by, id, pdf_type)
+      back_office_pdf_data(requested_by, id, pdf_type)
+    end
+
+    # Generates a ZIP file of waste data, where each site's waste data is a separate
+    # CSV file.
+    # @note Ideally this should use Tempfile.new and Zip::OutputStream.write_buffer to generate the files, as this
+    #   would automatically remove any temporary files, but this combination produced ZIP files that where able to be
+    #   read with Z-zip, but not with Windows explorer
+    # @param requested_by [User] is usually the current_user, who is requesting the data and containing the account id
+    # @param id [Hash] The reference number, tare_refno, srv_code and version of the SLFT return to get the waste data.
+    # @return [Array] success flag, and ZIP file, return reference and version, if successful
+    def self.return_wastes(requested_by, id)
+      slft_return = Returns::Slft::SlftReturn.find(id, requested_by)
+      raise Error::AppError.new('RETURN', "Cannot find return #{id[:tare_reference]}") if slft_return.nil?
+
+      zip_file = make_tmpname(requested_by, '.zip')
+      Dir.mktmpdir do |dir|
+        slft_return.export_site_wastes dir
+        zip_folder dir, zip_file
+      end
+      [true, zip_file, slft_return.tare_reference, slft_return.version]
+    end
+
+    # @!method self.make_tmpname(ext)
+    # Generate a temporary filename
+    # @param requested_by [User] is usually the current_user
+    # @param ext [String] file extension
+    # @return [String] temporary filename
+    private_class_method def self.make_tmpname(requested_by, ext)
+      FileStorageHelper.file_temp_storage_path(:download, requested_by.username, "#{SecureRandom.urlsafe_base64}#{ext}")
+    end
+
+    # @!method self.zip_folder(dir, zip_file)
+    # Add all of the files in the fir folder, into the named ZIP file. Not recursive.
+    # @param dir [String] directory containing all of the files to be zipped
+    # @param zip_file [String] the output file name
+    private_class_method def self.zip_folder(dir, zip_file)
+      Zip::File.open(zip_file, Zip::File::CREATE) do |archive|
+        entries = Dir.entries(dir) - %w[. ..]
+        entries.each do |file|
+          archive.add(file, File.join(dir, file))
+        end
+      end
     end
 
     # Gets the all returns from the back office according to the requested-by and filtering.
@@ -148,11 +270,12 @@ module Dashboard
     # @param return_data [Hash] this includes the data that we need to pass in to the request to get the data we want
     #   from the back office. It must include the symbol :reference and :version.
     # @param requested_by [Object] is the user who is requesting for the data.
+    # @param pdf_type [String] Receipt or Return to send in request xml
     # @return [Array] consists of [Boolean, Hash] the Boolean value is used to check if the call was successful and
     #   the Hash consists of data regarding the pdf to be downloaded.
-    private_class_method def self.back_office_pdf_data(requested_by, return_data)
+    private_class_method def self.back_office_pdf_data(requested_by, return_data, pdf_type)
       pdf_response = ''
-      success = call_ok?(:view_return_pdf, request_pdf_elements(requested_by, return_data)) do |body|
+      success = call_ok?(:view_return_pdf, request_pdf_elements(requested_by, return_data, pdf_type)) do |body|
         break if body.blank?
 
         pdf_response = body
@@ -164,9 +287,13 @@ module Dashboard
     # The request element list to retrieve data of the return which consists of a binary data,
     # this will be used for downloading the pdf that contains the data of that return.
     # @return [Hash] elements used to specify all the compulsory data needed to request data from the back office.
-    private_class_method def self.request_pdf_elements(requested_by, return_data)
+    # @param pdf_type consist value to send in RequestType eg. Receipt or Return
+    # if pdf_type = 'Receipt' response will contain Receipt PDF
+    # and if pdf_type = 'Return' response will contain Return PDF
+    private_class_method def self.request_pdf_elements(requested_by, return_data, pdf_type)
       { ParRefno: requested_by.party_refno, Username: requested_by.username,
-        TareReference: return_data[:reference], ReturnVersion: return_data[:version] }
+        TareReference: return_data[:tare_reference], ReturnVersion: return_data[:version],
+        RequestType: pdf_type }
     end
 
     # The request element list to retrieve the all return data.
@@ -183,10 +310,10 @@ module Dashboard
 
     # The optional request element list to retrieve more specific data.
     # @return [Hash] elements used to specify the optional request we want to do to get data from back office
-    # @note REturnStatus is named this way to be consistent with the back office.
+    # @note ReturnStatus is named this way to be consistent with the back office.
     private_class_method def self.request_optional_elements(filter, pagination)
       { Pagination: { 'ins1:StartRow' => pagination.start_row, 'ins1:NumRows' => pagination.num_rows },
-        TAREReference: filter.tare_reference, DateOfReturn: DateFormatting.to_xml_date_format(filter.return_date),
+        TAREReference: filter.tare_reference, AgentReference: filter.agent_reference,
         REturnStatus: filter.return_status, DescriptionSearch: filter.description,
         FromReturnDate: DateFormatting.to_xml_date_format(filter.from_return_date),
         ToReturnDate: DateFormatting.to_xml_date_format(filter.to_return_date) }

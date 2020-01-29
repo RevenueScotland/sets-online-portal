@@ -14,8 +14,9 @@
   <p />
   <b><%= t('.caution') %></b>
   <p />
-  <%= t('.reference_html', ref: @lbtt_return.tare_reference) %>
+  <%= t('.return_html') %>
+  <b><span id= "ret_ref_val"><%= @lbtt_return.tare_reference%></span>.</b>
+  <%= t('.reference_html') %>
 <% end %>
-<p />
 <%= navigational_links( [ { link: :back_to_return_summary, path: returns_lbtt_summary_path }, 
                           { link: :go_to_dashboard, path: dashboard_path} ] ) %>

@@ -103,6 +103,25 @@ module RevScot
                          response: :view_returns_response }
     view_return_pdf = { service: fl_endpoint, wsdl: 'ViewReturnPDF.wsdl', endpoint: '/getViewReturnPDF',
                         operation: :view_return_pdf, response: :view_return_pdf_response }
+    delete_draft_tax_return = { service: fl_endpoint, wsdl: 'DeleteDraftTaxReturn.wsdl',
+                                endpoint: '/deleteDraftTaxReturn',
+                                operation: :delete_draft_tax_return_wsdl, response: :delete_draft_tax_return_response }
+    get_tax_relief_types = { service: fl_endpoint, wsdl: 'GetTaxReliefTypes.wsdl',
+                             endpoint: '/GetTaxReliefTypes',
+                             operation: :get_tax_relief_types_wsdl, response: :get_tax_relief_types_response,
+                             savon_log: false }
+    add_document = { service: fl_endpoint, wsdl: 'AddDocument.wsdl', endpoint: '/AddDocument',
+                     operation: :add_document_wsdl, response: :add_document_response }
+    delete_document = { service: fl_endpoint, wsdl: 'DeleteDocument.wsdl', endpoint: '/DeleteDocument',
+                        operation: :delete_document_wsdl, response: :delete_document_response }
+    validate_return_reference = { service: fl_endpoint, wsdl: 'ValidateReturnReference.wsdl',
+                                  endpoint: '/ValidateReturnReference',
+                                  operation: :validate_return_reference_wsdl,
+                                  response: :validate_return_reference_response }
+    view_claim_pdf = { service: fl_endpoint, wsdl: 'ViewClaimPDF.wsdl', endpoint: '/ViewClaimPDF',
+                       operation: :view_claim_pdfwsdl, response: :view_claim_pdf_response }
+    view_document =  { service: fl_endpoint, wsdl: 'ViewDocument.wsdl', endpoint: '/ViewDocument',
+                       operation: :view_document_wsdl, response: :view_document_response }
 
     # Finally, map of all services used by this application
     @configuration = { add_attachment: add_attachment, address_detail: address_detail, address_search: address_search,
@@ -119,7 +138,11 @@ module RevScot
                        maintain_user_registration: maintain_user_registration,
                        secure_message_create: secure_message_create, slft_calc: slft_calc,
                        slft_tax_return: slft_tax_return, slft_tax_return_details: slft_tax_return_details,
-                       slft_update: slft_update, view_all_returns: view_all_returns, view_return_pdf: view_return_pdf }
+                       slft_update: slft_update, view_all_returns: view_all_returns, view_return_pdf: view_return_pdf,
+                       delete_draft_tax_return: delete_draft_tax_return, get_tax_relief_types: get_tax_relief_types,
+                       add_document: add_document, delete_document: delete_document,
+                       validate_return_reference: validate_return_reference,
+                       view_claim_pdf: view_claim_pdf, view_document: view_document }
 
     # Preload all the clients
     @configuration.reject { |_, v| v[:service][:root].nil? }

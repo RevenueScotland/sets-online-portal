@@ -8,9 +8,8 @@
   <%= form_errors_for @dashboard_return_filter %>
   <% form.current_browser = application_browser %>
   <%= form.text_field :tare_reference %>
-  <%= form.date_field :return_date %>
-  
-  
+  <%= form.text_field :agent_reference if account_has_service?(:lbtt) %>
+
   <%= render '/layouts/hideable_details/', { clickable_text: [t('filter_show'), t('filter_hide')] } do %>
     <div class = "display-inline-text govuk-!-width-one-third">
       <%= form.date_field :from_return_date, { width: 'full' } %>
@@ -26,38 +25,54 @@
     <%= form.check_box_field :all_versions %>
   <% end %>
 
-  <br />
+  <br/>
 
-  <%= form.button t('.find'), autofocus: @on_filter_find %>
+  <%= form.button t('.find'), autofocus: (@on_filter_find && !@form_error_found) %>
 <% end %>
-<br />
+<br/>
 
 <%= display_table(@dashboard_returns,
-                  [:tare_reference, :return_date, :description, :version, :return_status, :return_balance, :balance_status],
+                  [:tare_reference, :agent_reference, :return_date, :description, :version, :return_balance, :summary_status],
                   [
-                    { label: t('.download'), path: :dashboard_download_return_path,
-                                             parameter: :to_download_param,
-                                             options: { target: '_blank' } },
-                    { label: t('.transactions'), path: :dashboard_return_transactions_path,
+                    { label: t('.download_pdf'),  path: :download_pdf_dashboard_dashboard_return_path,
+                                                    options: { target: '_blank' },
+                                                    link_options: { requires_action: AuthorisationHelper::DOWNLOAD_RETURN_PDF } },
+                    { label: t('.receipt'),  path: :download_receipt_dashboard_dashboard_return_path,
+                                                    visible_for: :receipt_indicator?, options: { target: '_blank' },
+                                                    link_options: { requires_action: AuthorisationHelper::DOWNLOAD_RECEIPT } },
+                    { label: t('.download_waste'),  path: :download_waste_dashboard_dashboard_return_path,
+                                                    visible_for: :return_has_waste?,
+                                                    options: { target: '_blank' } },
+                    { label: t('.transactions'), path: :dashboard_financial_transactions_path,
                                                  visible_for: :indicator_is_latest,
-                                                 parameter: :tare_reference },
-                    { label: t('.amend'), method_path: :continue_amend_path,
-                                          visible_for: :return_is_amendable,
-                                          link_options: { requires_action_path: :amend_action } },
+                                                 query: { attributes: [ { label: :related_reference, attribute: :tare_reference } ],
+                                                          filter_model: :dashboard_financial_transaction_filter } },
+                    { label: t('.amend'), path: :load_dashboard_dashboard_return_path,
+                                               visible_for: :return_is_amendable?,
+                                               link_options: { requires_action_path: :amend_action } },
 
-                    { label: t('.claim'), path: :claim_claim_payments_payment_after_year_path, 
-                                          visible_for: :return_is_claimable, 
-                                          parameter: :to_claim_param,
+                    { label: t('.claim'), path: :claim_claim_payments_claim_reason_path,
+                                          visible_for: :return_is_claimable,
+                                          query: { attributes: [:tare_refno, :version, :srv_code,
+                                                                { label: :reference, attribute: :tare_reference },
+                                                                { label: :new, value: true }] },
                                           link_options: { requires_action: AuthorisationHelper::CLAIM_REPAYMENT } },
-                                          
-                    { label: t('.message'), path: :dashboard_return_messages_path, 
+                    { label: t('.message'), path: :dashboard_messages_path,
                                             visible_for: :indicator_is_latest,
-                                            parameter: :tare_reference },
-                    { label: t('.continue'), method_path: :continue_amend_path,
-                                             visible_for: :indicator_is_draft,
-                                             link_options: { requires_action_path: :continue_action } }
+                                            query: { attributes: [ { label: :reference, attribute: :tare_reference } ],
+                                                     filter_model: :dashboard_message_filter } },
+                    { label: t('.continue'), path: :load_dashboard_dashboard_return_path,
+                                               visible_for: :return_is_continuable?,
+                                               link_options: { requires_action_path: :continue_action } },
+                    { label: t('.delete'),  action: :destroy, visible_for: :indicator_is_draft,
+                                             link_options: { requires_action_path: :delete_action },
+                                            options: {data: {confirm: 'Delete draft return?' }}},
+                    { label: t('.enquiry_open'), path: :display, visible_for: :enquiry_indicator? },
+                    { label: t('.draft_present'), path: :display, visible_for: :draft_present? },
+                       
                   ],
                   { return_date: {format: :date},
+                    agent_reference: {break_characters: '/', add: account_has_service?(:lbtt)},
                     return_balance: {format: :money}}) %>
 
 <% if @dashboard_returns.blank? %>

@@ -46,15 +46,19 @@ en:
         show: "Show"
         delete: "Delete"
         continue: "Continue"
-        download: "Download"
+        download_pdf: "Download PDF"
+        download_waste: "Download waste details"
         transactions: "Transactions"
         amend: "Amend"
         message: "Message"
+        receipt: "Receipt"
+        enquiry_open: "Ongoing Enquiry"
+        draft_present: "Draft Present"
         link:
           messages: "All messages"
           dashboard_returns: "All returns"
           financial_transactions: "All transactions"
           hint:
             # new: "Create and send a new message to Revenue Scotland"
-            
+
         find: "Find"

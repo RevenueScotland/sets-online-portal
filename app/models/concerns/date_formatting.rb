@@ -11,7 +11,16 @@ module DateFormatting
     false
   end
 
-  # Converts the xml date to the standard display date which is in this format: 'dd-mm-yyyy'
+  # Converts the xml date to the standard display date which is in this format: 'dd Month yyyy'
+  # Should be used for displaying date in a non-date_field field.
+  def self.to_display_full_month_date_format(date)
+    return if date.blank?
+
+    date = Date.parse(date) unless date.is_a? Date
+    date.strftime('%d %B %Y')
+  end
+
+  # Converts the xml date to the standard display date which is in this format: 'dd/mm/yyyy'
   # Should be used for displaying date in a non-date_field field.
   def self.to_display_date_format(date)
     return if date.blank?
@@ -20,7 +29,7 @@ module DateFormatting
     date.strftime('%d/%m/%Y')
   end
 
-  # Converts the xml date to the standard display date which is in this format: 'dd-mm-yyyy'
+  # Converts the xml date to the standard display date which is in this format: 'dd/mm/yyyy hh:mm'
   # Should be used for displaying date in a non-date_field field.
   def self.to_display_datetime_format(date)
     return if date.nil?

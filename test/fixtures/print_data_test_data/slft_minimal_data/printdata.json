@@ -1,0 +1,173 @@
+{
+    "section": [
+        {
+            "sectioncode": "about_transaction",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Return period",
+            "listitem": [
+                {
+                    "itemcode": "tare_reference",
+                    "itemformat": null,
+                    "itemlabel": "Return reference",
+                    "itemdata": "\u003c%TARE_REFERENCE%\u003e"
+                },
+                {
+                    "itemcode": "version",
+                    "itemformat": null,
+                    "itemlabel": "Version",
+                    "itemdata": "\u003c%VERSION%\u003e"
+                },
+                {
+                    "itemcode": "form_type",
+                    "itemformat": null,
+                    "itemlabel": "Status",
+                    "itemdata": "Filed"
+                },
+                {
+                    "itemcode": "year",
+                    "itemformat": null,
+                    "itemlabel": "SLfT year",
+                    "itemdata": "2015/16"
+                },
+                {
+                    "itemcode": "fape_period",
+                    "itemformat": null,
+                    "itemlabel": "SLfT quarter",
+                    "itemdata": "January to March (Quarter 4)"
+                },
+                {
+                    "itemcode": "non_disposal_add_ind",
+                    "itemformat": null,
+                    "itemlabel": "Have you designated a new non-disposal area on any of your sites?",
+                    "itemdata": "No"
+                },
+                {
+                    "itemcode": "non_disposal_delete_ind",
+                    "itemformat": null,
+                    "itemlabel": "Have you ceased to operate a non-disposal area on any of your sites?",
+                    "itemdata": "No"
+                }
+            ],
+            "itemcount": 7
+        },
+        {
+            "sectioncode": "site",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": true,
+            "displaytitle": true,
+            "sectiontitle": "Waste Site 1",
+            "listitem": [
+                {
+                    "itemcode": "net_standard_tonnage",
+                    "itemformat": null,
+                    "itemlabel": "Standard rate\ntonnage (net)",
+                    "itemdata": "0"
+                },
+                {
+                    "itemcode": "net_lower_tonnage",
+                    "itemformat": null,
+                    "itemlabel": "Lower rate\ntonnage (net)",
+                    "itemdata": "0"
+                },
+                {
+                    "itemcode": "exempt_tonnage",
+                    "itemformat": null,
+                    "itemlabel": "Exempt\ntonnage",
+                    "itemdata": "0"
+                },
+                {
+                    "itemcode": "total_tonnage",
+                    "itemformat": null,
+                    "itemlabel": "Total\ntonnage",
+                    "itemdata": "0"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "credits_claimed",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": true,
+            "displaytitle": true,
+            "sectiontitle": "Credits claimed",
+            "listitem": [
+                {
+                    "itemcode": "slcf_yes_no",
+                    "itemformat": null,
+                    "itemlabel": "Are you claiming a credit in relation to an environmental contribution?",
+                    "itemdata": "No"
+                },
+                {
+                    "itemcode": "bad_debt_yes_no",
+                    "itemformat": null,
+                    "itemlabel": "Do you have any claims to make in relation to bad debt?",
+                    "itemdata": "No"
+                },
+                {
+                    "itemcode": "removal_credit_yes_no",
+                    "itemformat": null,
+                    "itemlabel": "Are you claiming a credit for permanent removal?",
+                    "itemdata": "No"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "calculation",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Calculated tax liability",
+            "listitem": [
+                {
+                    "itemcode": "total_tax_due",
+                    "itemformat": "money",
+                    "itemlabel": "Total tax due",
+                    "itemdata": "0"
+                },
+                {
+                    "itemcode": "total_credit",
+                    "itemformat": "money",
+                    "itemlabel": "Total credit",
+                    "itemdata": "0"
+                },
+                {
+                    "itemcode": "tax_payable",
+                    "itemformat": "money",
+                    "itemlabel": "Total payable",
+                    "itemdata": "0"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "declaration",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Payment and submission",
+            "listitem": [
+                {
+                    "itemcode": "fpay_method",
+                    "itemformat": null,
+                    "itemlabel": "How are you paying?",
+                    "itemdata": "BACS"
+                },
+                {
+                    "itemcode": "declaration",
+                    "itemformat": null,
+                    "itemlabel": "I, the taxpayer, confirm that this return is, to the best of my knowledge, correct and complete",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 2
+        }
+    ]
+}

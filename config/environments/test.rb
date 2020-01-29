@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'request_summary_log/log_middleware'
+require_relative '../cache.rb'
 
 Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # Settings specified here will take precedence over those in config/application.rb.
@@ -13,8 +14,14 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
 
   # Do not eager load code on boot. This avoids loading your whole application
   # just for the purpose of running a single test. If you are using a tool that
-  # preloads Rails for running tests, you may have to set it to true.
+  # pre-loads Rails for running tests, you may have to set it to true.
   config.eager_load = false
+
+  # Compress JavaScripts and CSS.
+  # used harmony syntax https://github.com/lautis/uglifier/issues/127
+  config.assets.js_compressor = Uglifier.new(harmony: true)
+  # For now do not compress the css see https://github.com/sass/libsass/issues/2701
+  config.assets.css_compressor = nil
 
   # Configure public file server for tests with Cache-Control for performance.
   config.public_file_server.enabled = true
@@ -29,12 +36,7 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   config.action_controller.perform_caching = true
 
   # use Redis for caching
-  config.cache_store = :redis_cache_store, {
-    url: ENV['REDIS_CACHE_URL'],
-    error_handler: lambda { |method:, returning:, exception:| # rubocop:disable Lint/UnusedBlockArgument
-      Rails.logger.error("Cache store exception : #{exception}")
-    }
-  }
+  config.cache_store = :redis_cache_store, cache_connection
 
   # Raise exceptions instead of rendering exception templates.
   config.action_dispatch.show_exceptions = false
@@ -70,7 +72,11 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
 
   # override the refresh so it doesn't run during the tests otherwise
   # it can break the savon mocking expectations
-  config.x.scheduled_jobs.refresh_ref_data_every = 60.minutes
+  config.x.scheduled_jobs.refresh_ref_data_every = 120.minutes
+  config.x.scheduled_jobs.refresh_sys_params_every = 120.minutes
+  config.x.scheduled_jobs.refresh_pws_text_every = 120.minutes
+  config.x.scheduled_jobs.refresh_tax_relief_type = 120.minutes
+  config.x.authorisation.cache_expiry = 120.minutes
 
   # Start ActiveJobs
   config.after_initialize do
@@ -79,13 +85,16 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
       RefreshRefDataJob.schedule_next_run(1.second)
 
       # GetSystemParameters refresh job
-      RefreshSystemParametersJob.schedule_next_run(3.seconds)
+      RefreshSystemParametersJob.schedule_next_run(1.minutes)
 
       # GetSystemParameters refresh job
-      RefreshPwsTextJob.schedule_next_run(5.seconds)
+      RefreshPwsTextJob.schedule_next_run(2.minutes)
 
-      # DeleteAttachmentFilesJob file delete job
-      DeleteAttachmentFilesJob.schedule_next_run(1.days)
+      # Tax Relief Type refresh job
+      TaxReliefTypeJob.schedule_next_run(3.minutes)
+
+      # Delete the temporary files job
+      DeleteTempFilesJob.schedule_next_run(4.minutes)
     end
   end
 end

@@ -12,16 +12,6 @@ module Dashboard
       load_outstanding
     end
 
-    helper_method :account_has_service?
-
-    # Check if the current account has the supplied service
-    # @param service [String/Symbol] the service to check for
-    # @return [Boolean] returns true if the account has the service otherwise false
-    def account_has_service?(service)
-      @account ||= Account.find(current_user)
-      @account.service?(service)
-    end
-
     private
 
     # Used for the messages section, to go to it's next page.
@@ -59,7 +49,8 @@ module Dashboard
     def load_outstanding
       @outstanding, @outstanding_pagination =
         DashboardReturn.list_all_returns(current_user,
-                                         outstanding_page, DashboardReturnFilter.new(outstanding_balance: true), 3)
+                                         outstanding_page,
+                                         DashboardReturnFilter.new(outstanding_balance: true, return_status: 'L'), 3)
     end
   end
 end

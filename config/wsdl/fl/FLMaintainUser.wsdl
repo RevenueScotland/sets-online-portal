@@ -2,6 +2,43 @@
 <!-- 17-Oct-2013   Version 1.0  -->
 <wsdl:definitions xmlns:ns="http://northgate-is.com/FL/MaintainUser" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://northgate-is.com/FL/MaintainUser.wsdl" targetNamespace="http://northgate-is.com/FL/MaintainUser.wsdl" name="MaintainUser">
 	<wsdl:types>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://northgateps.com/FLCommonTypes" targetNamespace="http://northgateps.com/FLCommonTypes" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="Money">
+				<xsd:sequence>
+					<xsd:element name="Pounds" type="xsd:int"/>
+					<xsd:element name="Pence">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:int">
+								<xsd:maxInclusive value="99"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="AddressType">
+				<xsd:annotation>
+					<xsd:documentation>An address is composed of a number of structured elements such as Postcode, Post-Town, Street etc</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Line1" type="xsd:string"/>
+					<xsd:element name="Line2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Town" type="xsd:string"/>
+					<xsd:element name="County" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Postcode" type="PostcodeType" minOccurs="0"/>
+					<xsd:element name="Country" type="xsd:string"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="PostcodeType">
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="PhoneNumberType">
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[0-9\-\.\)\(\+ ]+"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:schema>
 		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:complexType name="PersonNameType">
 				<xsd:sequence>
@@ -53,7 +90,7 @@
 					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
 					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>QAS unique reference fior the address</xsd:documentation>
+							<xsd:documentation>QAS unique reference for the address</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>
@@ -125,11 +162,22 @@
 				</xsd:annotation>
 				<xsd:sequence>
 					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Service" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example service is the name of the requesting system, e.g. RB or the database from which the request is coming from, e.g. RBDEV</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example requestor is the name of the Local Authority from which the request is being sent</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
-		<xsd:schema xmlns="http://northgate-is.com/FL/MaintainUser" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://northgate-is.com/FL/MaintainUser" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns="http://northgate-is.com/FL/MaintainUser" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" xmlns:flc="http://northgateps.com/FLCommonTypes" targetNamespace="http://northgate-is.com/FL/MaintainUser" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:import namespace="http://northgate-is.com/FL/Core"/>
+			<xsd:import namespace="http://northgateps.com/FLCommonTypes"/>
 			<xsd:element name="MaintainUserRequest">
 				<xsd:complexType>
 					<xsd:complexContent>
@@ -141,8 +189,8 @@
 											<xsd:enumeration value="ChangePassword"/>
 											<xsd:enumeration value="ResetPassword"/>
 											<xsd:enumeration value="ListUsers"/>
-											<!--added to sign user up to T&Cs-->
 											<xsd:enumeration value="TaCsSignUp"/>
+											<!--added to sign user up to T&Cs-->
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
@@ -181,6 +229,7 @@
 														<xsd:element name="Surname" type="xsd:string"/>
 														<xsd:element name="EmailAddress" type="xsd:string"/>
 														<xsd:element name="PreferredLanguage" type="xsd:string"/>
+														<xsd:element name="PhoneNumber" type="flc:PhoneNumberType"/>
 														<xsd:element name="UserRoles" type="UserRolesType"/>
 													</xsd:sequence>
 												</xsd:complexType>

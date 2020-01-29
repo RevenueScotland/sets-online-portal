@@ -5,6 +5,6 @@
 
 <%= form_for @forgotten_username, url: forgotten_username_path, local: true do |f| %>
   <%= form_errors_for @forgotten_username %>   
-  <%= f.text_field :email_address %><br>
+  <%= f.text_field :email_address %><br/>
   <%= f.button '.confirm' %> 
 <% end %>

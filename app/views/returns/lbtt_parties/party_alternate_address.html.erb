@@ -5,7 +5,7 @@
   <% content_for :page_title, t('.'+@party.party_type+ '_title') %>
   <%= form_errors_for [@party, @address_summary, @address_detail] %>
 
-  <%= f.collection_radio_buttons_fields(:is_contact_address_different, @party.list_ref_data(:is_contact_address_different), :code, :value) %>
+  <%= f.collection_radio_buttons_fields(:is_contact_address_different, @party.list_ref_data(:is_contact_address_different)) %>
   <div id='hideable'>
     <%= render "/layouts/address" %>
   </div>

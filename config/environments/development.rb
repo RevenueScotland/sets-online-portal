@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../cache.rb'
+
 Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -21,12 +23,7 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
     config.action_controller.perform_caching = true
 
     # use Redis for caching
-    config.cache_store = :redis_cache_store, {
-      url: ENV['REDIS_CACHE_URL'],
-      error_handler: lambda { |method:, returning:, exception:| # rubocop:disable Lint/UnusedBlockArgument
-        Rails.logger.error("Cache store exception : #{exception}")
-      }
-    }
+    config.cache_store = :redis_cache_store, cache_connection
 
     config.public_file_server.headers = {
       'Cache-Control' => "public, max-age=#{2.days.to_i}"
@@ -73,15 +70,19 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   config.after_initialize do
     unless ENV['PREVENT_JOBS_STARTING'] == 'Y'
       # GetReferenceData/ReferenceValues refresh job
-      RefreshRefDataJob.schedule_next_run(3.seconds)
+      RefreshRefDataJob.schedule_next_run(1.seconds)
 
       # GetSystemParameters refresh job
-      RefreshSystemParametersJob.schedule_next_run(5.seconds)
+      RefreshSystemParametersJob.schedule_next_run(3.seconds)
 
       # GetSystemParameters refresh job
-      RefreshPwsTextJob.schedule_next_run(7.seconds)
+      RefreshPwsTextJob.schedule_next_run(5.seconds)
 
-      # DeleteAttachmentFilesJob file delete job specifically not included
+      # Tax Relief Type refresh job
+      TaxReliefTypeJob.schedule_next_run(7.seconds)
+
+      # Delete the temporary files job
+      DeleteTempFilesJob.schedule_next_run(9.seconds)
     end
   end
 end

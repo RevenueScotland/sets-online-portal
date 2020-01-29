@@ -192,6 +192,16 @@
 								<xs:documentation>Username of person submitting the request</xs:documentation>
 							</xs:annotation>
 						</xs:element>
+						<xs:element name="Year" type="xs:integer" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Year being reported on</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Quarter" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Quarter being reported on</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

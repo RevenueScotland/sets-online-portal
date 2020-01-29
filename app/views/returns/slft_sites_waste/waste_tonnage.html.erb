@@ -1,4 +1,4 @@
-<% content_for :page_title, t('.title') %>
+<% content_for :page_title, t('.title' , waste: @waste.ewc_code, site_name: @waste.site_name )  %>
 <% content_for :page_subtitle, t('.subtitle') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 

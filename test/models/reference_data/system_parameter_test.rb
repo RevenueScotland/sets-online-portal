@@ -9,9 +9,9 @@ module ReferenceData
     include MemoryCacheHelper
 
     # actual_cache[ReferenceData::SystemParameter.cache_key][COMP_KEY_1][HASH_KEY]=TEST_HASH_VALUE
-    COMP_KEY_1 = 'dom.ser.wor'
-    COMP_KEY_2 = 'dom.ser.waa'
-    COMP_KEY_3 = 'nds.rev.scot'
+    COMP_KEY_1 = 'dom>$<ser>$<wor'
+    COMP_KEY_2 = 'dom>$<ser>$<waa'
+    COMP_KEY_3 = 'nds>$<rev>$<scot'
 
     TEST_VALUE_1 = ReferenceData::SystemParameter.new(code: 'T', value: 'test value data1')
     TEST_VALUE_2 = ReferenceData::SystemParameter.new(code: 'U', value: 'test value data2')
@@ -66,9 +66,10 @@ module ReferenceData
       # @param [SystemParameter] test_value - the data for that key
       private_class_method def self.make_call_ok_data(comp_key, test_value)
         output = {}
-        output[:domain_code] = comp_key.split('.')[0]
-        output[:service_code] = comp_key.split('.')[1]
-        output[:workplace_code] = comp_key.split('.')[2]
+        split_key = comp_key.split('>$<')
+        output[:domain_code] = split_key[0]
+        output[:service_code] = split_key[1]
+        output[:workplace_code] = split_key[2]
         output[:code] = test_value.code
         output[:string_value] = test_value.value
         output
@@ -81,7 +82,7 @@ module ReferenceData
     end
 
     test 'cache code works' do
-      # paranoya check, is the cache empty
+      # paranoia check, is the cache empty
       assert_nil(Rails.cache.read(TestSystemParameter.cache_key), 'Cache should start empty')
 
       # just testing single lookup, will always use this code for this test
@@ -120,7 +121,7 @@ module ReferenceData
 
     # check return types map and list are correct
     test 'return types are correct' do
-      keys = COMP_KEY_1.split('.')
+      keys = COMP_KEY_1.split('>$<')
       lookup_result = TestSystemParameter.lookup(keys[0], keys[1], keys[2])
       assert(lookup_result.is_a?(Hash))
       list_result = TestSystemParameter.list(keys[0], keys[1], keys[2])
@@ -133,7 +134,7 @@ module ReferenceData
     end
 
     # Check we can return multiple keys at once
-    test 'lookup mulitple system parameters' do
+    test 'lookup multiple system parameters' do
       keys = [COMP_KEY_1, COMP_KEY_2, COMP_KEY_3]
       result = TestSystemParameter.lookup_multiple(keys)
       assert(result.is_a?(Hash))
@@ -144,7 +145,7 @@ module ReferenceData
     end
 
     # Check we can return multiple keys as lists
-    test 'list mulitple system parameters' do
+    test 'list multiple system parameters' do
       keys = [COMP_KEY_1, COMP_KEY_2, COMP_KEY_3]
       result = TestSystemParameter.list_multiple(keys)
       assert(result.is_a?(Hash))

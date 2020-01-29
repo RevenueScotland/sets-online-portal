@@ -1,0 +1,1058 @@
+{
+    "section": [
+        {
+            "sectioncode": "return_type",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the return",
+            "listitem": [
+                {
+                    "itemcode": "tare_reference",
+                    "itemformat": null,
+                    "itemlabel": "Return reference",
+                    "itemdata": "\u003c%TARE_REFERENCE%\u003e"
+                },
+                {
+                    "itemcode": "version",
+                    "itemformat": null,
+                    "itemlabel": "Version",
+                    "itemdata": "\u003c%VERSION%\u003e"
+                },
+                {
+                    "itemcode": "form_type",
+                    "itemformat": null,
+                    "itemlabel": "Status",
+                    "itemdata": "Filed"
+                },
+                {
+                    "itemcode": "flbt_type",
+                    "itemformat": null,
+                    "itemlabel": "Which return do you want to submit?",
+                    "itemdata": "Conveyance or transfer"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "agent_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Agent details",
+            "listitem": [
+                {
+                    "itemcode": "title",
+                    "itemformat": null,
+                    "itemlabel": "Title",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "firstname",
+                    "itemformat": null,
+                    "itemlabel": "First name",
+                    "itemdata": "Portal User"
+                },
+                {
+                    "itemcode": "surname",
+                    "itemformat": null,
+                    "itemlabel": "Last name",
+                    "itemdata": "New Users"
+                },
+                {
+                    "itemcode": "agent_reference",
+                    "itemformat": null,
+                    "itemlabel": "Your reference",
+                    "itemdata": "Electronics"
+                },
+                {
+                    "itemcode": "agent_dx_number",
+                    "itemformat": null,
+                    "itemlabel": "DX number and exchange",
+                    "itemdata": "4982"
+                },
+                {
+                    "itemcode": "telephone",
+                    "itemformat": null,
+                    "itemlabel": "Telephone number",
+                    "itemdata": "07700900321"
+                },
+                {
+                    "itemcode": "email_address",
+                    "itemformat": null,
+                    "itemlabel": "Email",
+                    "itemdata": "noreply@northgateps.com"
+                }
+            ],
+            "itemcount": 7
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Agent address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "2 Park Lane"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Garden Village"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "NORTHTOWN"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Northshire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "RG1 1PB"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "organisation_type_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the buyer(An other organisation)",
+            "listitem": [
+                {
+                    "itemcode": "org_type",
+                    "itemformat": null,
+                    "itemlabel": "Type of organisation",
+                    "itemdata": "Trust"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "organisation_details",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Trust",
+            "listitem": [
+                {
+                    "itemcode": "org_name",
+                    "itemformat": null,
+                    "itemlabel": "Name",
+                    "itemdata": "Dunder Mifflin"
+                },
+                {
+                    "itemcode": "com_jurisdiction",
+                    "itemformat": null,
+                    "itemlabel": "What country's law is the organisation governed by?",
+                    "itemdata": "ENGLAND"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "1 Gipsy Lane"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Headington"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "OXFORD"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Oxfordshire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "OX3 7PT"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "representative_contact_details",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": "Contact details",
+            "listitem": [
+                {
+                    "itemcode": "contact_firstname",
+                    "itemformat": null,
+                    "itemlabel": "First name",
+                    "itemdata": "Michael"
+                },
+                {
+                    "itemcode": "contact_surname",
+                    "itemformat": null,
+                    "itemlabel": "Last name",
+                    "itemdata": "Scott"
+                },
+                {
+                    "itemcode": "job_title",
+                    "itemformat": null,
+                    "itemlabel": "Job title or position",
+                    "itemdata": "Manager"
+                },
+                {
+                    "itemcode": "contact_email",
+                    "itemformat": null,
+                    "itemlabel": "Email",
+                    "itemdata": "michael.scott@dudnermifflin.com"
+                },
+                {
+                    "itemcode": "contact_tel_no",
+                    "itemformat": null,
+                    "itemlabel": "Contact phone number",
+                    "itemdata": "0134411111"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "3 Gipsy Lane"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Headington"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "OXFORD"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Oxfordshire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "OX3 7PT"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "buyer_relation",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": "Buyer details",
+            "listitem": [
+                {
+                    "itemcode": "buyer_seller_linked_ind",
+                    "itemformat": null,
+                    "itemlabel": "Is the buyer connected to the seller?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "is_acting_as_trustee",
+                    "itemformat": null,
+                    "itemlabel": "Is the buyer acting as a trustee or representative partner for tax purposes?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "company_details",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the seller(An organisation registered with Companies House)",
+            "listitem": [
+                {
+                    "itemcode": "company_number",
+                    "itemformat": null,
+                    "itemlabel": "Company number",
+                    "itemdata": "09338960"
+                },
+                {
+                    "itemcode": "company_name",
+                    "itemformat": null,
+                    "itemlabel": "Company name",
+                    "itemdata": "NORTHGATE PUBLIC SERVICES LIMITED"
+                },
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Address",
+                    "itemdata": "Peoplebuilding 2 Peoplebuilding Estate"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Maylands Avenue"
+                },
+                {
+                    "itemcode": "locality",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "Hemel Hempstead"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Hertfordshire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "HP2 4NW"
+                },
+                {
+                    "itemcode": "country",
+                    "itemformat": null,
+                    "itemlabel": "Country",
+                    "itemdata": "GB"
+                }
+            ],
+            "itemcount": 8
+        },
+        {
+            "sectioncode": "representative_contact_details",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": "Contact details",
+            "listitem": [
+                {
+                    "itemcode": "contact_firstname",
+                    "itemformat": null,
+                    "itemlabel": "First name",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "contact_surname",
+                    "itemformat": null,
+                    "itemlabel": "Last name",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "job_title",
+                    "itemformat": null,
+                    "itemlabel": "Job title or position",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "contact_email",
+                    "itemformat": null,
+                    "itemlabel": "Email",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "contact_tel_no",
+                    "itemformat": null,
+                    "itemlabel": "Contact phone number",
+                    "itemdata": ""
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "property_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the property",
+            "listitem": [
+                {
+                    "itemcode": "lau_code",
+                    "itemformat": null,
+                    "itemlabel": "Local authority",
+                    "itemdata": "Dundee"
+                },
+                {
+                    "itemcode": "title_code",
+                    "itemformat": null,
+                    "itemlabel": "Title number (optional)",
+                    "itemdata": "LAN"
+                },
+                {
+                    "itemcode": "title_number",
+                    "itemformat": null,
+                    "itemdata": "8808"
+                },
+                {
+                    "itemcode": "parent_title_code",
+                    "itemformat": null,
+                    "itemlabel": "Parent title number (optional)",
+                    "itemdata": "KRK"
+                },
+                {
+                    "itemcode": "parent_title_number",
+                    "itemformat": null,
+                    "itemdata": "7907"
+                },
+                {
+                    "itemcode": "ads_due_ind",
+                    "itemformat": null,
+                    "itemlabel": "Does Additional Dwelling Supplement (ADS) apply to this transaction?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 6
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Property address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "First Scotrail Ltd"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Excess Office"
+                },
+                {
+                    "itemcode": "address_line3",
+                    "itemformat": null,
+                    "itemdata": "Waverley Railway Station"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "EDINBURGH"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "EH1 1BB"
+                }
+            ],
+            "itemcount": 6
+        },
+        {
+            "sectioncode": "ads_consideration",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Additional Dwelling Supplement (ADS)",
+            "listitem": [
+                {
+                    "itemcode": "ads_consideration_yes_no",
+                    "itemformat": null,
+                    "itemlabel": "Is the buyer replacing their main residence?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "ads_amount_liable",
+                    "itemformat": "money",
+                    "itemlabel": "Total consideration liable to ADS",
+                    "itemdata": "1500"
+                },
+                {
+                    "itemcode": "ads_consideration",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of ADS liability from new main residence",
+                    "itemdata": "1140"
+                },
+                {
+                    "itemcode": "ads_sell_residence_ind",
+                    "itemformat": null,
+                    "itemlabel": "Does the buyer intend to sell their main residence within 18 months?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "What is the address of the main residence that will be sold",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "Fruition Partners Ltd"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Unit 7"
+                },
+                {
+                    "itemcode": "address_line3",
+                    "itemformat": null,
+                    "itemdata": "Bracknell Beeches"
+                },
+                {
+                    "itemcode": "address_line4",
+                    "itemformat": null,
+                    "itemdata": "Old Bracknell Lane West"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "BRACKNELL"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "RG12 7BW"
+                }
+            ],
+            "itemcount": 7
+        },
+        {
+            "sectioncode": "ads_relief_claim_ind",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Reliefs on ADS consideration",
+            "listitem": [
+                {
+                    "itemcode": "ads_reliefclaim_option_ind",
+                    "itemformat": null,
+                    "itemlabel": "Is relief being claimed from the ADS consideration?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "ADS  Relief for 6 or more dwellings"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of tax saved by relief",
+                    "itemdata": "500"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "ADS - Family units"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of tax saved by relief",
+                    "itemdata": "450"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "about_the_transaction",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the transaction",
+            "listitem": [
+                {
+                    "itemcode": "property_type",
+                    "itemformat": null,
+                    "itemlabel": "What is the property type for this transaction?",
+                    "itemdata": "Non-residential"
+                },
+                {
+                    "itemcode": "effective_date",
+                    "itemformat": "date",
+                    "itemlabel": "Effective date of transaction",
+                    "itemdata": "07 November 2019"
+                },
+                {
+                    "itemcode": "relevant_date",
+                    "itemformat": "date",
+                    "itemlabel": "Relevant date",
+                    "itemdata": "07 November 2019"
+                },
+                {
+                    "itemcode": "contract_date",
+                    "itemformat": "date",
+                    "itemlabel": "Date of contract or conclusion of missives",
+                    "itemdata": "07 November 2019"
+                },
+                {
+                    "itemcode": "previous_option_ind",
+                    "itemformat": null,
+                    "itemlabel": "Is the transaction linked to a previous option agreement?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "exchange_ind",
+                    "itemformat": null,
+                    "itemlabel": "Does the transaction include any element of exchange or part exchange?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "uk_ind",
+                    "itemformat": null,
+                    "itemlabel": "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 7
+        },
+        {
+            "sectioncode": "linked_transactions_ind",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Linked Transactions",
+            "listitem": [
+                {
+                    "itemcode": "linked_ind",
+                    "itemformat": null,
+                    "itemlabel": "Are there any linked transactions?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "linked_transactions",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "return_reference",
+                    "itemformat": null,
+                    "itemlabel": "Return reference (if known)",
+                    "itemdata": "RS10001001HALO"
+                },
+                {
+                    "itemcode": "consideration_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Return consideration",
+                    "itemdata": "750"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "linked_transactions",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "return_reference",
+                    "itemformat": null,
+                    "itemlabel": "Return reference (if known)",
+                    "itemdata": "RS10001002SEAT"
+                },
+                {
+                    "itemcode": "consideration_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Return consideration",
+                    "itemdata": "280"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "linked_transactions",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "return_reference",
+                    "itemformat": null,
+                    "itemlabel": "Return reference (if known)",
+                    "itemdata": "RS10001003AHOY"
+                },
+                {
+                    "itemcode": "consideration_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Return consideration",
+                    "itemdata": "340"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "sale_of_business",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the transaction",
+            "listitem": [
+                {
+                    "itemcode": "business_ind",
+                    "itemformat": null,
+                    "itemlabel": "Is the transaction part of the sale of a business?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "sale_include_option",
+                    "itemformat": null,
+                    "itemlabel": "Does the sale include any of the following?",
+                    "itemdata": "Goodwill, Moveables"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "non_ads_relief_claim_ind",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Reliefs on this transaction",
+            "listitem": [
+                {
+                    "itemcode": "non_ads_reliefclaim_option_ind",
+                    "itemformat": null,
+                    "itemlabel": "Is relief being claimed for this transaction?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "Multiple dwellings relief"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of tax saved by relief",
+                    "itemdata": "9000"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "Charities relief (Full Relief)"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of tax saved by relief",
+                    "itemdata": "880"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "Charities relief (Partial Relief)"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of tax saved by relief",
+                    "itemdata": "7050"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "about_the_calculation",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About future events",
+            "listitem": [
+                {
+                    "itemcode": "contingents_event_ind",
+                    "itemformat": null,
+                    "itemlabel": "Does any part of your consideration depend on future events, like planning permission?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "deferral_agreed_ind",
+                    "itemformat": null,
+                    "itemlabel": "Have you applied to pay on a deferred basis??",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "deferral_reference",
+                    "itemformat": null,
+                    "itemlabel": "Revenue Scotland deferral reference",
+                    "itemdata": "RS10001002HALO"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "conveyance_values",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the conveyance or transfer",
+            "listitem": [
+                {
+                    "itemcode": "total_consideration",
+                    "itemformat": "money",
+                    "itemlabel": "Total consideration",
+                    "itemdata": "12500"
+                },
+                {
+                    "itemcode": "total_vat",
+                    "itemformat": "money",
+                    "itemlabel": "VAT amount",
+                    "itemdata": "790"
+                },
+                {
+                    "itemcode": "linked_consideration",
+                    "itemformat": "money",
+                    "itemlabel": "Linked transaction consideration",
+                    "itemdata": "1370"
+                },
+                {
+                    "itemcode": "non_chargeable",
+                    "itemformat": "money",
+                    "itemlabel": "Non-chargeable consideration",
+                    "itemdata": "6670"
+                },
+                {
+                    "itemcode": "remaining_chargeable",
+                    "itemformat": "money",
+                    "itemlabel": "Total consideration remaining",
+                    "itemdata": "30"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "calculation",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the calculation",
+            "listitem": [
+                {
+                    "itemcode": "calculated",
+                    "itemformat": "money",
+                    "itemlabel": "LBTT calculated",
+                    "itemdata": "17880"
+                },
+                {
+                    "itemcode": "ads_due",
+                    "itemformat": "money",
+                    "itemlabel": "ADS calculated",
+                    "itemdata": "6375"
+                },
+                {
+                    "itemcode": "due_before_reliefs",
+                    "itemformat": "money",
+                    "itemlabel": "Total liability",
+                    "itemdata": "24255.0"
+                },
+                {
+                    "itemcode": "total_ads_reliefs",
+                    "itemformat": "money",
+                    "itemlabel": "Total ADS reliefs claimed",
+                    "itemdata": "950"
+                },
+                {
+                    "itemcode": "total_reliefs",
+                    "itemformat": "money",
+                    "itemlabel": "Total LBTT reliefs claimed",
+                    "itemdata": "16930"
+                },
+                {
+                    "itemcode": "tax_due",
+                    "itemformat": "money",
+                    "itemlabel": "Total tax payable",
+                    "itemdata": "6375"
+                }
+            ],
+            "itemcount": 6
+        },
+        {
+            "sectioncode": "declaration",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Payment and submission",
+            "listitem": [
+                {
+                    "itemcode": "fpay_method",
+                    "itemformat": null,
+                    "itemlabel": "How are you paying?",
+                    "itemdata": "BACS"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "declaration",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Payment and submission",
+            "listitem": [
+                {
+                    "itemcode": "authority_ind",
+                    "itemformat": null,
+                    "itemlabel": "I, the agent for the buyer(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "declaration",
+                    "itemformat": null,
+                    "itemlabel": "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): \n (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and \n (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct.",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 2
+        }
+    ]
+}

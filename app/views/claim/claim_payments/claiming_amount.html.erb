@@ -1,6 +1,9 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-
+  <% content_for :page_view, render_page_view(__FILE__) %>
+<% if @claim_payment.pre_claim? %>
+<% content_for :page_title, t('.public_user_title') %>
+<% else %>
+  <% content_for :page_title, t('.title') %>    
+<% end %>
 <%= form_for @claim_payment, url: @post_path, local: true do |f| %>
 <%= form_errors_for @claim_payment %>
 <%= f.currency_field :claiming_amount %>

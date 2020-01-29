@@ -18,7 +18,7 @@
 #
 # @example
 #   def cached_ref_data_codes
-#     { year: 'YEAR.SYS.RSTU', fape_period: 'PERIOD.SYS.RSTU' }
+#     { year: comp_key('YEAR','SYS','RSTU'), fape_period: comp_key('PERIOD'.'SYS','RSTU') }
 #   end
 #
 # #uncached_ref_data_codes lists those keys that we do not want to cache locally (just linking the back
@@ -54,10 +54,33 @@ module ReferenceDataLookup
     true
   end
 
+  # Utility function provided as a wrapper for the ReferenceValue format_composite_key function
+  # @see ReferenceData::ReferenceDataCaching.format_composite_key
+  def comp_key(domain_code, service_code, workplace_code)
+    ReferenceData::ReferenceValue.format_composite_key(domain_code, service_code, workplace_code)
+  end
+
   # List version of @see #lookup_ref_data
   def list_ref_data(attribute)
     # duplicates parts of @see ReferenceData::ReferenceValue#list
     lookup_ref_data(attribute).values.sort_by(&:sort_key)
+  end
+
+  # Return reference data defined and cached in your model @see #initialize_ref_data.
+  #
+  # Whenever the same reference data is needed more than once alongside a model attribute you should consider
+  # adding it to a #cached_ref_data_codes method in your model.  The reference data will be stored inside the model
+  # (increasing the model size so don't use it for big lists but reducing the number of calls to Redis).
+  #
+  # Alternatively you can add it to a #uncached_ref_data_codes method in which case it won't be cached in the model
+  # but you won't have to keep writing the domain_code, service_code, workplace_code codes each time.
+  #
+  # @param attribute [String] key linked to ref data defined in #cached_ref_data_codes or #uncached_ref_data_codes
+  def lookup_ref_data(attribute)
+    Rails.logger.debug("Model ref data lookup for #{attribute}")
+    return @cached_ref_data[attribute] if initialize_ref_data && @cached_ref_data.key?(attribute)
+
+    lookup_uncached_ref_data(attribute)
   end
 
   # Lookup the value of the attribute in the associated ref data.
@@ -100,23 +123,6 @@ module ReferenceDataLookup
 
   private
 
-  # Return reference data defined and cached in your model @see #initialize_ref_data.
-  #
-  # Whenever the same reference data is needed more than once alongside a model attribute you should consider
-  # adding it to a #cached_ref_data_codes method in your model.  The reference data will be stored inside the model
-  # (increasing the model size so don't use it for big lists but reducing the number of calls to Redis).
-  #
-  # Alternatively you can add it to a #uncached_ref_data_codes method in which case it won't be cached in the model
-  # but you won't have to keep writing the domain_code, service_code, workplace_code codes each time.
-  #
-  # @param attribute [String] key linked to ref data defined in #cached_ref_data_codes or #uncached_ref_data_codes
-  def lookup_ref_data(attribute)
-    Rails.logger.debug("Model ref data lookup for #{attribute}")
-    return @cached_ref_data[attribute] if initialize_ref_data && @cached_ref_data.key?(attribute)
-
-    lookup_uncached_ref_data(attribute)
-  end
-
   # Return reference data defined and but not cached in your model @see #initialize_ref_data.
   #
   # called when the reference data is not defined in the cached model list
@@ -130,7 +136,7 @@ module ReferenceDataLookup
 
     Rails.logger.debug("Model ref data uncached lookup for #{attribute} #{uncached_ref_data_codes[attribute]}")
 
-    return ReferenceDataLookup.lookup_yesno if uncached_ref_data_codes[attribute] == 'YESNO.SYS.RSTU'
+    return ReferenceDataLookup.lookup_yesno if uncached_ref_data_codes[attribute] == comp_key('YESNO', 'SYS', 'RSTU')
 
     ReferenceData::ReferenceValue.lookup_composite_key(uncached_ref_data_codes[attribute])
   end

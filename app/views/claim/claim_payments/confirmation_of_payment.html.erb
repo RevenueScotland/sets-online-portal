@@ -3,11 +3,28 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @claim_payment %> 
-      <b><%= t('.caution') %></b>
-      <br/>
-      <br/>
-   <%=t('.secure_message',  
-   ref_link: link_to(t('.ref_message'), new_dashboard_message_path(:reference => @claim_payment.tare_reference))).html_safe %>
+  <% if current_user.nil? %>
+  <p class="govuk-body" if >
+    <%= t('.public_secure_message', return_reference: @claim_payment.tare_reference) %>
+  </p>
+  <% else %>
+  <p class="govuk-body">
+    <%= t('.secure_message', return_reference: @claim_payment.tare_reference) %>
+  </p>
+  <% end %>
+  <p class="govuk-body">
+    <%= t('.date_text', system_date: DateFormatting.to_display_date_format(Date.today)) %>
+  </p>
+  <p class="govuk-body">
+    <%= UtilityHelper.swap_texts(t('.paragraph2').html_safe,
+                                 text_link: { t('.paragraph2_link_text') =>
+                                               link_to(t('.paragraph2_link_text'), 'http://www.revenue.scot/', target: '_blank') }) %>
+  </p>
+  <p class="govuk-body">
+    <%= t('.caution') %>
+  </p>
 <% end %>
-<p />
-<%= link_to t('go_to_dashboard'), dashboard_path %>
+<%= link_to t('.print'), nil, class: 'print govuk-link' %>
+<p/>
+<%= link_to t('.download_claim_details'), claim_download_claim_path, target: "_blank" %>
+

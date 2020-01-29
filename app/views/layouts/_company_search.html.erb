@@ -2,20 +2,18 @@
 
   <%= cs.text_field :company_number %>
   <div class="govuk-form-group">
-    <%= cs.submit '.search', { :name => 'company_search', autofocus: @on_company_search } %> 
+    <%= cs.submit '.search', { :name => 'company_search', autofocus: (@on_company_search && !@form_error_found) } %> 
   </div>
 
-  <% unless @company_details.nil?  || !@company_details.company_name? %>
+  <% unless @company.company_name.nil? %>
     <div class="govuk-form-group">
-      <%= fields_for @company_details do |sr| %>
-        <%= sr.text_field :company_name, :readonly => @company_read_only %>
-        <%= sr.text_field :address_line1, :readonly => @company_read_only %>
-        <%= sr.text_field :address_line2, :readonly => @company_read_only %>
-        <%= sr.text_field :locality, :readonly => @company_read_only %>
-        <%= sr.text_field :county, :readonly => @company_read_only %>
-        <%= sr.text_field :postcode, :readonly => @company_read_only %>
-        <%= sr.text_field :country, :readonly => @company_read_only %>
-      <% end %>
+      <%= cs.text_field :company_name, {}, { :readonly => @company_read_only } %>
+      <%= cs.text_field :address_line1, {}, { :readonly => @company_read_only } %>
+      <%= cs.text_field :address_line2, {}, { :readonly => @company_read_only } %>
+      <%= cs.text_field :locality, {}, { :readonly => @company_read_only } %>
+      <%= cs.text_field :county, {}, { :readonly => @company_read_only } %>
+      <%= cs.text_field :postcode, {}, { :readonly => @company_read_only } %>
+      <%= cs.text_field :country, {}, { :readonly => @company_read_only } %>
     </div>
   <% end %>  
 

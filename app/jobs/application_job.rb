@@ -23,8 +23,8 @@ class ApplicationJob < ActiveJob::Base
   # Runs the job.  Calls job_action on the implementing class and attempts to always call {#self.schedule_next_run}.
   def perform
     job_action
-  rescue StandardError => exception
-    Error::ErrorHandler.log_exception(exception)
+  rescue StandardError => e
+    Error::ErrorHandler.log_exception(e)
   ensure
     self.class.schedule_next_run
   end

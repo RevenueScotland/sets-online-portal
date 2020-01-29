@@ -2,13 +2,11 @@
 
 # Model for the forgotten password functionality
 class ForgottenPassword < FLApplicationRecord
-  include CommonValidation
-
   attr_accessor :email_address, :new_password, :new_password_confirmation
   attr_reader :username
 
   validates :username, presence: true, length: { minimum: 3, maximum: 30 }
-  validate  :valid_email_address?
+  validates :email_address, presence: true, email_address: true
   validates :new_password, length: { maximum: 200 }, presence: true
   validates :new_password, confirmation: true
 
@@ -37,5 +35,10 @@ class ForgottenPassword < FLApplicationRecord
       NewPassword: new_password,
       ServiceCode: 'SYS'
     }
+  end
+
+  # Hash to translate back office logical data item into an attribute
+  def back_office_attributes
+    { PASSWORD: { attribute: :new_password } }
   end
 end

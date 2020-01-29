@@ -3,9 +3,9 @@
 
 <%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @lbtt_return, translation_options: { declaration: User.account_type(current_user) } %>
-  <%= f.collection_radio_buttons_fields(:fpay_method, @lbtt_return.list_payment_types(account_has_dd_instruction?), :code, :value, alignment: 'vertical') %>
+  <%= f.collection_radio_buttons_fields(:fpay_method, @lbtt_return.list_payment_types(account_has_dd_instruction?), alignment: 'vertical') %>
   <%= govuk_warning( t('.warning') ) %>
-  <%= f.collection_radio_buttons_fields(:authority_ind, @lbtt_return.list_ref_data(:authority_ind), :code, :value) if User.account_type(current_user) == 'AGENT' %>
+  <%= f.collection_radio_buttons_fields(:authority_ind, @lbtt_return.list_ref_data(:authority_ind)) if User.account_type(current_user) == 'AGENT' %>
   <%= f.check_box_field(:declaration, { translation_options: User.account_type(current_user) } ) %>
   <%= f.check_box_field(:lease_declaration, { translation_options: User.account_type(current_user) } ) if @lbtt_return.flbt_type == 'LEASERET'%>
   <br/>

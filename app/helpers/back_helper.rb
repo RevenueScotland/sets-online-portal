@@ -48,6 +48,8 @@ module BackHelper
   def clear_previous_stack
     # Always sets the session of visited links to the current page
     session[:link_visited] = [current_page_path(nil)]
+    # @see last_link_custom_path? method for details of it's use.
+    session[:is_last_link_custom_path] = nil
     ''
   end
 
@@ -66,10 +68,12 @@ module BackHelper
     session[:link_visited] = Array(link_stack).unshift(current_page_path(yield))
 
     # We want to clear the stack of the repeated link so that when the back link is clicked, it won't loop around.
-    remove_not_last_link
+    remove_not_last_link(last_link_custom_path?)
     remove_reloaded_page
     remove_loop
 
+    # Refreshes the indicator to know if the last visited link was to be modified.
+    last_link_custom_path?(yield)
     # Hides the back link while keeping the stack.
     return if yield == 'hide_link_keep_stack'
 
@@ -89,6 +93,15 @@ module BackHelper
   # @return [String] The full link with the 'new' param removed
   def remove_param_new(link_path)
     remove_params(link_path, ['new'])
+  end
+
+  # Removes the id and all the query of a path.
+  # @param page_name [String] The name of the page so that we do not remove it from the path.
+  # @return [String] The full path with the id and all query removed.
+  def remove_id_and_all_query(link_path, page_name)
+    path_array = URI(link_path).path.split('/')
+    path_array.pop unless path_array[-1] == page_name
+    path_array.join('/')
   end
 
   # Used for removing the params of the link.
@@ -118,7 +131,7 @@ module BackHelper
   # Mainly used in methods which are called from methods passed in yield in the {#current_page_path} method.
   # @param link_path [String] is the full path of the link.
   # @param link_queries [Array] an array of string that consists of queries to overwrite its path query.
-  # @return [String] the string value of the the full path of the link with the changed query/params
+  # @return [String] the string value of the full path of the link with the changed query/params
   def change_all_params(link_path, link_queries)
     # returns a string which is either the first item on the list or all the items joined by '&'
     link_queries = if link_queries.length <= 1
@@ -137,6 +150,26 @@ module BackHelper
   # @return [String] Returns the current stack of links of the visited pages
   def link_stack
     session[:link_visited]
+  end
+
+  # Used for checking if the yielded value is a symbol that is a method's name which will be used for modifying
+  # the last visited link's path. Some examples of a path are: /en/dashboard/messages, /en/returns/lbtt/summary.
+  #
+  # The other use for this method is to overwrite the session's :is_last_link_custom_path, which will be needed
+  # on the next page that will be visited.
+  # @return [Boolean] the value which is used to check if the last link is a path that was to be modified.
+  def last_link_custom_path?(yield_value = nil)
+    session[:is_last_link_custom_path] = custom_path_given(yield_value) unless yield_value.nil?
+    session[:is_last_link_custom_path]
+  end
+
+  # Determines whether the yielded value is an instruction to modify the path.
+  # @return [Boolean] is the yield value an instruction to modify the path?
+  def custom_path_given(yield_value)
+    return false if yield_value.blank?
+    return respond_to?(yield_value) if yield_value.is_a?(Symbol)
+
+    true
   end
 
   # Returns the link/path of the current page optionally modifying/replacing it based on the url_string_method.
@@ -189,10 +222,13 @@ module BackHelper
 
   # This is used to catch when the user clicks buttons/links too fast to go to different
   # pages with or without back link while the pages in between hasn't finished rendering.
-  def remove_not_last_link
+  def remove_not_last_link(custom_path_given)
     browser_last_link = request.referer
     # As the user manually reloads/refreshes the page, the request.referer becomes nil
-    return if browser_last_link.nil?
+    #
+    # Also, on a normal situation where we modified the path of the last visited link, then we would want
+    # to escape this.
+    return if browser_last_link.nil? || custom_path_given
 
     browser_last_link_path = uri_parse_path(browser_last_link)
 

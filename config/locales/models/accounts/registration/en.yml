@@ -12,10 +12,12 @@ en:
         description: ""
       company:
         title: "Sign up to file tax returns"
-        subtitle: "Company"
-        description: "Details of the company you are registering for."
         subtitle_org: "Organisation"
         description_org: "Details of the organisation you are registering for."
+      company_registered:
+        title: "Sign up to file tax returns"
+        subtitle: "Company"
+        description: "Details of the company you are registering for."
       address:
         title: "Sign up to file tax returns"
         subtitle_reg: "Contact address"
@@ -44,4 +46,3 @@ en:
   registered_organisation: "Companies House registered body"
   other_organisation: "Non registered body"
   individual: "Individual/Sole trader"
-  

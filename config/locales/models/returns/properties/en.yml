@@ -3,8 +3,13 @@ en:
     attributes:
       returns/lbtt/property:
         lau_code: "Local authority"
-        ads_due_ind: "Does Additional Dwelling Supplement (ADS) apply to this transaction?"
+        ads_due_ind: "Does Additional Dwelling Supplement (ADS) apply to this transaction"
+        address: "Address"
+        ads: "ADS?"
         full_title_number: "Title number (if provided)"
+    hints:
+      returns/lbtt/property:
+        ads_due_ind: "See guidance LBTT10001 - LBTT Additional Dwelling Supplement (opens in a new window) for further details"
   returns:
     lbtt_properties:
       about_the_property:
@@ -19,3 +24,4 @@ en:
         subtitle: "Provide property address"
       property_ads_applies:
         title: "About the property"
+        ads_due_ind_link: "LBTT10001 - LBTT Additional Dwelling Supplement (opens in a new window)"

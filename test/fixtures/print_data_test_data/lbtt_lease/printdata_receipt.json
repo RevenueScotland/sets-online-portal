@@ -1,0 +1,101 @@
+{
+    "section": [
+        {
+            "sectioncode": "return_type",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "tare_reference",
+                    "itemformat": null,
+                    "itemlabel": "Return reference",
+                    "itemdata": "\u003c%TARE_REFERENCE%\u003e"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "property_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the property",
+            "listitem": [
+                {
+                    "itemcode": "full_title_number",
+                    "itemformat": null,
+                    "itemlabel": "Title number (if provided)",
+                    "itemdata": "ANG 2910234"
+                },
+                {
+                    "itemcode": "full_address",
+                    "itemformat": null,
+                    "itemlabel": "Property address",
+                    "itemdata": "The Milkman, 7 Cockburn Street, EDINBURGH, EH1 1BP"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "party_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "full_name",
+                    "itemformat": null,
+                    "itemlabel": "Tenant",
+                    "itemdata": "Dunder Mifflin"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "return_type",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "flbt_type",
+                    "itemformat": null,
+                    "itemlabel": "Description of transaction",
+                    "itemdata": "Lease"
+                },
+                {
+                    "itemcode": "effective_date",
+                    "itemformat": "date",
+                    "itemlabel": "Effective date of transaction",
+                    "itemdata": "07 November 2019"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "party_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "agent_reference",
+                    "itemformat": null,
+                    "itemlabel": "Agent reference (if provided)",
+                    "itemdata": ""
+                }
+            ],
+            "itemcount": 1
+        }
+    ]
+}
