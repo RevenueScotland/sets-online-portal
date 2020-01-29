@@ -136,10 +136,8 @@ en:
       returns/lbtt/tax:
         calculated: "This is the derived LBTT liability from values provided in this form"
         ads_due: "This is ADS liability"
-        due_before_reliefs: "This is the total liability before the reliefs are deducted"
         total_ads_reliefs: "This is the total amount of reliefs claimed"
         total_non_ads_reliefs_claimed: "This is the total amount of reliefs claimed"
-        tax_due: "This is total liability with any reliefs deducted"
         npv: "This is the amount on which tax is calculated"
         total_reliefs: "This is the total amount of LBTT reliefs claimed"
         amount_already_paid: "How much you have already paid for any previous returns that relate to this lease agreement"
@@ -176,6 +174,12 @@ en:
               duplicate_relief_code: "A relief type can only be used once on a return"
               bad_rental_year_entry: "Invalid rental details year %{row}"
               missing_ads: "Please fill in the 'About the Additional Dwelling Supplement (ADS)' section"
+        returns/lbtt/tax:
+          attributes:
+            total_reliefs:
+              less_than: "must be less than the tax calculated"
+            total_ads_reliefs:
+              less_than: "must be less than the ADS calculated"
   returns:
     lbtt:
       summary:

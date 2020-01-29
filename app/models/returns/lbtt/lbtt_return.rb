@@ -140,7 +140,7 @@ module Returns
       validates :ads_sold_main_yes_no, presence: true, on: :ads_sold_main_yes_no
       validates :ads_sold_date, presence: true, on: :ads_sold_date,
                                 if: proc { |s| s.ads_sold_main_yes_no == 'Y' }
-      validate :valid_ads_date_format?
+      validate :valid_ads_date_format?, on: :ads_sold_date
 
       # ADS validation
       validates :ads_consideration_yes_no, presence: true, on: :ads_consideration_yes_no
@@ -278,7 +278,7 @@ module Returns
          { code: :ads_relief_claims, # section code
            divider: false, # should we have a section divider
            display_title: false, # Is the title to be displayed
-           when: :ads_relief_claim_ind,
+           when: :ads_reliefclaim_option_ind,
            is: ['Y'],
            type: :object },
          { code: :about_the_transaction, # section code
@@ -331,7 +331,7 @@ module Returns
          { code: :non_ads_relief_claims, # section code
            divider: false, # should we have a section divider
            display_title: false, # Is the title to be displayed
-           when: :non_ads_relief_claim_ind,
+           when: :non_ads_reliefclaim_option_ind,
            is: ['Y'],
            type: :object }, #         unless @version.blank?
          { code: :lease_values, # section code
@@ -849,6 +849,7 @@ module Returns
         unless output[:ads_sold_address].blank?
           output[:ads_sold_address] = Address.convert_hash_to_address(output[:ads_sold_address])
         end
+        output[:ads_sold_main_yes_no] = 'Y' unless output[:ads_sold_date].blank?
         output[:ads_sold_date] = output[:ads_sold_date] unless output[:ads_sold_date].blank?
 
         # convert back office yes/no to Y/N
@@ -863,7 +864,7 @@ module Returns
         # don't want to load the repayment details, throw this lot away
         # also the ads due ind as we get this at the property level
         delete = %i[repayment_bank_name repay_account_holder repay_bank_account_no repay_bank_sort_code repayment_ind
-                    repayment_agent_auth_ind repayment_amount_claimed ads_due_ind ads_sold_address ads_sold_date]
+                    repayment_agent_auth_ind repayment_amount_claimed ads_due_ind]
 
         # clean up leftover indexes that we've converted/renamed/moved but not used the delete method to do so
         # ie this is not a list of data we're throwing away
@@ -1217,7 +1218,12 @@ module Returns
                         'ins1:RepaymentBankName': @bank_name,
                         'ins1:RepayAmountClaimed': @repayment_amount_claimed,
                         'ins1:RepaymentAgentAuthInd': @repayment_declaration.blank? ? 'no' : 'yes')
-        else
+        # They haven't yet claimed a repayment but have said they sold the property
+        elsif @repayment_ind.nil? && @ads_sold_main_yes_no == 'Y'
+          output.merge!('ins1:ClaimType': 'PRE12MONTH',
+                        'ins1:ClaimReasonCode': 'ADS',
+                        'ins1:RepayAmountClaimed': @tax.ads_repay_amount_claimed)
+        elsif @repayment_ind == 'N'
           output['ins1:RepaymentInd'] = 'no'
         end
 

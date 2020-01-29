@@ -37,7 +37,7 @@ en:
         registered_company_name: "Registered name"
         type: "Type of buyer"
         org_type: "Type of organisation"
-        org_type_desc: "Description of Organisation type"
+        other_type_description: "Organisation description"
         type_LANDLORD: "Who is the landlord?"
         type_TENANT: "Who is the tenant?"
         type_SELLER: "Who is the seller?"

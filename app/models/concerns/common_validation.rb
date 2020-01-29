@@ -98,11 +98,14 @@ module CommonValidation
   # @param attribute [Symbol] the name of the attribute of an object to be checked for validation
   # @see DateFormatting::date_parsable? to see how it is handling the checker of a parsable date
   def date_format_valid?(attribute)
+    # We convert to a string as the attribute may be a date if returned straight from xml
+    value = send(attribute).to_s
+
     # Check the date is parsable
-    errors.add(attribute, :is_invalid) && return unless date_parsable?(send(attribute))
+    errors.add(attribute, :is_invalid) && return unless date_parsable?(value)
 
     # Checks the year has 4 digits
-    return if Date.parse(send(attribute)).year.to_s.length <= 4
+    return if Date.parse(value.to_s).year.to_s.length <= 4
 
     errors.add(attribute, :is_invalid)
   end

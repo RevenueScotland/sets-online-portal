@@ -17,7 +17,7 @@ module Returns
 
       # Layout to print the data in this model
       # This defines the sections that are to be printed and the content and layout of those sections
-      def print_layout
+      def print_layout # rubocop:disable Metrics/MethodLength
         [{ code: :site,
            name: { code: :site_name }, # as we are passing in a name then send in the name
            page_break: true,
@@ -25,7 +25,9 @@ module Returns
            display_title: true, # Is the title to be displayed
            type: :list,
            list_items: [{ code: :net_standard_tonnage, key_scope: %i[returns slft site_summary_table] },
-                        { code: :net_lower_tonnage, key_scope: %i[returns slft site_summary_table] }] },
+                        { code: :net_lower_tonnage, key_scope: %i[returns slft site_summary_table] },
+                        { code: :exempt_tonnage, key_scope: %i[returns slft site_summary_table] },
+                        { code: :total_tonnage, key_scope: %i[returns slft site_summary_table] }] },
          { code: :wastes,
            type: :table }]
       end
@@ -38,6 +40,16 @@ module Returns
       # Work out the standard_tonnage based on the waste entries
       def net_standard_tonnage
         sum_from_values(wastes, :net_standard_tonnage).to_i
+      end
+
+      # Work out the standard_tonnage based on the waste entries
+      def exempt_tonnage
+        sum_from_values(wastes, :exempt_tonnage).to_i
+      end
+
+      # Work out the standard_tonnage based on the waste entries
+      def total_tonnage
+        sum_from_values(wastes, :total_tonnage).to_i
       end
 
       # override string output to help with debugging.

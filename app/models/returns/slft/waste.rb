@@ -122,7 +122,8 @@ module Returns
       # Getter to work out the total
       def total_tonnage
         # only one of standard, lower and exempt will be set of course
-        total = (@standard_tonnage.to_f + @lower_tonnage.to_f - @water_tonnage.to_f - @exempt_tonnage.to_f).round(2)
+        # if exempt only then total will still show as positive
+        total = (((@standard_tonnage.to_f + @lower_tonnage.to_f) - @water_tonnage.to_f) + @exempt_tonnage.to_f).round(2)
         # removes trailing zeros from sum values
         total = total.to_i if total == total.to_i
         total
@@ -132,14 +133,14 @@ module Returns
       def net_lower_tonnage
         return 0 if @lower_tonnage.to_f.zero?
 
-        (@lower_tonnage.to_f - @water_tonnage.to_f - @exempt_tonnage.to_f)
+        (@lower_tonnage.to_f - @water_tonnage.to_f)
       end
 
       # Getter to work out the net standard total, if there is no lower total return 0
       def net_standard_tonnage
         return 0 if @standard_tonnage.to_f.zero?
 
-        (@standard_tonnage.to_f - @water_tonnage.to_f - @exempt_tonnage.to_f)
+        (@standard_tonnage.to_f - @water_tonnage.to_f)
       end
 
       # More useful output for logging this object
@@ -234,10 +235,8 @@ module Returns
       end
 
       # Validation method, waste can have either standard, lower or exempt.  The total must be positive.
-      # Water tonnage cannot be set if exempt tonnage is set.
       def validate_tonnage
-        tonnages = %i[standard_tonnage lower_tonnage exempt_tonnage]
-        set_tonnages = filter_set_values(tonnages)
+        set_tonnages = filter_set_values(%i[standard_tonnage lower_tonnage exempt_tonnage])
         counter = set_tonnages.length
 
         if counter > 1
@@ -246,7 +245,17 @@ module Returns
           errors.add(:base, :missing_tonnage)
         end
 
-        return unless set_tonnages.include?(:exempt_tonnage) && value_set?(@water_tonnage)
+        validate_water_tonnage
+      end
+
+      # Water tonnage cannot be set if exempt tonnage is set and cannot make tonnage negative
+      # called from validate_tonnage
+      def validate_water_tonnage
+        if net_lower_tonnage.negative? || net_standard_tonnage.negative?
+          errors.add(:water_tonnage, :cannot_exceed_tonnage)
+        end
+
+        return unless value_set?(@exempt_tonnage) && value_set?(@water_tonnage)
 
         errors.add(:water_tonnage, :cannot_be_set_with_exempt)
       end

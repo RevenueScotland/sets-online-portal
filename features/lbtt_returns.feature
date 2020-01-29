@@ -461,10 +461,8 @@ Feature: LBTT Returns
         Then I should see the "Calculated tax" page
         And I should see the text "106497" in field "LBTT calculated"
         And I should see the text "1630" in field "ADS calculated"
-        And I should see the text "108127" in field "Total liability"
         And I should see the text "0" in field "Total LBTT reliefs claimed"
         And I should see the text "123.5" in field "Total ADS reliefs claimed"
-        And I should see the text "108003" in field "Total tax payable"
 
         When I enter "abc" in the "Total ADS reliefs claimed" field
         And I click on the "Next" button
@@ -529,10 +527,10 @@ Feature: LBTT Returns
             | About the calculation      | Edit       |
             | LBTT calculated            | £106090.82 |
             | ADS calculated             | £10        |
-            | Total liability            | £106090.82 |
+            | Total liability            | £106100.82 |
             | Total LBTT reliefs claimed | £60        |
             | Total ADS reliefs claimed  | £0         |
-            | Total tax payable          | £106030    |
+            | Total tax payable          | £106040.00 |
 
         # check reliefs and linked transactions loaded correctly (selecting No to a repayment on first screen)
         When I click on the "Edit" link with id "add_ads"
@@ -1334,10 +1332,7 @@ Feature: LBTT Returns
         When I click on the "Edit" link with id "edit_calculation"
         Then I should see the "Calculated tax" page
         And I should see the text "106497" in field "LBTT calculated"
-        And I should see the text "0" in field "ADS calculated"
-        And I should see the text "106497" in field "Total liability"
         And I should see the text "0" in field "Total LBTT reliefs claimed"
-        And I should see the text "106497" in field "Total tax payable"
         And I click on the "Next" button
         Then I should see the "Return Summary" page
         And the table of data is displayed
@@ -1962,23 +1957,19 @@ Feature: LBTT Returns
         And I should see the text "2030" in field "LBTT tax liability on rent"
         And I should see the text "11450" in field "LBTT tax liability on premium"
         And I should see the text "208" in field "Total LBTT reliefs claimed"
-        And I should see the text "13272" in field "Total tax payable"
 
         When I enter "" in the "LBTT tax liability on rent" field
         And I enter "" in the "LBTT tax liability on premium" field
         And I enter "abc" in the "Total LBTT reliefs claimed" field
-        And I enter "" in the "Total tax payable" field
         And I click on the "Next" button
         And I should receive the message "LBTT tax liability on rent can't be blank"
         And I should receive the message "LBTT tax liability on premium can't be blank"
         And I should receive the message "Total LBTT reliefs claimed is not a number"
-        And I should receive the message "Total tax payable can't be blank"
 
         # Can change the values
         When I enter "38469" in the "LBTT tax liability on rent" field
         And I enter "18401" in the "LBTT tax liability on premium" field
         And I enter "100" in the "Total LBTT reliefs claimed" field
-        And I enter "56759" in the "Total tax payable" field
         And I click on the "Next" button
         Then I should see the "Return Summary" page
         And the table of data is displayed
@@ -1986,7 +1977,7 @@ Feature: LBTT Returns
             | LBTT tax liability on rent    | £38469.00 |
             | LBTT tax liability on premium | £18401.00 |
             | Total LBTT reliefs claimed    | £100.00   |
-            | Total tax payable             | £56759.00 |
+            | Total tax payable             | £56770.00 |
 
         When I click the "Submit return" button
         Then I should see the "Payment and submission" page
@@ -2192,14 +2183,10 @@ Feature: LBTT Returns
         When I enter "100" in the "Amount already paid" field
         And I click on the "Next" button
         Then I should see the "Calculated tax" page
-        And I should see the text "100" in field "Amount already paid"
-        And I should see the text "-98" in field "Amount payable for this return"
 
         # Check can change the values
         When I enter "38469" in the "LBTT tax liability on rent" field
         And I enter "18401" in the "LBTT tax liability on premium" field
-        And I enter "56759" in the "Total tax payable" field
-        And I enter "12345" in the "Amount payable for this return" field
 
         When I click on the "Next" button
         Then I should see the "Return Summary" page
@@ -2207,9 +2194,9 @@ Feature: LBTT Returns
             | About the calculation          | Edit      |
             | LBTT tax liability on rent     | £38469.00 |
             | LBTT tax liability on premium  | £18401.00 |
-            | Total tax payable              | £56759.00 |
+            | Total tax payable              | £56870.00 |
             | Amount already paid            | £100.00   |
-            | Amount payable for this return | £12345.00 |
+            | Amount payable for this return | £56770.00 |
 
         When I click the "Submit return" button
         Then I should see the "Repayment details" page
@@ -2414,7 +2401,7 @@ Feature: LBTT Returns
 
         When I check the "Other" radio button
         And I click on the "Next" button
-        Then I should receive the message "Other type description can't be blank"
+        Then I should receive the message "Organisation description can't be blank"
 
         When I check the "Club" radio button
         And I click on the "Next" button
@@ -2652,23 +2639,22 @@ Feature: LBTT Returns
         Then I should see the "Calculated tax" page
         And I should see the text "106525" in field "LBTT calculated"
         And I should see the text "1630" in field "ADS calculated"
-        And I should see the text "108155" in field "Total liability"
         And I should see the text "3544" in field "Total LBTT reliefs claimed"
-        And I should see the text "104611" in field "Total tax payable"
 
         # Can change the values
         When I enter "38469" in the "LBTT calculated" field
         And I enter "18401" in the "ADS calculated" field
-        And I enter "56869" in the "Total liability" field
         And I enter "100" in the "Total LBTT reliefs claimed" field
-        And I enter "56759" in the "Total tax payable" field
         And I click on the "Next" button
         Then I should see the "Return Summary" page
-        And I should see the text "38469"
-        And I should see the text "18401"
-        And I should see the text "56869"
-        And I should see the text "100"
-        And I should see the text "56759"
+        And the table of data is displayed
+            | About the calculation      | Edit      |
+            | LBTT calculated            | £38469.00 |
+            | ADS calculated             | £18401.00 |
+            | Total liability            | £56870.00 |
+            | Total LBTT reliefs claimed | £100.00   |
+            | Total ADS reliefs claimed  | £0.00     |
+            | Total tax payable          | £56770.00 |
 
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
