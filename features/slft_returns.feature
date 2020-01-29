@@ -233,7 +233,7 @@ Feature: SLfT Returns
         Then I should see the "Waste details summary" page
         And the table of data is displayed
             | EWC code          | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
-            | 05-01-03/icky goo | 0             | 0                | 13             | 0             | -13           |
+            | 05-01-03/icky goo | 0             | 0                | 13             | 0             | 13            |
 
         When I click on the "Add new waste type" link
         Then I should see the "Details of waste" page
@@ -282,7 +282,7 @@ Feature: SLfT Returns
 
         And the table of data is displayed
             | EWC code                 | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
-            | 05-01-03/icky goo        | 0             | 0                | 13             | 0             | -13           |
+            | 05-01-03/icky goo        | 0             | 0                | 13             | 0             | 13            |
             | 06-13-04/don't breath it | 18.45         | 0                | 0              | 8             | 10.45         |
             | 08-01-15/something else  | 0             | 0.78             | 0              | 0             | 0.78          |
 
@@ -303,7 +303,7 @@ Feature: SLfT Returns
         And the table of data is displayed
             | EWC code                 | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
             | 05-01-02/it gets worse   | 0             | 1                | 0              | 1             | 0             |
-            | 05-01-03/icky goo        | 0             | 0                | 13             | 0             | -13           |
+            | 05-01-03/icky goo        | 0             | 0                | 13             | 0             | 13            |
             | 06-13-04/don't breath it | 18.45         | 0                | 0              | 8             | 10            |
             | 08-01-15/something else  | 0             | 0.78             | 0              | 0             | 0.78          |
 
@@ -318,7 +318,7 @@ Feature: SLfT Returns
             | EWC code                 | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
             | 05-01-02/it gets worse   | 0             | 1                | 0              | 1             | 0             |
             | 06-13-04/don't breath it | 18.45         | 0                | 0              | 8             | 10            |
-            | 06-13-05/icky goo        | 0             | 0                | 13             | 0             | -13           |
+            | 06-13-05/icky goo        | 0             | 0                | 13             | 0             | 13            |
             | 08-01-15/something else  | 0             | 0.78             | 0              | 0             | 0.78          |
         And I should not see the text "05-01-03"
 
@@ -326,16 +326,17 @@ Feature: SLfT Returns
 
         Then I should see the "Return summary" page
         And the table of data is displayed
-            | Lower rate tonnage (net) | Standard rate tonnage (net) |
-            | 10                       | 1                           |
-            | 0                        | 0                           |
+            |              | Lower rate    | Standard rate | Exempt  | Total   |
+            |              | tonnage (net) | tonnage (net) | tonnage | tonnage |
+            | Waste Site 1 | 10            | 1             | 13      | 24      |
+            | Waste Site 2 | 0             | 0             | 0       | 0       |
 
         When I click on the 1 st "Add waste details" link
         Then the table of data is displayed
             | EWC code                 | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
             | 05-01-02/it gets worse   | 0             | 1                | 0              | 1             | 0             |
             | 06-13-04/don't breath it | 18.45         | 0                | 0              | 8             | 10            |
-            | 06-13-05/icky goo        | 0             | 0                | 13             | 0             | -13           |
+            | 06-13-05/icky goo        | 0             | 0                | 13             | 0             | 13            |
             | 08-01-15/something else  | 0             | 0.78             | 0              | 0             | 0.78          |
 
         When I click on the 3 rd "Delete row" link
@@ -350,9 +351,10 @@ Feature: SLfT Returns
         When I click on the "Back to return summary" link
         Then I should see the "Return summary" page
         And the table of data is displayed
-            | Lower rate tonnage (net) | Standard rate tonnage (net) |
-            | 10                       | 0                           |
-            | 0                        | 0                           |
+            |              | Lower rate    | Standard rate | Exempt  | Total   |
+            |              | tonnage (net) | tonnage (net) | tonnage | tonnage |
+            | Waste Site 1 | 10            | 0             | 0       | 10      |
+            | Waste Site 2 | 0             | 0             | 0       | 0       |
 
         When I click on the 2 nd "Add waste details" link
         And I click on the "Add new waste type" link
@@ -377,9 +379,10 @@ Feature: SLfT Returns
         When I click on the "Back" link
         Then I should see the "Return summary" page
         And the table of data is displayed
-            | Lower rate tonnage (net) | Standard rate tonnage (net) |
-            | 10                       | 0                           |
-            | 0                        | 12                          |
+            |              | Lower rate    | Standard rate | Exempt  | Total   |
+            |              | tonnage (net) | tonnage (net) | tonnage | tonnage |
+            | Waste Site 1 | 10            | 0             | 0       | 10      |
+            | Waste Site 2 | 0             | 12            | 0       | 12      |
 
         # Begin calculation part
         When I click on the "calculate_return" button
@@ -404,9 +407,10 @@ Feature: SLfT Returns
             | Have you ceased to operate a non-disposal area on any of your sites? | Y                         |
         And I should see the text "10000.00"
         And the table of data is displayed
-            |              | Lower rate | Standard rate |
-            | Waste Site 1 | 0          | 97            |
-            | Waste Site 2 | 9          | 0             |
+            |              | Lower rate    | Standard rate | Exempt  | Total   |
+            |              | tonnage (net) | tonnage (net) | tonnage | tonnage |
+            | Waste Site 1 | 0             | 97            | 18      | 115     |
+            | Waste Site 2 | 9             | 0             | 0       | 9       |
 
         # Begin calculation part
         When I click on the "Calculate" button
@@ -525,9 +529,10 @@ Feature: SLfT Returns
             | Have you ceased to operate a non-disposal area on any of your sites? | Y                         |
         And I should see the text "123.00"
         And the table of data is displayed
-            |              | Lower rate | Standard rate |
-            | Waste Site 1 | 90         | 90            |
-            | Waste Site 2 | 82         | 0             |
+            |              | Lower rate    | Standard rate | Exempt  | Total   |
+            |              | tonnage (net) | tonnage (net) | tonnage | tonnage |
+            | Waste Site 1 | 100           | 90            | 10      | 200     |
+            | Waste Site 2 | 100           | 0             | 18      | 118     |
 
         # the loaded data is bogus and clicking calculate revalidates the model
         When I click on the "calculate_return" button
@@ -591,9 +596,10 @@ Feature: SLfT Returns
         Then I should see the "Return summary" page
 
         And the table of data is displayed
-            |              | Lower rate | Standard rate |
-            | Waste Site 1 | 100        | 90            |
-            | Waste Site 2 | 100        | 0             |
+            |              | Lower rate    | Standard rate | Exempt  | Total   |
+            |              | tonnage (net) | tonnage (net) | tonnage | tonnage |
+            | Waste Site 1 | 100           | 90            | 0       | 190     |
+            | Waste Site 2 | 100           | 0             | 0       | 100     |
 
         # Check save draft works and you can go back
         When I click on the "Save draft" button
@@ -681,9 +687,10 @@ Feature: SLfT Returns
         When I click on the "Back to return summary" link
         Then I should see the "Return summary" page
         And the table of data is displayed
-            | Lower rate tonnage (net) | Standard rate tonnage (net) |
-            | 0                        | 11                          |
-            | 0                        | 0                           |
+            |              | Lower rate    | Standard rate | Exempt  | Total   |
+            |              | tonnage (net) | tonnage (net) | tonnage | tonnage |
+            | Waste Site 1 | 0             | 11            | 0       | 11      |
+            | Waste Site 2 | 0             | 0             | 0       | 0       |
 
         # Test the waste details entry
         And I should see the text "Waste Site 2"
@@ -714,6 +721,7 @@ Feature: SLfT Returns
         When I click on the "Back to return summary" link
         Then I should see the "Return summary" page
         And the table of data is displayed
-            | Lower rate tonnage (net) | Standard rate tonnage (net) |
-            | 0                        | 11                          |
-            | 3                        | 0                           |
+            |              | Lower rate    | Standard rate | Exempt  | Total   |
+            |              | tonnage (net) | tonnage (net) | tonnage | tonnage |
+            | Waste Site 1 | 0             | 11            | 0       | 11      |
+            | Waste Site 2 | 3             | 0             | 0       | 3       |

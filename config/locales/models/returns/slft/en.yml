@@ -76,6 +76,7 @@ en:
               only_one_waste_type: "cannot be set when other tonnages are set"
             water_tonnage:
               cannot_be_set_with_exempt: "cannot be set when exempt tonnage is set"
+              cannot_exceed_tonnage: "cannot exceed the waste tonnage"
             base:
               missing_exemption_tonnage: "At least one reason must be filled in"
               missing_tonnage: "Enter waste details"
@@ -109,8 +110,10 @@ en:
           add_credits_details: "Add credit details"
           edit_credits_details: "Edit credit details"
       site_summary_table:
-        net_lower_tonnage: "Lower rate tonnage (net)"
-        net_standard_tonnage: "Standard rate tonnage (net)"
+        net_lower_tonnage: "Lower rate<br/>tonnage (net)"
+        net_standard_tonnage: "Standard rate<br/>tonnage (net)"
+        exempt_tonnage: "Exempt<br/>tonnage"
+        total_tonnage: "Total<br/>tonnage"
         link:
           add_waste_details: "Add waste details"
       credit_environmental:

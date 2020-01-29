@@ -15,15 +15,15 @@ module Returns
       # Attributes for this class, in list so can re-use as permitted params list in the controller
       # NB flbt_type is passed in by the form for validation as we don't have access to it otherwise
       def self.attribute_list
-        %i[calculated ads_due due_before_reliefs total_reliefs tax_due npv npv_tax_due amount_already_paid
-           linked_npv total_ads_reliefs ads_repay_amount_claimed tax_due_for_return premium_tax_due]
+        %i[calculated ads_due total_reliefs npv npv_tax_due amount_already_paid
+           linked_npv total_ads_reliefs ads_repay_amount_claimed premium_tax_due]
       end
 
       attribute_list.each { |attr| attr_accessor attr }
 
       # Not including in the attribute_list so it can't be changed by the user
-      attr_accessor :orig_calculated, :orig_ads_due, :orig_due_before_reliefs, :orig_total_reliefs, :orig_npv,
-                    :orig_npv_tax_due, :orig_tax_due, :orig_premium_tax_due, :orig_total_due, :orig_total_ads_reliefs,
+      attr_accessor :orig_calculated, :orig_ads_due, :orig_total_reliefs, :orig_npv,
+                    :orig_npv_tax_due, :orig_premium_tax_due, :orig_total_due, :orig_total_ads_reliefs,
                     :orig_linked_npv, # this isn't used but we create orig_ values automatically so keeping it for that
                     :flbt_type, :ads_sold_main_yes_no, :linked_ind # HACK: values copied from LbttReturn for validation
 
@@ -41,15 +41,14 @@ module Returns
 
       validates :ads_due, presence: true, numericality: true, format: { with: TWO_DP_PATTERN, message: :invalid_2dp },
                           on: %i[calculated ads_due], if: :convey?
-      validates :due_before_reliefs, presence: true, numericality: true,
-                                     format: { with: TWO_DP_PATTERN, message: :invalid_2dp }, on: :calculated,
-                                     if: :convey?
       validates :total_reliefs, presence: true,
-                                numericality: { greater_than_or_equal_to: 0, less_than: 1_000_000_000_000_000_000 },
+                                numericality: { greater_than_or_equal_to: 0,
+                                                less_than_or_equal_to: proc { |s| s.calculated.to_f } },
                                 format: { with: TWO_DP_PATTERN, message: :invalid_2dp }, on: :calculated,
                                 if: :convey?
-      validates :total_ads_reliefs, presence: true, numericality: { greater_than_or_equal_to: 0,
-                                                                    less_than: 1_000_000_000_000_000_000 },
+      validates :total_ads_reliefs, presence: true,
+                                    numericality: { greater_than_or_equal_to: 0,
+                                                    less_than_or_equal_to: proc { |s| s.ads_due.to_f } },
                                     format: { with: TWO_DP_PATTERN, message: :invalid_2dp }, on: :calculated,
                                     if: :convey?
 
@@ -59,13 +58,13 @@ module Returns
       validates :premium_tax_due, presence: true, numericality: true,
                                   format: { with: TWO_DP_PATTERN, message: :invalid_2dp }, on: :npv_tax_due,
                                   unless: :convey?
-      validates :total_reliefs, presence: true, numericality: true,
+      validates :total_reliefs, presence: true,
+                                numericality: {
+                                  greater_than_or_equal_to: 0,
+                                  less_than_or_equal_to: proc { |s| s.calculated_for_lease.to_f }
+                                },
                                 format: { with: TWO_DP_PATTERN, message: :invalid_2dp },
                                 on: :npv_tax_due, if: :leaseret?
-      validates :tax_due, presence: true, numericality: true, format: { with: TWO_DP_PATTERN, message: :invalid_2dp },
-                          on: %i[calculated npv_tax_due]
-      validates :tax_due_for_return, presence: true, numericality: true, on: :tax_due_for_return,
-                                     if: :leaserev_assign_terminate?
 
       # ads_repay_details
       validates :ads_repay_amount_claimed, numericality: { greater_than: 0, less_than: 1_000_000_000_000_000_000 },
@@ -80,6 +79,45 @@ module Returns
                                              less_than: 1_000_000_000_000_000_000 }, presence: true,
                              format: { with: TWO_DP_PATTERN, message: :invalid_2dp }, on: :linked_npv,
                              if: :linked_ind_and_not_convey?
+
+      # The total liability before any reliefs are added
+      def due_before_reliefs
+        from_pence(to_pence(@calculated) + to_pence(@ads_due))
+      end
+
+      # The original total liability before any reliefs are added
+      def orig_due_before_reliefs
+        # use round to avoid funny trailing decimals
+        from_pence(to_pence(@orig_calculated) + to_pence(@orig_ads_due))
+      end
+
+      # The tax due based from liability either conveyance or lease less any reliefs
+      def tax_due
+        from_pence_advantageous_round(
+          (to_pence(@calculated) + to_pence(@ads_due) + to_pence(@npv_tax_due) + to_pence(premium_tax_due)) -
+          (to_pence(@total_reliefs) + to_pence(total_ads_reliefs))
+        )
+      end
+
+      # The tax due based from liability either conveyance or lease less any reliefs
+      def orig_tax_due
+        from_pence_advantageous_round(
+          (to_pence(@orig_calculated) + to_pence(@orig_ads_due) + to_pence(@orig_npv_tax_due) +
+           to_pence(@orig_premium_tax_due)) -
+          (to_pence(@orig_total_reliefs) + to_pence(@orig_total_ads_reliefs))
+        )
+      end
+
+      # The tax due for return is tax_due minus amount_already_paid.  It's always rounded to the lower whole number
+      # if it's a positive figure.  If it's negative then it's always rounded to the higher whole number.
+      def tax_due_for_return
+        from_pence_advantageous_round(to_pence(tax_due) - to_pence(@amount_already_paid))
+      end
+
+      # This derives the total calculated amount for a lease i.e. the npv and premium tax due
+      def calculated_for_lease
+        from_pence(to_pence(@npv_tax_due) + to_pence(@premium_tax_due))
+      end
 
       # Validation method to check model flbt_type
       def convey?
@@ -201,10 +239,10 @@ module Returns
         output["#{prefix}.calculated"] = @calculated
         output["#{prefix}.ads_due"] = @ads_due if show_ads
         # if ads is not due then due before reliefs and calculated is the same value so only show the calculated
-        output["#{prefix}.due_before_reliefs"] = @due_before_reliefs if show_ads
+        output["#{prefix}.due_before_reliefs"] = due_before_reliefs if show_ads
         output["#{prefix}.total_reliefs"] = @total_reliefs
         output["#{prefix}.total_ads_reliefs"] = @total_ads_reliefs if show_ads
-        output["#{prefix}.tax_due"] = @tax_due
+        output["#{prefix}.tax_due"] = tax_due
       end
 
       # split from #calculation_summary
@@ -213,12 +251,12 @@ module Returns
         output["#{prefix}.premium_tax_due"] = @premium_tax_due
 
         if %w[LEASEREV ASSIGN TERMINATE].include? lbtt.flbt_type
-          output["#{prefix}.tax_due"] = @tax_due
+          output["#{prefix}.tax_due"] = tax_due
           output["#{prefix}.amount_already_paid"] = @amount_already_paid
-          output["#{prefix}.tax_due_for_return"] = @tax_due_for_return
+          output["#{prefix}.tax_due_for_return"] = tax_due_for_return
         else
           output["#{prefix}.total_reliefs"] = @total_reliefs
-          output["#{prefix}.tax_due"] = @tax_due
+          output["#{prefix}.tax_due"] = tax_due
         end
       end
 
@@ -229,7 +267,7 @@ module Returns
       # Note that matched attributes are removed from the hash to stop them being matched into the main lbtt_return
       # except for flbt
       # @param output [Hash] the hash from the back office being converted to native format.
-      def self.convert_tax_calculations(output)
+      def self.convert_tax_calculations(output) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
         new_hash = {}
         # put tax entries (including orig_ versions) into it
         # note it is possible to get attribute or original or both
@@ -242,6 +280,13 @@ module Returns
           orig_output_attr = "orig_#{output_attr}".to_sym
           new_hash["orig_#{attr}".to_sym] = output.delete(orig_output_attr) if output.key?(orig_output_attr)
         end
+        # Set the ads repayment amount from the repayment amount claimed
+        new_hash[:ads_repay_amount_claimed] = output[:repayment_amount_claimed] unless output[:ads_sold_date].blank?
+
+        # delete the fields from the back office that are derived locally in the tax model
+        %i[due_before_reliefs orig_due_before_reliefs
+           tax_due orig_tax_due tax_due_for_return].each { |attr| output.delete(attr) }
+
         # setup tax object
         Lbtt::Tax.new(new_hash)
       end
@@ -274,20 +319,8 @@ module Returns
 
         call_ok?(:lbtt_calc, additional_parameters.merge!(request_calc(lbtt))) do |body|
           assign_attributes(convert_back_office_hash(body, update_orig_fields))
-          internal_calculations(body, lbtt)
+          set_lbtt_values(body, lbtt)
         end
-      end
-
-      # The tax due for return is tax_due minus amount_already_paid.  It's always rounded to the lower whole number
-      # if it's a positive figure.  If it's negative then it's always rounded to the higher whole number.
-      def calculate_tax_due_for_return
-        @tax_due_for_return = (or_zero(@tax_due).to_f - or_zero(@amount_already_paid).to_f)
-
-        @tax_due_for_return = if @tax_due_for_return.positive?
-                                @tax_due_for_return.floor
-                              else
-                                @tax_due_for_return.ceil
-                              end
       end
 
       private
@@ -315,11 +348,8 @@ module Returns
         conv_tax_payable = body[:conv_tax_payable]
         merge['calculated'] = conv_tax_payable[:lbtt_calculated]
         merge['ads_due'] = conv_tax_payable[:ads_payable]
-        merge['due_before_reliefs'] = conv_tax_payable[:total_liability]
         merge['total_reliefs'] = conv_tax_payable[:total_reliefs_claimed]
         merge['total_ads_reliefs'] = conv_tax_payable[:total_ads_reliefs_claimed]
-        # conv_tax_payable[:total_linked_transactions] updates lbtt.linked_consideration @see #internal_calculations
-        merge['tax_due'] = conv_tax_payable[:total_due]
       end
 
       # Extract back office tax response details for a non-conveyance type response
@@ -331,15 +361,10 @@ module Returns
         merge['premium_tax_due'] = lease_tax_payable[:tax_liabilityon_premium]
         merge['total_reliefs'] = lease_tax_payable[:total_reliefs_claimed]
         merge['linked_npv'] = lease_tax_payable[:total_linked_npv]
-        # lease_tax_payable[:total_linked_premium] updates lbtt.linked_lease_premium @see #internal_calculations
-        merge['tax_due'] = lease_tax_payable[:total_due] # nb tax_due re-used from conveyance type
       end
 
-      # Calls calculate_tax_due_for_return for amount already paid if needed and sets values returned
-      # by the back office onto the relevant fields in the LBTT model.
-      def internal_calculations(body, lbtt)
-        calculate_tax_due_for_return if %w[LEASEREV ASSIGN TERMINATE].include? lbtt.flbt_type
-
+      # Set relevant fields in the LBTT model.
+      def set_lbtt_values(body, lbtt)
         # update calculated conv field not in tax model
         lbtt.linked_consideration = body[:conv_tax_payable][:total_linked_transactions] if body.key? :conv_tax_payable
 

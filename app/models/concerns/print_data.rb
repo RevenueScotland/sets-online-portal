@@ -491,10 +491,15 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   def include_item_or_section_value(when_method, extra_data)
     Rails.logger.debug("When Method #{when_method} (#{respond_to?(when_method)}) Extra Data #{extra_data.inspect}}")
 
-    value = extra_data[when_method] unless extra_data.nil?
-    return value unless value.nil?
+    if !extra_data.nil? && extra_data.key?(when_method)
+      extra_data[when_method]
+    else
+      unless respond_to?(when_method)
+        raise Error::AppError.new('include_item_or_section_value', "#{when_method} is not defined")
+      end
 
-    send(when_method) if respond_to?(when_method)
+      send(when_method)
+    end
   end
 
   # Derives if this item should be included some items are only included when a

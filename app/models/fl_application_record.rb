@@ -112,7 +112,6 @@ class FLApplicationRecord
   # Works out the total sum of some values list/hash of this model.
   # @param list [Object] list or hash containing the objects which need summing
   # @param method [Method] method to call on each of the list entry objects (ie the variable to sum)
-  # @param round [Boolean] true to round the result, false to round down
   def self.sum_of_values_from_list(list, method)
     return 0 if list.blank?
 

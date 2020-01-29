@@ -31,6 +31,9 @@
 
 en:
   activemodel:
+    # model text not associated with attributes or errors
+    dashboard/message:
+        sent: sent
     attributes:
       dashboard/message:
         created_date: "Date & time"

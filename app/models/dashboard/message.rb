@@ -62,12 +62,15 @@ module Dashboard
     # with values depending on some of the data retrieved.
     # @param secure_message [Object] is the secure_message
     # @return [Array] the Hash value of the of the messages
-    private_class_method def self.modify_attributes(secure_message, filter)
+    private_class_method def self.modify_attributes(secure_message, filter) # rubocop:disable Metrics/AbcSize, Lint/UnneededCopDisableDirective, Metrics/LineLength
       message = Message.new_from_fl(secure_message)
       message.id = message.smsg_refno
-      #      message.created_date = DateFormatting.to_display_datetime_format(message.created_date)
       message.has_attachment = boolean_to_yesno(message.has_attachment)
-      message.read_indicator = boolean_to_yesno(message.read_indicator)
+      message.read_indicator = if message.direction == 'I'
+                                 I18n.t('.sent', scope: [i18n_scope, model_name.i18n_key])
+                               else
+                                 boolean_to_yesno(message.read_indicator)
+                               end
       message.selected = message.smsg_refno == filter.selected_message_id
       message
     end
@@ -107,7 +110,7 @@ module Dashboard
     # @param id [String] The id of the message to be shown
     # @param requested_by [String] The user who made a find request that the messages are linked to
     # @return [Object] an instance of a Message object with the correct matching message_id
-    def self.find(id, requested_by)
+    def self.find(id, requested_by) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       message = ''
       success = call_ok?(:get_secure_message_details, request_secure_message_details(requested_by, id)) do |response|
         break if response.blank?
@@ -116,7 +119,11 @@ module Dashboard
         message.id = message.smsg_refno
         #        message.created_date = DateFormatting.to_display_datetime_format(message.created_date)
         message.has_attachment = boolean_to_yesno(message.has_attachment)
-        message.read_indicator = boolean_to_yesno(message.read_indicator)
+        message.read_indicator = if message.direction == 'I'
+                                   I18n.t('.sent', scope: [i18n_scope, model_name.i18n_key])
+                                 else
+                                   boolean_to_yesno(message.read_indicator)
+                                 end
       end
       message if success
     end

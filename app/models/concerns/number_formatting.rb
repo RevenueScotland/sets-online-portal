@@ -29,4 +29,31 @@ module NumberFormatting
   def or_zero(value)
     value.blank? ? 0 : value
   end
+
+  # convert a string in money format to pence for to allow integer arithmetic
+  # @param value [String] The number to convert
+  # @return [Integer] the value in pence
+  def to_pence(value)
+    (value.to_f * 100).to_i
+  end
+
+  # convert a pence value back to a money format
+  # @param value [Integer] The value in pence
+  # @return [String] the pence value converted to a string 2 DP value
+  def from_pence(value)
+    (value / 100.0).to_s
+  end
+
+  # convert a pence value back to a money format, but with an advantageous round
+  # to whole pounds, i.e negative round up and positive round down
+  # @param value [Integer] The value in pence
+  # @return [String] the pence value converted to a string 2 DP value
+  def from_pence_advantageous_round(value)
+    value = (value / 100.0)
+    if value.positive?
+      value.floor.to_s
+    else
+      value.ceil.to_s
+    end
+  end
 end

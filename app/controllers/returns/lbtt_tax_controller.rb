@@ -57,9 +57,6 @@ module Returns
       # TODO: CR RSTP-547 should use setup_step override on 0.2
       unless params[:submitted]
         setup_npv if action_name == 'npv'
-
-        # update tax_due_for_return at start of this step
-        @tax.calculate_tax_due_for_return if action_name == 'calculation'
       end
 
       @tax

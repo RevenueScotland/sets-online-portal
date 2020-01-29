@@ -17,8 +17,7 @@ def RUBY_VERSION="2.5.5"
 	*/
 MAN_BACKOFFICE = "RSTSMAP"
 REL_BACKOFFICE = "RSTSTST1"
-BOT_BACKOFFICE = "RSTSDEV"
-BST_BACKOFFICE = "RSTSSMOK"
+BOT_BACKOFFICE = "RSTSSMOK"
 
 properties ([
 	buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '5'))
@@ -73,9 +72,7 @@ timestamps {
 					(deployed, host, port, seleniumPort) = deployDockeredEnvironment(manualTestName, manualTestLabel, true, backOfficeLabel)
 					if (isDevelopBranch() && deployed) {
 						deployDockeredEnvironment("backofficetest", "Back Office Test", false, BOT_BACKOFFICE)
-					} else if (deployed) {
-						deployDockeredEnvironment("backofficesmoketest", "Back Office Smoke Test ${this.releaseVersion()}", false, BST_BACKOFFICE)
-					}
+					} 
 				}
 			}
 			if (deployed && !isReleaseBuild()) {
@@ -462,7 +459,7 @@ def deployManualTestEnvironment(String environment, String environmentLabel, Str
 					export DOCKER_REG=10.102.16.121:443
 					export DOCKER_RELEASE_REG=10.102.16.121:444
 					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
-					[ ! -z "$(docker ps -qa --filter name=${APP}.*${ENVIRONMENT})" ] && docker stop $(docker ps -qa --filter "name=${APP}.*${ENVIRONMENT}") && docker rm -f $(docker ps -qa --filter "name=${APP}.*${ENVIRONMENT}")
+					[ ! -z "$(docker ps -qa --filter name=${APP}.*--${ENVIRONMENT})" ] && docker stop $(docker ps -qa --filter "name=${APP}.*--${ENVIRONMENT}") && docker rm -f $(docker ps -qa --filter "name=${APP}.*--${ENVIRONMENT}")
 					../../run-mt-app+shib-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
 					sleep ${TEST_DELAY}
 					export IMAGE_VERSION=${FULL_BUILD_VERSION}
