@@ -6,8 +6,8 @@
 // and source is http://jqueryui.com/download/. Version 1.12.1.
 //
 // Related icons used are in /assets/images/ui-icons_<hex>_256x240.png
-// @example How to use this on a page - simply add { text_auto_complete: true } in the html_options (4th parameter) section of the select field
-//   <%= form.select : country, ReferenceData:: ReferenceValue.list('COUNTRIES', 'SYS', 'RSTU'), {}, { text_auto_complete: true } %>
+// @example How to use this on a page - simply add { text_auto_complete: true } in the options (3rd parameter) section of the select field
+//   <%= form.select : country, ReferenceData:: ReferenceValue.list('COUNTRIES', 'SYS', 'RSTU'), { text_auto_complete: true }, {} %>
 //   @see party_details.html.erb for an example of where it's being used.
 $(function () {
     $.widget("custom.combobox", {
@@ -18,12 +18,13 @@ $(function () {
             // Pass the name attribute in to the autocomplete-combobox text field.
             // The id is passed so that cucumber testing could identify the field by its label.
             // See the error parameter in the _createAutocomplete to see where this is being used.
-            this._createAutocomplete(this.element.attr("name"), this.element.attr("id"), $('.combobox.govuk-select--error').length > 0);
+            this._createAutocomplete(this.element.attr("name"), this.element.attr("id"),
+                this.element.attr("aria-describedby"), this.element.hasClass("govuk-select--error"));
             this._createShowAllButton();
             this.element.removeAttr("id");
         },
 
-        _createAutocomplete: function (name, id, error) {
+        _createAutocomplete: function (name, id, describedby, error) {
             var selected = this.element.children(":selected"),
                 value = selected.val() ? selected.text() : "";
 
@@ -50,6 +51,10 @@ $(function () {
                     }
                 })
                 .attr("autocomplete", "off");
+
+            if (describedby != null) {
+                this.input.attr("aria-describedby", describedby);
+            }
 
             // The error class is added if the field itself is throwing an error. 
             // See base_form_builder's method gds_html_error_class.

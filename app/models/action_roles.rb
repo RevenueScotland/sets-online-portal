@@ -27,8 +27,8 @@ class ActionRoles < FLApplicationRecord
       success = call_ok?(:get_role_actions, make_request(DOMAIN_CODE, '')) do |body|
         cache_all(body)
       end
-    rescue StandardError => error
-      Rails.logger.warn("Unable to cache action/roles: #{error.message}")
+    rescue StandardError => e
+      Rails.logger.warn("Unable to cache action/roles: #{e.message}")
     end
     success
   end

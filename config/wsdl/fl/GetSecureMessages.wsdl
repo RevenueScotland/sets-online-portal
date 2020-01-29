@@ -170,6 +170,8 @@
 									</xs:simpleType>
 								</xs:element>
 								<xs:element name="SubjectCode" type="xs:string"/>
+								<xs:element name="WrkRefno" type="xs:integer" minOccurs="0"/>
+								<xs:element name="SRVCode" type="xs:string" minOccurs="0"/>
 								<xs:element name="Title" type="xs:string"/>
 								<xs:element name="Body" type="xs:string"/>
 								<xs:element name="Reference" type="xs:string" minOccurs="0">

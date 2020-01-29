@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'request_summary_log/log_middleware'
+require_relative '../cache.rb'
 
 Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # Settings specified here will take precedence over those in config/application.rb.
@@ -22,12 +23,7 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   config.middleware.use RequestSummaryLogging::LogMiddleware
 
   # use Redis for caching
-  config.cache_store = :redis_cache_store, {
-    url: ENV['REDIS_CACHE_URL'],
-    error_handler: lambda { |method:, returning:, exception:| # rubocop:disable Lint/UnusedBlockArgument
-      Rails.logger.error("Cache store exception : #{exception}")
-    }
-  }
+  config.cache_store = :redis_cache_store, cache_connection
 
   # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
   # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
@@ -38,10 +34,12 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
   # Compress JavaScripts and CSS.
-  config.assets.js_compressor = :uglifier
-  # config.assets.css_compressor = :sass
+  # used harmony syntax https://github.com/lautis/uglifier/issues/127
+  config.assets.js_compressor = Uglifier.new(harmony: true)
+  # For now do not compress the css see https://github.com/sass/libsass/issues/2701
+  config.assets.css_compressor = nil
 
-  # Do not fallback to assets pipeline if a precompiled asset is missed.
+  # Do not fall back to assets pipeline if a pre-compiled asset is missed.
   config.assets.compile = false
 
   # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
@@ -116,12 +114,15 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
     RefreshRefDataJob.schedule_next_run(1.second)
 
     # GetSystemParameters refresh job
-    RefreshSystemParametersJob.schedule_next_run(3.seconds)
+    RefreshSystemParametersJob.schedule_next_run(1.minute)
 
     # GetSystemParameters refresh job
-    RefreshPwsTextJob.schedule_next_run(5.seconds)
+    RefreshPwsTextJob.schedule_next_run(2.minutes)
 
-    # DeleteAttachmentFilesJob file delete job
-    DeleteAttachmentFilesJob.schedule_next_run(1.days)
+    # Tax Relief Type refresh job
+    TaxReliefTypeJob.schedule_next_run(3.minutes)
+
+    # Delete the temporary files job
+    DeleteTempFilesJob.schedule_next_run(4.minutes)
   end
 end

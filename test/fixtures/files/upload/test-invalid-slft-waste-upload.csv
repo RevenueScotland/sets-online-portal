@@ -1,0 +1,7 @@
+ewc_code,ewc_description,description,geographical_area_code,geographical_area_name,fmme_method,moved_from_non_disposal_ind,pre_treated_ind,standard_tonnage,lower_tonnage,water_tonnage,nda_ex_tonnage,restoration_ex_tonnage,other_ex_tonnage,other_ex_description
+01 01 01,ignored,Entry 1,9059,ignored,LF,n,y,150,20,40,,,,
+01 03 99,ignored,Entry 2,9059,ignored,LF,N,Y,,75,66,,10,,
+16 01 03,ignored,Entry 3,9059,ignored,LF,n,y,30,,,,40,,
+10 13 12,ignored,Entry 4,9059,ignored,LF,N,N,,,,15,,20,
+10 99 99,ignored,Invalid,0000,ignored,XX,x,A,,,,15,5,,
+04 02 16,ignored,Incomplete,,,,,,,,,,,,

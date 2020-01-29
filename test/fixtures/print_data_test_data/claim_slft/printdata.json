@@ -1,0 +1,108 @@
+{
+    "section": [
+        {
+            "sectioncode": "claim_reason",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Claim repayment",
+            "listitem": [
+                {
+                    "itemcode": "tare_reference",
+                    "itemformat": null,
+                    "itemlabel": "What was the original reference of the return that you are requesting an ADS repayment or claim for ?",
+                    "itemdata": "RS1000072CXTC"
+                },
+                {
+                    "itemcode": "version",
+                    "itemformat": null,
+                    "itemlabel": "Version",
+                    "itemdata": "2"
+                },
+                {
+                    "itemcode": "reason",
+                    "itemformat": null,
+                    "itemlabel": "What is the reason for your claim for payment from Revenue Scotland?",
+                    "itemdata": "Claim for Repayment"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "claiming_amount",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Details about your claim for repayment",
+            "listitem": [
+                {
+                    "itemcode": "claiming_amount",
+                    "itemformat": "money",
+                    "itemlabel": "How much are you claiming from Revenue Scotland?",
+                    "itemdata": "1170"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "bank_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Enter bank details",
+            "listitem": [
+                {
+                    "itemcode": "account_holder_name",
+                    "itemformat": null,
+                    "itemlabel": "Name of the account holder",
+                    "itemdata": "MR MICHAEL SCOTT"
+                },
+                {
+                    "itemcode": "account_number",
+                    "itemformat": null,
+                    "itemlabel": "Bank / building society account number",
+                    "itemdata": "24262810"
+                },
+                {
+                    "itemcode": "branch_code",
+                    "itemformat": null,
+                    "itemlabel": "Branch sort code",
+                    "itemdata": "78-92-35"
+                },
+                {
+                    "itemcode": "bank_name",
+                    "itemformat": null,
+                    "itemlabel": "Name of bank / building society",
+                    "itemdata": "Tesco"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "taxpayer_declaration",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Declarations",
+            "listitem": [
+                {
+                    "itemcode": "declaration_public",
+                    "itemformat": null,
+                    "itemlabel": "I (we), the tax payer(s) declare that this repayment or claim request is, to the best of my (our) knowledge, correct and complete and confirm that I (we) am (are) eligible for the refund claimed",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "declaration",
+                    "itemformat": null,
+                    "itemlabel": "I (we), the tax payer(s) declare that Revenue Scotland can contact me (us) regarding this repayment or claim request",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 2
+        }
+    ]
+}

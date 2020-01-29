@@ -1,0 +1,814 @@
+{
+    "section": [
+        {
+            "sectioncode": "return_type",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the return",
+            "listitem": [
+                {
+                    "itemcode": "tare_reference",
+                    "itemformat": null,
+                    "itemlabel": "Return reference",
+                    "itemdata": "\u003c%TARE_REFERENCE%\u003e"
+                },
+                {
+                    "itemcode": "version",
+                    "itemformat": null,
+                    "itemlabel": "Version",
+                    "itemdata": "\u003c%VERSION%\u003e"
+                },
+                {
+                    "itemcode": "form_type",
+                    "itemformat": null,
+                    "itemlabel": "Status",
+                    "itemdata": "Filed"
+                },
+                {
+                    "itemcode": "flbt_type",
+                    "itemformat": null,
+                    "itemlabel": "Which return do you want to submit?",
+                    "itemdata": "Assignation"
+                },
+                {
+                    "itemcode": "orig_return_reference",
+                    "itemformat": null,
+                    "itemlabel": "What was the original return reference?",
+                    "itemdata": "RS1234567AABB"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "agent_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Agent details",
+            "listitem": [
+                {
+                    "itemcode": "title",
+                    "itemformat": null,
+                    "itemlabel": "Title",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "firstname",
+                    "itemformat": null,
+                    "itemlabel": "First name",
+                    "itemdata": "Portal User"
+                },
+                {
+                    "itemcode": "surname",
+                    "itemformat": null,
+                    "itemlabel": "Last name",
+                    "itemdata": "New Users"
+                },
+                {
+                    "itemcode": "agent_reference",
+                    "itemformat": null,
+                    "itemlabel": "Your reference",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "agent_dx_number",
+                    "itemformat": null,
+                    "itemlabel": "DX number and exchange",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "telephone",
+                    "itemformat": null,
+                    "itemlabel": "Telephone number",
+                    "itemdata": "07700900321"
+                },
+                {
+                    "itemcode": "email_address",
+                    "itemformat": null,
+                    "itemlabel": "Email",
+                    "itemdata": "noreply@northgateps.com"
+                }
+            ],
+            "itemcount": 7
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Agent address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "2 Park Lane"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Garden Village"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "NORTHTOWN"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Northshire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "RG1 1PB"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "organisation_type_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the tenant(An other organisation)",
+            "listitem": [
+                {
+                    "itemcode": "org_type",
+                    "itemformat": null,
+                    "itemlabel": "Type of organisation",
+                    "itemdata": "Partnership"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "organisation_details",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Partnership",
+            "listitem": [
+                {
+                    "itemcode": "org_name",
+                    "itemformat": null,
+                    "itemlabel": "Name",
+                    "itemdata": "Dunder Mifflin"
+                },
+                {
+                    "itemcode": "com_jurisdiction",
+                    "itemformat": null,
+                    "itemlabel": "What country's law is the organisation governed by?",
+                    "itemdata": "ENGLAND"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "5 Gipsy Lane"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Headington"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "OXFORD"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Oxfordshire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "OX3 7PT"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "representative_contact_details",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": "Contact details",
+            "listitem": [
+                {
+                    "itemcode": "contact_firstname",
+                    "itemformat": null,
+                    "itemlabel": "First name",
+                    "itemdata": "Michael"
+                },
+                {
+                    "itemcode": "contact_surname",
+                    "itemformat": null,
+                    "itemlabel": "Last name",
+                    "itemdata": "Scott"
+                },
+                {
+                    "itemcode": "job_title",
+                    "itemformat": null,
+                    "itemlabel": "Job title or position",
+                    "itemdata": "Regional Manager"
+                },
+                {
+                    "itemcode": "contact_email",
+                    "itemformat": null,
+                    "itemlabel": "Email",
+                    "itemdata": "michael.scott@dudnermifflin.com"
+                },
+                {
+                    "itemcode": "contact_tel_no",
+                    "itemformat": null,
+                    "itemlabel": "Contact phone number",
+                    "itemdata": "0134411111"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "7 Gipsy Lane"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Headington"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "OXFORD"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Oxfordshire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "OX3 7PT"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "buyer_relation",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": "Tenant details",
+            "listitem": [
+                {
+                    "itemcode": "buyer_seller_linked_ind",
+                    "itemformat": null,
+                    "itemlabel": "Is the tenant connected to the landlord?",
+                    "itemdata": "No"
+                },
+                {
+                    "itemcode": "is_acting_as_trustee",
+                    "itemformat": null,
+                    "itemlabel": "Is the tenant acting as a trustee or representative partner for tax purposes?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "organisation_type_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the new tenant(An other organisation)",
+            "listitem": [
+                {
+                    "itemcode": "org_type",
+                    "itemformat": null,
+                    "itemlabel": "Type of organisation",
+                    "itemdata": "Company (not registered with UK companies house)"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "organisation_details",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Company",
+            "listitem": [
+                {
+                    "itemcode": "org_name",
+                    "itemformat": null,
+                    "itemlabel": "Name",
+                    "itemdata": "Saber Industry"
+                },
+                {
+                    "itemcode": "com_jurisdiction",
+                    "itemformat": null,
+                    "itemlabel": "What country's law is the organisation governed by?",
+                    "itemdata": "ENGLAND"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "Flat 1"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Saxon Court"
+                },
+                {
+                    "itemcode": "address_line3",
+                    "itemformat": null,
+                    "itemdata": "2 Stephen Road"
+                },
+                {
+                    "itemcode": "address_line4",
+                    "itemformat": null,
+                    "itemdata": "Headington"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "OXFORD"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Oxfordshire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "OX3 9FA"
+                }
+            ],
+            "itemcount": 7
+        },
+        {
+            "sectioncode": "representative_contact_details",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": "Contact details",
+            "listitem": [
+                {
+                    "itemcode": "contact_firstname",
+                    "itemformat": null,
+                    "itemlabel": "First name",
+                    "itemdata": "Jan"
+                },
+                {
+                    "itemcode": "contact_surname",
+                    "itemformat": null,
+                    "itemlabel": "Last name",
+                    "itemdata": "Levinson"
+                },
+                {
+                    "itemcode": "job_title",
+                    "itemformat": null,
+                    "itemlabel": "Job title or position",
+                    "itemdata": "Director"
+                },
+                {
+                    "itemcode": "contact_email",
+                    "itemformat": null,
+                    "itemlabel": "Email",
+                    "itemdata": "jan.levinson@saber.com"
+                },
+                {
+                    "itemcode": "contact_tel_no",
+                    "itemformat": null,
+                    "itemlabel": "Contact phone number",
+                    "itemdata": "0134422222"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "Flat 4"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Saxon Court"
+                },
+                {
+                    "itemcode": "address_line3",
+                    "itemformat": null,
+                    "itemdata": "2 Stephen Road"
+                },
+                {
+                    "itemcode": "address_line4",
+                    "itemformat": null,
+                    "itemdata": "Headington"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "OXFORD"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Oxfordshire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "OX3 9FA"
+                }
+            ],
+            "itemcount": 7
+        },
+        {
+            "sectioncode": "property_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the property",
+            "listitem": [
+                {
+                    "itemcode": "lau_code",
+                    "itemformat": null,
+                    "itemlabel": "Local authority",
+                    "itemdata": "Dundee"
+                },
+                {
+                    "itemcode": "title_code",
+                    "itemformat": null,
+                    "itemlabel": "Title number (optional)",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "title_number",
+                    "itemformat": null,
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "parent_title_code",
+                    "itemformat": null,
+                    "itemlabel": "Parent title number (optional)",
+                    "itemdata": "FFE"
+                },
+                {
+                    "itemcode": "parent_title_number",
+                    "itemformat": null,
+                    "itemdata": "129083"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Property address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "Underground Solution"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "9 Cockburn Street"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "EDINBURGH"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "EH1 1BP"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "about_the_transaction",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the transaction",
+            "listitem": [
+                {
+                    "itemcode": "effective_date",
+                    "itemformat": "date",
+                    "itemlabel": "Effective date of transaction",
+                    "itemdata": "07 November 2019"
+                },
+                {
+                    "itemcode": "relevant_date",
+                    "itemformat": "date",
+                    "itemlabel": "Relevant date",
+                    "itemdata": "07 November 2019"
+                },
+                {
+                    "itemcode": "contract_date",
+                    "itemformat": "date",
+                    "itemlabel": "Date of contract or conclusion of missives",
+                    "itemdata": "07 November 2019"
+                },
+                {
+                    "itemcode": "lease_start_date",
+                    "itemformat": "date",
+                    "itemlabel": "Lease start date",
+                    "itemdata": "07 November 2019"
+                },
+                {
+                    "itemcode": "lease_end_date",
+                    "itemformat": "date",
+                    "itemlabel": "Lease end date",
+                    "itemdata": "07 November 2022"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "linked_transactions_ind",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Linked Transactions",
+            "listitem": [
+                {
+                    "itemcode": "linked_ind",
+                    "itemformat": null,
+                    "itemlabel": "Are there any linked transactions?",
+                    "itemdata": "No"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "lease_values",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the lease values",
+            "listitem": [
+                {
+                    "itemcode": "annual_rent",
+                    "itemformat": "money",
+                    "itemlabel": "How much was the rent for the first year (inc VAT)?",
+                    "itemdata": "1650"
+                },
+                {
+                    "itemcode": "rent_for_all_years",
+                    "itemformat": null,
+                    "itemlabel": "Is this the same value for all rental years?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "premium_paid",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": false,
+            "sectiontitle": "About the lease values",
+            "listitem": [
+                {
+                    "itemcode": "premium_paid",
+                    "itemformat": null,
+                    "itemlabel": "Is a premium being paid?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "lease_premium",
+                    "itemformat": "money",
+                    "itemlabel": "Premium amount (inc VAT)",
+                    "itemdata": "7710"
+                },
+                {
+                    "itemcode": "linked_lease_premium",
+                    "itemformat": "money",
+                    "itemlabel": "Premium for linked transactions",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "relevant_rent",
+                    "itemformat": "money",
+                    "itemlabel": "What is the relevant rent amount for this transaction?",
+                    "itemdata": "2500"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "calculation",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the calculation",
+            "listitem": [
+                {
+                    "itemcode": "npv",
+                    "itemformat": "money",
+                    "itemlabel": "Net Present Value (NPV)",
+                    "itemdata": "6060.58"
+                },
+                {
+                    "itemcode": "linked_npv",
+                    "itemformat": "money",
+                    "itemlabel": "Net Present Value (NPV) for linked transactions",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "npv_tax_due",
+                    "itemformat": "money",
+                    "itemlabel": "LBTT tax liability on rent",
+                    "itemdata": "2202"
+                },
+                {
+                    "itemcode": "premium_tax_due",
+                    "itemformat": "money",
+                    "itemlabel": "LBTT tax liability on premium",
+                    "itemdata": "77"
+                },
+                {
+                    "itemcode": "total_reliefs",
+                    "itemformat": "money",
+                    "itemlabel": "Total LBTT reliefs claimed",
+                    "itemdata": "0"
+                },
+                {
+                    "itemcode": "tax_due",
+                    "itemformat": "money",
+                    "itemlabel": "Total tax payable",
+                    "itemdata": "2279"
+                },
+                {
+                    "itemcode": "amount_already_paid",
+                    "itemformat": "money",
+                    "itemlabel": "Amount already paid",
+                    "itemdata": "1650"
+                },
+                {
+                    "itemcode": "tax_due_for_return",
+                    "itemformat": "money",
+                    "itemlabel": "Amount payable for this return",
+                    "itemdata": "629"
+                }
+            ],
+            "itemcount": 8
+        },
+        {
+            "sectioncode": "repayment",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Repayment details",
+            "listitem": [
+                {
+                    "itemcode": "repayment_ind",
+                    "itemformat": null,
+                    "itemlabel": "Do you want to request a repayment from Revenue Scotland?",
+                    "itemdata": "No"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "declaration",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Payment and submission",
+            "listitem": [
+                {
+                    "itemcode": "fpay_method",
+                    "itemformat": null,
+                    "itemlabel": "How are you paying?",
+                    "itemdata": "BACS"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "declaration",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Payment and submission",
+            "listitem": [
+                {
+                    "itemcode": "authority_ind",
+                    "itemformat": null,
+                    "itemlabel": "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "declaration",
+                    "itemformat": null,
+                    "itemlabel": "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): \n (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and \n (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct.",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 2
+        }
+    ]
+}

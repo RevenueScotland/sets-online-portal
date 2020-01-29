@@ -13,6 +13,8 @@ module AuthorisationHelper
   SLFT_AMEND = %i[pwslftam].freeze
   # Continue link on return lists for SLFT (summary page and view all returns)
   SLFT_CONTINUE = %i[pwslftup].freeze
+  # Delete link on return lists for SLFT (summary page and view all returns)
+  SLFT_DELETE = %i[pwslftdl].freeze
   # Save button on SLFT summary page
   SLFT_SAVE = %i[pwslftcr pwslftup].freeze
   # Access to Load SLFT 'page'
@@ -27,6 +29,8 @@ module AuthorisationHelper
   LBTT_AMEND = %i[pwlbttam].freeze
   # Continue link on return lists for LBTT (summary page and view all returns)
   LBTT_CONTINUE = %i[pwlbttup].freeze
+  # Delete link on return lists for LBTT (summary page and view all returns)
+  LBTT_DELETE = %i[pwlbttdl].freeze
   # Save button on LBTT summary page
   LBTT_SAVE = %i[pwlbttcr or pwlbttup].freeze
   # Access to Load LBTT 'page'
@@ -60,6 +64,15 @@ module AuthorisationHelper
 
   # Claim Repayment
   CLAIM_REPAYMENT = %i[wsclaim].freeze
+
+  # Claim Repayment attachment
+  CLAIM_REPAYMENT_ATTACHMENT = %i[wsadddoc].freeze
+
+  # download Receipt pdf
+  DOWNLOAD_RECEIPT = %i[wsrecpdf].freeze
+
+  # download Return pdf WSVWRPDF
+  DOWNLOAD_RETURN_PDF = %i[wsvwrpdf].freeze
 
   # Determine if the supplied user is authorised to perform the action. If authorisation is disabled, via the
   # Rails.configuration.x.authorisation.disabled flag then this method returns true. Options is a hash, which

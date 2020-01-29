@@ -1,45 +1,24 @@
 <% content_for :form_errors do %>
-  <%
-    # Extract a list of the input objects that contain errors (ones without errors are disregarded).
-    # The input can be a single object or an array
-    filtered = if object.is_a?(Array)
-                 object.find_all { |obj| obj&.errors.present? }
-               else
-                 object&.errors.present? ? object : nil
-               end
+  <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+    <h2 class="govuk-error-summary__title" id="error-summary-title"><%= t('error_advice') %></h2>
 
-    # ensure it's an array
-    error_objects = Array(filtered)
-  %>
-
-  <% if error_objects.present? || flash.any? %>
-    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">
-      <h2 class="govuk-error-summary__title" id="error-summary-title"><%= t('error_advice') %></h2>
+    <div class="govuk-error-summary__body">
       <ul class="govuk-list govuk-error-summary__list">
         <% unless flash.empty? %>
           <% flash.each do |key, value| %>
-            <li class="flash_error"><%= t('error_report') %> <%= value %></li>
+            <% if key=="fatal_error" %>
+              <li><%= t('errors.error_report', error_ref: value) %></li>
+            <% else %>
+              <li><%= value %></li>
+            <% end %>
           <% end %>
         <% end %>
-        <% unless error_objects.empty? %>
-          <% error_objects.each do |obj| %>
-            <% obj.errors.messages.each do |attr, messages| %>
-              <% attr = '' if do_not_show_attributes %>
-              <% messages.each do |msg|%>
-                <li>
-                  <% if do_not_show_attributes || attr == :base || attr == 'base' %>
-                    <%= msg %>
-                  <% else %>
-                    <!-- turbolink false is required to move to the error field -->
-                    <a href="#<%= model_name_from_record_or_class(obj).param_key + '_' + attr.to_s()%>" data-turbolinks="false">
-                    <%= (error_attribute_name(obj, attr, options) + ' ').to_s() + msg %> </a>
-                  <% end %>
-                </li>
-              <% end %>
-            <% end %>
+        <% unless error_hashes.blank? %>
+          <% error_hashes.each do |error_hash| %>
+              <li><a href="#<%= error_hash[:href] %>" data-turbolinks="false"> <%= error_hash[:message] %> </a></li>
           <% end %>
         <% end %>
       </ul>
     </div>
-  <% end %>
+  </div>
 <% end %>

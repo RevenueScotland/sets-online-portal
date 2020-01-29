@@ -4,6 +4,7 @@ module Dashboard
   # MessageController handles all the messaging stuff
   class MessagesController < ApplicationController
     include FileUploadHandler
+    include DownloadHelper
 
     authorise route: :index, requires: AuthorisationHelper::VIEW_MESSAGES
     authorise route: :new, requires: AuthorisationHelper::CREATE_MESSAGE
@@ -23,8 +24,8 @@ module Dashboard
     # This processes the message to find that was chosen from the list of messages from the index page
     # and a list of messages that are related to it, by looking at their origin_id.
     def show
-      @message = Message.find(params[:id], current_user)
-      Rails.logger.debug { "Calling show method of (class) #{params[:id]} with #{current_user}" }
+      @message = Message.find(params[:smsg_refno], current_user)
+      Rails.logger.debug { "Calling show method of (class) #{params[:smsg_refno]} with #{current_user}" }
       @message_filter = show_message_filter
       @messages, @pagination_collection =
         Message.list_paginated_messages(current_user, params[:page], @message_filter)
@@ -33,7 +34,7 @@ module Dashboard
     # Processes what happens when the send button for the new page, which is the page related to sending a message
     def create
       @message = Message.new(message_params)
-      return if handle_file_upload('new', @message)
+      return if handle_file_upload('new')
 
       @message.attachment = @resource_items[0] unless @resource_items.nil?
       success, msg_refno = @message.save(current_user)
@@ -50,11 +51,11 @@ module Dashboard
         handle_confirmation_file_upload
       elsif params[:continue]
         # clear cache
-        wizard_end
+        file_upload_end
         redirect_to dashboard_messages_path
       else
         # clear previous cache
-        wizard_end
+        file_upload_end
         initialize_fileupload_variables
         @message.additional_file = 'Y'
       end
@@ -82,25 +83,23 @@ module Dashboard
 
       return unless success
 
-      send_file_data(attachments[:attachment])
+      send_file_from_attachment(attachments[:attachment])
     end
 
     # Processes some data to initially load up for the sending a message page.
     # If it is a reply then carry over the :subject, :origin_id, :title and :reference.
     def new
       # clear previous cache
-      wizard_end if request.get?
-      @message = Message.initialise_message(current_user, params[:id], params[:reference])
+      file_upload_end if request.get?
+      @message = Message.initialise_message(current_user, params[:smsg_refno], params[:reference])
       initialize_fileupload_variables
     end
 
     private
 
-    # Send file to browser for download
-    def send_file_data(attachment)
-      send_data Base64.decode64(attachment[:binary_data]),
-                type: attachment[:file_type], filename: attachment[:file_name],
-                disposition: 'attachment'
+    # which file types are allowed to be uploaded.
+    def content_type_whitelist
+      Rails.configuration.x.file_upload_content_type_whitelist.split(/\s*,\s*/)
     end
 
     # Retrieve download file details
@@ -111,18 +110,13 @@ module Dashboard
     # Permits the access to the data passed on the .permit of :message objects
     def message_params
       params.require(:dashboard_message).permit(:original_smsg_refno,
-                                                :subject_code,
+                                                :subject_code, :subject_full_key_code,
                                                 :reference, :title, :body, :attachment, :additional_file, :smsg_refno)
-    end
-
-    # which file types are allowed to be uploaded.
-    def content_type_whitelist
-      Rails.configuration.x.secure_message_file_upload_content_type_whitelist.split(/\s*,\s*/)
     end
 
     # Used specifically for show method to filter message
     def show_message_filter
-      MessageFilter.new(selected_message_id: @message.id,
+      MessageFilter.new(selected_message_smsg_refno: @message.smsg_refno,
                         smsg_original_refno: @message.original_smsg_refno)
     end
 
@@ -131,7 +125,7 @@ module Dashboard
     def render_confirmation_page(msg_refno)
       @message.smsg_refno = msg_refno
       # clear cache
-      wizard_end
+      file_upload_end
       initialize_fileupload_variables
       render 'confirmation', id: msg_refno
     end
@@ -140,9 +134,9 @@ module Dashboard
     # on confirmation page
     def handle_confirmation_file_upload
       @message = Message.new(message_params)
-      handle_file_upload('confirmation', @message,
-                         after_add_resource: :add_document,
-                         after_delete_resource: :delete_document)
+      handle_file_upload('confirmation',
+                         after_add: :add_document,
+                         before_delete: :delete_document)
     end
   end
 end

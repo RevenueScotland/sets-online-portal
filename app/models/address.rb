@@ -1,33 +1,32 @@
 # frozen_string_literal: true
 
 # Model for address records
-class Address
+class Address < FLApplicationRecord
   include ActiveModel::Model
   include ActiveModel::Serialization
   include ActiveModel::Translation
   include ServiceClient
   include PrintData
-  include CommonValidation
+  validates_with ScotlandPostcodeValidator, on: :scotland_postcode_selected
 
   # Attributes for this class, in list so can re-use as permitted params list in the controller
   def self.attribute_list
     %i[address_identifier address_line1 address_line2 address_line3 address_line4 town county postcode country
-       local_ed_auth_code local_auth_code udprn umprn delivery_point_suffix]
+       local_ed_auth_code local_auth_code udprn umprn delivery_point_suffix default_country]
   end
 
   attribute_list.each { |attr| attr_accessor attr }
+
   # validates :address_line1, presence: true, on: :save
   validates :address_line1, presence: true, length: { maximum: 255 }, on: :save
-  validates :address_line2, length: { maximum: 255 }, on: :save
-  validates :address_line3, length: { maximum: 255 }, on: :save
-  validates :address_line4, length: { maximum: 255 }, on: :save
+  validates :address_line2, :address_line3, :address_line4, length: { maximum: 255 }, on: :save
   validates :town, presence: true, length: { maximum: 100 }, on: :save
   validates :county, length: { maximum: 50 }, on: :save
   validates_format_of :postcode,
                       with: /\A([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})\z/i,
                       on: :save, if: proc { |p| p.postcode.present? }
   validate :address_selected?, on: :address_selected
-  validate :valid_scotland_address?, on: :scotland_postcode_selected
+  validates :country, presence: true, on: :save
 
   # Layout to print the data in this model
   # This defines the sections that are to be printed and the content and layout of those sections
@@ -45,27 +44,32 @@ class Address
                     { code: :postcode }] }]
   end
 
-  # Validation contexts for addresses to check that an address has been "selected"
-  # @return [Hash] validation contexts for selecting an address
-  def self.selected_validation_contexts
-    %i[address_selected]
-  end
-
-  # Validation contexts for addresses to check that an address is valid for saving
-  # @return [Hash] validation contexts for saving an address
-  def self.save_validation_contexts
-    %i[save]
-  end
-
   # Performs a get address detail query
   # @param address_identifier the identifier of the address to be searched for
   # @return [Object] the details of the address
   def self.find(address_identifier)
     address_detail = {}
     success = call_ok?(:address_detail, Address: { 'ins1:AddressIdentifier' => address_identifier }) do |body|
+      body[:address][:country] = convert_search_country_code(body[:address][:country])
       address_detail = new(body[:address])
     end
     address_detail if success
+  end
+
+  # Define the ref data codes associated with the attributes to be cached in this model
+  # @return [Hash] <attribute> => <ref data composite key>
+  def cached_ref_data_codes
+    { country: comp_key('COUNTRIES', 'SYS', 'RSTU') }
+  end
+
+  # Overrides the default getter. Sets default country to the default country if one was set on initialisation or to GB
+  def country
+    @country || @default_country || 'GB'
+  end
+
+  # Overrides the default setter to trim the value as seems to come back with spaces
+  def address_identifier=(value)
+    @address_identifier = value&.strip
   end
 
   # @return [String] The formatted full address
@@ -104,10 +108,9 @@ class Address
   def format_town_county_postcode(output)
     output['ins0:AddressTownOrCity'] = town
     output['ins0:AddressCountyOrRegion'] = county if county.present?
-    return if postcode.blank?
-
-    output['ins0:AddressPostcodeOrZip'] = postcode
-    output['ins0:AddressCountryCode'] = 'GB'
+    output['ins0:AddressPostcodeOrZip'] = postcode if postcode.present?
+    output['ins0:AddressCountryCode'] = country if country.present?
+    output['ins0:QASMoniker'] = address_identifier if address_identifier.present?
   end
 
   # converts back-office address hash into address object
@@ -118,13 +121,23 @@ class Address
       address_hash[:county] = address_hash.delete(:address_county_or_region)
     end
     address_hash[:postcode] = address_hash.delete(:address_postcode_or_zip)
+    address_hash[:country] = address_hash.delete(:address_country_code)
 
     # remove unnecessary values from address hash
-    address_hash.delete(:address_country_code)
-    address_hash.delete(:qas_moniker)
+    address_hash[:address_identifier] = address_hash.delete(:qas_moniker)
 
     # setup address object
     Address.new(address_hash)
+  end
+
+  # Convert the code returned by the address search into a recognised country code
+  private_class_method def self.convert_search_country_code(country_code)
+    return 'SCO' if country_code == 'S92000003'
+    return 'EN' if country_code == 'E92000001'
+    return 'NIR' if country_code == 'N92000002'
+    return 'WA' if country_code == 'W92000004'
+
+    country_code
   end
 
   private
@@ -135,13 +148,5 @@ class Address
     return unless address_line1.to_s.empty? || town.to_s.empty?
 
     errors.add(:postcode, :address_not_chosen)
-  end
-
-  # Validation check for valid Scotland Address.
-  def valid_scotland_address?
-    if (country.present? && scotland_country_code_valid(country) == false) ||
-       (postcode.present? && scotland_postcode_format_valid?(postcode) == false)
-      errors.add(:postcode, :postcode_format_invalid)
-    end
   end
 end

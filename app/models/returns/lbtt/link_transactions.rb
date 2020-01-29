@@ -8,7 +8,6 @@ module Returns
     class LinkTransactions < FLApplicationRecord
       include NumberFormatting
       include PrintData
-      include CommonValidation
 
       # Attributes for this class, in list so can re-use as permitted params list in the controller
       def self.attribute_list
@@ -16,17 +15,14 @@ module Returns
       end
       attribute_list.each { |attr| attr_accessor attr }
 
-      # amount validations @see #validation_status
+      # amount validations
       validates :consideration_amount, numericality: {
-        greater_than_or_equal_to: 0, less_than: 1_000_000_000_000_000_000, allow_blank: true
-      }, presence: true, format: { with: TWO_DP_PATTERN, message: :invalid_2dp }, on: 'CONVEY'
-      validates :npv_inc, numericality: { greater_than_or_equal_to: 0, less_than: 1_000_000_000_000_000_000,
-                                          allow_blank: true }, presence: true,
-                          format: { with: TWO_DP_PATTERN, message: :invalid_2dp }, on: :NON_CONVEY
-      validates :premium_inc, numericality: { greater_than_or_equal_to: 0, less_than: 1_000_000_000_000_000_000,
-                                              allow_blank: true }, presence: true,
-                              format: { with: TWO_DP_PATTERN, message: :invalid_2dp }, on: :NON_CONVEY
-      validate  :return_reference_valid?, on: :NON_CONVEY
+        greater_than_or_equal_to_zero: 0, less_than: 1_000_000_000_000_000_000, allow_blank: true
+      }, presence: true, two_dp_pattern: true, on: %w[CONVEY]
+      validates :npv_inc, :premium_inc, numericality: {
+        greater_than_or_equal_to_zero: 0, less_than: 1_000_000_000_000_000_000, allow_blank: true
+      }, presence: true, two_dp_pattern: true, on: %w[LEASERET LEASEREV ASSIGN TERMINATE]
+      validates :return_reference, reference_number: true
 
       # Layout to print the data in this model
       # This defines the sections that are to be printed and the content and layout of those sections
@@ -47,15 +43,12 @@ module Returns
 
       # @return a hash suitable for use in a save request to the back office
       def request_save
-        return nil if validation_status(nil) == :empty
-
         output = {}
 
-        output['ins1:Reference'] = @return_reference unless @return_reference.blank?
-        output['ins1:ConsiderationAmount'] = or_zero(@consideration_amount) unless @consideration_amount.blank?
-        output['ins1:NetPresentValue'] = or_zero(@npv_inc) unless @npv_inc.blank?
-        output['ins1:LeasePremium'] = or_zero(@premium_inc) unless @premium_inc.blank?
-
+        xml_element_if_present(output, 'ins1:Reference', @return_reference)
+        xml_element_if_present(output, 'ins1:ConsiderationAmount', @consideration_amount)
+        xml_element_if_present(output, 'ins1:NetPresentValue', @npv_inc)
+        xml_element_if_present(output, 'ins1:LeasePremium', @premium_inc)
         output
       end
 
@@ -72,37 +65,6 @@ module Returns
 
         # Create new instance
         LinkTransactions.new_from_fl(output)
-      end
-
-      def return_reference_valid?
-        return if @return_reference.blank? || valid_reference?(@return_reference)
-
-        errors.add(:return_reference, :format_is_invalid)
-      end
-
-      # Summarises the state of this link transaction.
-      # NB return reference can be nil but if it's set then a value must be provided so we return :missing.
-      # @param context [@flbt_type] the validation context (LBTT type)
-      # @return :good, :missing (value missing), :bad (fails validation) or :empty (no value).
-      def validation_status(context)
-        validation_count = 0
-
-        # check if any of the values fields are present (not return reference, that can be blank)
-        [@consideration_amount, @npv_inc, @premium_inc].each { |r| validation_count += 1 if r.present? }
-
-        # translate count into a symbol for calling methods to use
-        if validation_count.zero?
-          # if the return ref is set then an amount must be given
-          return :missing if @return_reference.present?
-
-          return :empty
-        end
-
-        # there is a value so ensure it's valid and return good only if it is ok
-        context = :NON_CONVEY unless context == 'CONVEY'
-        return :good if valid?(context)
-
-        :bad
       end
     end
   end

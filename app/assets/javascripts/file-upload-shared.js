@@ -1,6 +1,5 @@
 
 $(function () {
-
 	$(".file").each(function () {
 		var file = $(this);
 		// to adjust spinner position
@@ -37,4 +36,15 @@ $(function () {
 			});
 	});
 
+	$(".file-upload-check").on("click", function () {
+		var fileinput = $("input[type='file']");
+		if (fileinput.length) {
+			if (fileinput[0].value) {
+				warning_message = fileinput[0].attributes['data-warning-message'].value
+				if (!confirm(warning_message)) {
+					event.preventDefault();
+				}
+			}
+		}
+	})
 });

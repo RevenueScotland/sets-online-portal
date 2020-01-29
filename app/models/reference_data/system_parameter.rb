@@ -7,7 +7,7 @@ module ReferenceData
   # @see BackOfficeDataCaching#lookup (and similar methods) for how to call this class.
   class SystemParameter < ReferenceDataCaching
     # additional fields
-    attr_accessor :value
+    attr_accessor :code, :value
 
     # @return [String] the contents of code and value.
     # NB may be used in drop down lists so don't just change it!
@@ -23,8 +23,15 @@ module ReferenceData
         value == other.value)
     end
 
+    # Returns a sort key used when getting the list method
+    # overrides default in ReferenceDataCaching
+    # @return [object] value suitable for sorting
+    def sort_key
+      @code
+    end
+
     # Create a new instance of this class using the back office data given.
-    # value will be set to the one with data ie data[:string_value], data[:numberic_value] or data[:date_value]
+    # value will be set to the one with data ie data[:string_value], data[:numeric_value] or data[:date_value]
     # (checks in that order).
     # @param data [Hash] data from the back office response
     # @note return [Object] a new instance
@@ -34,7 +41,9 @@ module ReferenceData
       data_value ||= data[:date_value]
 
       # calls .to_s to convert from Nori::StringWithAttributes to String so it won't confuse us
-      SystemParameter.new(code: data[:code], value: data_value&.to_s)
+      SystemParameter.new(domain_code: data[:domain_code], service_code: data[:service_code],
+                          workplace_code: data[:workplace_code],
+                          code: data[:code], value: data_value&.to_s)
     end
 
     # Calls the correct service and specifies where the results are in the response body

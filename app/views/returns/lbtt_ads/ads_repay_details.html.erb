@@ -1,0 +1,12 @@
+<% content_for :page_title, t('returns.lbtt_ads.title') %>
+<% content_for :page_subtitle, t('.subtitle') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+
+<%= form_for @ads, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for @ads %>
+
+  <%= display_field @lbtt_return.tax,:ads_due , format: :money, translation_options: :original %>
+  <%= f.currency_field :ads_repay_amount_claimed %>
+
+  <%= f.button 'next', { :name => 'submitted' } %>
+<% end %>

@@ -18,7 +18,7 @@
       <%= at.hidden_field :registration_type %>
     <% end %>
   <% end %>
-  <%= f.fields_for @account.current_user do |u| %>
+  <%= f.fields_for :current_user, @account.current_user do |u| %>
     <% if local_assigns[:other_organisation] %>
       <%= f.fields_for @account.company do |c| %>
         <%= c.text_field :company_name, translation_options: @account.account_type %>

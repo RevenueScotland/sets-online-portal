@@ -10,7 +10,6 @@
 # see the User class).
 class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   include AccountBasedCaching
-  include CommonValidation
   include AccountPersistence
   include AccountValidation
 
@@ -23,39 +22,34 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
 
   attribute_list.each { |attr| attr_accessor attr }
 
-  validates :terms_and_conditions, presence: true, on: %i[create terms_and_conditions]
   validates :email_data_ind, presence: true, on: %i[create email_data_ind]
-  validate  :valid_email_address?, on: %i[create update email_address update_basic]
+  validate  :names_valid?, on: %i[update update_basic]
+  validates :email_address, presence: true, email_address: true, on: %i[create update email_address update_basic]
   validates :email_address, confirmation: true, on: %i[create update email_address update_basic]
   validate  :taxes_valid?, on: %i[create taxes]
-  validate  :names_valid?, on: %i[update update_basic]
   validate  :company_valid?, on: :update
   validate  :basic_company_details_valid?, on: :update_basic
   validates :reg_company_contact_address_yes_no, presence: true, on: :reg_company_contact_address_yes_no
   validates :party_account_type, presence: true, on: :party_account_type
-  validate  :nino_valid?, on: %i[nino update_basic]
-  validates :contact_number, presence: true, on: %i[contact_number update_basic]
-  validate  :contact_number_format_valid?, on: %i[create update contact_number update_basic]
-
+  validates :nino, presence: true, nino: true, on: %i[nino update_basic],
+                   unless: proc { |p| AccountType.registered_organisation?(p.account_type) }
+  validates :contact_number, presence: true, phone_number: true, on: %i[contact_number update_basic]
+  validates :terms_and_conditions, presence: true, on: %i[create terms_and_conditions]
   # Custom validation context for activating account
   validates :registration_token, presence: true, on: :process_activate_account
 
   # Define the ref data codes associated with the attributes to be cached in this model
   # @return [Hash] <attribute> => <ref data composite key>
   def cached_ref_data_codes
-    { taxes: 'PORTALSERVICES.SYS.RSTU', party_account_type: 'PARTY_ACT_TYPES.SYS.RSTU' }
+    { taxes: comp_key('PORTALSERVICES', 'SYS', 'RSTU'), party_account_type: comp_key('PARTY_ACT_TYPES', 'SYS', 'RSTU') }
   end
 
   # Define the ref data codes associated with the attributes not to be cached in this model
   # @return [Hash] <attribute> => <ref data composite key>
   def uncached_ref_data_codes
-    { terms_and_conditions: 'YESNO.SYS.RSTU', reg_company_contact_address_yes_no: 'YESNO.SYS.RSTU',
-      email_data_ind: 'YESNO.SYS.RSTU' }
-  end
-
-  # Check if contact telephone number is valid
-  def contact_number_format_valid?
-    phone_number_format_valid? :contact_number
+    { terms_and_conditions: comp_key('YESNO', 'SYS', 'RSTU'),
+      reg_company_contact_address_yes_no: comp_key('YESNO', 'SYS', 'RSTU'),
+      email_data_ind: comp_key('YESNO', 'SYS', 'RSTU') }
   end
 
   # override getter for terms and conditions to ensure it returns a boolean type
@@ -176,7 +170,7 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
       address_line1: address_details[:address_line1], address_line2: address_details[:address_line2],
       address_line3: address_details[:address_line3], address_line4: address_details[:address_line4],
       town: address_details[:address_town_or_city], county: address_details[:address_county_or_region],
-      postcode: address_details[:address_postcode_or_zip]
+      postcode: address_details[:address_postcode_or_zip], country: address_details[:address_country_code]
     )
   end
 
@@ -188,14 +182,25 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     company_address(address) unless address.nil?
   end
 
+  # Surrogate getter to return the company address at the account level
+  # used by the @see registration_controller
+  def org_address
+    company&.company_address
+  end
+
+  # Surrogate setter to return the company address at the account level
+  # used by the @see registration_controller
+  def org_address=(address)
+    company.from_address!(address)
+  end
+
   # Returns a translation attribute where a given attribute
   # may have more than one name based on e.g. a type discriminator
   # @param attribute [Symbol] the name of the attribute to translate
   # @param extra [Object] additional information for the translation process
-  # @param _error_attribute [Boolean] is this being called to render the error attribute name
   # @return [Symbol] the name of the translation attribute
-  def translation_attribute(attribute, extra = nil, _error_attribute = false)
-    return :org_nino if attribute == :nino && AccountType.other_organisation?(account_type)
+  def translation_attribute(attribute, extra = nil)
+    return :ORG_nino if attribute == :nino && AccountType.other_organisation?(account_type)
     return @company.translation_attribute(attribute, extra) unless @company.nil?
 
     attribute
@@ -206,6 +211,13 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   # @return [Boolean] returns true if the account has the service otherwise false
   def service?(service)
     taxes.include?(service.to_s.upcase)
+  end
+
+  # check if the account has services allocated to it
+  # @return [Boolean] returns true if account does not have any service otherwise false
+  def no_services?
+    # taxes is a array which contains services if allocated by back-office
+    taxes.empty?
   end
 
   private

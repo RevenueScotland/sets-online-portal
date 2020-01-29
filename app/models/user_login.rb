@@ -4,10 +4,14 @@
 # Split out into a separate class to keep User class small/keep Rubocop happy.
 module UserLogin
   # Logs this authenticate user out of the back office, NOT the app.
-  # Called by LoginController.logout.  Call LoginController.logout to actually log out.
+  # Called by @see LoginController#logout.  Call @see LoginController#logout to actually log out.
+  # Logs and ignores any StandardError exceptions so we can still log out of the app later.
   def logout_back_office
     # Note: the back office is case sensitive but this is from the model which is already upcase
     call_ok?(:log_off_user, Username: username)
+  rescue StandardError => e
+    Rails.logger.error("\nERROR: #{e&.message}")
+    Rails.logger.error("BACKTRACE: \n  #{e.backtrace[0..5].join("\n  ")}")
   end
 
   # @return true if the token is invalid, otherwise false
@@ -68,8 +72,8 @@ module UserLogin
     def two_factor_authenticate(username, token)
       user = nil
 
-      # Note: We need to uppercase the username as back office is case sensitive
-      # strip the token to handle cut and paste with spaces
+      # Note: We need to uppercase the username as back office is case sensitive and trim the token
+      # to handle dodgy cut and paste
       call_ok?(:authenticate_user, Username: username.upcase, Token: token.strip) do |body|
         # Set up the Authenticate user details from response
         user = from_backoffice body, username

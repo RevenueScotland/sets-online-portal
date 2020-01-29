@@ -142,34 +142,30 @@
 			<xs:element name="ClaimRepaymentDetailsRequest">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="ParRefNo" type="xs:integer">
-							<xs:annotation>
-								<xs:documentation>Portal Users Party Reference No (PBE)
-						</xs:documentation>
-							</xs:annotation>
-						</xs:element>
 						<xs:element name="Username" type="xs:string" minOccurs="0">
 							<xs:annotation>
-								<xs:documentation>Portal User name that submitted the claim
-						</xs:documentation>
+								<xs:documentation>Portal User name that submitted the claim</xs:documentation>
 							</xs:annotation>
 						</xs:element>
+						<xs:element name="ParRefNo" type="xs:integer" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Portal Users Party Reference No (PBE)</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Authenticated" type="core:YesNoType" minOccurs="0"/>
 						<xs:element name="ClaimType" type="xs:string">
 							<xs:annotation>
-								<xs:documentation>Domain is CLAIMTYPE and for RSTS-709 value will
-							be POST</xs:documentation>
+								<xs:documentation>Domain is CLAIMTYPE and for RSTS-709 value will be POST</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="TareReference" type="xs:string">
 							<xs:annotation>
-								<xs:documentation>Return Reference for which the Claim is raised
-						</xs:documentation>
+								<xs:documentation>Return Reference for which the Claim is raised</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="Version" type="xs:integer">
 							<xs:annotation>
-								<xs:documentation>Return Reference Version for which the Claim is
-							raised</xs:documentation>
+								<xs:documentation>Return Reference Version for which the Claim is raised</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="ServiceCode" type="xs:string">
@@ -179,8 +175,7 @@
 						</xs:element>
 						<xs:element name="ClaimReasonCode" type="xs:string">
 							<xs:annotation>
-								<xs:documentation>Code for the reason selected based on domain
-						</xs:documentation>
+								<xs:documentation>Code for the reason selected based on domain</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="OtherClaimReasonDescription" type="xs:string" minOccurs="0"/>
@@ -191,26 +186,22 @@
 						</xs:element>
 						<xs:element name="RepayAccountHolder" type="xs:string">
 							<xs:annotation>
-								<xs:documentation>Bank Account Name for the repayment to be paid
-						</xs:documentation>
+								<xs:documentation>Bank Account Name for the repayment to be paid</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="RepayBankAccountNo" type="xs:integer">
 							<xs:annotation>
-								<xs:documentation>Bank Account Number for the repayment to be paid
-						</xs:documentation>
+								<xs:documentation>Bank Account Number for the repayment to be paid</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="RepayBankSortCode" type="xs:string">
 							<xs:annotation>
-								<xs:documentation>Bank Account Sort code for the repayment to be
-							paid</xs:documentation>
+								<xs:documentation>Bank Account Sort code for the repayment to be paid</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="RepayBankName" type="xs:string">
 							<xs:annotation>
-								<xs:documentation>Bank Name for the repayment to be paid
-						</xs:documentation>
+								<xs:documentation>Bank Name for the repayment to be paid</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="ADSSoldAddress" type="core:AddressType" minOccurs="0">
@@ -225,66 +216,23 @@
 						</xs:element>
 						<xs:element name="ADSFamilyInd" type="core:YesNoType" minOccurs="0">
 							<xs:annotation>
-								<xs:documentation>Indicator if ADS Claim is about Family Unit
-							changes</xs:documentation>
+								<xs:documentation>Indicator if ADS Claim is about Family Unit changes</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="PrintData" type="xs:string"/>
-						<xs:element name="TaxPayer" minOccurs="0">
+						<xs:element name="TaxPayer" type="TaxPayerStructure" minOccurs="0"/>
+						<xs:element name="SecondTaxPayer" type="TaxPayerStructure" minOccurs="0"/>
+						<xs:element name="Agent" type="AgentStructure" minOccurs="0"/>
+						<xs:element name="Document" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Attached document</xs:documentation>
+							</xs:annotation>
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element name="TaxPayerType" minOccurs="0">
-										<xs:annotation>
-											<xs:documentation>Individual or Organisation</xs:documentation>
-										</xs:annotation>
-										<xs:simpleType>
-											<xs:restriction base="xs:string">
-												<xs:enumeration value="Individual"/>
-												<xs:enumeration value="Organisation"/>
-											</xs:restriction>
-										</xs:simpleType>
-									</xs:element>
-									<xs:element name="FlptType" type="xs:string">
-										<xs:annotation>
-											<xs:documentation>Type of Return Interest</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="ContactAddress" type="core:AddressType">
-										<xs:annotation>
-											<xs:documentation>The address moniker is provided when the
-										address has
-										been searched via the address search, otherwise it is
-										a manual address
-									</xs:documentation>
-										</xs:annotation>
-									</xs:element>
-									<xs:element name="ContactTelNo" type="xs:string"/>
-									<xs:element name="ContactEmailAddress" type="xs:string"/>
-									<xs:element name="ParPerNiNo" type="xs:string"/>
-									<xs:choice>
-										<xs:element name="Individual" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>Only for an Individual</xs:documentation>
-											</xs:annotation>
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="ForeName" type="xs:string" minOccurs="0"/>
-													<xs:element name="Surname" type="xs:string" minOccurs="0"/>
-												</xs:sequence>
-											</xs:complexType>
-										</xs:element>
-										<xs:element name="OrganisationContact" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>Only for an Organisation</xs:documentation>
-											</xs:annotation>
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="CompanyName" type="xs:string" minOccurs="0"/>
-													<xs:element name="ContactName" type="xs:string" minOccurs="0"/>
-												</xs:sequence>
-											</xs:complexType>
-										</xs:element>
-									</xs:choice>
+									<xs:element name="FileName" type="xs:string"/>
+									<xs:element name="FileType" type="xs:string"/>
+									<xs:element name="Description" type="xs:string" minOccurs="0"/>
+									<xs:element name="BinaryData" type="xs:base64Binary"/>
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
@@ -294,10 +242,119 @@
 			<xs:element name="ClaimRepaymentDetailsResponse">
 				<xs:complexType>
 					<xs:complexContent>
-						<xs:extension base="core:StandardResponseStructure"/>
+						<xs:extension base="core:StandardResponseStructure">
+							<xs:sequence>
+								<xs:element name="CaseRefno" type="xs:integer" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Internal Case reference of the case created </xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="CaseReference" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Case reference of the case created to which other attachments can be loaded</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="RepaymentRefNo" type="xs:integer" minOccurs="0"/>
+							</xs:sequence>
+						</xs:extension>
 					</xs:complexContent>
 				</xs:complexType>
 			</xs:element>
+			<xs:complexType name="TaxPayerStructure">
+				<xs:sequence>
+					<xs:element name="TaxPayerType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Individual or Organisation</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="Individual"/>
+								<xs:enumeration value="Organisation"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="ContactAddress" type="core:AddressType">
+						<xs:annotation>
+							<xs:documentation>The address moniker is provided when the address has been searched via the address search, otherwise it is a manual address</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="ContactTelNo" type="xs:string"/>
+					<xs:element name="ContactEmailAddress" type="xs:string"/>
+					<xs:element name="ParPerNiNo" type="xs:string"/>
+					<xs:choice>
+						<xs:element name="Individual" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Only for an Individual</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ForeName" type="xs:string" minOccurs="0"/>
+									<xs:element name="Surname" type="xs:string" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="OrganisationContact" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Only for an Organisation</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="CompanyName" type="xs:string" minOccurs="0"/>
+									<xs:element name="ContactName" type="xs:string" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="AgentStructure">
+				<xs:sequence>
+					<xs:element name="AgentType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Individual or Organisation</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="Individual"/>
+								<xs:enumeration value="Organisation"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="ContactAddress" type="core:AddressType">
+						<xs:annotation>
+							<xs:documentation>The address moniker is provided when the address has been searched via the address search, otherwise it is a manual address</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="ContactTelNo" type="xs:string"/>
+					<xs:element name="ContactEmailAddress" type="xs:string"/>
+					<xs:element name="ParPerNiNo" type="xs:string"/>
+					<xs:choice>
+						<xs:element name="Individual" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Only for an Individual</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ForeName" type="xs:string" minOccurs="0"/>
+									<xs:element name="Surname" type="xs:string" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="OrganisationContact" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Only for an Organisation</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="CompanyName" type="xs:string" minOccurs="0"/>
+									<xs:element name="ContactName" type="xs:string" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+					<xs:element name="DXNumber" type="xs:string" minOccurs="0"/>
+				</xs:sequence>
+			</xs:complexType>
 		</xs:schema>
 	</wsdl:types>
 	<wsdl:message name="ClaimRepaymentDetailsRequest">

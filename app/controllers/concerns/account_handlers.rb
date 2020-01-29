@@ -3,6 +3,7 @@
 # Account handlers for actions from screen
 module AccountHandlers
   extend ActiveSupport::Concern
+  include AddressHelper
 
   # show account details
   def show
@@ -26,7 +27,6 @@ module AccountHandlers
     @account = Account.new(update_params)
     return redirect_to account_path if @account.update_basic(update_params, current_user)
 
-    merge_associated_error_messages
     @post_path = update_basic_account_path
     render 'edit_basic'
   end
@@ -43,10 +43,9 @@ module AccountHandlers
     @account.address = populate_address_data
     if address_search?
       perform_address_search
-    elsif @account.update_address(address_params, current_user)
+    elsif @account.update_address(address_params, current_user, address_validation_contexts)
       redirect_to account_path
     else
-      merge_associated_error_messages
       render 'edit_address'
     end
   end

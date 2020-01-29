@@ -7,13 +7,13 @@
   <% if @lbtt_return.flbt_type == 'CONVEY' %>
     <%= f.currency_field :calculated %>
     <%= f.currency_field :ads_due if @lbtt_return.show_ads? %>
-    <%= f.currency_field :total_reliefs %>
-    <%= f.currency_field :total_ads_reliefs if @lbtt_return.show_ads? %>
+    <%= display_field @tax,:total_reliefs , format: :money %>
+    <%= display_field @tax,:total_ads_reliefs , format: :money if @lbtt_return.show_ads? %>
   <% else %>
     <%= f.currency_field :npv_tax_due %>
     <%= f.currency_field :premium_tax_due %>
     <% if 'LEASERET' == @lbtt_return.flbt_type %>
-      <%= f.currency_field :total_reliefs %>
+     <%= display_field @tax,:total_reliefs , format: :money %>
     <% end %>
   <% end %>
 

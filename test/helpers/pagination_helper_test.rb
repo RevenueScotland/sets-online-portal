@@ -40,21 +40,21 @@ class PaginationHelperTest < ActionView::TestCase
   def expected_output_display_next_previous_link
     out_put = '<nav class="page-numbers-container pagination-container"><div class="previous"><a href' \
               '="?page=1">previous</a></div><div class="next"><a href="?page=3">next</a></div><div class="paginatio' \
-              'n"><ul class="list-inline"><li><a class="active" href="">5-9</a></li></ul></div></nav>'
+              'n"><ul class="list-inline"><li><a class="active govuk-link" href="">5-9</a></li></ul></div></nav>'
     out_put
   end
 
   def expected_output_display_next_link_only
     out_put = '<nav class="page-numbers-container pagination-container"><div class="next"' \
                '><a href="?page=3">next</a></div><div class="pagination"><ul class="list-inline"><li><a class="activ' \
-               'e" href="">1-5</a></li></ul></div></nav>'
+               'e govuk-link" href="">1-5</a></li></ul></div></nav>'
     out_put
   end
 
   def expected_output_display_previous_link_only
     out_put = '<nav class="page-numbers-container pagination-cont' \
                 'ainer"><div class="previous"><a href="?page=1">previous</a></div><div class="pagination"><ul class="' \
-                'list-inline"><li><a class="active" href="">10-15</a></li></ul></div></nav>'
+                'list-inline"><li><a class="active govuk-link" href="">10-15</a></li></ul></div></nav>'
     out_put
   end
 end

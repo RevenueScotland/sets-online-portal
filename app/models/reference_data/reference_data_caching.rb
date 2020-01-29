@@ -11,9 +11,10 @@ module ReferenceData
     include ActiveModel::Model
     include ActiveModel::Serialization
 
-    # The code field under a given Domain, Service and Workplace composite key
-    attr_accessor :code
-    validates :code, presence: true
+    # The key fields for the base class we store the domain code, workplace code and service code as
+    # although these are normally used for the cache key there are some instances where we combine across these fields
+    # but still need to know what the underlying data is to filter.
+    attr_accessor :domain_code, :workplace_code, :service_code
 
     # Where this data is stored in the cache.  Must be unique to the implementing class so setting to the class' name.
     # Overrides cache_key in CachedBackOfficeData as reference data is not dependent on party ref no (account id).
@@ -23,7 +24,7 @@ module ReferenceData
 
     # Get the data from the cache and return the list associated with the parameters
     # (the result is suitable for iterating over).
-    # If you need to call this method mulitple times, consider calling cached_values once to get the raw data and
+    # If you need to call this method multiple times, consider calling cached_values once to get the raw data and
     # operate on that rather than making multiple calls to the cache.
     # @param [String] domain_code - back office key
     # @param [String] service_code - back office key
@@ -32,7 +33,7 @@ module ReferenceData
     def self.list(domain_code, service_code, workplace_code)
       output = lookup(domain_code, service_code, workplace_code).values.sort_by(&:sort_key)
 
-      comp_key = composite_key(domain_code, service_code, workplace_code)
+      comp_key = format_composite_key(domain_code, service_code, workplace_code)
       raise Error::AppError.new(500, "No  #{name} list data found for #{comp_key}") if output.blank?
 
       output
@@ -46,7 +47,7 @@ module ReferenceData
     # @raise [Error::AppError] if the data doesn't exist.
     # @return [Hash] the hash for the given domain, service and workplace codes.
     def self.lookup(domain_code, service_code, workplace_code)
-      comp_key = composite_key(domain_code, service_code, workplace_code)
+      comp_key = format_composite_key(domain_code, service_code, workplace_code)
       lookup_composite_key(comp_key)
     end
 
@@ -61,7 +62,7 @@ module ReferenceData
       output
     end
 
-    # Helper method to get the cached data for mulitple keys at once (ie only 1 call to the cache).
+    # Helper method to get the cached data for multiple keys at once (ie only 1 call to the cache).
     # @param [Array] composite_keys - list of composite keys made from calling @see composite_key.
     # @return [Hash] output[composite_key] = <result>
     def self.lookup_multiple(composite_keys)
@@ -83,6 +84,27 @@ module ReferenceData
         output[key] = multiple[key].values.sort_by(&:sort_key)
       end
       output
+    end
+
+    # Return the composite key for this object.
+    # Normally domain code, service code and workplace code but may be overriden
+    # @return [String] the hash composite key
+    def composite_key
+      ReferenceDataCaching.format_composite_key(@domain_code, @service_code, @workplace_code)
+    end
+
+    # Returns the code for this object used to index in the main hash if the stored object
+    # at the main hash is a hash type
+    # @return [String] The value used for the inner hash
+    def code
+      nil
+    end
+
+    # Returns a sort key used when getting the list method
+    # must be overridden by individual classes
+    # @return [object] value suitable for sorting
+    def sort_key
+      nil
     end
 
     # Get (and populate if needed) the cached data.
@@ -117,25 +139,41 @@ module ReferenceData
         output = organise_results(body[index])
         output.merge!(application_values(output))
       end
-      output if success
+      return output if success
+
+      raise Error::AppError.new('lookup_back_office_data', 'success was false from back office')
     end
 
-    # Converts the back office data response to a 2 dimensional hash object indexed first by @see composite_key
-    # and then by the mandatory code field.
-    # @note return [Hash] output [composite_key][code]=[object].
+    # Converts the back office data response to a 1 or 2 dimensional hash object indexed first by @see composite_key
+    # and then optionally by a code field if one is provided.
+    # @note return [Hash] output [composite_key][code]=[object] or [composite_key] = [object]
     # Each index in our output map is an array of the values returned for that key.
     # @param element [Hash] an element from the result message body from back office
     private_class_method def self.organise_results(element)
       output = {}
       ServiceClient.iterate_element(element) do |data|
-        key = composite_key(data[:domain_code], data[:service_code], data[:workplace_code])
+        cache_object = make_object(data)
 
-        # initialise the array ready for data if it doesn't exist already
-        output[key] = {} unless output.key?(key)
-        # call to_s for the key so we have String keys not Nori::StringWithAttributes
-        output[key][data[:code].to_s] = make_object(data)
+        add_object(output, cache_object)
       end
       output
+    end
+
+    # Adds the given object onto the output hash, either directly or if it exists at the code value point
+    # @param output [Hash] The hash being built
+    # @param cache_object [Object] The object, an instance of reference data caching, being added
+    private_class_method def self.add_object(output, cache_object)
+      code_key = cache_object.code
+      composite_key = cache_object.composite_key
+
+      if code_key.nil?
+        output[composite_key] = cache_object
+      else
+        # initialise the array ready for data if it doesn't exist already
+        output[composite_key] = {} unless output.key?(composite_key)
+        # call to_s for the key so we have String keys not Nori::StringWithAttributes
+        output[composite_key][code_key.to_s] = cache_object
+      end
     end
 
     # Generate the hash composite key for the given parameters.
@@ -143,8 +181,8 @@ module ReferenceData
     # @param service_code [String] back office key
     # @param workplace_code [String] back office key
     # @return [String] the hash composite key for the given parameters
-    def self.composite_key(domain_code, service_code, workplace_code)
-      "#{domain_code}.#{service_code}.#{workplace_code}"
+    def self.format_composite_key(domain_code, service_code, workplace_code)
+      "#{domain_code}>$<#{service_code}>$<#{workplace_code}"
     end
 
     # CV lists which we need for the application but which don't exist in the back office.
@@ -156,13 +194,6 @@ module ReferenceData
       # app_codes = { 'Y' => SystemParameter.new(code: 'Y') }
       # output[composite_key('domain', 'service', 'workplace')] = app_codes
       output
-    end
-
-    # Returns a sort key used when getting the list method
-    # can be overridden by individual classes
-    # @return [object] value suitable for sorting
-    def sort_key
-      @code
     end
   end
 end

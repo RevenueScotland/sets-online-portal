@@ -11,7 +11,7 @@
     <%= f.text_field :nino %> 
     <%= render '/layouts/hideable_details/', { clickable_text: t('.'+@party.party_type+'_show_hide') } do %>
       <%= f.select :alrt_type, @party.list_ref_data(:alrt_type), { include_blank: true }, {} %>
-      <%= f.select :ref_country, @party.list_ref_data(:ref_country), {}, { text_auto_complete: true } %>
+      <%= f.select :ref_country, @party.list_ref_data(:ref_country), { text_auto_complete: true }, {} %>
       <%= f.text_field :alrt_reference %> 
     <% end %>
   <% end %>

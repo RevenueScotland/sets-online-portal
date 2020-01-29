@@ -1,0 +1,226 @@
+{
+    "json_class": "Returns::Lbtt::LbttReturn",
+    "is_public": false,
+    "new_record": true,
+    "tax": {
+        "json_class": "Returns::Lbtt::Tax",
+        "new_record": true,
+        "flbt_type": "LEASERET",
+        "linked_ind": "Y",
+        "linked_npv": "8300",
+        "orig_linked_npv": 8300,
+        "total_reliefs": "5463",
+        "orig_total_reliefs": "5463",
+        "npv": "47126.72",
+        "npv_tax_due": "5400",
+        "premium_tax_due": "630",
+        "orig_npv": "47126.72",
+        "orig_npv_tax_due": "0",
+        "orig_premium_tax_due": "63"
+    },
+    "ads": {
+        "json_class": "Returns::Lbtt::Ads",
+        "new_record": true,
+        "flbt_type": "LEASERET"
+    },
+    "flbt_type": "LEASERET",
+    "lease_premium": "6320",
+    "agent": {
+        "json_class": "Returns::Lbtt::Party",
+        "party_type": "AGENT",
+        "new_record": true,
+        "firstname": "Portal User",
+        "surname": "New Users",
+        "email_address": "noreply@northgateps.com",
+        "telephone": "07700900321",
+        "address": {
+            "json_class": "Address",
+            "address_line1": "2 Park Lane",
+            "address_line2": "Garden Village",
+            "town": "NORTHTOWN",
+            "county": "Northshire",
+            "postcode": "RG1 1PB",
+            "country": "GB",
+            "new_record": true
+        }
+    },
+    "properties": {
+        "5f0242de-0807-410a-b09f-c7736220d216": {
+            "json_class": "Returns::Lbtt::Property",
+            "property_id": "5f0242de-0807-410a-b09f-c7736220d216",
+            "flbt_type": "LEASERET",
+            "new_record": true,
+            "address": {
+                "json_class": "Address",
+                "address_line1": "The Milkman",
+                "address_line2": "7 Cockburn Street",
+                "town": "EDINBURGH",
+                "postcode": "EH1 1BP",
+                "country": "SCO",
+                "new_record": true,
+                "default_country": "SCO",
+                "address_identifier": "8194331"
+            },
+            "lau_code": "9059",
+            "title_code": "ANG",
+            "title_number": "2910234"
+        }
+    },
+    "property_type": "3",
+    "effective_date": "2019-11-07",
+    "relevant_date": "2019-11-08",
+    "exchange_ind": "Y",
+    "previous_option_ind": "N",
+    "uk_ind": "N",
+    "link_transactions": [
+        {
+            "json_class": "Returns::Lbtt::LinkTransactions",
+            "new_record": true,
+            "return_reference": "RS10001001HALO",
+            "npv_inc": "1500",
+            "premium_inc": "2450"
+        },
+        {
+            "json_class": "Returns::Lbtt::LinkTransactions",
+            "new_record": true,
+            "return_reference": "RS10001002GATE",
+            "npv_inc": "6800",
+            "premium_inc": "2850"
+        }
+    ],
+    "linked_ind": "Y",
+    "non_ads_relief_claims": [
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false,
+            "relief_type": "ALTPROP",
+            "relief_amount": "0",
+            "relief_override_amount": "5300"
+        },
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false,
+            "relief_type": "CHARITIES",
+            "relief_amount": "0",
+            "relief_override_amount": "100"
+        },
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false,
+            "relief_type": "CHARITIESP",
+            "relief_amount": "63",
+            "relief_override_amount": "63"
+        }
+    ],
+    "non_ads_reliefclaim_option_ind": "Y",
+    "declaration": "true",
+    "lease_declaration": "true",
+    "fpay_method": "DDEBIT",
+    "authority_ind": "Y",
+    "form_type": "L",
+    "tare_reference": "RS1000038WBMS",
+    "tare_refno": "147",
+    "payment_date": "15/11/2019",
+    "version": "1",
+    "account_type": "AGENT",
+    "tenants": {
+        "efd02e78-4bc3-4585-b109-bd9ce90ca1db": {
+            "json_class": "Returns::Lbtt::Party",
+            "party_type": "TENANT",
+            "new_record": true,
+            "address": {
+                "json_class": "Address",
+                "address_line1": "1 Gipsy Lane",
+                "address_line2": "Headington",
+                "town": "OXFORD",
+                "county": "Oxfordshire",
+                "postcode": "OX3 7PT",
+                "country": "EN",
+                "new_record": true,
+                "address_identifier": "18074175"
+            },
+            "party_id": "efd02e78-4bc3-4585-b109-bd9ce90ca1db",
+            "type": "OTHERORG",
+            "buyer_seller_linked_ind": "Y",
+            "is_acting_as_trustee": "N",
+            "org_type": "CHARITY",
+            "charity_number": "872",
+            "org_name": "Dunder Mifflin",
+            "com_jurisdiction": "GB",
+            "job_title": "Regional Manager",
+            "contact_surname": "Scott",
+            "contact_firstname": "Michael",
+            "contact_email": "michael.scott@dudnermifflin.com",
+            "contact_tel_no": "0134411111",
+            "org_contact_address": {
+                "json_class": "Address",
+                "address_line1": "3 Gipsy Lane",
+                "address_line2": "Headington",
+                "town": "OXFORD",
+                "county": "Oxfordshire",
+                "postcode": "OX3 7PT",
+                "country": "EN",
+                "new_record": true,
+                "address_identifier": "18074186"
+            }
+        }
+    },
+    "landlords": {
+        "784b96f8-30b0-4d49-951e-ece88003b5fb": {
+            "json_class": "Returns::Lbtt::Party",
+            "party_type": "LANDLORD",
+            "new_record": true,
+            "firstname": "Jan",
+            "surname": "Levinson",
+            "address": {
+                "json_class": "Address",
+                "address_line1": "Flat 1",
+                "address_line2": "Saxon Court",
+                "address_line3": "2 Stephen Road",
+                "address_line4": "Headington",
+                "town": "OXFORD",
+                "county": "Oxfordshire",
+                "postcode": "OX3 9FA",
+                "country": "EN",
+                "new_record": true,
+                "address_identifier": "27542710"
+            },
+            "party_id": "784b96f8-30b0-4d49-951e-ece88003b5fb",
+            "type": "PRIVATE",
+            "title": "MISS"
+        }
+    },
+    "lease_start_date": "2019-11-07",
+    "lease_end_date": "2022-11-07",
+    "yearly_rents": [
+        {
+            "json_class": "Returns::Lbtt::YearlyRent",
+            "year": "1",
+            "new_record": true,
+            "rent": "5600"
+        },
+        {
+            "json_class": "Returns::Lbtt::YearlyRent",
+            "year": "2",
+            "new_record": true,
+            "rent": "10100"
+        },
+        {
+            "json_class": "Returns::Lbtt::YearlyRent",
+            "year": "3",
+            "new_record": true,
+            "rent": "14880"
+        },
+        {
+            "json_class": "Returns::Lbtt::YearlyRent",
+            "year": "4",
+            "new_record": true,
+            "rent": "21650"
+        }
+    ],
+    "annual_rent": "5600",
+    "rent_for_all_years": "N",
+    "linked_lease_premium": "5300",
+    "premium_paid": "Y",
+    "relevant_rent": "1240"
+}

@@ -1,50 +1,37 @@
 <% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, " #{t('.subtitle')} #{@site.site_name}" %>
+<% content_for :page_subtitle, t('.subtitle' ,site_name: @site.site_name ) %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 
-<table class="govuk-table">
-  <thead>
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header"><%= t('.description') %></th>
-      <th class="govuk-table__header"><%= t('.lower_tonnage') %></th>
-      <th class="govuk-table__header"><%= t('.standard_tonnage') %></th>
-      <th class="govuk-table__header"><%= t('.exempt_tonnage') %></th>
-      <th class="govuk-table__header"><%= t('.water_tonnage') %></th>
-      <th class="govuk-table__header"><%= t('.total_tonnage') %></th>
-      <th class="govuk-table__header"><%= t('action') %></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% unless @wastes.nil? %>
-      <% @wastes.values.sort_by(&:ewc_code)&.each do |waste| %>
-        <tr>
-          <td width="30%"><%= "#{waste.ewc_code}/#{waste.description}" %></td>
-          <td><%= waste.or_zero(waste.lower_tonnage) %></td>
-          <td><%= waste.or_zero(waste.standard_tonnage) %></td>
-          <td><%= waste.or_zero(waste.exempt_tonnage) %></td>
-          <td><%= waste.or_zero(waste.water_tonnage) %></td>
-          <td><%= waste.total_tonnage %></td>
-          <td nowrap>
-            <%= link_to t('edit_row'), path = returns_slft_waste_description_path(waste: waste.uuid) %>
-            |
-            <%= link_to t('delete_row'), path = returns_slft_waste_delete_path(waste: waste.uuid), data: { confirm: "Delete #{waste.ewc_code}/#{waste.description}?" } %>
-          </td>
-        </tr>
-      <% end %>
-    <% end %>
-  </tbody>
-</table>
+<%= display_table(
+  @site.wastes&.values.sort_by(&:ewc_code),
+  [:ewc_code_and_description, :lower_tonnage, :standard_tonnage, :exempt_tonnage, :water_tonnage, :total_tonnage],  
+  [ { label: t('.edit_row'), path: :returns_slft_waste_description_path },
+    # For the contents of the data: { confirm: [<...>] } see table_helper's action_options method
+    { label: t('.delete_row'), path: :returns_waste_path, action: :destroy, options: { data: { confirm: ['.delete', :ewc_code_and_description] } } } ],
+  { ewc_code_and_description: { label: t('.description'), cell_class: 'govuk-!-width-one-third' },
+    water_tonnage: { label: t('.water_tonnage') } }
+) %>
 
-<%= navigational_links [{ link: '.add_new_waste_type', path: "#{returns_slft_waste_description_path}?new=true" }] %>
-<br />
-<br />
+<%= navigational_links [{ link: '.add_new_waste_type', path: returns_slft_waste_description_path(waste: 'new') },
+                        { link: '.delete_all_waste_types', path: returns_slft_site_waste_summary_path(site: @site, delete_all: true), link_html_options: { data: { confirm: t('.delete_all') } } }] %>
+ <p />
+ <%= form_for :csv_upload, url: returns_slft_site_waste_summary_path(site: @site, csv_upload: true), html: { multipart: true } , method: :post, local: true do |f| %>
+   <%= form_errors_for @resource_item %>
+   <%= render "/layouts/file_upload_component", file_upload_label: t('.file_upload_label'), hide_description: true %>
+ <% end %>
+<p />
 <%= link_to t('back_to_return_summary'), returns_slft_summary_path %>
 <% if can? AuthorisationHelper::SLFT_SAVE %>
 <p />
-  <%= form_with url: returns_slft_site_waste_summary_path(save_draft: true), method: :post, local: true do |f| %>
-    <%= form_errors_without_attributes @slft_return %>
-    <%= f.hidden_field :save_draft, :value => 'save_draft' %>
+  <%= form_with url: returns_slft_site_waste_summary_path(site: @site, save_draft: true), method: :post, local: true do |f| %>
+    <%= form_errors_for @slft_return %>
+    <%= f.hidden_field :save_draft, {}, { :value => 'save_draft' } %>
     <%= f.button 'save_draft', { :name => 'submitted' } %>
-    <%= t('returns.slft.save_draft.reference_html', ref: @site_summary_save_reference) if @site_summary_save_reference.present? %>
+
+    <% if @site_summary_save_reference.present? %>
+      <%= t('returns.slft.save_draft.return_html') %>
+      <b><span id="ret_ref_val"><%= @site_summary_save_reference %></span>.</b>
+      <%= t('returns.slft.save_draft.reference_html') %>
+    <% end %>
   <% end %>
 <% end %>

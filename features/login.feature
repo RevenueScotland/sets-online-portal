@@ -11,15 +11,15 @@ Feature: Login and authentication
 
     Scenario: User does not provide any details
         When I go to the "Login" page
-        And click on the "Sign in" button
+        And I click on the "Sign in" button
         Then I should receive the message "Username can't be blank"
         And I should receive the message "Password can't be blank"
 
     Scenario: User provides incorrect details
         When I go to the "Login" page
-        And enter "x" in the "Username" field
-        And enter "x" in the "Password" field
-        And click on the "Sign in" button
+        And I enter "x" in the "Username" field
+        And I enter "x" in the "Password" field
+        And I click on the "Sign in" button
         Then I should receive the message "Enter the correct username and password"
         And I should see the text "username"
         And I should see the text "password"
@@ -28,56 +28,58 @@ Feature: Login and authentication
 
     Scenario: User provides the correct details
         When I go to the "Login" page
-        And enter "portal.one" in the "Username" field
-        And enter "Password1!" in the "Password" field
-        And click on the "Sign in" button
+        And I enter "portal.one" in the "Username" field
+        And I enter "Password1!" in the "Password" field
+        And I click on the "Sign in" button
         Then I should see the "Dashboard" page
 
     Scenario: User logs out and cannot access authenticate page
         Given I have signed in
-        And go to the "Users" page
+        And I go to the "Users" page
         When I click on the "Sign out" link
-        And go to the "Users" page
+        And I go to the "Users" page
         Then I should see the "Sign in" page
+        When I click on the "Cookies" link and switch to that window
+        Then I should see the "Cookies" page
 
     @mock_locked_user
     Scenario: User provides the correct detail but the user is locked
         When I go to the "Login" page
-        And enter "locked.user" in the "Username" field
-        And enter "valid.password" in the "Password" field
-        And click on the "Sign in" button
+        And I enter "locked.user" in the "Username" field
+        And I enter "valid.password" in the "Password" field
+        And I click on the "Sign in" button
         Then I should receive the message "Your user is locked, use the forgotten password process to unlock it"
 
     @mock_not_actived_user
     Scenario: User provides the correct detail but the user is not activated
         When I go to the "Login" page
-        And enter "not.activated.user" in the "Username" field
-        And enter "valid.password" in the "Password" field
-        And click on the "Sign in" button
+        And I enter "not.activated.user" in the "Username" field
+        And I enter "valid.password" in the "Password" field
+        And I click on the "Sign in" button
         Then I should receive the message "Activate your account using the token you were sent"
 
     @mock_expired_password
     Scenario: Expired password
         When I go to the "Login" page
-        And enter "expired.password" in the "Username" field
-        And enter "valid.password" in the "Password" field
-        And click on the "Sign in" button
+        And I enter "expired.password" in the "Username" field
+        And I enter "valid.password" in the "Password" field
+        And I click on the "Sign in" button
         Then I should see the text "Password Expired"
 
     @mock_forced_password_change
     Scenario: Force password change
         When I go to the "Login" page
-        And enter "forced.password.change.user" in the "Username" field
-        And enter "valid.password" in the "Password" field
-        And click on the "Sign in" button
+        And I enter "forced.password.change.user" in the "Username" field
+        And I enter "valid.password" in the "Password" field
+        And I click on the "Sign in" button
         Then I should see the "Change Password" page
 
     @mock_due_password
     Scenario: Displaying password expired in n days
         When I go to the "Login" page
-        And enter "due.password" in the "Username" field
-        And enter "valid.password" in the "Password" field
-        And click on the "Sign in" button
+        And I enter "due.password" in the "Username" field
+        And I enter "valid.password" in the "Password" field
+        And I click on the "Sign in" button
         And I go to the "Account" page
         Then I should see the "Sign up details" page
         And I should see the text "Your password expires in 4 days"
@@ -94,8 +96,8 @@ Feature: Login and authentication
         And I click on the "Confirm" button
 
         Then I should see the "Terms and Conditions" page
-        And I should receive the message "This can't be blank"
-        And I check "I confirm that I have read and understood the terms & conditions" checkbox
+        And I should receive the message "I confirm that I have read and understood the terms & conditions (opens in a new window) can't be blank"
+        And I check the "I confirm that I have read and understood the terms & conditions" checkbox
         And I click on the "Confirm" button
 
     # Then I should see the "Dashboard" page
@@ -123,7 +125,7 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
         Then I should see the text "This is the token in the e-mail you have been sent"
-        And I enter "" in the "Username" field
+        And I clear the "Username" field
         When I click on the "Sign in" button
 
         Then I should see the text "This is the token in the e-mail you have been sent"
@@ -227,10 +229,10 @@ Feature: Login and authentication
         And I click on the "Sign in" button
 
         Then I should see the "Change Password" page
-        And enter "valid.password" in the "Old password" field
-        And enter "New.password1" in the "New password" field
-        And enter "New.password1" in the "Confirm new password" field
-        And click on the "Change Password" button
+        And I enter "valid.password" in the "Old password" field
+        And I enter "New.password1" in the "New password" field
+        And I enter "New.password1" in the "Confirm new password" field
+        And I click on the "Change Password" button
 
         Then I should see the "Sign in" page
         When I enter "valid.user" in the "Username" field
@@ -242,6 +244,6 @@ Feature: Login and authentication
         And I click on the "Confirm" button
 
         Then I should see the "Terms and Conditions" page
-        And I should receive the message "This can't be blank"
-        And I check "I confirm that I have read and understood the terms & conditions" checkbox
+        And I should receive the message "I confirm that I have read and understood the terms & conditions (opens in a new window) can't be blank"
+        And I check the "I confirm that I have read and understood the terms & conditions" checkbox
         And I click on the "Confirm" button

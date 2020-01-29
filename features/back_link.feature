@@ -1,4 +1,4 @@
-# feature/messages.feature
+# feature/back_link.feature
 
 Feature: Back Link
     As a registered user
@@ -69,6 +69,15 @@ Feature: Back Link
         When I click on the "Back" link
         Then I should see the text "Tenant details"
 
+        # Check the back link is working on the customised back link for agent details page
+        When I click on the "Back" link
+        And I click on the "Back" link
+        And I click on the "Edit agent details" link
+        Then I should see the "Agent details" page
+        When I click on the "Next" button
+        And I click on the "Back" link
+        Then I should see the "Agent details" page
+
     Scenario: Finish filling in a form and then going back to main page
         Given I have signed in 'PORTAL.WASTE' and password 'Password1!'
         # Scenario's test part 1
@@ -84,19 +93,19 @@ Feature: Back Link
         Then I should see the "What accounting period is this return for?" page
 
         When I select "2015/16" from the "returns_slft_slft_return[year]"
-        And I check "April to June (Quarter 1)" radio button
+        And I check the "April to June (Quarter 1)" radio button
         And I click on the "Next" button
         # Page D
         Then I should see the "Non disposal area information" page
         And I should see the text "Have you designated a new non-disposal area on any of your sites?"
 
-        When I check "returns_slft_slft_return_non_disposal_add_ind_n" radio button
+        When I check the "returns_slft_slft_return_non_disposal_add_ind_n" radio button
         And I click on the "Next" button
         # Page E
         Then I should see the "Non disposal area information" page
         And I should see the text "Have you ceased to operate a non-disposal area on any of your sites?"
 
-        When I check "returns_slft_slft_return_non_disposal_delete_ind_n" radio button
+        When I check the "returns_slft_slft_return_non_disposal_delete_ind_n" radio button
         And I click on the "Next" button
         # Now looped back to Page B
         Then I should see the "Return summary" page
@@ -117,7 +126,7 @@ Feature: Back Link
         Then I should see the "What accounting period is this return for?" page
 
         When I select "2015/16" from the "returns_slft_slft_return[year]"
-        And I check "April to June (Quarter 1)" radio button
+        And I check the "April to June (Quarter 1)" radio button
         And I click on the "Next" button
         # Page C
         Then I should see the "Non disposal area information" page
@@ -133,3 +142,16 @@ Feature: Back Link
         And I should see the text "2015/16"
         And I should see the text "SLfT quarter"
         And I should see the text "Quarter 1"
+
+    Scenario: Back link on generic error page
+        Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
+        Then I should see the "Dashboard" page
+
+        When I click on the "Create LBTT return" link
+        Then I should see the "About the return" page
+
+        When I go to the "home/error" page
+        Then I should see the "Something has gone wrong" page
+
+        When I click on the "Back" link
+        Then I should see the "About the return" page

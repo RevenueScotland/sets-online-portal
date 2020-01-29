@@ -3,7 +3,7 @@
 
 <%= form_for @account, url: @post_path, local: true do |f| %>
   <%= form_errors_for @account %>
-  <%= f.collection_check_boxes_fields(:taxes, @account.list_ref_data(:taxes), :code, :value) %>
-  <%= f.collection_radio_buttons_fields(:party_account_type, @account.list_ref_data(:party_account_type), :code, :value, { alignment: 'vertical' }) %>
+  <%= f.collection_check_boxes_fields(:taxes, @account.list_ref_data(:taxes)) %>
+  <%= f.collection_radio_buttons_fields(:party_account_type, @account.list_ref_data(:party_account_type), { alignment: 'vertical' }) %>
   <%= f.button 'next', { :name => 'submitted' }  %>
 <% end %>  

@@ -6,9 +6,9 @@
 <%= form_for @slft_return, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @slft_return %>
   
-  <%= f.currency_field(:total_tax_due, readonly:true) %>
-  <%= f.currency_field(:total_credit, readonly:true) %>
-  <%= f.currency_field(:tax_payable, readonly:true) %>
+  <%= f.currency_field(:total_tax_due, {}, { readonly: true }) %>
+  <%= f.currency_field(:total_credit, {}, { readonly: true }) %>
+  <%= f.currency_field(:tax_payable, {}, { readonly: true }) %>
 
   <%= f.button 'next', { :name => 'submitted' } unless @slft_return.errors.any? %>
 <% end %>

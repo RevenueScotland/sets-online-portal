@@ -286,6 +286,7 @@
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
+						<xs:element name="PrintDataReceipt" type="xs:string" minOccurs="0"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

@@ -4,24 +4,70 @@
 <% content_for :page_description, t('.description') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <!-- Applies the CSS class 'external-link' to the navigation bar options, see return-form-dirty.js for details -->
-<% content_for :nav_bar_options, { class: 'external-link' } %>
+<% content_for :nav_bar_html_options, { class: 'external-link' } %>
 <!-- See return-form-dirty.js for details of the application of form-dirty-warning-message value of data property -->
 <%= form_for @slft_return, url: returns_slft_summary_path, method: :post, 
             :data => { 'form-dirty-warning-message' => t('.form_dirty_warning_message') } , local: true do |f| %>
-  <%= form_errors_without_attributes @slft_return %>
+  <%= form_errors_for @slft_return %>
 
   <%= govuk_warning( t('.warning') ) %>
-  <!-- <%= @slft_return.tare_reference %> Version <%= @slft_return.version %> -->
 
-  <% transactions_link_text = @transaction_summary.blank? ? :add_transaction_details : :edit_transaction_details %>
-  <% nav_link = navigational_links [{link: transactions_link_text, path: returns_slft_transaction_period_path}] %>
-  <%= render '/layouts/summary_table', {table_headers: [ t('.transaction_subtitle'), nav_link], table_help: nil, summary_data: @transaction_summary} %>
+  <% transactions_nav_link = {
+    link: @slft_return.year.blank? ? :add_transaction_details : :edit_transaction_details,
+    path: returns_slft_transaction_period_path,
+    link_options: { id: 'add_return_period' } } %>
 
-  <%= render 'site_summary_table', {table_headers: [ t('.sites_subtitle')], data: @slft_return.sites} %>
+  <%= display_region( {
+    header: { label: t('.transaction_subtitle') }.merge(transactions_nav_link),
+    data: [ { model: @slft_return,
+              attributes: [ { attribute: :year, format: :lookup_ref, skip: :if_blank },
+                            { attribute: :fape_period, format: :lookup_ref, skip: :if_blank },
+                            { attribute: :non_disposal_add_ind, format: :lookup_ref, skip: :if_blank },
+                            { attribute: :non_disposal_delete_ind, format: :lookup_ref, skip: :if_blank } ] } ]
+    },
+    { header: { link_cell_class: 'text_align_right' },
+      data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
+  %>
 
-  <% credits_link_text = @credit_summary.blank? ? :add_credits_details : :edit_credits_details %>
-  <% nav_link = navigational_links [{link: credits_link_text, path: returns_slft_credit_environmental_path}] %>
-  <%= render '/layouts/summary_table', {table_headers: [ t('.credits_subtitle'), nav_link], table_help: nil, summary_data: @credit_summary} %>
+  <%= display_table_region( { 
+      header: { label: t('.sites_subtitle') }, 
+      table: { models: @slft_return.sites&.values, attributes: [:site_name, :net_lower_tonnage, :net_standard_tonnage, :exempt_tonnage, :total_tonnage],
+               actions: [ { label: t('.add_waste_details'), path: :returns_slft_site_waste_summary_path } ],
+               options: { summary: { total: { attributes: %i[net_lower_tonnage net_standard_tonnage exempt_tonnage total_tonnage], label: { cell: :site_name, text: t('.total') } }
+                                      } } } 
+      }, 
+      { header: { link_cell_class: 'text_align_right' } } ) %>
+
+  <% unless (@slft_return.deleted_sites||{}).count.zero? %>
+    <%= display_table_region( { 
+        header: { label: t('.deleted_sites_subtitle') }, 
+        description: { region_description: t('.deleted_sites_description') },
+        table: { models: @slft_return.deleted_sites&.values, attributes: [:site_name, :net_lower_tonnage, :net_standard_tonnage, :exempt_tonnage, :total_tonnage],
+                 options: {  } }
+        }, 
+        { header: { link_cell_class: 'text_align_right' } } ) %>
+  <% end %>
+
+  <% credits_nav_link = {
+    link: @slft_return.slcf_yes_no.blank? ? :add_credits_details : :edit_credits_details,
+    path: returns_slft_credit_environmental_path,
+    link_options: { id: 'add_credit_details' } } %>
+
+  <%= display_region( {
+    header: { label: t('.credits_subtitle') }.merge(credits_nav_link),
+    data: [ { model: @slft_return,
+              attributes: [ { attribute: :slcf_yes_no, format: :lookup_ref, skip: @slft_return.slcf_yes_no != 'N' },
+                            { attribute: :slcf_contribution, format: :money, skip: :if_blank },
+                            { attribute: :slcf_credit_claimed, format: :money, skip: :if_blank },
+                            { attribute: :bad_debt_yes_no, format: :lookup_ref, skip: @slft_return.bad_debt_yes_no != 'N' },
+                            { attribute: :bad_debt_credit, format: :money, skip: :if_blank },
+                            { attribute: :removal_credit_yes_no, format: :lookup_ref, skip: @slft_return.removal_credit_yes_no != 'N' },
+                            { attribute: :removal_credit, format: :money, skip: :if_blank } ] }
+          ]
+    }, 
+    { header: { link_cell_class: 'text_align_right' },
+      data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
+  %>
 
   <% if can? AuthorisationHelper::SLFT_SAVE %>
     <%= f.button 'save_draft', { :name => 'save_draft' }  %>

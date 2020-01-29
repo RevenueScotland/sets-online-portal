@@ -1,12 +1,34 @@
 # frozen_string_literal: true
 
 # helper for creating application specific table
-module TableHelper
+#
+# This is a visual example of how the table structure may look like for display_table:
+#
+#              column 0        column 1        column 2        column n
+#             +---------------+---------------+---------------+---------------+
+# objects[0]  | <th>          | <th>          | <th>          | <th...>       | row 0
+#             | attributes[0] | attributes[1] | attributes[2] | attributes[n] |
+#             +---------------+---------------+---------------+---------------+
+# objects[1]  | <td>          | <td>          | <td>          | <td...>       | row 1
+#             +---------------+---------------+---------------+---------------+
+#             | <action links >                                               | row 2
+#             +---------------+---------------+---------------+---------------+
+# objects[2]  | <td>          | <td>          | <td>          | <td...>       | row 3
+#             +---------------+---------------+---------------+---------------+
+#             | <action links >                                               | row 4
+#             +---------------+---------------+---------------+---------------+
+# objects[3]  | <td...>       | <td...>       | <td...>       | <td...>       | row (n - 1)
+#             +---------------+---------------+---------------+---------------+
+#             | <action links...>                                             | row n
+#             +---------------+---------------+---------------+---------------+
+#
+module TableHelper # rubocop:disable Metrics/ModuleLength
   # This is a main method to creates a standard table using gds style and classes
   # @param objects [Object] a collection require to build table
   # @param attributes [Symbol] is the attribute of the object, which can be considered as a method of it too.
-  # @param actions [Hash] the link actions to be created for that row. See include_action? and action_tag for
-  #   the extra parameters.
+  #   These are used to display the value of the object's attributes.
+  # @param actions [Hash] the link actions to be created for each rows. See include_action? and action_tag for
+  #   the extra parameters and what to pass into this part of the params.
   # @param options [Hash] is a hash of extra information to be control the display of individual attributes
   # Recognised formats are :money and :date
   # @return [HTML block element] The HTML for table with GDS style attached
@@ -21,86 +43,103 @@ module TableHelper
   def display_table(objects, attributes, actions = nil, options = {})
     return if objects.nil? || objects.empty?
 
-    table(table_head_tag(objects[0], attributes, options) + table_body_tag(objects, attributes, actions, options))
+    table_tag(table_head_tag(table_heading_row(objects[0], attributes, options)) +
+      display_table_body(objects, attributes, actions, options) +
+      display_table_footer(attributes, options))
   end
 
   private
 
-  # Create table tag
-  # @param contents [HTML block element] the contents to be wrapped in a table element
-  # @return [HTML block element] the standard table-wrapped contents with the appropriate class
-  def table(contents)
-    content_tag(:table, contents, class: 'govuk-table')
-  end
-
-  # create table header applying gds CSS classes
-  # This is using {#header_column_tag} to create the table header and
-  # @param attributes [Array] a collection of attributes related to the object, these are the attributes
-  #   to be shown on the table header.
-  # @return [HTML block element] the standard table head element with the appropriate classes
-  def table_head_tag(object, attributes, options)
+  # Creates the row for the table headings <th> which are the labels of each of the attributes.
+  def table_heading_row(object, attributes, options)
     return if object.nil?
 
     cols = attributes.collect do |attribute|
-      label = t(attribute, default: '', scope: [object.i18n_scope, :attributes, object.model_name.i18n_key])
-      header_column_tag(attribute, options[attribute], label)
+      label = UtilityHelper.label_text(object, attribute, options[attribute])
+      table_header_tag_cell(attribute, options[attribute], label)
     end
 
-    tr_tag = content_tag(:tr, cols.join('').html_safe, class: 'govuk-table__head')
-
-    content_tag(:thead, tr_tag, class: 'govuk-table__head')
+    table_row_tag(cols.join(''))
   end
 
-  # create table header column applying gds CSS class
-  # @param label [String] is the text that is passed in for the table header contents
-  # @return [HTML block element] the standard table header element with the appropriate class
-  def header_column_tag(attribute, options, label = '')
-    content_tag(:th, label, class: detail_column_class_list(attribute, options, ['govuk-table__header']))
+  # Create table header cell applying the GDS standard.
+  # @see the {#table_cell_class} for usage and description of both the params attribute and options.
+  # @param label [String] text that is passed in for the table header contents
+  # @return [HTML block element] the standard table header <th> element with the appropriate class
+  def table_header_tag_cell(attribute, options, label = '')
+    return '' if skip_cell?(options)
+
+    table_heading_class = table_cell_class(attribute, options, :th)
+    option_class = table_heading_class.blank? ? {} : { class: table_heading_class }
+    table_heading_tag(label, option_class)
   end
 
-  # create table data column applying gds CSS class
-  # @param text [String] is the text passed in for the contents of the table data element
-  # @param attribute [Object] is the attribute of the object, normally it won't have an attribute if it's used for
-  #   action links.
+  # Create table data cell applying the GDS standard, used for displaying the contents of an attribute or
+  # for creating a table data cell for action links.
+  # @param text [String] text passed in for the contents of the table data element
+  # @param attribute [Object] is the attribute of the object, normally it won't have an attribute if the
+  #   method is used for action links.
   # @param options [Hash] is used to add extra information into this attribute
-  # @return [HTML block element] the standard table data element with the appropriate class
-  def detail_column_tag(text = '', attribute = nil, options = {})
+  # @return [HTML block element] the standard table data <td> element with the appropriate class
+  def table_data_tag_cell(text = '', attribute = nil, options = {})
+    return '' if skip_cell?(options)
+
     options = {} if options.nil?
-    td_class = detail_column_class_list(attribute, options).join(' ')
-    text = detail_column_text(text, options)
-    content_tag(:td, text, options.merge!(class: td_class))
+    table_data_class = table_cell_class(attribute, options)
+    option_class = table_data_class.blank? ? {} : { class: table_data_class }
+    # Normally options contains all other options that doesn't need to be included in the element's property,
+    # so we'll make sure to get the defined html_options if it exists.
+    html_options = options[:html_options] || {}
+    table_data_tag(text, html_options.merge(option_class))
+  end
+
+  # Create table data cell for the footer applying the GDS standard, used for displaying the contents of a footer
+  # normally totals, not that the tag is still <td>
+  # @param text [String] text passed in for the contents of the table data element
+  # @param options [Hash] is used to add extra information into this attribute
+  # @return [HTML block element] the standard table data <td> element with the appropriate class
+  def table_footer_tag_cell(text = '', options = {})
+    return '' if skip_cell?(options)
+
+    options = {} if options.nil?
+    table_data_class = table_cell_class(nil, options)
+    option_class = table_data_class.blank? ? {} : { class: table_data_class }
+    # Normally options contains all other options that doesn't need to be included in the element's property,
+    # so we'll make sure to get the defined html_options if it exists.
+    html_options = options[:html_options] || {}
+    table_data_tag(text, html_options.merge(option_class))
   end
 
   # The standard class for the attribute's table cell with the added extra class from options extracted and applied.
-  # @return [Array] a list of classes which are to be combined
-  def detail_column_class_list(attribute, options, column_class = ['govuk-table__cell'])
+  # Currently it applies to both the <th> and <td>.
+  # @param attribute [Symbol] the attribute of the object.
+  # @param options [Hash] contains a hash of options which will be used to add on to the table cell's class.
+  # @param cell [Symbol] determines which table cell this method is used for, the values should only be a :td or :th.
+  # @return [String] a combined list of classes which could be an empty string.
+  def table_cell_class(attribute, options, cell = :td)
+    cell_classes = []
     # Class to remove border bottom line as for the attributes we don't want to put a line below it. This is because
     # their action links are below its row of data. If there's an attribute then it means that it's an action and
     # therefore the bottom line should not be remove so that it a divider between each objects can be seen.
-    column_class << 'remove_border_bottom_line' if !attribute.nil? && !column_class.include?('govuk-table__header')
+    cell_classes << 'remove_border_bottom_line' if !attribute.nil? && cell == :td
 
     # Adds a format specific class onto the column
-    column_class << 'money_format' if !options.nil? && options[:format] == :money
-    column_class
+    unless options.nil?
+      cell_classes << 'money_format' if options[:format] == :money
+      cell_classes << options[:cell_class] unless options[:cell_class].nil?
+    end
+
+    cell_classes.join(' ')
   end
 
-  # Modifies the text if it needs to be
-  def detail_column_text(text, options)
-    text = CommonFormatting.format_text(text, options)
+  # Used for skipping the showing of a cell, normally when an attribute is not to be shown then
+  # that whole column shouldn't be shown too. So this is used to create that.
+  def skip_cell?(options)
+    return false if options.blank?
 
-    # Puts the text in new lines for each '\n' found in the text
-    text = new_lines_detail(text)
-    text
-  end
+    return true if !options[:add].nil? && options[:add] == false
 
-  # For texts that should consist of new lines, this will put it on the next line down.
-  # @return [String] a html safe string with the break line added
-  def new_lines_detail(text)
-    return text unless text.to_s.include?("\n") || text.to_s.include?("\302")
-
-    # replaces all of \n with a break line
-    text.gsub!("\n", '<br />')
-    text.html_safe
+    options[:skip]
   end
 
   # create table body applying gds CSS class
@@ -113,65 +152,99 @@ module TableHelper
   # @param actions [Array] a collection of hash that is used for actions, such as action for a link to edit page.
   # @param options [Hash] is used for adding extra option class to the specified column by its attribute.
   # @return [HTML block element] the standard table body element with the appropriate class
-  # @note I cannot seem to find another way of making this method smaller without altering
-  def table_body_tag(objects, attributes, actions, options)
+  def display_table_body(objects, attributes, actions, options)
     return if objects.nil?
 
+    setup_table_summary(options)
+
     rows = objects.collect do |object|
-      # Collects each of the attributes from the object which is placed in a table data.
-      cols = attributes.collect do |attribute|
-        detail_column_tag(object.send(attribute), attribute, options[attribute])
-      end
+      # Collects each of the attributes from the object which is then placed in a table data.
+      cols = display_table_body_row_cells(object, attributes, options)
+
       # Creating the two rows:
       # 1. first one is the row of the collected attributes data of the object,
       # 2. the second one is the row of actions related to that object of which it's attributes data are shown.
-      table_row_tag(cols, highlight_row_class(object)) +
-        table_row_tag(table_row_action_columns(actions, cols, object))
+      table_row_tag(cols.join(''), table_row_highlight_class(object)) +
+        table_row_tag(actions_cell(object, attributes, actions, cols))
     end
-    content_tag(:tbody, rows.join('').html_safe, class: 'govuk-table__body')
+
+    table_body_tag(rows.join(''))
   end
 
-  # Creates the table row tag with a specified row class options if defined.
-  # @param row_data_list [Array] contains an array of table data which will be joined
-  # @param row_class_options [String] class options for row only
-  def table_row_tag(row_data_list, row_class_options = '')
-    content_tag(:tr, row_data_list.join('').html_safe, class: "govuk-table__row#{row_class_options}")
+  # create table footer from the summary data applying gds CSS class
+  # It loops through the attributes and checks if a summary total needs to be applied and if so
+  # then creates it in the correct cell
+  # Currently it only supports a total but can be expanded to add average, count etc
+  # It also creates the label for the row row description in the cell given
+  # Note that if both a label and summary are specified for the same cell then the summary will take precedence
+  # @example summary: { total: { attributes: %i[net_lower_tonnage net_standard_tonnage exempt_tonnage total_tonnage],
+  #                     label: { cell: :site_name, text: t('.total') } }
+  #
+  # @param attributes [Array] a collection of attributes related to the objects, these attributes are
+  #   to be shown on the table data.
+  # @param options [Hash] is used for adding extra option class to the specified column by its attribute.
+  # @return [HTML block element] the standard table body element with the appropriate class
+  def display_table_footer(attributes, options)
+    return if @table_summary.nil?
+
+    rows = []
+    @table_summary.each do |type, type_hash|
+      # We have other hash in the table summary e.g. with the data ignore these
+      # note used include for when we add other totals
+      next unless %i[total].include?(type)
+
+      cols = display_table_footer_row_cells(type, type_hash, attributes, options)
+      rows << table_row_tag(cols.join(''), class: 'table_footer')
+    end
+    table_footer_tag(rows.join(''))
   end
 
   # This is used to determine whether an item is to be highlighted or not.
   #
   # It should skip the objects that doesn't have the :selected attribute.
   # @param object [Object] is the instance of the object to be looked at
-  # @return [String] returns the value of the class for highlighting the row
-  def highlight_row_class(object)
-    return '' unless object.respond_to?(:selected)
+  # @return [Hash] value of the class for highlighting the row.
+  def table_row_highlight_class(object)
+    return {} unless object.respond_to?(:selected)
 
     # Checks the object's selected attribute to see if it's been selected or not, to highlight the row.
-    return ' govuk-focus-colour' if object.send(:selected)
+    return { class: 'govuk-focus-colour' } if object.send(:selected)
 
-    ''
+    {}
   end
 
   # create table row for actions column
   #
   # Skips the item in the list that are selected, used for the messages. If the row is selected
   # which means that it is currently being viewed, then do not put the action links for it.
-  # @param actions [Array] an array of actions to be pushed into a column
-  # @param cols [Array] is the array that contains all the table data <td> elements of that row, which is
-  #   only used to find out how big the size of it for the colspan of the action row.
+  # @param actions [Array] an array of actions which may be related to the object, and may or may not be shown.
+  # @param cols [Array] contains all the table data <td> elements of that row, which is
+  #   only used to find out how big the size of it for the colspan of the row of actions.
   # @param object [Object] the object with attributes to which the action to be shown is connected to.
-  # @return [Array] an array consisting of HTML table data of the action anchor elements
-  def table_row_action_columns(actions, cols, object)
+  # @return [HTML block element] a HTML table data <td> of the action anchor elements
+  def actions_cell(object, attributes, actions, cols)
     # creating column for actions
     action_cols = ''
     actions.nil? || actions.each do |action|
-      # If row is highlighted (in other words 'selected' in show messages) then the action link doesn't need to be
-      # shown for it.
-      # And if the action is not included for that row of data, then don't show it.
-      action_cols += action_tag(action, object) + '&emsp;&emsp;'.html_safe if highlight_row_class(object) == '' &&
-                                                                              include_action?(action, object)
+      # Main reason why we have the if-statement is to know which actions to show/add.
+      # break-down of conditions:
+      # 1. table_row_highlight_class(object) - If row is highlighted (in other words 'selected' in show messages)
+      #   then the action link doesn't need to be shown for it.
+      # 2. include_action?(action, object) - If the action is not (or should not be) included for that row of data,
+      #   then don't show it.
+      # 3. action[:path] == :display - If the simple text needs to be displayed instead of an action link, then do that
+      # To display simple text among all action link content_tag(:span, action[:label]) has been added
+      # @example "Ongoing Enquiry" with "continue", "download" links
+      next unless include_action?(action, object)
+
+      if action[:path] == :display
+        action_cols += action_display_tag(action)
+      elsif table_row_highlight_class(object).blank?
+        action_cols += action_tag(object, attributes, action)
+      end
     end
-    [detail_column_tag(action_cols.html_safe, nil, colspan: cols.size)]
+
+    table_data_tag_cell(action_cols.html_safe, nil, html_options: { colspan: cols.size })
   end
 
   # This method is used to check if the action link should be visible or not. Also
@@ -181,15 +254,16 @@ module TableHelper
   # Action options relevant to this method:
   #   1. action[:visible_for] contains a single method of the object that is passed as param,
   #   that method should return a boolean value of true for the action link to be considered
-  #   to be shown.
+  #   to be shown. If this isn't defined, then it should default to including that action, when it
+  #   passes the authentication of actions.
   #   2. action[:link_options] containing the :requires_action or :requires_action_path to check
   #   if authorized to have this action link. @see include_auth_actions
   #
-  # Only used for {table_row_action_columns}
+  # Only used for {actions_cell}
   # @param action [Hash] is a hash which should contain :visible_for for this method to check the object's methods
-  #   and :link_options to check if authorized.
-  # @param object [Object] is the object holding the methods that the contents of the :visible_for symbol will
-  #   match with, to determine if action link is to be shown or not.
+  #   for visibility and :link_options to check if authorized.
+  # @param object [Object] is the object holding the methods (that the contents of the :visible_for symbol will
+  #   match with) to determine if action link is to be shown or not.
   # @return [Boolean] if the action link should be visible for the row and they are authorized
   #   then that action link will be shown; true.
   def include_action?(action, object)
@@ -208,36 +282,231 @@ module TableHelper
       link_options.include?(:requires_action_path)
   end
 
+  # Creates the action tag for text display only
+  def action_display_tag(action)
+    options = action[:options] || {}
+    options[:class] = action_class_option(options, :text)
+    content_tag(:span, action[:label], options)
+  end
+
   # Create action tag like edit, show more details available at url
   # https://guides.rubyonrails.org/routing.html#creating-paths-and-urls-from-objects
+  # To add more actions to any related row of data, simply add or append a list of hash
+  # to the 3rd param value of the {#display_table} method when used.
   #
-  # Action options relevant to this method:
-  #   1. action[:path] can be set to define an actual path (ie to another controller)
-  #   2. action[:method_path] to call a method from the object to get the path.
-  #   3. action[:parameter] passes any 1 attribute's value from the object that creates the table
-  #   4. action[:label] sets the label of the link.
-  #   5. action[:action] rails standard routes path (e.g. :show, :new, etc.)
-  #   6. action[options] contains a hash of options that will be directly passed into the link_to method.
+  # Action options relevant to this method, to build the action tag:
+  #   Label of link (mandatory):
+  #     1. action[:label] [String] sets the label of the link.
+  #   Path to link (mandatory- but only one is needed):
+  #     1. action[:path] [Symbol || String] the rails path name, which may include a query string or the object's
+  #       id (to_param output) when link is generated. See {#action_path_link} for how the different data type
+  #       is handled.
+  #     2. action[:action] [Symbol] rails standard routes path (e.g. :show, :new, etc.)
+  #   Extra options (optional):
+  #     1. action[:parameter] [Symbol] custom param values to create the link
+  #     2. action[:query] [Hash] used to create the resourceful way of forming links with query strings. See
+  #       below for more details about the contents of this hash:
+  #       a. :attributes [Array] array of attributes that will be used to get values to construct the query string.
+  #         This can include a symbol or hash. The [Symbol] will automatically be converted into the value and create
+  #         it into a query string, for example we have a symbol :sent_by and the object's sent_by attribute consists
+  #         of the value 'Me', so the query string will be '?sent_by=Me'.
+  #         The [Hash] is used to be more specific with how we'll get the value. Below are the contents of this hash:
+  #         - :attribute [Symbol] the same as above's symbol
+  #         - :value [String] instead of getting the object's value, this will override that and use this.
+  #         - :label [String] instead of using the attribute as the label for the value, this will override that.
+  #       b. :filter_model [Symbol] the model of the filter, so that we can construct a query string in a specific
+  #         way such as '?dashboard_message_filter[sent_by]=Me', without this then it should only create '?sent_by=Me'
+  #     3. action[:options] contains a hash of options that will be directly passed into the link_to method.
   #
-  # @param action [Object] is a hash containing the label to the action and the action itself
+  # @param action [Hash] is a hash containing the label to the action and the action itself
   # @param object [Object] is the object holding attributes that can be used for the specific action
-  # @return [HTML block element] the standard action element which consists of an anchor
-  #   element with link related to the parameter value of object.
-  def action_tag(action, object) # rubocop:disable Metrics/AbcSize
-    options = action[:options]
-    return link_to(action[:label], nil, options) if action[:action] == :nil
+  # @return [HTML block element] the standard action element which consists of an anchor element
+  #   with the applied options if applicable.
+  def action_tag(object, attributes, action)
+    link_to(action[:label], action_link(action, object), action_options(object, attributes, action))
+  end
 
-    # If action[:parameter] is defined then get that value from the object; this will be used to pass param values.
-    param = action[:parameter].nil? ? object : object.send(action[:parameter]).to_s
-    # Sets the link's path to the object method's path
-    return link_to(action[:label], send(object.send(action[:method_path]), param), options) if action[:method_path]
-    # Sets the link's path to the path name
-    return link_to(action[:label], send(action[:path], param), options) if action[:path]
+  # Creates the action link to be used in the link_to.
+  def action_link(action, object)
+    # If action[:parameter] is defined then get that value from the object; this will be used to pass
+    # custom param values in the path of the link.
+    action_content = action[:action]
+    path_content = action[:path]
+    link = object if %i[show destroy].include? action_content
+    # Simply gets the action link from the action hash of key :path if it exists.
+    link = action_path_link(action, path_content, object, link) unless path_content.nil?
+    # After looking for the link, if we still haven't created a link, then we do below.
+    link ||= [action_content, object]
+    link
+  end
 
-    if action[:action] == :show
-      link_to(action[:label], object, options)
-    else
-      link_to(action[:label], [action[:action], object], options)
+  # Creates the action link for the hash of action's key :path.
+  # @return [String] the path generated from the hash of the key :path with param or query string values,
+  #   OR the initial action link passed from the parameter, if no such key exists.
+  def action_path_link(action, path, object, action_link)
+    # Sets the link's path to the custom path which is the path passed from the view. This means that the path
+    # will be a fixed path (which will be the same for each row in the list)
+    return path if path.is_a?(String)
+
+    # Creates the param or query value depending on the contents of the action. Normally when this is being generated
+    # only one of the two is needed.
+    param_or_query = action[:parameter].nil? ? object : object.send(action[:parameter]).to_s
+    param_or_query = action[:query].nil? ? param_or_query : query_string_hash(action, object)
+
+    # @note send(<method>, <param>) is equals to <method>(<param>)
+    # @example send(:action_display_tag, { action: :display, label: 'Hello'})
+    #   is equals to action_display_tag({ action: :display, label: 'Hello'})
+    return send(path, param_or_query) if path
+
+    action_link.html_safe
+  end
+
+  # Creates the query string that will currently be in hash format, to be passed into the path.
+  # @return [Hash] the query string contents which is currently in a hash format.
+  def query_string_hash(action, object)
+    query = action[:query]
+    return if query.nil?
+
+    query_hash = {}
+
+    # Builds the query hash contents
+    query[:attributes].each { |attribute| query_hash = attribute_to_query_hash(query_hash, attribute, object) }
+    query[:filter_model].nil? ? query_hash : { query[:filter_model] => query_hash }
+  end
+
+  # Adds the contents of the attribute to the query hash.
+  # @return [Hash] the query hash with the new added query instruction
+  def attribute_to_query_hash(query_hash, attribute, object)
+    label, value = if attribute.is_a?(Symbol)
+                     [attribute, object.send(attribute)]
+                   else
+                     [attribute[:label] || attribute[:attribute],
+                      attribute[:value] || object.send(attribute[:attribute])]
+                   end
+
+    query_hash[label] = value
+    query_hash
+  end
+
+  # Extracts the options that are to be passed as html_options to link_to (link tag)
+  # @return [Hash] html options for each actions
+  def action_options(object, attributes, action)
+    options = action[:options] || {}
+    options[:method] = 'delete' if action[:action] == :destroy
+    options[:class] = action_class_option(options)
+    set_action_aria_label_option(object, attributes, action, options)
+    set_action_data_option(object, options)
+    options
+  end
+
+  # Sets up the aria-label option, which will default to the first item of the attributes to be shown.
+  # However, if there's no value in the attribute then it will not add an aria-label.
+  # @return [String] the value for the aria-label.
+  def set_action_aria_label_option(object, attributes, action, options)
+    aria_label = action[:aria_label]
+    value = object.send((aria_label.nil? ? attributes[0] : aria_label).to_sym)
+    return if value.blank?
+
+    options['aria-label'] = "#{action[:label]} for #{value}"
+  end
+
+  # Sets up the data option, which modifies it according to its contents.
+  # A value of the object can be passed into the text displayed on the confirm box.
+  def set_action_data_option(object, options)
+    data = options[:data]
+    return if data.nil?
+
+    # :data is used for displaying a dialog box, mainly when deleting a row of data or leaving the page.
+    # The contents of :confirm is normally a text, but if it's an array, the first item is the translatable text
+    # and the second item is attribute of the object which it's value will be added on to the translation.
+    # In short, this is a way to pass an object attribute's value to the translation.
+    # @example
+    # { label: t('.delete_row'), path: :returns_slft_waste_delete_path, parameter: :delete_action_param,
+    #   options: { data: { confirm: ['.delete', :ewc_code_and_description] } } }
+    return unless data[:confirm].is_a?(Array)
+
+    translatable, attribute = data[:confirm]
+    options[:data] = { confirm: t(translatable, value: object.send(attribute)) }
+  end
+
+  # Generates the class of the action link, which a custom class can be added from the view.
+  # @param type [Symbol] As this is used for the action, which can be a text or a link, then the two possible
+  #   values of this are :link and :text.
+  # @return [String] the action link's class option
+  def action_class_option(html_options, type = :link)
+    action_class = 'table_action_item'
+    action_class += " #{UtilityHelper.link_class(html_options)}" if type == :link
+    action_class
+  end
+
+  # Builds an array of cells for a body row
+  #
+  # @param object [Object] The object being processed
+  # @param attributes [Array] a collection of attributes related to the objects, these attributes are
+  #   to be shown on the table data.
+  # @param options [Hash] is used for adding extra option class to the specified column by its attribute.
+  # @return [Array] An array of HTML cells
+  def display_table_body_row_cells(object, attributes, options)
+    attributes.collect do |attribute|
+      attr_options = options[attribute] || {}
+      table_data_tag_cell(table_display_value_text(object, attribute, attr_options), attribute, attr_options)
     end
+  end
+
+  # Sets up an internal hash used to store the values for generating a summary if one is needed
+  # @param options [Hash] the hash passed in this will contain the summary tag if one is provided
+  def setup_table_summary(options)
+    @table_summary = options.delete(:summary)
+    return if @table_summary.nil?
+
+    # Create a nested hash to hold totals for any attributes from any of the summary lines
+    # This is then used to hold a list of values that are then totalled or summarised as needed when the footer is
+    # produced
+    # Need to create and then merge as cannot add into a hash during iteration
+    data = {}
+    @table_summary.each_value do |value|
+      array = value[:attributes]
+      array.each { |sym| data[sym] = [] }
+    end
+    @table_summary.merge!(data)
+  end
+
+  # Builds an array of cells for a  footer row for a given total type
+  # @param type [Symbol] the type of total being derived
+  # @param type_hash [Hash] the hash of options for this type
+  # @param attributes [Array] the list of attributes (cells) in the table
+  # @param options [Hash] the array of general options
+  # @return [array] the array of html for cells on this row
+  def display_table_footer_row_cells(type, type_hash, attributes, options)
+    cols = []
+    attributes.each do |attribute|
+      attr_options = options[attribute] || {}
+      value = table_footer_label_value(attribute, type_hash[:label])
+
+      # work out what the summary value is, currently only total is supported
+      value = table_footer_summary_value(@table_summary[attribute], type) if type_hash[:attributes].include?(attribute)
+      cols << table_footer_tag_cell(CommonFormatting.format_text(value, attr_options), attr_options)
+    end
+    cols
+  end
+
+  # Get the label for a table footer row if one is required for this cell
+  # @param attribute [Symbol] the name of the attribute cell being process
+  # @param label_options [Hash] the options for the label for this row
+  # @return String the label value for this cell if required
+  def table_footer_label_value(attribute, label_options)
+    return '' if label_options.nil?
+
+    label_options[:text] if label_options[:cell] == attribute
+  end
+
+  # Get the summary for a table footer row if one is required for this cell
+  # @param attribute_values [Array] the array of values for this attribute
+  # @param type [Symbol] the type of summary being calculated, currently only total
+  # @return [String] the summary value
+  def table_footer_summary_value(attribute_values, type)
+    return '' if attribute_values.nil?
+
+    attribute_values.sum if type == :total
   end
 end

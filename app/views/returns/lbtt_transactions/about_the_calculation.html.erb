@@ -3,9 +3,10 @@
 
 <%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
-  <%= f.collection_radio_buttons_fields(:contingents_event_ind, @lbtt_return.list_ref_data(:contingents_event_ind), :code, :value) %> 
+  <%= f.collection_radio_buttons_fields(:contingents_event_ind, @lbtt_return.list_ref_data(:contingents_event_ind), text_link: { t('.contingents_event_ind') =>
+                                                    link_to(t('.contingents_event_ind'), "#{Rails.configuration.x.external_links.lbtt2005_contingent_events}", target: '_blank')}) %> 
    <div class='govuk-radios__conditional--hidden' id='deferral_agreed_details'>
-     <%= f.collection_radio_buttons_fields(:deferral_agreed_ind, @lbtt_return.list_ref_data(:deferral_agreed_ind), :code, :value) %> 
+     <%= f.collection_radio_buttons_fields(:deferral_agreed_ind, @lbtt_return.list_ref_data(:deferral_agreed_ind)) %> 
      <div class='govuk-radios__conditional--hidden' id='deferral_reference_details'>
         <%= f.text_field :deferral_reference %>
      </div>   

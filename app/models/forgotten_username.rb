@@ -2,14 +2,12 @@
 
 # Model for the forgotten username functionality
 class ForgottenUsername < FLApplicationRecord
-  include CommonValidation
-
   attr_accessor :email_address
 
-  validate :valid_email_address?
+  validates :email_address, presence: true, email_address: true
 
   # Save an existing record
-  # it is using the method {#save_or_update} to do so.
+  # @see save_or_update
   def save
     save_or_update
   end

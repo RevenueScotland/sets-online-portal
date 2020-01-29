@@ -5,21 +5,29 @@ require 'base64'
 module Dashboard
   # Models a user objects, not including authentication, see User Session for that.
   # @note the attribute :selected is for highlighting the row of data from the table whose :selected
-  #   is set to true, which is used for determing if that message is currently being viewed.
+  #   is set to true, which is used for determining if that message is currently being viewed.
   class Message < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     include Pagination
-    attr_accessor :id, :created_datetime,
-                  :party_refno, :sent_by, :reference, :title, :body,
-                  :subject_code, :from, :selected,
+    include AllMessageSubject
+
+    attr_accessor :created_datetime, :created_by,
+                  :party_refno, :reference, :title, :body,
+                  :selected,
                   :attachment, :additional_file, :document, :smsg_refno,
                   :original_smsg_refno, :direction, :wrk_refno, :created_date,
-                  :srv_code, :created_by, :read_indicator, :subject_domain, :has_attachment,
+                  :srv_code, :read_indicator, :subject_domain, :has_attachment,
                   :read_datetime, :attachments, :forename, :surname
+    # see AllMessageSubject for accessors for subject_code
 
     validates :reference, presence: true, length: { maximum: 255 }
     validates :title, presence: true, length: { maximum: 255 }
     validates :body, presence: true, length: { maximum: 4000 }
     validates :subject_code, presence: true
+
+    # overrides the standard id parameters to smsg_refno
+    def to_param
+      @smsg_refno
+    end
 
     # Getting the formatted full name of the user.
     # @return [String] the formatted full name of the user.
@@ -29,12 +37,12 @@ module Dashboard
 
     # The list of cached message codes
     def cached_ref_data_codes
-      { subject_code: 'MESSAGE_SUBJECT.SYS.RSTU', direction: 'DIRECTION.SYS.RSTU' }
+      { subject_code: comp_key('MESSAGE_SUBJECT', @srv_code, 'RSTU'), direction: comp_key('DIRECTION', 'SYS', 'RSTU') }
     end
 
     # Uses the subject code to and translates it to the description of the subject
     def subject_description
-      lookup_ref_data_value(:subject_code)
+      lookup_ref_data_value(:subject_code, @subject_code)
     end
 
     # @!method self.list_paginated_messages(requested_by, page, filter = nil, num_rows)
@@ -57,24 +65,6 @@ module Dashboard
       [secure_message_filtered, pagination]
     end
 
-    # @!method self.modify_attributes(secure_message,filter)
-    # When the back office data is being extracted, this method set the specific attributes
-    # with values depending on some of the data retrieved.
-    # @param secure_message [Object] is the secure_message
-    # @return [Array] the Hash value of the of the messages
-    private_class_method def self.modify_attributes(secure_message, filter) # rubocop:disable Metrics/AbcSize, Lint/UnneededCopDisableDirective, Metrics/LineLength
-      message = Message.new_from_fl(secure_message)
-      message.id = message.smsg_refno
-      message.has_attachment = boolean_to_yesno(message.has_attachment)
-      message.read_indicator = if message.direction == 'I'
-                                 I18n.t('.sent', scope: [i18n_scope, model_name.i18n_key])
-                               else
-                                 boolean_to_yesno(message.read_indicator)
-                               end
-      message.selected = message.smsg_refno == filter.selected_message_id
-      message
-    end
-
     # Checks whether a save can be done by checking the validations
     def save(requested_by)
       return false unless valid?
@@ -84,62 +74,53 @@ module Dashboard
 
     # Initialises a new message with the correct default attributes.
     #
-    # This is used for creating a new message, whether it's a reply or just creating a new message.
+    # This is used for creating a new message, whether it's a reply or just a new message.
+    # If it's a reply then looks up some data from the original message.
     #
-    # @param id [String] is the id related to the origin_id message that it came from if it is a reply message,
-    #   if this param value is nil then that means the message initialised is a new message, if not then it's a
-    #   reply message which would have some data carried over to some fields.
+    # @param smsg_refno [String] is the smsg_refno related to the message that it came from if it is a reply message.
+    #                    If this param value is nil then that means the message initialised is a new message
+    # @param reference [String] If creating a new message the reference to be used
     # @return [Object] this returns an instance of Message with the some of the attributes filled in.
-    def self.initialise_message(requested_by, id = nil, reference = nil)
-      # @note reference is being passed on here, currently being used for the all_returns page
-      #   when the "Message" link is clicked - should fill in the reference for New message page
-      message = Message.new(reference: reference)
+    def self.initialise_message(requested_by, smsg_refno = nil, reference = nil)
+      if smsg_refno.nil?
+        # @note reference is being passed on here, currently being used for the all_returns page
+        #   when the "Message" link is clicked - should fill in the reference for New message page
+        message = Message.new(reference: reference)
+      else
+        # Handle reply
+        message = Message.find(smsg_refno, requested_by)
+        message.body = ''
+      end
       # current_user.username gets the name as it is needed and not the User object
       message.created_by = requested_by.username
       message.party_refno = requested_by.party_refno # @account.company_name
-      message.from = "#{message.party_refno} (#{message.sent_by})"
-      unless id.nil? || !reference.nil?
-        message = Message.find(id, requested_by)
-        message.body = ''
-      end
       message
     end
 
     # Finds a specific message linked to the party_refno of the user and updates the read to 'Y'.
     # This method is mainly used for when the user is viewing a specific message.
-    # @param id [String] The id of the message to be shown
+    # @param smsg_refno [String] The internal reference of the message to be shown
     # @param requested_by [String] The user who made a find request that the messages are linked to
-    # @return [Object] an instance of a Message object with the correct matching message_id
-    def self.find(id, requested_by) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    # @return [Object] an instance of a Message object with the correct matching smsg_refno
+    def self.find(smsg_refno, requested_by)
       message = ''
-      success = call_ok?(:get_secure_message_details, request_secure_message_details(requested_by, id)) do |response|
+      success = call_ok?(:get_secure_message_details,
+                         request_secure_message_details(requested_by, smsg_refno)) do |response|
         break if response.blank?
 
-        message = Message.new_from_fl(response)
-        message.id = message.smsg_refno
-        #        message.created_date = DateFormatting.to_display_datetime_format(message.created_date)
-        message.has_attachment = boolean_to_yesno(message.has_attachment)
-        message.read_indicator = if message.direction == 'I'
-                                   I18n.t('.sent', scope: [i18n_scope, model_name.i18n_key])
-                                 else
-                                   boolean_to_yesno(message.read_indicator)
-                                 end
+        message = Message.new_from_fl(convert_back_office_hash(response.merge!(subject_domain: 'MESSAGE_SUBJECT')))
       end
       message if success
     end
 
     # @!method self.list_messages(requested_by, pagination, filter)
     # Lists the messages that are related to the party_refno of the user that is logged in.
-    # To get all the messages, there shouldn't be an origin_id passed as param value. This is used
-    # to show all the messages in the index page of messages.
     #
-    # To get all the messages that have the same origin_id then it must be passed as param value.
-    # This is used to show all the messages related to the message that is shown in full details
-    # of the specific message currently being viewed.
+    # A filter can be passed that limits the messages to a subset of those
     #
     # @param requested_by [Object] the user who requests to get the list of their messages
     # @return [Hash] a hash of messages in this format {"1"=>#<Message...>, "2"=>#<Message...>, ...}.
-    #   So it's in the format of { id : <Message>, ... }
+    #   So it's in the format of { smsg_refno : <Message>, ... }
     private_class_method def self.list_messages(requested_by, pagination, filter)
       secure_messages, pagination_secure_message = {}
       success = call_ok?(:list_secure_messages,
@@ -148,7 +129,7 @@ module Dashboard
 
         pagination_secure_message = response[:pagination]
         ServiceClient.iterate_element(response[:secure_messages]) do |secure_message|
-          secure_messages[secure_message[:smsg_refno]] = modify_attributes(secure_message, filter)
+          secure_messages[secure_message[:smsg_refno]] = new_from_fl(convert_back_office_hash(secure_message, filter))
         end
       end
       [pagination_secure_message, secure_messages] if success
@@ -165,7 +146,7 @@ module Dashboard
       [success, msg_refno]
     end
 
-    # store individual document to backoffice
+    # store individual document to back office
     def add_attachment(requested_by, document, smsg_refno)
       doc_refno = ''
       success = call_ok?(:add_attachment, request_add_attachment(requested_by, document, smsg_refno)) do |response|
@@ -211,39 +192,24 @@ module Dashboard
     # @!method self.request_list_secure_messages(requested_by, pagination, message_filter, smsg_original_refno)
     # @return a hash suitable for use in a list secure messages request to the back office
     private_class_method def self.request_list_secure_messages(requested_by, pagination, message_filter)
-      request = request_user(requested_by).merge!(WrkRefno: 1, SRVCode: 'SYS')
+      request = request_user(requested_by).merge!(WrkRefno: 1)
       request[:Pagination] = { 'ins1:StartRow' => pagination.start_row, 'ins1:NumRows' => pagination.num_rows }
       return request if message_filter.nil?
 
-      request.merge!(request_list_secure_messages_filter(message_filter))
+      request.merge!(message_filter.request_list_secure_messages_filter)
     end
 
-    # @!method self.request_list_secure_messages_filter(message_filter)
-    # @return a hash suitable for use in a list secure messages filter
-    private_class_method def self.request_list_secure_messages_filter(message_filter)
-      { SmsgOriginalRefno: message_filter.smsg_original_refno.to_s,
-        SubjectCode: message_filter.subject_code.to_s,
-        SearchUserName: message_filter.sent_by.to_s,
-        Reference: message_filter.reference.to_s,
-        Direction: translate_direction_code(message_filter.direction_code.to_s),
-        UnreadOnly: message_filter.unread_only.to_s }.merge(request_date_filter(message_filter))
-    end
-
-    # @!method self.request_date_filter(message_filter)
-    # @return a hash containing date values suitable for use in a list secure messages filter
-    private_class_method def self.request_date_filter(message_filter)
-      { FromDate: DateFormatting.to_xml_date_format(message_filter.from_datetime),
-        ToDate: DateFormatting.to_xml_date_format(message_filter.to_datetime) }
-    end
-
-    # @!method self.translate_direction_code
-    # @return a hash suitable for use in a list secure messages filter
-    private_class_method def self.translate_direction_code(code)
-      if code.to_s == 'I'
-        'Inbound'
-      elsif code.to_s == 'O'
-        'Outbound'
-      end
+    # @!method self.convert_back_office_hash
+    # @return a hash where the back office values are converted to class values
+    private_class_method def self.convert_back_office_hash(hash, filter = nil)
+      hash[:has_attachment] = boolean_to_yesno(hash[:has_attachment])
+      hash[:read_indicator] = if hash[:direction] == 'I'
+                                I18n.t('.sent', scope: [i18n_scope, model_name.i18n_key])
+                              else
+                                boolean_to_yesno(hash[:read_indicator])
+                              end
+      hash[:selected] = (hash[:smsg_refno] == filter.selected_message_smsg_refno) unless filter.nil?
+      hash
     end
 
     # @return a hash suitable for use in all message request
@@ -262,15 +228,15 @@ module Dashboard
       { 'ins1:FileName': document.original_filename,
         'ins1:FileType': document.content_type,
         'ins1:Description': document.description,
-        'ins1:BinaryData': Base64.encode64(document.data) }
+        'ins1:BinaryData': Base64.encode64(document.file_data) }
     end
 
     # @return a hash suitable for use in a save request to the back office
     def request_save(requested_by)
       secure_message_create_request = { OriginalRefno: @original_smsg_refno,
                                         MsgSubject: { 'ins1:Subject': @subject_code,
-                                                      'ins1:FrdDomain': 'MESSAGE_SUBJECT',
-                                                      'ins1:WrkRefno': 1, 'ins1:SrvCode': 'SYS' },
+                                                      'ins1:FrdDomain': @subject_domain,
+                                                      'ins1:WrkRefno': @wrk_refno, 'ins1:SrvCode': @srv_code },
                                         Title: @title, Body: @body, Reference: @reference }
       secure_message_create_request = request_user_instance(requested_by).merge!(secure_message_create_request)
       return secure_message_create_request if @attachment.nil?

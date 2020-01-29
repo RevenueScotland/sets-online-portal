@@ -20,7 +20,7 @@
           <TransferIndicator>false</TransferIndicator>
           <HoldIndicator>false</HoldIndicator>
           <PaidByDD>false</PaidByDD>
-          <RelatedReference>RS200001AAAAA</RelatedReference>
+          <RelatedReference>RS2000001AAAA</RelatedReference>
           <RelatedSubReference>1</RelatedSubReference>
           <RelatedReferenceType>RETURN</RelatedReferenceType>
           <CustomerReference/>
@@ -55,6 +55,6 @@
   <MatchedAmount/>
   <OriginalAmount>1000</OriginalAmount>
 </RelatedTransaction>
-</RelatedTransactions></Transaction><Transaction><TransactionReference>6</TransactionReference><EffectiveDate>2019-01-01</EffectiveDate><ActualDate>2019-01-01</ActualDate><TransactionType><Description>LBTT 1st Failure to Make Return</Description><TransactionTypeCode>LBT1</TransactionTypeCode><TransactionTypeGroup>PENALTY</TransactionTypeGroup></TransactionType><TransferIndicator>false</TransferIndicator><HoldIndicator>false</HoldIndicator><PaidByDD>false</PaidByDD><RelatedReference>RS200001AAAAA</RelatedReference><RelatedSubReference>1</RelatedSubReference><RelatedReferenceType>RETURN</RelatedReferenceType><CustomerReference/><Amount>100</Amount><OutstandingBalance>100</OutstandingBalance></Transaction></Transactions></GetTransactionsResponse>
+</RelatedTransactions></Transaction><Transaction><TransactionReference>6</TransactionReference><EffectiveDate>2019-01-01</EffectiveDate><ActualDate>2019-01-01</ActualDate><TransactionType><Description>LBTT 1st Failure to Make Return</Description><TransactionTypeCode>LBT1</TransactionTypeCode><TransactionTypeGroup>PENALTY</TransactionTypeGroup></TransactionType><TransferIndicator>false</TransferIndicator><HoldIndicator>false</HoldIndicator><PaidByDD>false</PaidByDD><RelatedReference>RS2000001AAAA</RelatedReference><RelatedSubReference>1</RelatedSubReference><RelatedReferenceType>RETURN</RelatedReferenceType><CustomerReference/><Amount>100</Amount><OutstandingBalance>100</OutstandingBalance></Transaction></Transactions></GetTransactionsResponse>
   </soap:Body>
 </soap:Envelope>

@@ -80,7 +80,7 @@ module PaginationHelper
   # @param last_row [Integer] the last row of the pagination
   # @return [HTML block element] the standard link to pages element with the appropriate classes
   def pages_tag(start_row, last_row)
-    link_content = link_to(start_row.to_s + '-' + last_row.to_s, '', class: 'active')
+    link_content = link_to(start_row.to_s + '-' + last_row.to_s, '', class: 'active govuk-link')
     li_content = content_tag(:li, link_content)
     page_contents = content_tag(:ul, li_content.html_safe, class: 'list-inline')
     content_tag(:div, page_contents, class: 'pagination')

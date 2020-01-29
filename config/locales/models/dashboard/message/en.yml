@@ -33,7 +33,7 @@ en:
   activemodel:
     # model text not associated with attributes or errors
     dashboard/message:
-        sent: sent
+      sent: sent
     attributes:
       dashboard/message:
         created_date: "Date & time"
@@ -45,12 +45,11 @@ en:
         submit: "Send message"
         direction_code: "Type"
         reference: "Reference"
-        sent_by: "Sent by"
         created_by: "Sent by"
-        from: "Account (Sent by)"
         attachment: Attachment
         has_attachment: Attachment
         subject_code: "Subject"
+        subject_full_key_code: "Subject"
         subject_description: "Subject"
         additional_file: Do you want to upload any more documents?
         full_name: Name
@@ -60,6 +59,7 @@ en:
         to_datetime: "Created date to"
         reference: "Reference"
         subject_code: "Subject"
+        subject_full_key_code: "Subject"
         subject_description: "Subject"
         sent_by: "Sent by"
         direction_code: "Type"
@@ -67,6 +67,8 @@ en:
         month: "Month"
         year: "Year"
     hints:
+      dashboard/message:
+        reference: "If the message relates to a return, this should be the Revenue Scotland return reference"
       dashboard/message_filter:
         reference: "Enter part or all of the reference"
         sent_by: "Enter part or all of the sender name"
@@ -75,9 +77,9 @@ en:
         dashboard/message_filter:
           attributes:
             from_datetime:
-              before_date_error: "must be BEFORE the created date to"
+              before_date_error: "%{attribute} must be before the created date to"
             to_datetime:
-              after_date_error: "must be AFTER the created date from"
+              after_date_error: "%{attribute} must be after the created date from"
   dashboard:
     messages:
       index:
@@ -108,5 +110,6 @@ en:
         title: Confirmation
         paragraph_heading: What happens next
         paragraph1: Thank you for your secure message.
-        paragraph2: We aim to respond as quickly as possible. In the meantime, full information and guidance is available on the Revenue Scotland <a target="_blank" href='http://www.revenue.scot/'>website (opens in a new window)</a>.
+        paragraph2: We aim to respond as quickly as possible. In the meantime, full information and guidance is available on the Revenue Scotland website (opens in a new window).
+        paragraph2_link_text: website (opens in a new window)
         file_upload_label: Upload a document to support your secure message

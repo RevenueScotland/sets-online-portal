@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Brendan Nellis (SX3 PUBLIC SECTOR) -->
+<xs:schema xmlns="http://www.northgate-is.com/FL/GetRoleActionsRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:flc="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgate-is.com/FL/GetReferenceValues" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+	<xs:element name="GetRoleActionsRequest">
+		<xs:annotation><xs:documentation>This API allows you to get the lists of all defined Action/Role combinations defined. By providing a domain value this list returned will be restricted to those roles defined in the domain</xs:documentation></xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="DomainCode" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>The domain code of the list of values e.g. PortalRoles, that will be used to filter the list of Actions and Roles</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>	
+				<xs:element name="UserRoleCode" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation> Filter responses only for a particular User Role</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="15"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="RoleActionCode" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Filter responses for a particular Role Action </xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="8"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

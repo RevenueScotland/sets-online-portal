@@ -7,32 +7,25 @@ en:
         email_address: "Email address"
         email_address_confirmation: "Confirm email address"
         registration_token: "Registration token"
-        company_name: "Company name"
-        other_org_name: "Organisation name"
-        reg_company_contact_address_yes_no: "Is your registered address also your contact address?"
-        # The address lines are only used when there is an error
-        address_line1: "Address line 1"
-        address_line2: "Address line 2"
-        address_line3: "Address line 3"
-        address_line4: "Address line 4"
-        postcode: "Postcode"
-        contact_number: "Contact telephone number"
-        terms_and_conditions: "I confirm that I have read and understood the terms & conditions"
-        email_data_ind: "I confirm that I have read and understood Revenue Scotland’s email communication policy. I agree to receive email communication from Revenue Scotland and accept the associated risks."
-        # TODO: Nesting user in account has confused validation error translation requiring this field below
-        new_password_confirmation: "Confirm new password"
+        company_name: "Name"
+        COMPANY_company_name: "Company name"
+        OTHER_company_name: "Organisation name"
+        reg_company_contact_address_yes_no: "Is your registered address also your contact address"
+        contact_number: "Contact phone number"
+        terms_and_conditions: "I confirm that I have read and understood the terms & conditions (opens in a new window)"
+        email_data_ind: "I confirm that I have read and understood Revenue Scotland’s email communication policy (opens in a new window). I agree to receive email communication from Revenue Scotland and accept the associated risks."
         full_address: "Address"
         forename: "First name"
         surname: "Last name"
         nino: "National insurance number (NINO)"
-        org_nino: "Representative national insurance number (NINO)"
+        ORG_nino: "Representative national insurance number (NINO)"
         org_email_address: "Organisation email address"
         org_telephone: "Organisation phone number"
         main_rep_name: "Organisation main representative name"
-        taxes: Which type of tax return do you want to be able to file?
-        party_account_type: "Who is the account for?"
+        taxes: Which type of tax return do you want to be able to file
+        party_account_type: "Who is the account for"
       account_type: 
-       registration_type:  "Who are you signing up on behalf of?"
+       registration_type:  "Who are you signing up on behalf of"
     hints:
       account:
         registration_token: "Enter the token from the registration email or from the password reset email."
@@ -79,15 +72,12 @@ en:
     edit_address:
       title: "Update address"
       confirm: "Confirm"
-    new-confirmation:
-      title: "Complete sign up"
-      description: "Your registration has been accepted. An email will be sent to you confirming what you need to do next to activate your account."
     activate_account:
       title: "Complete registration"
       activate_registration: "Confirm"
     activate_account_confirmation:
       title: "Completed registration"
-      description: "Your Revenue Scotland account is now active."   
+      description: "Your Revenue Scotland account is now active"   
   layouts:
     account:
       basic:

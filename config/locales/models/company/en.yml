@@ -39,8 +39,9 @@ en:
     attributes:
       company:
         company_number: "Company number"
-        company_name: "Company name"
-        other_org_name: "Organisation name"
+        company_name: "Name"
+        COMPANY_company_name: "Company name"
+        OTHER_company_name: "Organisation name"
         address_line1: "Address"
         locality: "Town"
         county: "County"

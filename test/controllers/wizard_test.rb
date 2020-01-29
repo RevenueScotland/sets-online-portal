@@ -29,7 +29,7 @@ class WizardTest < ActionController::TestCase
     attr_accessor :session
 
     # Override method to not be private so can be called for test
-    def wizard_cache_key(controller_name = self.class.name)
+    def wizard_cache_key(cache_index = self.class.name)
       super
     end
 
@@ -44,15 +44,13 @@ class WizardTest < ActionController::TestCase
     include Wizard
     attr_accessor :session
     # Override method to not be private so can be called for test
-    def wizard_cache_key(controller_name = self.class.name)
+    def wizard_cache_key(cache_index = self.class.name)
       super
     end
   end
 
-  # Wizard model based on SLFT to override the lookup cache method
-  class TestWizardModel < Returns::Slft::SlftReturn
-    # Remove method that lists cached ref data codes
-    undef_method :cached_ref_data_codes
+  # Wizard model based on Abstract to override the lookup cache method
+  class TestWizardModel < Returns::AbstractReturn
   end
 
   test 'cache_key provides unique id based on class name and wizard caching and merging works' do
@@ -64,7 +62,7 @@ class WizardTest < ActionController::TestCase
     controller.wizard_save(slft)
 
     # merge in something else
-    controller.wizard_merge_and_save(controller.wizard_load, 'tare_reference' => 'mars')
+    controller.wizard_merge_and_save(controller.wizard_load, 'tare_reference' => 'mars') { true }
 
     # save a decoy under another controller in the same session
     another = AnotherWizardController.new
@@ -76,7 +74,7 @@ class WizardTest < ActionController::TestCase
     assert_equal('mars', cached_data.tare_reference, 'Saved and loaded data should exist')
 
     # change the value
-    controller.wizard_merge_and_save(controller.wizard_load, 'tare_reference' => 'under the sea')
+    controller.wizard_merge_and_save(controller.wizard_load, 'tare_reference' => 'under the sea') { true }
     cached_data = controller.wizard_load
     assert_equal('under the sea', cached_data.tare_reference, 'Overriding values should be allowed')
 

@@ -2,66 +2,135 @@ en:
   activemodel:
     attributes:
       claim/claim_payment:
-        tare_reference: "Return reference" # translation for print format
         version: "Version" # translation for print format
-        reason: "What is the reason for your claim for payment from Revenue Scotland?"
-        date_of_sale: "What is the date of sale or disposal of the previous main residence?"
+        reason: "What is the reason for your claim for payment from Revenue Scotland"
+        date_of_sale: "What is the date of sale or disposal of the previous main residence"
         main_residence_address: "What is the address of the previous main residence that has been sold or disposed of"
-        # The address lines are only used when there is an error
-        address_line1: "Address line 1"
-        address_line2: "Address line 2"
-        address_line3: "Address line 3"
-        address_line4: "Address line 4"
-        town: "Town"
-        county: "County"
-        postcode: "Postcode"
-        further_claim_info: "Is the tax payer claiming repayment as a result of the changes to the ADS rules around family units and replacing main residences?"
-        claiming_amount: "How much are you claiming from Revenue scotland?"
-        slft_claim_amount: "How much are you claiming from Revenue scotland?"
+        further_claim_info: "Is the tax payer claiming repayment as a result of the changes to the ADS rules around family units and replacing main residences"
+        claiming_amount: "How much are you claiming from Revenue Scotland"
         email_address: "Email"
         firstname: "First name"
+        claim_desc: "Claim description"
         surname: "Last name"
         telephone: "Telephone number"
         nino: "National Insurance Number (NINO)"
-        org_name: "Organisation Name (Optional)"
+        org_name: "Organisation name"
         account_holder_name: "Name of the account holder"
         account_number: "Bank / building society account number"
         branch_code: "Branch sort code"
         bank_name: "Name of bank / building society"
-        taxpayer: "I, the taxpayer(s), declare that this claim form is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed"
-        agent_declaration: "I, the agent for the taxpayers(s), confirm that the taxpayer(s) have authorised repayment to be made to these bank details"
-        agent_second_declaration: "I, the agent of the taxpayer(s), having been authorised to complete this claim form on behalf of the taxpayer(s), certify that the buyer(s) has/have declared that the information provided in the claim form is to the best of their knowledge, correct and complete, and confirm that the taxpayer(s) is/are eligible for the refund claimed"
+        # declaration
+        declaration_public: "The declaration"
+        declaration: "The declaration"
+        declaration_public_TAXPAYER: "I (we), the tax payer(s) declare that this repayment or claim request is, to the best of my (our) knowledge, correct and complete and confirm that I (we) am (are) eligible for the refund claimed"
+        declaration_TAXPAYER: "I (we), the tax payer(s) declare that Revenue Scotland can contact me (us) regarding this repayment or claim request"
+        declaration_public_AGENT: "I, the agent for the buyer(s), confirm that the buyer(s) have authorised repayment to be made to these bank details"
+        declaration_AGENT: "I, the agent of the buyer(s), having been authorised to complete this repayment or claim request on behalf of the buyer(s), certify that the buyer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the buyer(s) is/are eligible for the refund claimed"
+
+        additional_tax_payer: "Is there an additional tax payer included in the original return that is subject to the ADS repayment or claim request"
+        more_uploads: "Do you want to upload any more documents"
+        s_email_address: "Email"
+        s_firstname: "First name"
+        s_surname: "Last name"
+        s_telephone: "Telephone number"
+        s_nino: "National Insurance Number (NINO)"
+        s_org_name: "Organisation Name"
+        claimant_info: "Are you a tax payer"
+        tare_reference: "What was the original reference of the return that you are requesting an ADS repayment or claim for "
+        agent_email_address: "Email"
+        agent_firstname: "First name"
+        agent_surname: "Last name"
+        agent_telephone: "Telephone number"
+        agent_dx_number: "DX number and exchange"
+        agent_org_name: "Organisation name"
     hints:
       claim/claim_payment:
         account_number: "This should be 8 digits"
         branch_code: "The sort code should be entered in the format 99-99-99"
+    errors:
+      models:
+        claim/claim_payment:
+          open_ads_repayment: "An ADS repayment already exists for this return"
+          attributes:
+            tare_reference:
+              pre_claim_not_conveyance: "Claim requests within 12 months of filing are not supported for this type of Return. Contact Revenue Scotland for more information"
+              return_does_not_exist: "Return does not exist"
   claim:
     claim_payments:
-      payment_after_year:
-        title: Claim payment
+      claim_reason:
+        title: Claim repayment
       date_of_sale:
-        title: "Date of sale or disposal"
+        title: "ADS repayment - date of sale or disposal"
       main_residence_address:
-        title: "Main residence address"
+        title: "ADS repayment - previous main residence address"
         address: "What is the address of the previous main residence that has been sold or disposed of?"
       further_claim_info:
-        title: "Further claim information"
+        title: "ADS repayment - further claim information"
       claiming_amount:
-        title: "Details about your claim for payment"
-      slft_claim_amount:
-        title: "Details about your claim for payment"
-      confirm_individual_details:
-        title: "Confirm tax payer details"
-        subtitle: "Provide the details of the taxpayer that is making the claim"
+        title: "Details about your claim for repayment"
+        public_user_title: "Details about your request for repayment"
+      taxpayer_details:
+        title: "Tax payer details"
+        subtitle: "Provide the details of the tax payer that is making this claim"
       taxpayer_address:
-        title: "Confirm tax payer address"
+        title: "Tax payer address"
+        subtitle: "Provide the address of the tax payer making this claim"
       claim_payment_bank_details:
         title: "Enter bank details"
+        subtitle: "Provide the details of the bank to which any repayment is to be paid"
       taxpayer_declaration:
         title: "Declarations"
         warning: "If you give false information, you may face penalties and/or prosecution"
+      second_taxpayer_info:
+        title: "Tax payer details"
+        subtitle: "Provide the details of the tax payer that is making this claim"
+      second_tax_payer:
+        title: "Tax payer address"
+        subtitle: "Provide the address of the tax payer making this claim"
+      additional_tax_payer:
+        title: "Additional tax payer"
+      upload_evidence:
+        title: "Upload evidence to support your repayment request"
+        file_upload_label: "Please upload any evidence to support your claim for repayment. Your claim may be rejected if you do not provide evidence to support it."
+      more_uploads:
+        title: "Your claim has been sent to Revenue Scotland"
+        file_upload_label: "Upload evidence to support your repayment request"
+        # subtitle: "Provide the details of the taxpayer that is making the claim"
       confirmation_of_payment:
         title: "Your claim has been sent to Revenue Scotland"
-        secure_message: "Send evidence by %{ref_link} or by post."
-        ref_message: secure message
-        caution: "Your claim will be rejected if you do not give evidence to support it"
+        secure_message: Your repayment or claim request to your Land and Buildings Transaction Tax return %{return_reference} has now been submitted. A secure message confirming this claim submission has been sent to you.
+        public_secure_message: Your repayment or claim request to your Land and Buildings Transaction Tax return %{return_reference} has now been submitted. A confirmation email will be sent to the email addresses provided.
+        date_text: The submission date is %{system_date}.
+        caution: If you have any queries about this repayment or claim request, you can contact Revenue Scotland by calling the support desk on 03000 200 310
+        paragraph2: We will aim to respond as quickly as possible. In the meantime, full information and guidance is available on the Revenue Scotland website (opens in a new window) We will contact you if we need further information.
+        paragraph2_link_text: Revenue Scotland website (opens in a new window)
+        print: "Print confirmation details"
+        download_claim_details: "Download details of repayment claim"
+      public_claim_landing:
+        title: "To complete this ADS repayment/ claim request, you will need the following information:"
+        info_needed:
+          "<li>The reference for original return that was submitted</li>
+          <li>The reason for repayment or claim request</li>
+          <li>For Additional Dwelling Supplement(ADS) repayment requests;
+          <ul>
+          <li>The ADS property address and title details(Optional)</li>
+          <li>The date of sale</li>
+          </ul>
+          </li>
+          <li>The account details into which any approved request or claim will be paid </li>
+          <li>Evidence to support the repayment or claim request</li>
+          <li>As a tax payer your contact details for future correspondence</li>"
+        start_warning: " Once you have started the request you must complete it. You will not be able to save a draft and go back to it later. You will not be able to amend any submissions made through this form but will need to contact Revenue Scotland directly."
+        second_warning: "This online form may also be used by authorized Agents upon behalf of Tax Payers. As an Agent, if you have registered with Revenue Scotland, please do not use this form but instead use login using following link and submit using this method. %{ref_link}"
+        ref_message: Sign in
+        public_lbtt_return: "Create repayment request"
+      return_reference_number:
+        title: "Return reference number"
+      claimant_info:
+        title: "Claimant information"
+      agent_info:
+        title: Agent details
+        subtitle: Provide your details
+      agent_address:
+        title: Agent address
+        subtitle: Provide agent address

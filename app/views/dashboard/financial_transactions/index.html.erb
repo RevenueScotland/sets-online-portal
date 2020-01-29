@@ -12,8 +12,8 @@
   <%= render '/layouts/hideable_details/', { clickable_text: [t('filter_show'), t('filter_hide')] } do %>
     <%= form.currency_field :amount %>
     <%= render '/layouts/fields_range/' do %>
-      <%= form.currency_field :minimum_amount, { width: 'full' } %>
-      <%= form.currency_field :maximum_amount, { width: 'full' } %>
+      <%= form.currency_field :minimum_amount, { width: 'two-thirds' } %>
+      <%= form.currency_field :maximum_amount, { width: 'two-thirds' } %>
     <% end %>
 
 		<%= form.date_field :actual_date %>
@@ -30,11 +30,11 @@
   <% end %>
 
 
-  <br />
+  <br/>
 
-  <%= form.button t('.find'), autofocus: @on_filter_find %>
+  <%= form.button t('.find'), autofocus: (@on_filter_find && !@form_error_found) %>
 <% end %>
-<br />
+<br/>
 
 <%= display_table(@transactions,
                   [:actual_date, :effective_date, :related_reference, :description, :amount, :outstanding_balance],

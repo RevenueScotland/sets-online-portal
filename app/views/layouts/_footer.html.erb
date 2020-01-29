@@ -8,34 +8,34 @@
 							<div class="content clearfix">
 								<% links = [
 									{ link: :accessibility,
-										path: Rails.configuration.x.external_links.accessibility,
-										addional_text_options: {}, 
-										list_options: { class: 'first leaf' },
-										link_options: { class: '', target:'_blank'} 
+									  path: Rails.configuration.x.external_links.accessibility,
+									  addional_text_options: {}, 
+									  list_html_options: { class: 'first leaf' },
+									  link_html_options: { class: 'govuk-footer__link scot-rev-footer__link', target:'_blank'} 
 									}, {
 										link: :legal_notices,
 										path: Rails.configuration.x.external_links.legal_notices,
 										addional_text_options: {},
-										list_options: { class: 'leaf' },
-										link_options: { class: '', target:'_blank'}
+										list_html_options: { class: 'leaf' },
+										link_html_options: { class: 'govuk-footer__link scot-rev-footer__link', target:'_blank'}
 									}, {
 										link: :site_map,
 										path: Rails.configuration.x.external_links.site_map,
 										addional_text_options: {},
-										list_options: { class: 'leaf' },
-										link_options: { class: '', target:'_blank'}
+										list_html_options: { class: 'leaf' },
+										link_html_options: { class: 'govuk-footer__link scot-rev-footer__link', target:'_blank'}
 									}, {
 										link: :foi,
 										path: Rails.configuration.x.external_links.foi,
 										addional_text_options: {},
-										list_options: { class:'leaf' },
-										link_options: { class:'', target: '_blank' }
+										list_html_options: { class:'leaf' },
+										link_html_options: { class: 'govuk-footer__link scot-rev-footer__link', target: '_blank' }
 									}, {
 										link: :cookies,
 										path: website_text_path('COOKIES'),
 										addional_text_options: {},
-										list_options: { class:'last leaf' },
-										link_options: { class:'', target: '_blank' }
+										list_html_options: { class:'last leaf' },
+										link_html_options: { class: 'govuk-footer__link scot-rev-footer__link', target: '_blank' }
 									}
 								] %>
                 <%= navigational_links(links, class:'menu') %>

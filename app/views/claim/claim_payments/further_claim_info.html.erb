@@ -3,7 +3,7 @@
 <%= form_for @claim_payment, url: @post_path, local: true do |f| %>
 <%= form_errors_for @claim_payment %>
 
- <%= f.collection_radio_buttons_fields(:further_claim_info, @claim_payment.list_ref_data(:further_claim_info), :code, :value) %>
+ <%= f.collection_radio_buttons_fields(:further_claim_info, @claim_payment.list_ref_data(:further_claim_info)) %>
 
 <%= f.button 'next', { :name => 'submitted' }  %>
 <%end%>

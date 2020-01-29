@@ -8,7 +8,7 @@
        <%= hidden_field_tag :reference, @message_filter.reference %>
       <%= f.button '.new' %>
   <% end %>
-  <br />
+  <br/>
    
 <% end %>
 
@@ -21,12 +21,12 @@
   <%= render '/layouts/hideable_details/', { clickable_text: [t('filter_show'), t('filter_hide')] } do %>
     <%= form.text_field :sent_by %>
     <%= form.select :direction_code, @message_filter.list_ref_data(:direction_code), { include_blank: true }, {} %>
-    <%= form.select :subject_code, @message_filter.list_ref_data(:subject_code), { include_blank: true }, {} %>
+    <%= form.select :subject_code, @message_filter.subject_description_list(current_user), { selected: @message_filter.subject_code, :code => :full_key_code, :value => :value, include_blank: true }, {} %>
   <% end %>
     
-  <%= form.button t('.find'), autofocus: @on_filter_find %>
+  <%= form.button t('.find'), autofocus: (@on_filter_find && !@form_error_found) %>
 <% end %>
-<br />
+<br/>
 
 <%= display_table(@messages,
                   [:created_date, :full_name, :title, :reference, :subject_description, :has_attachment, :read_indicator],

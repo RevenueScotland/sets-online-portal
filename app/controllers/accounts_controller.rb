@@ -17,22 +17,6 @@ class AccountsController < ApplicationController
 
   private
 
-  # merge associates class error in parent class
-  def merge_associated_error_messages
-    merge_child_errors!(:current_user)
-    merge_child_errors!(:company)
-    merge_child_errors!(:address)
-    @account.errors.add(:address, (I18n.t '.no_address_found')) unless validate_address_detail
-  end
-
-  # merge errors from child objects into the main account object
-  # @param model [Symbol] name of the child object to check for errors
-  def merge_child_errors!(model)
-    return if @account.send(model).nil? || @account.send(model).errors.empty?
-
-    @account.errors.merge!(@account.send(model).errors)
-  end
-
   # Permit update params
   def update_account_params
     register_account_params.merge!(register_company_params)

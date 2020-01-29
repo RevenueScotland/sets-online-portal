@@ -1,0 +1,262 @@
+{
+    "section": [
+        {
+            "sectioncode": "about_transaction",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Return period",
+            "listitem": [
+                {
+                    "itemcode": "tare_reference",
+                    "itemformat": null,
+                    "itemlabel": "Return reference",
+                    "itemdata": "\u003c%TARE_REFERENCE%\u003e"
+                },
+                {
+                    "itemcode": "version",
+                    "itemformat": null,
+                    "itemlabel": "Version",
+                    "itemdata": "\u003c%VERSION%\u003e"
+                },
+                {
+                    "itemcode": "form_type",
+                    "itemformat": null,
+                    "itemlabel": "Status",
+                    "itemdata": "Filed"
+                },
+                {
+                    "itemcode": "year",
+                    "itemformat": null,
+                    "itemlabel": "SLfT year",
+                    "itemdata": "2016/17"
+                },
+                {
+                    "itemcode": "fape_period",
+                    "itemformat": null,
+                    "itemlabel": "SLfT quarter",
+                    "itemdata": "January to March (Quarter 4)"
+                },
+                {
+                    "itemcode": "non_disposal_add_ind",
+                    "itemformat": null,
+                    "itemlabel": "Have you designated a new non-disposal area on any of your sites?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "non_disposal_add_text",
+                    "itemformat": null,
+                    "itemlabel": "Tell us which sites have a new non disposal area",
+                    "itemdata": "Hello"
+                },
+                {
+                    "itemcode": "non_disposal_delete_ind",
+                    "itemformat": null,
+                    "itemlabel": "Have you ceased to operate a non-disposal area on any of your sites?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "non_disposal_delete_text",
+                    "itemformat": null,
+                    "itemlabel": "Tell us which sites you have removed a non-disposal area from",
+                    "itemdata": "Ahoy"
+                }
+            ],
+            "itemcount": 9
+        },
+        {
+            "sectioncode": "site",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": true,
+            "displaytitle": true,
+            "sectiontitle": "Waste Site 1",
+            "listitem": [
+                {
+                    "itemcode": "net_standard_tonnage",
+                    "itemformat": null,
+                    "itemlabel": "Standard rate\ntonnage (net)",
+                    "itemdata": "150"
+                },
+                {
+                    "itemcode": "net_lower_tonnage",
+                    "itemformat": null,
+                    "itemlabel": "Lower rate\ntonnage (net)",
+                    "itemdata": "0"
+                },
+                {
+                    "itemcode": "exempt_tonnage",
+                    "itemformat": null,
+                    "itemlabel": "Exempt\ntonnage",
+                    "itemdata": "10"
+                },
+                {
+                    "itemcode": "total_tonnage",
+                    "itemformat": null,
+                    "itemlabel": "Total\ntonnage",
+                    "itemdata": "160"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "credits_claimed",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": true,
+            "displaytitle": true,
+            "sectiontitle": "Credits claimed",
+            "listitem": [
+                {
+                    "itemcode": "slcf_yes_no",
+                    "itemformat": null,
+                    "itemlabel": "Are you claiming a credit in relation to an environmental contribution?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "slcf_contribution",
+                    "itemformat": "money",
+                    "itemlabel": "Contribution to environmental bodies",
+                    "itemdata": "20"
+                },
+                {
+                    "itemcode": "slcf_credit_claimed",
+                    "itemformat": "money",
+                    "itemlabel": "Credit claimed in relation to the contribution",
+                    "itemdata": "1"
+                },
+                {
+                    "itemcode": "bad_debt_yes_no",
+                    "itemformat": null,
+                    "itemlabel": "Do you have any claims to make in relation to bad debt?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "bad_debt_credit",
+                    "itemformat": "money",
+                    "itemlabel": "Bad debt claim amount",
+                    "itemdata": "400"
+                },
+                {
+                    "itemcode": "removal_credit_yes_no",
+                    "itemformat": null,
+                    "itemlabel": "Are you claiming a credit for permanent removal?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "removal_credit",
+                    "itemformat": "money",
+                    "itemlabel": "Permanent removal claim amount",
+                    "itemdata": "55"
+                }
+            ],
+            "itemcount": 7
+        },
+        {
+            "sectioncode": "calculation",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Calculated tax liability",
+            "listitem": [
+                {
+                    "itemcode": "total_tax_due",
+                    "itemformat": "money",
+                    "itemlabel": "Total tax due",
+                    "itemdata": "12660"
+                },
+                {
+                    "itemcode": "total_credit",
+                    "itemformat": "money",
+                    "itemlabel": "Total credit",
+                    "itemdata": "456"
+                },
+                {
+                    "itemcode": "tax_payable",
+                    "itemformat": "money",
+                    "itemlabel": "Total payable",
+                    "itemdata": "12204"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "repayment",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Repayment details",
+            "listitem": [
+                {
+                    "itemcode": "repayment_yes_no",
+                    "itemformat": null,
+                    "itemlabel": "Do you want to request a repayment from Revenue Scotland?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "amount_claimed",
+                    "itemformat": "money",
+                    "itemlabel": "How much are you claiming from Revenue Scotland?",
+                    "itemdata": "1700"
+                },
+                {
+                    "itemcode": "account_holder",
+                    "itemformat": null,
+                    "itemlabel": "Name of the account holder",
+                    "itemdata": "MR MJ SCOTT"
+                },
+                {
+                    "itemcode": "bank_sort_code",
+                    "itemformat": null,
+                    "itemlabel": "Branch sort code",
+                    "itemdata": "58-81-88"
+                },
+                {
+                    "itemcode": "bank_account_no",
+                    "itemformat": null,
+                    "itemlabel": "Bank / building society account number",
+                    "itemdata": "79854684"
+                },
+                {
+                    "itemcode": "bank_name",
+                    "itemformat": null,
+                    "itemlabel": "Name of bank / building society",
+                    "itemdata": "Logitech Banking"
+                },
+                {
+                    "itemcode": "rrep_bank_auth_ind",
+                    "itemformat": null,
+                    "itemlabel": "I, the taxpayer, declare that this claim form is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 7
+        },
+        {
+            "sectioncode": "declaration",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Payment and submission",
+            "listitem": [
+                {
+                    "itemcode": "fpay_method",
+                    "itemformat": null,
+                    "itemlabel": "How are you paying?",
+                    "itemdata": "BACS"
+                },
+                {
+                    "itemcode": "declaration",
+                    "itemformat": null,
+                    "itemlabel": "I, the taxpayer, confirm that this return is, to the best of my knowledge, correct and complete",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 2
+        }
+    ]
+}

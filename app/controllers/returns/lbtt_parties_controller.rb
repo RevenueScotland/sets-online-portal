@@ -4,10 +4,10 @@
 module Returns
   # Controller for parties management- for adding/editing buyers/ sellers details involved in lbtt return
   class LbttPartiesController < ApplicationController # rubocop:disable Metrics/ClassLength
-    include AddressHelper
     include Wizard
+    include WizardAddressHelper
     include LbttPartiesHelper
-    include CompanyHelper
+    include WizardCompanyHelper
 
     authorise requires: AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
     # Allow unauthenticated/public access to parties actions
@@ -33,9 +33,7 @@ module Returns
     # Party wizard page
     # Depending on selection of radio button, next page flow decide
     def about_the_party
-      wizard_step(nil) do
-        { params: :filter_params, next_step: :about_the_party_next_steps }
-      end
+      wizard_step(nil) { { setup_step: :setup_step, next_step: :about_the_party_next_steps } }
     end
 
     # Party wizard - individual steps page
@@ -47,7 +45,7 @@ module Returns
                                                           party_details_hash[:alrt_type].blank? &&
                                                           party_details_hash[:alrt_reference].blank?
       end
-      wizard_step(INDVAL_STEPS) { { params: :filter_params } }
+      wizard_step(INDVAL_STEPS)
     end
 
     # Party wizard - individual steps page
@@ -55,37 +53,35 @@ module Returns
     def party_address
       # important that :next_page_or_summary is passed as a next_step pointer so it doesn't get resolved before
       # :store_address - ie don't want to copy party data and redirect before we've saved the address into the party
-      wizard_address_step(nil, :store_address, load_address: :load_previous_address, next_step: :next_page_or_summary)
+      wizard_address_step(nil, next_step: :next_page_or_summary)
     end
 
     # Party wizard - individual steps last page
     def party_alternate_address
-      wizard_address_step(INDVAL_STEPS, :store_alternate_address,
-                          load_address: :load_alternate_address, pre_search: :store_different_address_indicator)
+      wizard_address_step(INDVAL_STEPS, address_attribute: :contact_address,
+                                        address_required: :is_contact_address_different)
     end
 
     # Party wizard - parties relationship page
     def parties_relation
-      wizard_step(returns_lbtt_acting_as_trustee_path) { { params: :filter_params } }
+      wizard_step(returns_lbtt_acting_as_trustee_path)
     end
 
     # Representative acting as either trustee or representative for tax purposes.
     # Final step in the wizards, copies the party data into the LBTT wizard cache at the end.
     def acting_as_trustee
-      wizard_step(returns_lbtt_summary_path) { { params: :filter_params, after_merge: :dump_party_into_lbtt_wizard } }
+      wizard_step(returns_lbtt_summary_path) { { after_merge: :dump_party_into_lbtt_wizard } }
     end
 
     # Party wizard - company steps page
     # A next step is added as we don't want to go to the contact details page for Seller/Landlord
     def company_number
-      wizard_company_step(nil, :store_company, load_company: :load_company, next_step: :next_page_or_summary)
+      wizard_company_step(nil, next_step: :next_page_or_summary)
     end
 
     # Party wizard - company steps page
     def organisation_contact_details
-      wizard_address_step(REG_COMPANY_STEPS, :store_representative_address,
-                          load_address: :load_previous_representative_address,
-                          pre_search: :representative_address_pre_search)
+      wizard_address_step(REG_COMPANY_STEPS, address_attribute: :org_contact_address)
     end
 
     # Party wizard - organisation steps page
@@ -93,30 +89,26 @@ module Returns
     # If user edit organisation details and changed type from "Trust" to "Club" on organisation_type_details
     # then clear details related to trust, so user can see blank option on next pages to enter club details.
     def organisation_type_details
-      setup_step
+      load_step
       return unless params[:submitted]
 
       reset_party_details if filter_params.present? && @party.org_type != filter_params[:org_type]
-      wizard_step_submitted(OTHER_ORG_STEPS, params: :filter_params)
+      wizard_step_submitted(OTHER_ORG_STEPS)
     end
 
     # Party wizard - organisation steps page @see #next_page_or_summary
     def organisation_details
-      wizard_address_step(nil, :store_address,
-                          load_address: :load_previous_address, pre_search: :address_pre_search,
-                          next_step: :next_page_or_summary)
+      wizard_address_step(nil, next_step: :next_page_or_summary)
     end
 
     # Party wizard - organisation steps page
     def representative_contact_details
       # @see party_address
-      wizard_address_step(OTHER_ORG_STEPS, :store_representative_address,
-                          load_address: :load_previous_representative_address,
-                          pre_search: :representative_address_pre_search)
+      wizard_address_step(OTHER_ORG_STEPS, address_attribute: :org_contact_address)
     end
 
     # Delete the party entry entry specified by params[:party_id]
-    def delete
+    def destroy
       look_for_party(params[:party_id], delete: true)
       redirect_to returns_lbtt_summary_path
     end
@@ -130,51 +122,6 @@ module Returns
 
       Rails.logger.debug("Chosen party type is #{params[:type]}")
       STEP_CHOICES[params[:type]]
-    end
-
-    # Return the parameter list filtered for the attributes of the SlftReturn model
-    def filter_params
-      required = :returns_lbtt_party
-      attribute_list = Lbtt::Party.attribute_list
-      params.require(required).permit(attribute_list) if params[required]
-    end
-
-    # Sets up @party for this wizard/form to use (where to post the form to).
-    # If party_id is provided in params then will load that party from the LBTT wizard and save in this wizard.
-    # Otherwise it will load from the wizard (ie the current party) (no extra saving needed).
-    # Otherwise it's a new one, and will use party_id from the params and save it in this wizard.
-    # (The first step clears the cache before calling this so shouldn't ever see the wrong party's data!)
-    # @return [Party] the model for wizard saving
-    def setup_step
-      @post_path = wizard_post_path(LbttController.name)
-      load_party
-
-      # @party MUST have a party_id at this point or we've done something wrong
-      raise Error::AppError.new('Party', 'Missing party_id') if @party.party_id.nil?
-
-      Rails.logger.debug("Loaded party #{@party.party_id}")
-
-      @party
-    end
-
-    # Loads @party info if available in the wizard cache. @See #setup_step
-    # Parties are indexed by UUID so we don't get the wrong one when editing or deleting them.
-    def load_party
-      party_id = params[:party_id]
-      if party_id
-
-        # new party case - assign a UUID
-        @party = Lbtt::Party.new(party_id: SecureRandom.uuid, party_type: params[:party_type]) if party_id == 'new'
-
-        # or lookup the existing party by it's ID (which is a UUID)
-        @party ||= look_for_party(party_id)
-
-        # save the newly loaded party into this wizard's cache ready for the next step
-        wizard_save(@party)
-      else
-        @party = wizard_load
-      end
-      @party
     end
 
     # For buyer and tenant party, next page will be whatever's defined in the appropriate steps list @see STEP_CHOICES.
@@ -201,6 +148,78 @@ module Returns
       # restore back original party
       @party = Lbtt::Party.new(party_id: party_id, party_type: party_type, type: type)
       wizard_save(@party)
+    end
+
+    # Sets up wizard model if it doesn't already exist in the cache
+    # Parties are indexed by UUID so we don't get the wrong one when editing or deleting them.
+    # Follows the same pattern as @see LbttPropertiesController#setup_step
+    # @raise [Error::AppError] if the party_id is missing (provided as a param)
+    # @return [Party] the model for wizard saving
+    def setup_step
+      @post_path = wizard_post_path(LbttController.name)
+
+      party_id, party_type = about_the_party_params
+      setup_party(party_id, party_type)
+
+      # @party MUST have a party_id at this point or we've done something wrong
+      raise Error::AppError.new('Party', 'Missing party_id') if @party.party_id.nil?
+
+      # save the newly loaded party into this wizard's cache ready for the next step
+      wizard_save(@party)
+
+      Rails.logger.debug("Loaded party #{@party.party_id}")
+      @party
+    end
+
+    # Called by setup_step to setup or re-load @party
+    def setup_party(party_id, party_type)
+      @party = if party_id == 'new' && !party_type.nil?
+                 # Add a buyer/seller/tenant/new-tenant/landlord
+                 # New party case - assign a UUID
+                 Lbtt::Party.new(party_id: SecureRandom.uuid, party_type: party_type)
+               elsif !party_id.nil? && party_id != 'new'
+                 # Click on the Edit row - triggers when user wants to edit a party.
+                 # or lookup the existing party by it's ID (which is a UUID)
+                 look_for_party(party_id)
+               else
+                 # When we come back to the about the party page after either an add or edit, so we don't
+                 # refresh either the re-loading of the party details or creation of the new party object.
+                 #
+                 # Moreover, the reason why we don't want the reloading to happen is because the data
+                 # only gets merged back into the cache after the 'Add a <party_type>' or 'Edit row' flow of
+                 # pages has finished. This means that if we do re-load the party details, then we overwrite all
+                 # the new edits we have done (if there's any) on this instance of Edit row.
+                 #
+                 # This is also the normal load from cache. if it didn't get setup above.
+                 wizard_load
+               end
+
+      # assign hash of used NINO'S to hash_for_nino
+      lbtt_return = wizard_load(LbttController)
+      @party.hash_for_nino = lbtt_return.list_of_used_ninos(@party.nino)
+
+      @party
+    end
+
+    # Loads existing wizard models from the wizard cache or redirects to the summary page
+    # (The first step clears the cache and loads a specific party so this shouldn't ever see the wrong party's data!
+    # @see #setup_step)
+    # @return [Party] the model for wizard saving
+    def load_step
+      @post_path = wizard_post_path(LbttController.name)
+      @party = wizard_load_or_redirect(returns_lbtt_summary_url)
+    end
+
+    # Return the parameter list filtered for the attributes of the Party model
+    def filter_params
+      required = :returns_lbtt_party
+      attribute_list = Lbtt::Party.attribute_list
+      params.require(required).permit(attribute_list) if params[required]
+    end
+
+    # Parameters used in the about the party page.
+    def about_the_party_params
+      [params[:party_id], params[:party_type]]
     end
   end
 end

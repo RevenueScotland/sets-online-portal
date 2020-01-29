@@ -1,24 +1,34 @@
 <%
-   unless ( params[:manual_address] || params[:search] || params[:search_results] )
+   unless ( params[:manual_address] || params[:search] || params[:search_results])
     # set show manual address to display div as per previous state
-    @show_manual_address = ActiveModel::Type::Boolean.new.cast(params[:show_manual_address]) if params[:show_manual_address]
-    @address_read_only  =  ActiveModel::Type::Boolean.new.cast(params[:address_read_only]) if params[:address_read_only]
+      @show_manual_address = ActiveModel::Type::Boolean.new.cast(params[:show_manual_address]) if params[:show_manual_address]
+      @address_read_only  =  ActiveModel::Type::Boolean.new.cast(params[:address_read_only]) if params[:address_read_only]
    end
+  # Control showing label instead of postcode search textbox
+  @show_label_postcode = (!@search_results.nil? || @show_manual_address) && !@address_summary.postcode.blank?
 %>
 <%= fields_for @address_summary do |asf| %>
-  <%= asf.text_field :postcode %>
-  <div class="govuk-form-group">
-    <%# An autofocus is added here so that when the user has clicked on this button, which should show the select
-        field, it would then focus on this button. %>
-    <%= asf.submit '.search', { :name => 'search', autofocus: !@search_results.nil? } %>
-    <%= hidden_field_tag 'show_manual_address', @show_manual_address %>
-    <%= hidden_field_tag 'address_read_only', @address_read_only %>
-  </div>
+  <% if @show_label_postcode %>
+    <div class="govuk-form-group">
+      <%= display_field @address_summary, :postcode, {}, { wrapper: { class: "display-inline-text" }, text: { class: "govuk-label" } } %>
+      <%= asf.hidden_field :postcode %>
+      <%= asf.button 'change_postcode', { :class => 'scot-rev-button_link govuk-link', :name => 'change_postcode' } %>
+    </div>
+   <% else %>
+   <%= asf.text_field :postcode %>
+    <div class="govuk-form-group">
+      <%# An autofocus is added here so that when the user has clicked on this button, which should show the select
+          field, it would then focus on this button. %>
+      <%= asf.submit '.search', { :name => 'search', autofocus: !@search_results.nil? } %>
+    </div>
+   <% end %>
+   <%= hidden_field_tag 'show_manual_address', @show_manual_address %>
+   <%= hidden_field_tag 'address_read_only', @address_read_only %>
   <% unless @search_results.nil? %>
    <div class="govuk-form-group">
       <%= label_tag "search_results", t('address_select'), class: 'govuk-label' %>
       <%= select_tag "search_results", options_for_select(@search_results.collect { |v| [v.formatted_address, v.address_identifier] }),
-                     { width: 'two-thirds', include_blank: t('.blank_address_select') } %>
+                     { width:'two-thirds' }, { include_blank: t('.no_of_address_select', count: @search_results.length ) } %>
    </div>
    <div class="js-hidden ">
       <%= asf.submit '.select', {:name => 'select'} %>
@@ -26,27 +36,36 @@
   <% end %>
   <div class="govuk-form-group">
     <% focus_on_line_1 = false %>
-    <% if @show_manual_address  &&  @show_manual_address != '' %>
-      <%= asf.button 'edit_address', { :class => 'scot-rev-button_link manual_link govuk-details__summary-text', :name => 'manual_address' } %>
+    <% if @show_manual_address && @show_manual_address != '' %>
+      <%= asf.button 'edit_address', { :class => 'scot-rev-button_link govuk-link', :name => 'manual_address' } %>
     <% else %>
-      <%= asf.button 'manual_address', { :class => 'scot-rev-button_link manual_link govuk-details__summary-text', :name => 'manual_address' } %>
+      <%= asf.button 'manual_address', { :class => 'scot-rev-button_link govuk-link', :name => 'manual_address' } %>
     <% end %>
   </div>
 <% end %>
 
 
-<div class="govuk-form-group <%= ' js-hidden' unless  @show_manual_address  &&  @show_manual_address != '' %>" id="address_detail">
+<div class="govuk-form-group <%= ' js-hidden' unless  @show_manual_address %>" id="address_detail">
   <%= fields_for @address_detail, html: { multipart: true } do |adf| %>
     <%# Autofocus is set to true when the address_line1 is an editable text field or when the user has selected an
         address through the select field options. %>
-    <%= adf.text_field :address_line1, readonly: @address_read_only, autofocus: !@address_summary.postcode.blank? || !@address_read_only %>
-    <%= adf.text_field :address_line2, readonly: @address_read_only %>
-    <%= adf.text_field :address_line3, :readonly => @address_read_only %>
-    <%= adf.text_field :address_line4, :readonly => @address_read_only %>
-    <%= adf.text_field :town, :readonly => @address_read_only %>
-    <%= adf.text_field :county, :readonly => @address_read_only %>
-    <%= adf.text_field :postcode, readonly: @address_read_only %>
-    <%= adf.hidden_field :country if @country_code_required %>
+    <%= adf.text_field :address_line1, {}, { readonly: @address_read_only, autofocus: ((!@address_summary.postcode.blank? || !@address_read_only) && !@form_error_found) } %>
+    <%= adf.text_field :address_line2, { label: '' }, { readonly: @address_read_only } %>
+    <%= adf.text_field :address_line3, { label: '' }, { readonly: @address_read_only } %>
+    <%= adf.text_field :address_line4, { label: '' }, { readonly: @address_read_only } %>
+    <%= adf.text_field :town, {}, { readonly: @address_read_only } %>
+    <%= adf.text_field :county, {}, { readonly: @address_read_only } %>
+    <% if @country_code_required || @country_code_required.nil? %>
+      <%= adf.select :country, @address_detail.list_ref_data(:country), { text_auto_complete: !@address_read_only },
+       { disabled: @address_read_only } %>
+    <% end %>
+    <%# Include the hidden country code field if the country code isn't shown or is disabled %>
+    <% if !(@country_code_required || @country_code_required.nil?) || @address_read_only %>
+      <%= adf.hidden_field :country %>
+    <% end %>
+    <%= adf.text_field :postcode, {}, { readonly: @address_read_only } %>
+    <%= adf.hidden_field :default_country %>
+    <%= adf.hidden_field :address_identifier %>
   <% end %>
 </div>
 

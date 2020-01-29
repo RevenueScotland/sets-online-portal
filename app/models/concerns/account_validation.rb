@@ -34,7 +34,6 @@ module AccountValidation
     return true if send(attribute).nil? || filtered_context.nil? || filtered_context.empty?
 
     valid = send(attribute).valid?(filtered_context)
-    errors.merge!(send(attribute).errors)
     valid
   end
 
@@ -76,21 +75,12 @@ module AccountValidation
 
   # perform validation on current_user, the main account object, and the address
   def validate_all
-    current_user.valid?(:save) && valid?(:create) && address_valid?
+    current_user.valid?(:save) && valid?(:create) && address_valid?(:save)
   end
 
   # Validation for taxes, user must have selected only one non-blank service
   def taxes_valid?
     errors.add(:taxes, :one_must_be_chosen) if taxes.reject(&:empty?).size != 1
-  end
-
-  # Validation for NINO. Only required when the account type is for other organisation
-  # or individual
-  def nino_valid?
-    return nil if AccountType.registered_organisation?(account_type)
-
-    national_insurance_number_empty? :nino
-    national_insurance_number_valid? :nino
   end
 
   # Validation for names, if it's not a company
@@ -103,11 +93,13 @@ module AccountValidation
 
   # Checks if the address is valid. For registered companies without a separate contract address
   # this can be nil, otherwise it must be supplied, and is validated by the address object
-  def address_valid?
+  # @param validation_contexts[String] validation contexts to validate address object
+  # @return [Boolean] true if the address valid, or doesn't need validation otherwise false
+  def address_valid?(validation_contexts)
     return true if address.nil?
     return true unless reg_company_contact_address_yes_no == 'N' || reg_company_contact_address_yes_no.to_s.empty?
 
-    address.valid?(:save)
+    address.valid?(validation_contexts)
   end
 
   # Checks if the company is valid.

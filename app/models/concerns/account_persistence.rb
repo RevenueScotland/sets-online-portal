@@ -45,12 +45,19 @@ module AccountPersistence
   # Updates address details on an account
   # @param address_params [Hash] changes to the address data
   # @param requested_by [User] the user requesting the changes
+  # @param validation_contexts[String] validation contexts to validate address object
   # @return [Boolean] true if the address changes where saved in the back office, otherwise false
-  def update_address(address_params, requested_by)
+  def update_address(address_params, requested_by, validation_contexts)
     self.address = Address.new(address_params)
-    return false unless address_valid?
+    return false unless address_valid?(validation_contexts)
 
     save_or_update(requested_by)
+  end
+
+  # Hash to translate back office logical data item into an attribute
+  def back_office_attributes
+    { PASSWORD: { attribute: :new_password, model: :current_user },
+      REGISTRATION_TOKEN: { attribute: :registration_token } }
   end
 
   private
@@ -102,6 +109,7 @@ module AccountPersistence
 
   # Creates back office request
   def save_activate_account_request
+    # Not strip the token to handle dodgy cut and paste
     { Action: 'CompleteRegistration', RegistrationToken: registration_token.strip, ServiceCode: 'SYS' }
   end
 

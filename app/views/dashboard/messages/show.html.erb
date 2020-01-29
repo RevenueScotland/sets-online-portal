@@ -5,10 +5,10 @@
 <% if can? AuthorisationHelper::CREATE_MESSAGE %>
     <%= form_for @message, url: new_dashboard_message_path, method: :get, local: true do |f| %>  
         <%= hidden_field_tag :original_smsg_refno, @message.original_smsg_refno %>
-        <%= hidden_field_tag :id, @message.id %>
+        <%= hidden_field_tag :smsg_refno, @message.smsg_refno %>
         <%= f.button '.reply' %>
     <% end %>
-    <br />
+    <br/>
 <% end %>
 <%= display_field @message,:full_name %>
 <%= display_field @message,:created_date ,format: :datetime %>
@@ -33,9 +33,9 @@
                         <tr class="govuk-table__row">
                             <td>
                                 <% if can? AuthorisationHelper::DOWNLOAD_ATTACHMENT %>
-                                    <%= link_to resource_item[:file_name], 
-                                    "retrieve-file-attachment/?Id=" + @message.id +  "&attachment_ref_no=" + resource_item[:attachment_refno] + "&attachment_type=" + resource_item[:attachment_type], 
-                                    { target:"_blank" }
+                                    <%= link_to resource_item[:file_name],
+                                                retrieve_file_attachment_dashboard_message_path(attachment_ref_no: resource_item[:attachment_refno], attachment_type: resource_item[:attachment_type]),
+                                                { target:"_blank" }
                                     %>
                                 <% else %>
                                   <%= resource_item[:file_name] %>
@@ -52,8 +52,9 @@
                     <tr class="govuk-table__row">
                         <td>
                             <% if can? AuthorisationHelper::DOWNLOAD_ATTACHMENT %>
-                                <%= link_to resource_item[:file_name], 
-                                "retrieve-file-attachment/?Id=" + @message.id +  "&attachment_ref_no=" + resource_item[:attachment_refno] + "&attachment_type=" + resource_item[:attachment_type] , { target:"_blank" }
+                                <%= link_to resource_item[:file_name],
+                                            retrieve_file_attachment_dashboard_message_path(attachment_ref_no: resource_item[:attachment_refno], attachment_type: resource_item[:attachment_type]),
+                                            { target: "_blank" }
                                 %>
                             <% else %>
                                 <%= resource_item[:file_name] %>

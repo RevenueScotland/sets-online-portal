@@ -41,13 +41,13 @@ en:
         amount: "Amount"
         balance: "Balance"
         outstanding_balance: "Balance"
-      
+
       dashboard/related_transaction:
         actual_date: "Created date"
         effective_date: "Effective date"
         description: "Description"
-        matched_amount: "Allocated\namount"
-        original_amount: "Original\namount"
+        matched_amount: "Allocated<br/>amount"
+        original_amount: "Original<br/>amount"
 
       dashboard/financial_transaction_filter:
         actual_date: "Created date"
@@ -57,11 +57,11 @@ en:
         effective_date_to: "Effective date to"
         effective_date_from: "Effective date from"
         reference: "Reference"
-        related_reference: "Reference"
+        related_reference: "Return Reference"
         amount: "Amount"
         maximum_amount: "Amount to (max)"
         minimum_amount: "Amount from (min)"
-        
+
         day: "Day"
         month: "Month"
         year: "Year"
@@ -75,14 +75,14 @@ en:
         dashboard/financial_transaction_filter:
           attributes:
             actual_date_from:
-              before_date_error: "must be BEFORE the created date to"
+              before_date_error: "%{attribute} must be before the created date to"
             actual_date_to:
-              after_date_error: "must be AFTER the created date from"
+              after_date_error: "%{attribute} must be after the created date from"
             effective_date_from:
-              before_date_error: "must be BEFORE the effective date to"
+              before_date_error: "%{attribute} must be before the effective date to"
             effective_date_to:
-              after_date_error: "must be AFTER the effective date from"
-        
+              after_date_error: "%{attribute} must be after the effective date from"
+
   dashboard:
     financial_transactions:
       index:
@@ -97,6 +97,3 @@ en:
         link:
           dashboard: "Dashboard"
           financial_transactions: "Go to all financial transactions"
-
-        
-    

@@ -107,24 +107,6 @@
     border-bottom-right-radius: 0;
 }
 
-.pagination ul > li > a {
-    padding: 4px 12px;
-    line-height: 20px;
-    text-decoration: none;
-}
-
-.pagination ul > li > a:hover,
-.pagination ul > li > a:focus {
-    text-decoration: underline;
-    background: transparent;
-}
-
-.pagination ul > li > a:focus {
-    background: #ffbf47;
-    outline: 3px solid #ffbf47;
-    outline-offset: 0;
-}
-
 .pagination ul > .active span,
 .pagination ul > .active a {
     color: #999;

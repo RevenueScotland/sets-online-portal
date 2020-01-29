@@ -13,47 +13,50 @@ Feature: Roles and Actions
     And I should not see a link with text "Update"
     And I should not see a link with text "Create or update users"
     When I go to the "account/edit-basic" page
-    Then I should see the text "You are not authorised to view this page."
+    Then I should see the text "You are not authorised to view this page"
 
     When I go to the "account/edit-address" page
-    Then I should see the text "You are not authorised to view this page."
+    Then I should see the text "You are not authorised to view this page"
 
     When I go to the "dashboard" page
     Then I should not see the button with text "Create new message"
     And I should not see the button with text "Create LBTT return"
     And I should not see the button with text "Create SLfT return"
     And I should not see a link with text "Continue"
+    And I should not see a link with text "Delete"
 
     When I go to the "dashboard/messages/new" page
-    Then I should see the text "You are not authorised to view this page."
+    Then I should see the text "You are not authorised to view this page"
 
     When I go to the "returns/lbtt/summary" page
-    Then I should see the text "You are not authorised to view this page."
+    Then I should see the text "You are not authorised to view this page"
 
     When I go to the "returns/slft/summary" page
-    Then I should see the text "You are not authorised to view this page."
+    Then I should see the text "You are not authorised to view this page"
 
-    When I go to the "returns/lbtt/load" page
-    Then I should see the text "You are not authorised to view this page."
+    When I go to the "dashboard/dashboard_returns/1-1-LBTT-RS/load" page
+    Then I should see the text "You are not authorised to view this page"
 
-    When I go to the "returns/slft/load" page
-    Then I should see the text "You are not authorised to view this page."
+    When I go to the "dashboard/dashboard_returns/1-1-SLFT-RS/load" page
+    Then I should see the text "You are not authorised to view this page"
 
     When I go to the "returns/lbtt/save_draft" page
-    Then I should see the text "You are not authorised to view this page."
+    Then I should see the text "You are not authorised to view this page"
 
     When I go to the "returns/slft/save_draft" page
-    Then I should see the text "You are not authorised to view this page."
+    Then I should see the text "You are not authorised to view this page"
 
-    When I go to the "claim/claim_payments/payment_after_year" page
-    Then I should see the text "You are not authorised to view this page."
+    When I go to the "claim/claim_payments/claim_reason" page
+    Then I should see the text "You are not authorised to view this page"
 
   Scenario: Has limited access to some actions
     Given I have signed in "PORTAL.NO.ACCESS" and password "Password1!"
     Then I should see the "Dashboard" page
     And I should not see a link with text "Continue"
+    Then I should not see a link with text "Delete"
     When I click on the "All returns" link
     Then I should not see a link with text "Continue"
+    Then I should not see a link with text "Delete"
     Then I should not see a link with text "Claim"
 
   Scenario: Read only access to messages
@@ -64,4 +67,4 @@ Feature: Roles and Actions
     Then I should see the "Message full details" page
     And I should not see the button with text "Reply"
     When I go to the "dashboard/messages/new" page
-    Then I should see the text "You are not authorised to view this page."
+    Then I should see the text "You are not authorised to view this page"

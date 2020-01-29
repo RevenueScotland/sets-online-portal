@@ -1,0 +1,112 @@
+{
+    "json_class": "Claim::ClaimPayment",
+    "srv_code": "LBTT",
+    "tare_reference": "RS1000071TJYV",
+    "flbt_type": "CONVEY",
+    "version": "2",
+    "submitted_date": "2019-11-12",
+    "filing_date": "2017-12-12",
+    "open_ads_repayment": true,
+    "current_user": {
+        "json_class": "User",
+        "username": "PORTAL.NEW.USERS",
+        "work_place_refno": "3",
+        "party_refno": "187",
+        "user_roles": {
+            "user_role": [
+                "ACCADMN",
+                "ACCSECADMN",
+                "PWSAMEND",
+                "PWSCLAIM",
+                "PWSDASH",
+                "PWSDRNEW",
+                "PWSDRSUB",
+                "PWSDRUPD",
+                "PWSMESSAGE"
+            ]
+        },
+        "password_change_required": false,
+        "password_expiry_date": "2020-02-05",
+        "new_record": true
+    },
+    "new_record": true,
+    "cached_ref_data": {
+        "reason": {
+            "ADS": {
+                "json_class": "ReferenceData::ReferenceValue",
+                "domain_code": "CLAIMREASONS",
+                "service_code": "LBTT",
+                "workplace_code": "RSTU",
+                "code": "ADS",
+                "value": "ADS repayment following a sale or disposal of previous main residence",
+                "default": "yes",
+                "sequence": "10",
+                "new_record": true
+            },
+            "CONT": {
+                "json_class": "ReferenceData::ReferenceValue",
+                "domain_code": "CLAIMREASONS",
+                "service_code": "LBTT",
+                "workplace_code": "RSTU",
+                "code": "CONT",
+                "value": "Less tax payable due to contingency ceases or consideration ascertained",
+                "default": "yes",
+                "sequence": "30",
+                "new_record": true
+            },
+            "LEGAL": {
+                "json_class": "ReferenceData::ReferenceValue",
+                "domain_code": "CLAIMREASONS",
+                "service_code": "LBTT",
+                "workplace_code": "RSTU",
+                "code": "LEGAL",
+                "value": "Impact of legislation change",
+                "default": "yes",
+                "sequence": "20",
+                "new_record": true
+            },
+            "OTHER": {
+                "json_class": "ReferenceData::ReferenceValue",
+                "domain_code": "CLAIMREASONS",
+                "service_code": "LBTT",
+                "workplace_code": "RSTU",
+                "code": "OTHER",
+                "value": "Other",
+                "default": "yes",
+                "sequence": "40",
+                "new_record": true
+            }
+        }
+    },
+    "reason": "LEGAL",
+    "claiming_amount": "1500",
+    "email_address": "michael.scott@dudnermifflin.com",
+    "surname": "Scott",
+    "firstname": "Michael",
+    "nino": "AA786543C",
+    "telephone": "0134411111",
+    "tax_address": {
+        "json_class": "Address",
+        "address_line1": "Flat 1",
+        "address_line2": "Saxon Court",
+        "address_line3": "2 Stephen Road",
+        "address_line4": "Headington",
+        "town": "OXFORD",
+        "county": "Oxfordshire",
+        "postcode": "OX3 9FA",
+        "country": "EN",
+        "new_record": true,
+        "address_identifier": "27542710"
+    },
+    "additional_tax_payer": "N",
+    "account_holder_name": "MR MJ SCOTT",
+    "account_number": "45562302",
+    "branch_code": "59-98-02",
+    "bank_name": "Bank",
+    "declaration_public": "true",
+    "declaration": "true",
+    "case_reference": "CMSL00000136",
+    "repayment_ref_no": "35",
+    "account_type": "AGENT",
+    "org_name": "Dunder Mifflin"
+}

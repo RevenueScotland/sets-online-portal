@@ -3,6 +3,6 @@
 
 <%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
-    <%= f.collection_radio_buttons_fields(:flbt_type, @lbtt_return.public_flbt_type_list, :code, :value ,alignment: 'vertical') %>    
+    <%= f.collection_radio_buttons_fields(:flbt_type, @lbtt_return.public_flbt_type_list, alignment: 'vertical') %>    
     <%= f.button 'next', { :name => 'submitted' }  %>
 <% end %>

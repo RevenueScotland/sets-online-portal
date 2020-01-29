@@ -6,7 +6,7 @@
 <%= form_for @account, url: @post_path, local: true do |f| %>
   <%= form_errors_for @account %>
   <%= f.fields_for @account.account_type do |at| %>
-    <%= at.collection_radio_buttons_fields(:registration_type, AccountType.list, :code, :value, alignment: 'vertical' ) %>
+    <%= at.collection_radio_buttons_fields(:registration_type, AccountType.list, alignment: 'vertical' ) %>
   <% end %>
   <%= f.button 'next', { :name => 'submitted' }  %>
 <% end %>

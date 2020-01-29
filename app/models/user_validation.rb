@@ -4,7 +4,6 @@
 # Split out into a separate class to keep User class small/keep Rubocop happy.
 module UserValidation
   extend ActiveSupport::Concern
-  include CommonValidation
 
   included do
     validates :username, presence: true, on: %i[update update_password login two_factor]
@@ -17,9 +16,9 @@ module UserValidation
 
     validates :token, presence: true, length: { maximum: 200 }, on: :two_factor
 
-    validate :valid_email_address?, on: %i[save update email_check]
-    validates :email_address, confirmation: true
-
+    validates :email_address, presence: true, email_address: true, on: %i[save update email_check]
+    validates :email_address, confirmation: true, on: %i[save update email_check]
+    validates :phone_number, phone_number: true, on: %i[save update]
     validates :forename, presence: true, length: { maximum: 50 }, on: %i[save update forename]
     validates :surname, presence: true, length: { maximum: 100 }, on: %i[save update surname]
 

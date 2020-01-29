@@ -82,7 +82,7 @@ end
 def mock_list_secure_messages(party_ref, requestor)
   fixture = File.read('test/fixtures/files/list_secure_messages.xml')
   message = { ParRefno: party_ref, Username: requestor,
-              WrkRefno: 1, SRVCode: 'SYS', SmsgOriginalRefno: '',
+              WrkRefno: 1, SRVCode: nil, SmsgOriginalRefno: '',
               Pagination: { 'ins1:StartRow' => 1, 'ins1:NumRows' => 3 } }
   @savon.expects(:list_secure_messages_wsdl).with(message: message).returns(fixture)
 end
@@ -132,6 +132,41 @@ def mock_alt_address_search
                                   'ins1:IncludeMultiResidenceAddresses' => false,
                                   'ins1:IncludeNIAddresses' => true } }
   @savon.expects(:nas_address_search_wsdl).with(message: message).returns(fixture)
+end
+
+# party 1 for the mock_address_identifier_details
+def mock_party_1
+  { :"ins1:PartyType" => 'PER', 'ins1:LpltType' => 'PRIVATE', 'ins1:FlptType' => 'BUYER',
+    'ins1:PersonName' => { "ins1:Title": '', "ins1:Forename": 'Albert', "ins1:Surname": 'Buyer' },
+    'ins1:Address' => { :"ins0:AddressLine1" => 'Royal Mail', 'ins0:AddressLine2' => 'Luton Delivery Office 9-11',
+                        'ins0:AddressLine3' => 'Dunstable Road', 'ins0:AddressTownOrCity' => 'LUTON',
+                        'ins0:AddressPostcodeOrZip' => 'LU1 1AA', 'ins0:AddressCountryCode' => 'EN',
+                        'ins0:QASMoniker' => '14174279' },
+    'ins1:AuthorityInd' => 'no', 'ins1:TelNo' => '0123456789', 'ins1:EmailAddress' => 'noreply@northgateps.com',
+    'ins1:ParPerNiNo' => 'AB123456C', 'ins1:AlternateReference' => { "ins1:AlrtType": '',
+                                                                     "ins1:RefCountry": '', "ins1:Reference": '' },
+    'ins1:BuyerSellerLinkedInd' => 'no', 'ins1:BuyerSellerLinkedDesc' => '', 'ins1:ActingAsTrusteeInd' => 'no' }
+end
+
+# party 1 for the mock_address_identifier_details
+def mock_party_2
+  { :"ins1:PartyType" => 'PER', 'ins1:LpltType' => 'PRIVATE', 'ins1:FlptType' => 'BUYER',
+    'ins1:PersonName' => { "ins1:Title": '', "ins1:Forename": 'Bert', "ins1:Surname": 'Buyer' },
+    'ins1:Address' => { :"ins0:AddressLine1" => 'Royal Mail', 'ins0:AddressLine2' => 'Luton Delivery Office 9-11',
+                        'ins0:AddressLine3' => 'Dunstable Road', 'ins0:AddressTownOrCity' => 'LUTON',
+                        'ins0:AddressPostcodeOrZip' => 'LU1 1AA', 'ins0:AddressCountryCode' => 'EN' },
+    'ins1:AuthorityInd' => 'no', 'ins1:TelNo' => '0123456780', 'ins1:EmailAddress' => 'noreply2@northgateps.com',
+    'ins1:ParPerNiNo' => 'NP123456D', 'ins1:AlternateReference' => { "ins1:AlrtType": '',
+                                                                     "ins1:RefCountry": '', "ins1:Reference": '' },
+    'ins1:BuyerSellerLinkedInd' => 'no', 'ins1:BuyerSellerLinkedDesc' => '', 'ins1:ActingAsTrusteeInd' => 'no' }
+end
+
+# Agent for the mock_address_identifier_details
+def mock_agent
+  { :"ins1:PartyType" => 'PER', 'ins1:LpltType' => 'PRIVATE', 'ins1:FlptType' => 'AGENT',
+    'ins1:PersonName' => { "ins1:Title": nil, "ins1:Forename": 'Valid', "ins1:Surname": 'User' },
+    'ins1:AuthorityInd' => 'no', 'ins1:EmailAddress' => 'valid.user@northgateps.com',
+    'ins1:BuyerSellerLinkedInd' => nil, 'ins1:BuyerSellerLinkedDesc' => '', 'ins1:ActingAsTrusteeInd' => nil }
 end
 
 # Mock a locked user sign in
@@ -314,13 +349,17 @@ Before('@mock_new_user_registration') do
   start_mock
   mock_address_search
   mock_address_details
-  message = { Action: 'CREATE', WorkplaceCode: '3', ServiceCode: 'SYS',
+
+  message = { Requestor: 'NEW.USER.REGISTRATION', Action: 'CREATE', WorkplaceCode: '3', ServiceCode: 'SYS',
               Username: 'NEW.USER.REGISTRATION', Password: 'Password001', ForcePasswordChange: 'N', UserIsCurrent: 'N',
-              Forename: 'forename', Surname: 'surname', EmailAddress: 'test@example.com', EmailDataIndicator: 'Y',
-              ConfirmEmailAddress: 'test@example.com', AddressLine1: 'Royal Mail', PartyNINO: 'AB123456D',
-              AddressLine2: 'Luton Delivery Office 9-11', AddressTownOrCity: 'LUTON', AddressCountryCode: 'GB',
-              AddressPostcodeOrZip: 'LU1 1AA', PartyAccountType: 'TAXPAYER',
-              UserServices: { 'ins2:UserService' => ['LBTT'] } }
+              UserPhoneNumber: '07700 900123', Forename: 'forename', Surname: 'surname',
+              EmailAddress: 'test@example.com', ConfirmEmailAddress: 'test@example.com', PartyAccountType: 'TAXPAYER',
+              PartyNINO: 'AB123456D', EmailDataIndicator: 'Y', AddressLine1: 'Royal Mail',
+              AddressLine2: 'Luton Delivery Office 9-11', AddressLine3: 'Dunstable Road', AddressLine4: '',
+              AddressTownOrCity: 'LUTON', AddressCountyOrRegion: '', AddressCountryCode: 'EN',
+              AddressPostcodeOrZip: 'LU1 1AA', UserServices: { 'ins2:UserService' => ['LBTT'] },
+              PartyEmailAddress: 'test@example.com', PartyPhoneNumber: '07700 900123' }
+
   fixture = File.read('test/fixtures/files/register_user.xml')
 
   @savon.expects(:maintain_user_wsdl).with(message: message).returns(fixture)
@@ -333,20 +372,24 @@ Before('@mock_new_other_company_registration') do
   mock_address_details
   mock_alt_address_search
   mock_alt_address_details
-  message = { Action: 'CREATE', WorkplaceCode: '3', ServiceCode: 'SYS', UserPhoneNumber: '01234567890',
+  message = { Requestor: 'NEW.USER.REGISTRATION', Action: 'CREATE', WorkplaceCode: '3', ServiceCode: 'SYS',
               Username: 'NEW.USER.REGISTRATION', Password: 'Password001', ForcePasswordChange: 'N', UserIsCurrent: 'N',
-              Forename: 'forename', Surname: 'surname', EmailAddress: 'test@example.com', EmailDataIndicator: 'Y',
-              ConfirmEmailAddress: 'test@example.com', AddressLine1: '10 Rydal Avenue', PartyNINO: 'AB123456D',
-              AddressLine2: 'Tilehurst', AddressTownOrCity: 'READING', AddressCountyOrRegion: '',
-              AddressCountryCode: 'GB', AddressPostcodeOrZip: 'RG30 6XT', PartyAccountType: 'TAXPAYER',
-              PartyPhoneNumber: '01234567891', PartyEmailAddress: 'noreply@northgateps.com',
-              PartyContactName: 'Mr Wobble', UserServices: { 'ins2:UserService' => ['LBTT'] },
-              CompanyName: 'Other Company',
+              UserPhoneNumber: '01234567890', Forename: 'forename', Surname: 'surname',
+              EmailAddress: 'test@example.com', ConfirmEmailAddress: 'test@example.com',
+              PartyAccountType: 'TAXPAYER', PartyNINO: 'AB123456D',
+              EmailDataIndicator: 'Y', AddressLine1: '10 Rydal Avenue', AddressLine2: 'Tilehurst', AddressLine3: '',
+              AddressLine4: '', AddressTownOrCity: 'READING', AddressCountyOrRegion: '', AddressCountryCode: 'EN',
+              AddressPostcodeOrZip: 'RG30 6XT', UserServices: { 'ins2:UserService' => ['LBTT'] },
+              CompanyName: 'Other Company', RegistrationNumber: nil,
               RegisteredAddress: { 'ins1:AddressLine1' => 'Royal Mail',
                                    'ins1:AddressLine2' => 'Luton Delivery Office 9-11',
                                    'ins1:AddressTownOrCity' => 'LUTON',
                                    'ins1:AddressCountyOrRegion' => '',
-                                   'ins1:AddressPostcodeOrZip' => 'LU1 1AA', 'ins1:AddressCountryCode' => 'GB' } }
+                                   'ins1:AddressPostcodeOrZip' => 'LU1 1AA',
+                                   'ins1:AddressCountryCode' => 'EN' },
+              PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@northgateps.com',
+              PartyPhoneNumber: '01234567891' }
+
   fixture = File.read('test/fixtures/files/register_user.xml')
 
   @savon.expects(:maintain_user_wsdl).with(message: message).returns(fixture)
@@ -355,20 +398,25 @@ end
 
 Before('@mock_new_company_no_address_registration') do
   start_mock
-  message = { Action: 'CREATE', WorkplaceCode: '3', ServiceCode: 'SYS', UserPhoneNumber: '01234567890',
+  message = { Requestor: 'NEW.USER.REGISTRATION', Action: 'CREATE', WorkplaceCode: '3', ServiceCode: 'SYS',
               Username: 'NEW.USER.REGISTRATION', Password: 'Password001', ForcePasswordChange: 'N', UserIsCurrent: 'N',
-              Forename: 'forename', Surname: 'surname', EmailAddress: 'test@example.com', EmailDataIndicator: 'Y',
-              ConfirmEmailAddress: 'test@example.com', AddressLine1: 'Peoplebuilding 2 Peoplebuilding Estate',
-              AddressLine2: 'Maylands Avenue', AddressTownOrCity: 'Hemel Hempstead',
-              AddressCountryCode: 'GB', AddressPostcodeOrZip: 'HP2 4NW', PartyAccountType: 'TAXPAYER',
-              PartyPhoneNumber: '01234567891', PartyEmailAddress: 'noreply@northgateps.com',
-              PartyContactName: 'Mr Wobble', UserServices: { 'ins2:UserService' => ['LBTT'] },
+              UserPhoneNumber: '01234567890', Forename: 'forename', Surname: 'surname',
+              EmailAddress: 'test@example.com', ConfirmEmailAddress: 'test@example.com', PartyAccountType: 'TAXPAYER',
+              PartyNINO: nil, EmailDataIndicator: 'Y',
+              AddressLine1: 'Peoplebuilding 2 Peoplebuilding Estate', AddressLine2: 'Maylands Avenue',
+              AddressLine3: nil, AddressLine4: nil, AddressTownOrCity: 'Hemel Hempstead',
+              AddressCountyOrRegion: 'Hertfordshire', AddressCountryCode: 'GB', AddressPostcodeOrZip: 'HP2 4NW',
+              UserServices: { 'ins2:UserService' => ['LBTT'] },
               CompanyName: 'NORTHGATE PUBLIC SERVICES LIMITED', RegistrationNumber: '09338960',
               RegisteredAddress: { 'ins1:AddressLine1' => 'Peoplebuilding 2 Peoplebuilding Estate',
                                    'ins1:AddressLine2' => 'Maylands Avenue',
                                    'ins1:AddressTownOrCity' => 'Hemel Hempstead',
                                    'ins1:AddressCountyOrRegion' => 'Hertfordshire',
-                                   'ins1:AddressPostcodeOrZip' => 'HP2 4NW', 'ins1:AddressCountryCode' => 'GB' } }
+                                   'ins1:AddressPostcodeOrZip' => 'HP2 4NW',
+                                   'ins1:AddressCountryCode' => 'GB' },
+              PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@northgateps.com',
+              PartyPhoneNumber: '01234567891' }
+
   fixture = File.read('test/fixtures/files/register_user.xml')
 
   @savon.expects(:maintain_user_wsdl).with(message: message).returns(fixture)
@@ -379,20 +427,26 @@ Before('@mock_new_company_registration') do
   start_mock
   mock_address_search
   mock_address_details
-  message = { Action: 'CREATE', WorkplaceCode: '3', ServiceCode: 'SYS', UserPhoneNumber: '01234567890',
+
+  message = { Requestor: 'NEW.USER.REGISTRATION', Action: 'CREATE', WorkplaceCode: '3', ServiceCode: 'SYS',
               Username: 'NEW.USER.REGISTRATION', Password: 'Password001', ForcePasswordChange: 'N', UserIsCurrent: 'N',
-              Forename: 'forename', Surname: 'surname', EmailAddress: 'test@example.com',
-              ConfirmEmailAddress: 'test@example.com', AddressLine1: 'Royal Mail', EmailDataIndicator: 'Y',
-              AddressLine2: 'Luton Delivery Office 9-11', AddressTownOrCity: 'LUTON', AddressCountryCode: 'GB',
-              AddressPostcodeOrZip: 'LU1 1AA', PartyAccountType: 'TAXPAYER', PartyPhoneNumber: '01234567891',
-              PartyEmailAddress: 'noreply@northgateps.com', PartyContactName: 'Mr Wobble',
-              UserServices: { 'ins2:UserService' => ['LBTT'] }, CompanyName: 'NORTHGATE PUBLIC SERVICES LIMITED',
-              RegistrationNumber: '09338960',
+              UserPhoneNumber: '01234567890', Forename: 'forename', Surname: 'surname',
+              EmailAddress: 'test@example.com', ConfirmEmailAddress: 'test@example.com',
+              PartyAccountType: 'TAXPAYER', PartyNINO: nil,
+              EmailDataIndicator: 'Y', AddressLine1: 'Royal Mail', AddressLine2: 'Luton Delivery Office 9-11',
+              AddressLine3: 'Dunstable Road', AddressLine4: '', AddressTownOrCity: 'LUTON', AddressCountyOrRegion: '',
+              AddressCountryCode: 'EN', AddressPostcodeOrZip: 'LU1 1AA',
+              UserServices: { 'ins2:UserService' => ['LBTT'] },
+              CompanyName: 'NORTHGATE PUBLIC SERVICES LIMITED', RegistrationNumber: '09338960',
               RegisteredAddress: { 'ins1:AddressLine1' => 'Peoplebuilding 2 Peoplebuilding Estate',
                                    'ins1:AddressLine2' => 'Maylands Avenue',
                                    'ins1:AddressTownOrCity' => 'Hemel Hempstead',
                                    'ins1:AddressCountyOrRegion' => 'Hertfordshire',
-                                   'ins1:AddressPostcodeOrZip' => 'HP2 4NW', 'ins1:AddressCountryCode' => 'GB' } }
+                                   'ins1:AddressPostcodeOrZip' => 'HP2 4NW',
+                                   'ins1:AddressCountryCode' => 'GB' },
+              PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@northgateps.com',
+              PartyPhoneNumber: '01234567891' }
+
   fixture = File.read('test/fixtures/files/register_user.xml')
 
   @savon.expects(:maintain_user_wsdl).with(message: message).returns(fixture)
@@ -407,20 +461,9 @@ Before('@mock_slft_load_amend') do
   fixture = File.read('test/fixtures/files/slft_load_amend.xml')
   @savon.expects(:slft_tax_return_wsdl).with(message: message).returns(fixture)
 
-  calc_message = {}
-  calc_fixture = File.read('test/fixtures/files/slft_calculate.xml')
-  @savon.expects(:slft_calc_wsdl).with(message: calc_message).returns(calc_fixture)
-
-  Rails.logger.debug { "Mocking configured : #{@savon.inspect}" }
-end
-
-# Mock loading an SLfT return with missing sites to check we're fault tolerant
-Before('@mock_slft_load_no_sites_details') do
-  start_mock
-  mock_valid_signin
-  message = { "ins1:TareRefno": '960', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
-  fixture = File.read('test/fixtures/files/slft_load_no_sites.xml')
-  @savon.expects(:slft_tax_return_wsdl).with(message: message).returns(fixture)
+  message = { ParRefno: '117', Username: 'VALID.USER', Year: '2019', Quarter: 'Q1' }
+  fixture = File.read('test/fixtures/files/standard_sites.xml')
+  @savon.expects(:slft_sites_wsdl).with(message: message).returns(fixture)
 
   calc_message = {}
   calc_fixture = File.read('test/fixtures/files/slft_calculate.xml')
@@ -436,6 +479,10 @@ Before('@mock_slft_load_one_site_details') do
   message = { "ins1:TareRefno": '960', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
   fixture = File.read('test/fixtures/files/slft_load_one_site.xml')
   @savon.expects(:slft_tax_return_wsdl).with(message: message).returns(fixture)
+
+  message = { ParRefno: '117', Username: 'VALID.USER', Year: '2018', Quarter: 'Q1' }
+  fixture = File.read('test/fixtures/files/one_site.xml')
+  @savon.expects(:slft_sites_wsdl).with(message: message).returns(fixture)
 
   calc_message = {}
   calc_fixture = File.read('test/fixtures/files/slft_calculate.xml')
@@ -458,6 +505,10 @@ Before('@mock_slft_load_submit_draft') do
   message = { "ins1:TareRefno": '960', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
   fixture = File.read('test/fixtures/files/slft_load.xml')
   @savon.expects(:slft_tax_return_wsdl).with(message: message).returns(fixture)
+
+  message = { ParRefno: '117', Username: 'VALID.USER', Year: '2015', Quarter: 'Q1' }
+  fixture = File.read('test/fixtures/files/standard_sites.xml')
+  @savon.expects(:slft_sites_wsdl).with(message: message).returns(fixture)
 
   # saving draft twice
   fixture = File.read('test/fixtures/files/slft_draft_saved.xml')
@@ -483,30 +534,6 @@ def load_lbtt_convey
   @savon.expects(:lbtt_tax_return_wsdl).with(message: message).returns(fixture)
 end
 
-# Mock loading an LBTT return
-Before('@mock_load_lbtt_convey_details_with_tax_calc') do
-  start_mock
-  mock_valid_signin
-  load_lbtt_convey
-
-  calc_message = {}
-  calc_fixture = File.read('test/fixtures/files/lbtt_tax_calc.xml')
-  @savon.expects(:get_lbtt_calc_wsdl).with(message: calc_message).returns(calc_fixture)
-
-  Rails.logger.debug { "Mocking configured : #{@savon.inspect}" }
-end
-
-# Mock loading an LBTT return and responses for the amend tests
-Before('@mock_load_lbtt_convey_details_for_amend') do
-  start_mock
-  mock_valid_signin
-  load_lbtt_convey
-
-  mock_address_search
-  mock_address_details
-  Rails.logger.debug { "Mocking configured : #{@savon.inspect}" }
-end
-
 # Mock updating an LBTT return
 Before('@mock_update_lbtt_details') do
   start_mock
@@ -519,6 +546,54 @@ Before('@mock_update_lbtt_details') do
   lbtt_update_fixture = File.read('test/fixtures/files/lbtt_update.xml')
   @savon.expects(:lbtt_tax_return_wsdl).with(message: {}).returns(lbtt_update_fixture)
 
+  Rails.logger.debug { "Mocking configured : #{@savon.inspect}" }
+end
+
+# Mock updating an LBTT return
+Before('@mock_address_identifier_details') do
+  start_mock
+  mock_valid_signin
+  mock_address_search
+  mock_address_details
+  mock_address_search
+  mock_address_details
+
+  lbtt = { :"ins1:FlbtType" => 'CONVEY', :"ins1:PropertyType" => nil,
+           :"ins1:EffectiveDate" => nil, :"ins1:RelevantDate" => nil,
+           :"ins1:ContractDate" => nil, :"ins1:PreviousOptionInd" => nil,
+           :"ins1:ExchangeInd" => nil, :"ins1:UKInd" => nil,
+           'ins1:Parties' => { "ins1:Party": [mock_party_1, mock_party_2, mock_agent] },
+           'ins1:LinkedConsideration' => 0, 'ins1:BusinessInd' => nil, 'ins1:TotalConsideration' => nil,
+           'ins1:TotalVat' => nil, 'ins1:NonChargeable' => nil, 'ins1:RemainingChargeable' => nil,
+           'ins1:Reliefs' => { "ins1:Relief": [] }, 'ins1:Calculated' => nil, 'ins1:AdsDue' => nil,
+           'ins1:DueBeforeReliefs' => '0.0', 'ins1:TotalReliefs' => nil,
+           'ins1:TotalADSReliefs' => nil, 'ins1:TaxDue' => '0', 'ins1:OrigCalculated' => nil, 'ins1:OrigAdsDue' => nil,
+           'ins1:OrigDueBeforeReliefs' => '0.0', 'ins1:OrigTotalReliefs' => nil, 'ins1:OrigTaxDue' => '0',
+           'ins1:OrigNetPresentValue' => nil, 'ins1:OrigTotalADSReliefs' => nil, 'ins1:OrigPremiumTaxDue' => nil,
+           'ins1:AdsDueInd' => 'no', 'ins1:ContingentsEventInd' => nil }
+
+  msg = { FormType: 'D', Version: '1', Username: 'VALID.USER', ParRefno: '117',
+          "ins1:LBTTReturnDetails": lbtt }
+  lbtt_save_draft_fixture = File.read('test/fixtures/files/lbtt_draft_saved.xml')
+  @savon.expects(:lbtt_tax_return_wsdl).with(message: msg).returns(lbtt_save_draft_fixture)
+
+  Rails.logger.debug { "Mocking configured : #{@savon.inspect}" }
+end
+
+# Mock calling the back office and getting a success=false no messages error which should send the user to the
+# error page with a back link on it
+# This is only used for development testing # @see errors.feature
+Before('@mock_lbtt_serious_back_office_error') do
+  start_mock
+  mock_valid_signin
+  message = { "ins1:TareRefno": '251', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
+  fixture = File.read('test/fixtures/files/lbtt_load_success_false_no_messages.xml')
+  @savon.expects(:lbtt_tax_return_wsdl).with(message: message).returns(fixture)
+
+  # back to the dashboard
+  mock_list_secure_messages('117', 'VALID.USER')
+  mock_all_returns('117', 'VALID.USER')
+  mock_all_returns('117', 'VALID.USER')
   Rails.logger.debug { "Mocking configured : #{@savon.inspect}" }
 end
 

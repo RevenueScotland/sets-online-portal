@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<soap:Body>
+		<SLFTSitesResponse xmlns="http://www.northgateps.com/RSTS/SLFTSites" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+			<core:Success>true</core:Success>
+			<SLFTSites>
+				<Site>
+					<SiteName>Waste Site 1</SiteName>
+					<LasiRefno>99</LasiRefno>
+					<SepaLicenceNumber>12345</SepaLicenceNumber>
+					<LowerExpectedTonnage>10000</LowerExpectedTonnage>
+					<StandardExpectedTonnage>20000</StandardExpectedTonnage>
+					<ExemptExpectedTonnage>100</ExemptExpectedTonnage>
+					<WeighbridgeInd>yes</WeighbridgeInd>
+					<NonDisposalInd>no</NonDisposalInd>
+					<ControllerParRefno>148</ControllerParRefno>
+				</Site>
+				<Site>
+					<SiteName>Waste Site 2</SiteName>
+					<LasiRefno>100</LasiRefno>
+					<SepaLicenceNumber>12345</SepaLicenceNumber>
+					<LowerExpectedTonnage>10000</LowerExpectedTonnage>
+					<StandardExpectedTonnage>20000</StandardExpectedTonnage>
+					<ExemptExpectedTonnage>100</ExemptExpectedTonnage>
+					<WeighbridgeInd>yes</WeighbridgeInd>
+					<NonDisposalInd>no</NonDisposalInd>
+					<ControllerParRefno>148</ControllerParRefno>
+				</Site>
+			</SLFTSites>
+		</SLFTSitesResponse>
+	</soap:Body>
+</soap:Envelope>

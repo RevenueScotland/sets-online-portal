@@ -7,27 +7,27 @@ en:
         version: "Version" # translation for print format
         form_type: "Status" # translation for print format
         payment_date: "Payment due date" # translation for print format
-        slcf_yes_no: "Are you claiming a credit in relation to an environmental contribution?"
+        slcf_yes_no: "Are you claiming a credit in relation to an environmental contribution"
         slcf_contribution: "Contribution to environmental bodies"
         slcf_credit_claimed: "Credit claimed in relation to the contribution"
-        bad_debt_yes_no: "Do you have any claims to make in relation to bad debt?"
+        bad_debt_yes_no: "Do you have any claims to make in relation to bad debt"
         bad_debt_credit: "Bad debt claim amount"
-        non_disposal_add_ind: "Have you designated a new non-disposal area on any of your sites?"
+        non_disposal_add_ind: "Have you designated a new non-disposal area on any of your sites"
         non_disposal_add_text: "Tell us which sites have a new non disposal area"
-        non_disposal_delete_ind: "Have you ceased to operate a non-disposal area on any of your sites?"
+        non_disposal_delete_ind: "Have you ceased to operate a non-disposal area on any of your sites"
         non_disposal_delete_text: "Tell us which sites you have removed a non-disposal area from"
         fape_period: "SLfT quarter"
         year: "SLfT year"
-        removal_credit_yes_no: "Are you claiming a credit for permanent removal?"
+        removal_credit_yes_no: "Are you claiming a credit for permanent removal"
         removal_credit: "Permanent removal claim amount"
-        declaration_error: "The declaration"
-        declaration: "I, the taxpayer, confirm that this return is, to the best of my knowledge, correct and complete"
-        fpay_method: "How are you paying?"
+        SLFT_declaration: "I, the taxpayer, confirm that this return is, to the best of my knowledge, correct and complete"
+        declaration: "The declaration"
+        fpay_method: "How are you paying"
         total_tax_due: "Total tax due"
         total_credit: "Total credit"
         tax_payable: "Total payable"
-        repayment_yes_no: "Do you want to request a repayment from Revenue Scotland?"
-        amount_claimed: "How much are you claiming from Revenue Scotland?"
+        repayment_yes_no: "Do you want to request a repayment from Revenue Scotland"
+        amount_claimed: "How much are you claiming from Revenue Scotland"
         account_holder: "Name of the account holder"
         bank_account_no: "Bank / building society account number"
         bank_sort_code: "Branch sort code"
@@ -36,12 +36,14 @@ en:
         rrep_bank_auth_text: ""
       returns/slft/waste:
         ewc_code: "EWC code"
+        ewc_description: "EWC description"
         description: "Description of waste"
         lau_code: "Geographical area"
+        lau_description: "Geographical area name"
         fmme_method: "Management method"
-        from_non_disposal_ind: "Has this waste been moved out of a non-disposal area (NDA)?"
-        pre_treated_ind: "Is it pre-treated?"
-        exemption_yes_no: "Is there an exemption for the waste?"
+        from_non_disposal_ind: "Has this waste been moved out of a non-disposal area (NDA)"
+        pre_treated_ind: "Is it pre-treated"
+        exemption_yes_no: "Is there an exemption for the waste"
         nda_ex_yes_no: "NDA"
         restoration_ex_yes_no: "Restoration"
         other_ex_yes_no: "Other"
@@ -53,37 +55,45 @@ en:
         lower_tonnage: "Lower tonnage"
         exempt_tonnage: "Exempt tonnage"
         water_tonnage: "Water discount tonnage"
-        total: "Total tonnage"
+        total_tonnage: "Total tonnage"
+      returns/slft/site:
+        site_name: "Site"
+        net_lower_tonnage: "Lower rate<br/>tonnage (net)"
+        net_standard_tonnage: "Standard rate<br/>tonnage (net)"
+        exempt_tonnage: "Exempt<br/>tonnage"
+        total_tonnage: "Total<br/>tonnage"
     errors:
       models:
         returns/slft/slft_return:
           attributes:
             # Custom messages for the summary page
-            year:
+            base:
               missing_about_the_transaction: "Please fill in the 'Return period' section"
-            slcf_yes_no:
               missing_credits_claimed: "Please fill in the 'Credits claimed' section"
+            sites:
+              site_removed: "Site %{site_name} has been removed as it is not required for this quarter "
             # Custom messages for the slcf_credit_claimed validations for numericality
             slcf_credit_claimed:
-              less_than: "must be less than the contribution to environmental bodies"
+              less_than_or_equal_to: "Credit claimed must be less than 90% of the contribution to environmental bodies"
         returns/slft/waste:
           attributes:
             standard_tonnage:
-              only_one_waste_type: "cannot be set when other tonnages are set"
+              only_one_waste_type: "%{attribute} cannot be set when other tonnages are set"
+              missing_tonnage: "%{attribute} or the lower or exempt tonnage must be entered"
             lower_tonnage:
-              only_one_waste_type: "cannot be set when other tonnages are set"
+              only_one_waste_type: "%{attribute} cannot be set when other tonnages are set"
             exempt_tonnage:
-              only_one_waste_type: "cannot be set when other tonnages are set"
+              only_one_waste_type: "%{attribute} cannot be set when other tonnages are set"
             water_tonnage:
-              cannot_be_set_with_exempt: "cannot be set when exempt tonnage is set"
-              cannot_exceed_tonnage: "cannot exceed the waste tonnage"
+              cannot_be_set_with_exempt: "%{attribute} cannot be set when exempt tonnage is set"
+              cannot_exceed_tonnage: "%{attribute} cannot exceed the waste tonnage"
+            nda_ex_yes_no:
+              missing_exemption_tonnage: "%{attribute} or restoration or other must be selected"
             base:
-              missing_exemption_tonnage: "At least one reason must be filled in"
-              missing_tonnage: "Enter waste details"
-              exemption_tonnage_isnt_equal: "Total of all exemptions must be equal to Exempt tonnage"
+              exemption_tonnage_isnt_equal: "The total tonnage of these exemptions must be equal to the exempt tonnage"
     hints:
       returns/slft/slft_return:
-        slcf_credit_claimed: "It cant be more than 90% of you total contribution for the accounting year and must not exceed 5.6% of your SLFT liability in the contribution year."
+        slcf_credit_claimed: "This can't be more than 90% of your total contribution for the accounting period and must not exceed 5.6% of your SLFT liability in the contribution year."
         bank_account_no: "This should be 8 digits"
         bank_sort_code: "The sort code should be entered in the format 99-99-99"
       returns/slft/waste:
@@ -100,22 +110,18 @@ en:
         description: "The SLfT return is split into sections which can be completed in any order."
         transaction_subtitle: "Return period"
         sites_subtitle: "Registered site list"
+        deleted_sites_subtitle: "Removed site list"
+        deleted_sites_description: "The sites listed are not owned by you during this period and will not be saved, if this is incorrect change the return period"
         credits_subtitle: "Credits claimed"
         warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
         form_dirty_warning_message: "You are about to leave this return. If you haven't saved your changes click 'Cancel' followed by the 'Save draft' button on the return summary screen. Any unsaved changes will be lost."
+        add_waste_details: "Add waste details"
+        total: "Total"
         link:
           add_transaction_details: "Add return period"
           edit_transaction_details: "Edit return period"
-          add_waste_details: "Add waste details"
           add_credits_details: "Add credit details"
           edit_credits_details: "Edit credit details"
-      site_summary_table:
-        net_lower_tonnage: "Lower rate<br/>tonnage (net)"
-        net_standard_tonnage: "Standard rate<br/>tonnage (net)"
-        exempt_tonnage: "Exempt<br/>tonnage"
-        total_tonnage: "Total<br/>tonnage"
-        link:
-          add_waste_details: "Add waste details"
       credit_environmental:
         title: "Environmental credit"
         subtitle: ""
@@ -136,7 +142,8 @@ en:
         title: "Return saved"
         information: "Your tax return has been saved so that you can return to either complete or cancel it."
         caution: "It has not been submitted to Revenue Scotland."
-        reference_html: "Your return reference is <b>%{ref}</b>. You will need this to find your return."
+        return_html: "Your return reference is"
+        reference_html: "You will need this to find your return."
         link:
           back_to_return_summary: "Back to return summary"
           go_to_dashboard: "Go to dashboard"
@@ -165,21 +172,30 @@ en:
     slft_sites_waste:
       site_waste_summary:
         title: "Waste details summary"
-        subtitle: "Waste details summary for"
+        subtitle: "Waste details summary for %{site_name}"
         description: "EWC code"
         standard_tonnage: "Standard tonnage"
         lower_tonnage: "Lower tonnage"
         total_tonnage: "Total tonnage"
         exempt_tonnage: "Exempt tonnage"
         water_tonnage: "Water tonnage"
+        file_upload_label: "Load waste summary details from a CSV file"
+        delete_all: "Delete all waste types?"
+        edit_row: "Edit row"
+        delete_row: "Delete row"
+        delete: "Delete %{value}?"
         link:
           add_new_waste_type: "Add new waste type"
+          delete_all_waste_types: "Delete all waste types"
       waste_description:
-        title: "Details of waste"
+        title: "Details of the %{waste} waste for %{site_name}"
         subtitle: "Provide the following waste details"
-      waste_exemption:
-        title: "Details of waste"
-        subtitle: "Why is some tonnage exempt?"
       waste_tonnage:
-        title: "Provide tonnage details for this waste type"
-        subtitle: "Provide the following waste details"
+        title: "Details of the %{waste} waste for %{site_name}"
+        subtitle: "Provide tonnage details for this waste type"
+      waste_exemption:
+        title: "Details of the %{waste} waste for %{site_name}"
+        subtitle: "Why is some tonnage exempt?"
+      csv_upload:
+        title: "CSV upload results"
+        subtitle: "Review the imported lines and select which to load"
