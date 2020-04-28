@@ -85,6 +85,26 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     content_tag(:div, label + text, display_field_wrapper_html_options(html_options[:wrapper]))
   end
 
+  # Creates the standard heading and body paragraph(s) using the passed parameters.
+  # It is also possible to exclude the title, so it will just have the body paragraph in it.
+  # The normal text only needs to be passed for this to add the correct tags and classes around the text. But if tags
+  # were added on the :body then this can modify it to add the standard classes of each elements.
+  # @param contents [Hash] containing two keys to be used to ensure that the paragraph has the correct classes
+  #   - :heading [String] pass in the string as the title of the current paragraph(s), leave blank if there's no need.
+  #     There is no need to put the <h2> as that will be added for you.
+  #   - :body [Array] array of strings which is the body of the paragraph(s). There is no need to put the <p> but if
+  #     its needed then make sure that you add all the tags you need.
+  # @return [HTML block element] the heading (if this exists) and a body paragraph with the correct classes.
+  def display_paragraph_components(contents)
+    # The <h2> automatically gets added to an existing :heading, otherwise leave it an empty string.
+    title = contents[:heading].present? ? content_tag(:h2, contents[:heading]) : ''
+    body = contents[:body].html_safe
+    # Only add a <p> tag if the contents of the :body does not have <p> or paragraph tag with attributes,
+    # like <p class='hello'>
+    body = content_tag(:p, body) unless body.include?('<p>') || !(body =~ /\<p[\"\=\w\s\'\d]*\>/).nil?
+    UtilityHelper.standardize_elements(title + body).html_safe
+  end
+
   # Create a list of navigational links.
   #
   # Input parameter includes a collection of link data and options to
@@ -265,11 +285,17 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # @param obj [Object] The object containing the errors
   # @return [Array] an array of hashed with an object: and optionally an index:
   def object_and_index_array(obj)
-    return [object_and_index_hash(obj)] unless obj.is_a?(Array) # deal with the simple case that this isn't an array
+    # deal with the simple case that this isn't an array or a hash
+    return [object_and_index_hash(obj)] unless obj.is_a?(Array) || obj.is_a?(Hash)
 
-    # make sure that if the object is an array all the same we push it down a level in the array
-    object_class = obj[0].class
-    obj = [obj] if obj.all? { |o| o.class == object_class }
+    if obj.is_a?(Array)
+      # make sure that if the object is an array all the same we push it down a level in the array
+      object_class = obj[0].class
+      obj = [obj] if obj.all? { |o| o.class == object_class }
+    elsif obj.is_a?(Hash)
+      # if object is a hash then make it an array so the iterate processes correctly
+      obj = [obj]
+    end
 
     # Now we can iterate to create the hash
     iterate_object(obj)
@@ -278,15 +304,18 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # Iterates around the object to produce a hash of the objects and the index in the array if needed
   # assumes the object has already been tidied up @see object_and_index_array
   # @param obj [Object] The object array
+  # @param error_array [Array] The array of error objects
   # @return [Array] an array of hashes @see object_and_index_hash
-  def iterate_object(obj)
-    error_array = []
+  def iterate_object(obj, error_array = [])
     obj.each do |this_object|
       if this_object.is_a?(Array)
         # Need to iterate around this object, we now assume this is an array of the same object type
         this_object.each_with_index { |that_object, i| error_array << object_and_index_hash(that_object, i) }
+      elsif this_object.is_a?(Hash)
+        # If the object is a hash then use the hash key as the index
+        this_object.each { |i, that_object| error_array << object_and_index_hash(that_object, i) }
       else
-        # handle an array on objects
+        # handle a normal object
         error_array << object_and_index_hash(this_object)
       end
     end

@@ -84,15 +84,21 @@ module PrintData # rubocop:disable Metrics/ModuleLength
                   :sectiondivider, :displaytitle, :itemcount, :tablerowcount, :tablecolumncount
 
     # Creates a section
+    # The parent section options are used for the first section when a section is based on an array
+    # of objects. This allows headers to be provided for the start of the list of objects rather than for
+    # each individual object
     # @param object [Object] the object being rendered
     # @param section_options [Hash] the hash being used to render this section
-    # @param parent_section_options [Hash] the hash for the parent section when processing objects
     # @param objects [Array] an array of objects when rendering a table
+    # @param parent_section_options [Hash] the hash for the parent section when processing objects
     # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
     # @return [SectionData] an instance of section data
     def initialize(object, section_options, objects = nil, parent_section_options = nil, extra_data = nil)
-      initialize_section_options(section_options)
-      @sectiontitle = object.section_name(section_options, parent_section_options)
+      use_parent_title = (parent_section_options || {})[:use_parent_title]
+      # Pass the parent options down for initialisation if needed
+      initialize_section_options(section_options, (use_parent_title ? parent_section_options : {}))
+
+      @sectiontitle = object.section_name(section_options, parent_section_options, extra_data)
 
       if sectiontype == :list
         list_specific_items(object, section_options, extra_data)
@@ -104,13 +110,42 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     private
 
     # Initialises the basic section options
+    # The parent details are only used if the option is not provided for this section
+    # The rules are
+    #   Use the current section option if the value is provided
+    #   else use the parent section value
     # @param section_options [Hash] the hash being used to render this section
-    def initialize_section_options(section_options)
-      @sectioncode = section_options[:code]
-      @sectiontype = section_options[:type]
-      @sectiondivider = section_options[:divider]
-      @pagebreak = section_options[:page_break]
-      @displaytitle = section_options[:display_title]
+    # @param parent_section_options [Hash] The parent section details
+    def initialize_section_options(section_options, parent_section_options)
+      @sectioncode = set_value(section_options, parent_section_options, :code)
+      @sectiontype = set_value(section_options, parent_section_options, :type)
+      @sectiondivider = set_value(section_options, parent_section_options, :divider)
+      @pagebreak = set_value(section_options, parent_section_options, :page_break)
+      @displaytitle = set_value(section_options, parent_section_options, :display_title)
+    end
+
+    # Set the individual option value based on the rule
+    #   Use the current section option if the value is provided
+    #   else use the parent section value
+    # @param section_options [Hash] the hash being used to render this section
+    # @param parent_section_options [Hash] The parent section details
+    # @param key [Symbol] The key being processed
+    def set_value(section_options, parent_section_options, key)
+      return section_options[key] if section_options.key?(key)
+
+      parent_section_options[key]
+    end
+
+    # Override the section options
+    # This overrides previously set values based on those passed in if they are specifed
+    # @param section_options [Hash] the hash being used to render this section
+    def override_section_options(section_options)
+      # Note we can't use || as the values may be false
+      @sectioncode = section_options[:code] if section_options.key?(:code)
+      @sectiontype = section_options[:type] if section_options.key?(:type)
+      @sectiondivider = section_options[:divider] if section_options.key?(:divider)
+      @pagebreak = section_options[:page_break] if section_options.key?(:page_break)
+      @displaytitle = section_options[:display_title] if section_options.key?(:display_title)
     end
 
     # For tables, loops around the array of objects and gets a row of data for each object
@@ -160,7 +195,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
       @itemcode = item_options[:code]
       @itemformat = item_options[:format]
       unless item_options[:nolabel]
-        @itemlabel = object.this_label(item_options[:code], item_options[:key_scope], item_options[:translation_extra],
+        @itemlabel = object.this_label(item_options[:code], item_options[:key_scope], item_options,
                                        extra_data)
       end
 
@@ -219,7 +254,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
       if item_count == 1 || item[:nolabel]
         this_value
       else
-        object.this_label(item[:code], item[:key_scope], item[:translation_extra], extra_data) + ' : ' +
+        object.this_label(item[:code], item[:key_scope], item, extra_data) + ' : ' +
           (this_value || '')
       end
     end
@@ -233,30 +268,30 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param layout [Symbol] The method to call on the model for the layout, the default is :print_layout
   # @return [Json] The json format of the wrapped sections for the printing
   def print_data(layout = :print_layout, extra_data = nil)
-    PrintData.new(sections(nil, layout, extra_data)).to_json
+    PrintData.new(sections(layout, extra_data)).to_json
   end
 
   # This is the main routine is loops through the sections defined on the underlying object from
   # the #print_layout method and then builds the sections and the items/tables that make it up.
-  # @param parent_section [Hash] The options for the parent section used when processing objects
   # @param layout [Symbol] The method to call on the model for the layout, the default is :print_layout
   # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
+  # @param parent_section [Hash] The options for the parent section used when processing objects
+  # @param first_object [Boolean] Set if processing objects and this is the first object, used to control headings
   # @return [hash] the sections to be printed; may be merged into a parent object
-  def sections(parent_section, layout, extra_data)
-    # raise Error::AppError.new('sections', 'print_layout not defined') unless respond_to?(:print_layout)
-
+  def sections(layout, extra_data, parent_section = nil, first_object = false)
     layout_print = send(layout)
 
     section_list = []
 
     # loop around each section rendering it in turn
-    layout_print.each do |section|
+    layout_print.each_with_index do |section, i|
       next if section.nil?
 
-      Rails.logger.debug("Section #{section[:code]} Type #{section[:type]} Extra Data #{extra_data.inspect}}")
+      Rails.logger.debug("Section #{section[:code]} Type #{section[:type]} Extra Data #{extra_data.inspect}")
       next if skip_section(section, parent_section, extra_data)
 
-      section_list += process_section(layout, section, parent_section, extra_data)
+      section_list += process_section(layout, section, extra_data, parent_section,
+                                      (first_object && i.zero? ? true : false))
     end
     section_list # return the section list
   end
@@ -290,9 +325,9 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param section_options [Hash] the hash being used to render this section
   # @param parent_section_options [Hash] the hash for the parent section if an object
   # @return [string] the section name to use
-  def section_name(section_options, parent_section_options)
+  def section_name(section_options, parent_section_options, extra_data)
     section_name = extract_name(parent_section_options)
-    section_name = extract_name(replace_section_name(section_options)) if section_name.nil?
+    section_name = extract_name(replace_section_name(section_options, extra_data)) if section_name.nil?
     section_name
   end
 
@@ -315,15 +350,20 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # defined in the #translation_attribute method on the object
   # @param code [string] The name of the attribute
   # @param key_scope [string] The scope for the translation
-  # @param translation_extra [string] the key to look up in the translation options if they are passed
+  # @param options [Hash] The hash of options
   # @param extra_data [Hash] a hash of extra translation options keyed on a value
   # @return [string] the label for this item
-  def this_label(code, key_scope, translation_extra, extra_data)
-    extra = extra_data[translation_extra] unless translation_extra.nil? || extra_data.nil?
+  def this_label(code, key_scope, options, extra_data)
+    options ||= {}
+    # Set the value of the translations options if a key was passed in to the item that is present in the extra data
+    unless options[:translation_extra].nil? || extra_data.nil?
+      options[:translation_options] = extra_data[options[:translation_extra]]
+    end
+    options[:key_scope] = i18n_item_scope(key_scope)
 
-    label = UtilityHelper.label_text(self, code, key_scope: i18n_item_scope(key_scope), translation_options: extra)
+    label = UtilityHelper.label_text(self, code, options)
     # Make sure breaks turn into returns for printing
-    label = label.gsub('<br/>', "\n")
+    label = label.gsub('<br>', "\n")
     # strip any other HTML out of the labels
     sanitizer = Rails::Html::FullSanitizer.new
     sanitizer.sanitize(label)
@@ -395,7 +435,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     row_cells.each do |cell|
       list << if cell[:list_items].count == 1
                 item = cell[:list_items][0]
-                this_label(item[:code], item[:key_scope], item[:translation_extra], extra_data) unless item[:nolabel]
+                this_label(item[:code], item[:key_scope], item, extra_data) unless item[:nolabel]
               else
                 ''
               end
@@ -415,10 +455,11 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # note that it returns an array as the section may be based on a list of objects
   # in which case each object is a section
   # @param section_options [Hash] The options to be used for this section
-  # @param parent_section_options [Hash] The options for the parent section when this is an object
   # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
+  # @param parent_section_options [Hash] The options for the parent section when this is an object
+  # @param use_parent_title [Boolean] Should you use the parent section to generate the section headers
   # @return [Array] the sections rendered
-  def process_section(layout, section_options, parent_section_options, extra_data)
+  def process_section(layout, section_options, extra_data, parent_section_options, use_parent_title)
     # for table and object types get the list of objects
     # skip if there are none
     if %i[object table].include?(section_options[:type])
@@ -428,9 +469,11 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     end
 
     if %i[list table].include?(section_options[:type])
-      [SectionData.new(self, section_options, objects, parent_section_options, extra_data)] # always return an array
+      # always return an array so wrap this in an array
+      parent_section_options[:use_parent_title] = use_parent_title unless parent_section_options.nil?
+      [SectionData.new(self, section_options, objects, parent_section_options, extra_data)]
     else # object
-      process_objects_section(replace_section_name(section_options), layout, objects, extra_data)
+      process_objects_section(replace_section_name(section_options, extra_data), layout, objects, extra_data)
     end
   end
 
@@ -456,8 +499,12 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     return if objects.nil?
 
     section_list = []
-    objects.each do |object|
-      section_list += object.sections(parent_section, layout, extra_data)
+    objects.each_with_index do |object, i|
+      extra_data ||= {}
+      # We're passing in the index of the object so that we can use it with things like showing or hiding a row of data
+      # depending on the index of the object.
+      extra_data[:object_index] = i
+      section_list += object.sections(layout, extra_data, parent_section, (i.zero? ? true : false))
     end
     section_list
   end
@@ -548,19 +595,23 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # It turns a key with a replace #key_value# into a string and a name method into the value
   # @param section_options [Hash] the hash being used to render this section
   # @return [Hash] the revised hash
-  def replace_section_name(section_options)
-    section_options = replace_section_name_key(section_options)
+  def replace_section_name(section_options, extra_data)
+    section_options = replace_section_name_key(section_options, extra_data)
     replace_section_name_name(section_options)
   end
 
   # This turns a key with a replace #key_value# into a string
   # @param section_options [Hash] the hash being used to render this section
   # @return [Hash] the revised hash
-  def replace_section_name_key(section_options)
+  def replace_section_name_key(section_options, extra_data)
     # If the key is a string replace value and turn it into a symbol
     unless section_options[:key].nil?
+      # The :key_value can be used as the method to be called from the model OR
+      # it can be called from the print_data's extra_data parameter.
       key_value = section_options.delete(:key_value)
-      value = send(key_value) unless key_value.nil?
+      unless key_value.nil?
+        value = extra_data.blank? || extra_data[key_value].nil? ? send(key_value) : extra_data[key_value]
+      end
       key = section_options[:key]
       section_options[:key] = key.sub('#key_value#', value).to_sym if key.is_a? String
     end

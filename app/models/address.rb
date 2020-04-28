@@ -46,11 +46,13 @@ class Address < FLApplicationRecord
 
   # Performs a get address detail query
   # @param address_identifier the identifier of the address to be searched for
+  # @param default_country [String] the default country to carry forward
   # @return [Object] the details of the address
-  def self.find(address_identifier)
+  def self.find(address_identifier, default_country)
     address_detail = {}
     success = call_ok?(:address_detail, Address: { 'ins1:AddressIdentifier' => address_identifier }) do |body|
       body[:address][:country] = convert_search_country_code(body[:address][:country])
+      body[:address][:default_country] = default_country
       address_detail = new(body[:address])
     end
     address_detail if success

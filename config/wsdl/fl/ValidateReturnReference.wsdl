@@ -144,12 +144,12 @@
 					<xs:sequence>
 						<xs:choice>
 							<xs:sequence>
-								<xs:element name="Username" type="xs:string">
+								<xs:element type="xs:string" name="Username">
 									<xs:annotation>
 										<xs:documentation>Portal User name that submitted the claim</xs:documentation>
 									</xs:annotation>
 								</xs:element>
-								<xs:element name="ParRefNo" type="xs:integer">
+								<xs:element type="xs:integer" name="ParRefNo">
 									<xs:annotation>
 										<xs:documentation>Portal Users Party Reference No (PBE)</xs:documentation>
 									</xs:annotation>
@@ -157,7 +157,7 @@
 							</xs:sequence>
 							<xs:element name="UnAuthenticated" type="xs:boolean" default="true"/>
 						</xs:choice>
-						<xs:element name="TareReference" type="xs:string">
+						<xs:element type="xs:string" name="TareReference">
 							<xs:annotation>
 								<xs:documentation>Return Reference which requires to be validated</xs:documentation>
 							</xs:annotation>
@@ -181,13 +181,12 @@
 								<xs:element name="Status" type="xs:string" minOccurs="0"/>
 								<xs:element name="SubmittedDate" type="xs:date" minOccurs="0"/>
 								<xs:element name="ADSIncluded" type="xs:string" minOccurs="0"/>
-								<xs:element name="ADSAddressPostcode" type="xs:string" minOccurs="0"/>
 								<xs:element name="ADSPropertyTitle" type="xs:string" minOccurs="0"/>
 								<xs:element name="ADSFtpfCode" type="xs:string" minOccurs="0"/>
-								<xs:element name="OpenADSRepaymentIndicator" type="xs:string" minOccurs="0"/>
-								<xs:element name="OpenClaimIndicator" type="xs:string" minOccurs="0"/>
 								<xs:element name="FlbtType" type="xs:string" minOccurs="0"/>
 								<xs:element name="FilingDate" type="xs:date" minOccurs="0"/>
+								<xs:element name="NoOfBuyers" type="xs:string" minOccurs="0"/>
+								<xs:element name="ADSAmount" type="xs:string" minOccurs="0"/>
 							</xs:sequence>
 						</xs:extension>
 					</xs:complexContent>

@@ -1,9 +1,8 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= content_for :page_title, t('.title')%>
 <% content_for :hide_back_link, :remove_param_new %>
-
 <%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @claim_payment %>
-    <%= f.text_field :tare_reference %>
-    <%= f.button 'next', { :name => 'submitted' } %>
+  <%= f.text_field :tare_reference %>
+  <%= f.button %>
 <% end %>

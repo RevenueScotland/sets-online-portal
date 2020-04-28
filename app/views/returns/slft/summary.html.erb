@@ -9,14 +9,11 @@
 <%= form_for @slft_return, url: returns_slft_summary_path, method: :post, 
             :data => { 'form-dirty-warning-message' => t('.form_dirty_warning_message') } , local: true do |f| %>
   <%= form_errors_for @slft_return %>
-
   <%= govuk_warning( t('.warning') ) %>
-
   <% transactions_nav_link = {
     link: @slft_return.year.blank? ? :add_transaction_details : :edit_transaction_details,
     path: returns_slft_transaction_period_path,
     link_options: { id: 'add_return_period' } } %>
-
   <%= display_region( {
     header: { label: t('.transaction_subtitle') }.merge(transactions_nav_link),
     data: [ { model: @slft_return,
@@ -28,7 +25,6 @@
     { header: { link_cell_class: 'text_align_right' },
       data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
   %>
-
   <%= display_table_region( { 
       header: { label: t('.sites_subtitle') }, 
       table: { models: @slft_return.sites&.values, attributes: [:site_name, :net_lower_tonnage, :net_standard_tonnage, :exempt_tonnage, :total_tonnage],
@@ -37,7 +33,6 @@
                                       } } } 
       }, 
       { header: { link_cell_class: 'text_align_right' } } ) %>
-
   <% unless (@slft_return.deleted_sites||{}).count.zero? %>
     <%= display_table_region( { 
         header: { label: t('.deleted_sites_subtitle') }, 
@@ -47,12 +42,10 @@
         }, 
         { header: { link_cell_class: 'text_align_right' } } ) %>
   <% end %>
-
   <% credits_nav_link = {
     link: @slft_return.slcf_yes_no.blank? ? :add_credits_details : :edit_credits_details,
     path: returns_slft_credit_environmental_path,
     link_options: { id: 'add_credit_details' } } %>
-
   <%= display_region( {
     header: { label: t('.credits_subtitle') }.merge(credits_nav_link),
     data: [ { model: @slft_return,
@@ -68,7 +61,6 @@
     { header: { link_cell_class: 'text_align_right' },
       data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
   %>
-
   <% if can? AuthorisationHelper::SLFT_SAVE %>
     <%= f.button 'save_draft', { :name => 'save_draft' }  %>
   <% end %>

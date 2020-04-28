@@ -7,7 +7,7 @@ module Returns
     extend ActiveSupport::Concern
 
     # Return the parameter list filtered for the attributes of the LbttReturn model
-    def filter_params
+    def filter_params(_sub_object_attribute = nil)
       required = :returns_lbtt_lbtt_return
       attribute_list = Lbtt::LbttReturn.attribute_list
 

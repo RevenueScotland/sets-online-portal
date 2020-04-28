@@ -58,10 +58,10 @@ en:
         total_tonnage: "Total tonnage"
       returns/slft/site:
         site_name: "Site"
-        net_lower_tonnage: "Lower rate<br/>tonnage (net)"
-        net_standard_tonnage: "Standard rate<br/>tonnage (net)"
-        exempt_tonnage: "Exempt<br/>tonnage"
-        total_tonnage: "Total<br/>tonnage"
+        net_lower_tonnage: "Lower rate<br>tonnage (net)"
+        net_standard_tonnage: "Standard rate<br>tonnage (net)"
+        exempt_tonnage: "Exempt<br>tonnage"
+        total_tonnage: "Total<br>tonnage"
     errors:
       models:
         returns/slft/slft_return:
@@ -70,11 +70,12 @@ en:
             base:
               missing_about_the_transaction: "Please fill in the 'Return period' section"
               missing_credits_claimed: "Please fill in the 'Credits claimed' section"
+              has_already_been_submitted: "This return has already been submitted. If you are unsure that the return has been submitted, save a draft version and check on the dashboard"
             sites:
               site_removed: "Site %{site_name} has been removed as it is not required for this quarter "
             # Custom messages for the slcf_credit_claimed validations for numericality
             slcf_credit_claimed:
-              less_than_or_equal_to: "Credit claimed must be less than 90% of the contribution to environmental bodies"
+              less_than_or_equal_to: "Credit claimed must be less than the specified percentage of the contribution to environmental bodies"
         returns/slft/waste:
           attributes:
             standard_tonnage:
@@ -93,7 +94,7 @@ en:
               exemption_tonnage_isnt_equal: "The total tonnage of these exemptions must be equal to the exempt tonnage"
     hints:
       returns/slft/slft_return:
-        slcf_credit_claimed: "This can't be more than 90% of your total contribution for the accounting period and must not exceed 5.6% of your SLFT liability in the contribution year."
+        slcf_credit_claimed: "This can't be more than %{env_contrib_cut_off}% of your total contribution for the accounting period and must not exceed %{liability_cut_off}% of your SLFT liability in the contribution year"
         bank_account_no: "This should be 8 digits"
         bank_sort_code: "The sort code should be entered in the format 99-99-99"
       returns/slft/waste:
@@ -125,7 +126,7 @@ en:
       credit_environmental:
         title: "Environmental credit"
         subtitle: ""
-        credit_claimed_hint: "This is the amount you are claiming to be deducted from your total tax liability for this quarter. It can't be more than 90% of the total contribution"
+        credit_claimed_hint: "This is the amount you are claiming to be deducted from your total tax liability for this quarter. It can't be more than specified percentage of the total contribution"
       credit_bad_debt:
         title: "Bad debt credit"
         subtitle: ""
@@ -179,7 +180,7 @@ en:
         total_tonnage: "Total tonnage"
         exempt_tonnage: "Exempt tonnage"
         water_tonnage: "Water tonnage"
-        file_upload_label: "Load waste summary details from a CSV file"
+        file_upload_label_default: "Load waste summary details from a CSV file"
         delete_all: "Delete all waste types?"
         edit_row: "Edit row"
         delete_row: "Delete row"

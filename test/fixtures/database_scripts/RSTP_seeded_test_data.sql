@@ -224,6 +224,7 @@ BEGIN
   DELETE FROM return_repayments WHERE rrep_claimant_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM return_repayments WHERE rrep_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM contact_details WHERE cde_object_reference IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
+  DELETE FROM case_links WHERE cali_case_refno IN (SELECT case_refno FROM cases WHERE case_reference LIKE 'PORTAL.%');
   DELETE FROM cases WHERE case_reference LIKE 'PORTAL.%';
   DELETE FROM parties WHERE par_com_company_name like 'Test Portal Company%';
 
@@ -761,7 +762,7 @@ BEGIN
     'Y','N','N',l_h_version);
 	
   --------
-  -- FINAL conveyance less thant 12 months with no ADS claim
+  -- FINAL conveyance less thant 12 months with no ADS claim and five buyers
   INSERT INTO tax_returns
    (tare_refno, tare_reference, tare_srv_code)
   VALUES
@@ -837,6 +838,86 @@ BEGIN
     l_tmp_par_refno,l_tare_refno,1,
     'BUYER','LBTT','RETURNPARTYLINKS',1,
     'N','N','N',l_h_version);
+    
+  INSERT INTO parties
+    (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+  VALUES
+    (par_refno_seq.nextval,'PER','Buyer-Second','Francis','N')
+  RETURNING par_refno INTO l_tmp_par_refno;
+  
+  create_or_maintain_address(p_refno=>l_tmp_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'24 Playground Lane',
+    p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+
+  history_tables_api.snapshot_party( p_par_refno=>l_tmp_par_refno,p_snapshot_src_vn=>NULL,p_parh_version=>l_h_version);
+
+  INSERT INTO lbtt_return_party_links (
+    lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,
+    lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,lpli_flpt_wrk_refno,
+    lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version
+) VALUES (
+    l_tmp_par_refno,l_tare_refno,1,
+    'BUYER','LBTT','RETURNPARTYLINKS',1,
+    'N','N','N',l_h_version);
+
+  INSERT INTO parties
+    (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+  VALUES
+    (par_refno_seq.nextval,'PER','Buyer-Third','Graham','N')
+  RETURNING par_refno INTO l_tmp_par_refno;
+  
+  create_or_maintain_address(p_refno=>l_tmp_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'26 Playground Lane',
+    p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+
+  history_tables_api.snapshot_party( p_par_refno=>l_tmp_par_refno,p_snapshot_src_vn=>NULL,p_parh_version=>l_h_version);
+
+  INSERT INTO lbtt_return_party_links (
+    lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,
+    lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,lpli_flpt_wrk_refno,
+    lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version
+) VALUES (
+    l_tmp_par_refno,l_tare_refno,1,
+    'BUYER','LBTT','RETURNPARTYLINKS',1,
+    'N','N','N',l_h_version);
+   
+  INSERT INTO parties
+    (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+  VALUES
+    (par_refno_seq.nextval,'PER','Buyer-Fourth','Helen','N')
+  RETURNING par_refno INTO l_tmp_par_refno;
+  
+  create_or_maintain_address(p_refno=>l_tmp_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'28 Playground Lane',
+    p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+
+  history_tables_api.snapshot_party( p_par_refno=>l_tmp_par_refno,p_snapshot_src_vn=>NULL,p_parh_version=>l_h_version);
+
+  INSERT INTO lbtt_return_party_links (
+    lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,
+    lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,lpli_flpt_wrk_refno,
+    lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version
+) VALUES (
+    l_tmp_par_refno,l_tare_refno,1,
+    'BUYER','LBTT','RETURNPARTYLINKS',1,
+    'N','N','N',l_h_version);
+   
+  INSERT INTO parties
+    (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+  VALUES
+    (par_refno_seq.nextval,'PER','Buyer-Fifth','Ian','N')
+  RETURNING par_refno INTO l_tmp_par_refno;
+  
+  create_or_maintain_address(p_refno=>l_tmp_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'30 Playground Lane',
+    p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+
+  history_tables_api.snapshot_party( p_par_refno=>l_tmp_par_refno,p_snapshot_src_vn=>NULL,p_parh_version=>l_h_version);
+
+  INSERT INTO lbtt_return_party_links (
+    lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,
+    lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,lpli_flpt_wrk_refno,
+    lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version
+) VALUES (
+    l_tmp_par_refno,l_tare_refno,1,
+    'BUYER','LBTT','RETURNPARTYLINKS',1,
+    'N','N','N',l_h_version);
    
    INSERT INTO parties
     (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
@@ -871,7 +952,7 @@ BEGIN
     'Y','N','N',l_h_version);
 
   --------
-  -- FINAL conveyance more thant 12 months with open ADS claim
+  -- FINAL conveyance more thant 12 months with open ADS claim and five buyers
   INSERT INTO tax_returns
    (tare_refno, tare_reference, tare_srv_code)
   VALUES
@@ -947,7 +1028,87 @@ BEGIN
     l_tmp_par_refno,l_tare_refno,1,
     'BUYER','LBTT','RETURNPARTYLINKS',1,
     'N','N','N',l_h_version);
+
+  INSERT INTO parties
+    (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+  VALUES
+    (par_refno_seq.nextval,'PER','Buyer-Second','Harold','N')
+  RETURNING par_refno INTO l_tmp_par_refno;
+  
+  create_or_maintain_address(p_refno=>l_tmp_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'32 Park Lane',
+    p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+
+  history_tables_api.snapshot_party( p_par_refno=>l_tmp_par_refno,p_snapshot_src_vn=>NULL,p_parh_version=>l_h_version);
+
+  INSERT INTO lbtt_return_party_links (
+    lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,
+    lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,lpli_flpt_wrk_refno,
+    lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version
+) VALUES (
+    l_tmp_par_refno,l_tare_refno,1,
+    'BUYER','LBTT','RETURNPARTYLINKS',1,
+    'N','N','N',l_h_version);
+
+  INSERT INTO parties
+    (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+  VALUES
+    (par_refno_seq.nextval,'PER','Buyer-Third','Ian','N')
+  RETURNING par_refno INTO l_tmp_par_refno;
+  
+  create_or_maintain_address(p_refno=>l_tmp_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'33 Park Lane',
+    p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+
+  history_tables_api.snapshot_party( p_par_refno=>l_tmp_par_refno,p_snapshot_src_vn=>NULL,p_parh_version=>l_h_version);
+
+  INSERT INTO lbtt_return_party_links (
+    lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,
+    lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,lpli_flpt_wrk_refno,
+    lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version
+) VALUES (
+    l_tmp_par_refno,l_tare_refno,1,
+    'BUYER','LBTT','RETURNPARTYLINKS',1,
+    'N','N','N',l_h_version);
    
+  INSERT INTO parties
+    (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+  VALUES
+    (par_refno_seq.nextval,'PER','Buyer-Fourth','James','N')
+  RETURNING par_refno INTO l_tmp_par_refno;
+  
+  create_or_maintain_address(p_refno=>l_tmp_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'35 Park Lane',
+    p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+
+  history_tables_api.snapshot_party( p_par_refno=>l_tmp_par_refno,p_snapshot_src_vn=>NULL,p_parh_version=>l_h_version);
+
+  INSERT INTO lbtt_return_party_links (
+    lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,
+    lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,lpli_flpt_wrk_refno,
+    lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version
+) VALUES (
+    l_tmp_par_refno,l_tare_refno,1,
+    'BUYER','LBTT','RETURNPARTYLINKS',1,
+    'N','N','N',l_h_version);
+   
+  INSERT INTO parties
+    (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+  VALUES
+    (par_refno_seq.nextval,'PER','Buyer-Fifth','Keith','N')
+  RETURNING par_refno INTO l_tmp_par_refno;
+  
+  create_or_maintain_address(p_refno=>l_tmp_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'37 Park Lane',
+    p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+
+  history_tables_api.snapshot_party( p_par_refno=>l_tmp_par_refno,p_snapshot_src_vn=>NULL,p_parh_version=>l_h_version);
+
+  INSERT INTO lbtt_return_party_links (
+    lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,
+    lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,lpli_flpt_wrk_refno,
+    lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version
+) VALUES (
+    l_tmp_par_refno,l_tare_refno,1,
+    'BUYER','LBTT','RETURNPARTYLINKS',1,
+    'N','N','N',l_h_version);
+
    INSERT INTO parties
     (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
    VALUES
@@ -1367,7 +1528,7 @@ BEGIN
     INSERT INTO financial_accounts
       (fiac_refno,fiac_reference,fiac_wrk_refno,fiac_srv_code,fiac_suspense_ind)
     values
-      (fiac_seq.nextval,'PORTAL.ONE',1,'LBTT','Y')
+      (fiac_seq.nextval,'PORTAL.ONE',1,'LBTT',NULL)
     RETURNING fiac_refno INTO l_fiac_refno;
     
     INSERT INTO fiac_party_links(
@@ -1946,6 +2107,33 @@ BEGIN
      0,0, 445000, 0, 0, 0,
      'N', '',  'N','', 
      255000,'BACS','PAYMENT TYPE','SLFT',1,'P', '03-JUL-2019');
+     
+    --*********************************
+    -- Create the Financial accounts for the PORTAL.WASTE account
+    --*********************************
+    INSERT INTO financial_accounts
+      (fiac_refno,fiac_reference,fiac_wrk_refno,fiac_srv_code,fiac_suspense_ind)
+    values
+      (fiac_seq.nextval,'PORTAL.WASTE',1,'SLFT',NULL)
+    RETURNING fiac_refno INTO l_fiac_refno;
+    
+    INSERT INTO fiac_party_links(
+    fpli_par_refno,fpli_fiac_refno,
+    fpli_ffpl_type,fpli_ffpl_frd_domain,fpli_ffpl_srv_code,fpli_ffpl_wrk_refno,fpli_authority_ind
+    ) VALUES (
+    l_par_refno,l_fiac_refno,
+    'LIABLE','FIACPARTYLINKS','SLFT',1,'Y');
+    
+    INSERT INTO transactions
+    (tra_refno,tra_actual_date,tra_effective_date,tra_fiac_refno,
+    tra_tty_srv_code,tra_tty_code,tra_tty_wrk_refno,tra_amount,
+    tra_related_reference,tra_related_subreference,tra_fobt_frd_domain, tra_fobt_srv_code, tra_fobt_type, tra_fobt_wrk_refno
+    ) VALUES (
+    tra_seq.nextval,'10-JAN-2019','10-JAN-2019',l_fiac_refno,
+    'SLFT','SLFT',1,1000,
+    'RS100001AAAAA','1','OBJECT TYPES','SLFT','RETURN',1)
+    RETURNING tra_refno INTO l_ltra_refno;
+    
  
 -- ********************************
   -- Create the Account for Waste Operator with two sites with for adding new returns

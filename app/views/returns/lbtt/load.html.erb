@@ -1,12 +1,9 @@
 <% content_for :hide_back_link, true %>
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @lbtt_return, url: '.', method: :post, local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
 <% end %>
-
 <%= @bht_message %>
-
-<p />
+<br>
 <%= link_to t('back'), dashboard_path %>

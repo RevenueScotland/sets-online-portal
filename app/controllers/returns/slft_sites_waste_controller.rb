@@ -164,58 +164,61 @@ module Returns
 
     # Handles where a user has uploaded a CSV file
     def csv_upload
-      if params[:csv_upload]
-        @imported_wastes = []
-        handle_file_upload(nil, post_upload_process: :validate_and_import_waste_file)
-        handle_import_errors
-        copy_import_into_site unless @resource_item&.errors&.any?
+      handle_file_upload(nil, add_processing: :validate_and_import_waste_file, clear_cache: true)
+      return unless params[:csv_upload]
 
-        wizard_save(@slft_return, Returns::SlftController)
-        clear_resource_items
-      end
-      initialize_fileupload_variables unless @resource_item&.errors&.any?
+      wizard_save(@slft_return, Returns::SlftController)
+      # specifically clear the resource items as we don't want them shown, force the clear
+      clear_resource_items(true)
     end
 
     # Callback from the file upload component. Validates and imports the waste file. If the file isn't a well
     # formed CSV file, the file isn't imported and a validation message attached to the file_data element of
-    # the @resource_item. If there are errors on the individual rows the file is imported, with errors attached
-    # to the individual wastes that are created
+    # the resource_item in the hash.
+    # If there are errors on the individual rows the file is imported, with errors attached to the individual
+    # wastes that are created
+    # @param resource_item [Object] The resource item being processed
     # @return [Boolean] indicator if the file has been imported correctly
-    def validate_and_import_waste_file
-      return if @resource_item.nil?
+    def validate_and_import_waste_file(resource_item)
+      return if resource_item.nil?
 
-      @imported_wastes = @site.import_waste_csv_data @resource_item
-      @resource_item.errors.none?
-    end
+      Rails.logger.debug("Importing File #{resource_item.original_filename}")
 
-    # If there are import errors, and some are validation errors on the wastes then add another error
-    # so that the user understands they need to correct and re-upload the file. If there any errors then
-    # clear any imported records
-    def handle_import_errors
-      duplicate_waste_errors_into_resource_item unless @imported_wastes.nil? || @imported_wastes.empty?
-      return if @resource_item.errors.none?
+      imported_wastes = @site.import_waste_csv_data resource_item
+      duplicate_waste_errors_into_resource_item(resource_item, imported_wastes)
+      copy_import_into_site(imported_wastes) if resource_item.errors.none?
 
-      @resource_item.errors.add(:base, :reimport_file) if @imported_wastes.any? { |w| w.errors.any? }
+      resource_item.errors.none?
     end
 
     # As the controller doesn't handle correcting validation errors on the wastes, we copy the waste error
-    # messages into the resource_item so that they can be displayed to the user, when the wastes are cleared
-    def duplicate_waste_errors_into_resource_item
-      @imported_wastes.each do |w|
+    # messages into the resource_item so that they can be displayed to the user
+    # @param resource_item [Object] The resource item being processed
+    # @param imported_wastes [Array] The imported wastes
+    def duplicate_waste_errors_into_resource_item(resource_item, imported_wastes)
+      any_errors = false
+      imported_wastes.each do |w|
         next if w.errors.none?
 
-        messages = w.errors.full_messages.join(', ')
-        @resource_item.errors.add(:base, t(:import_row_error, description: w.ewc_code_and_description,
-                                                              count: w.errors.full_messages.count,
-                                                              messages: messages))
+        duplicate_single_waste_errors_into_resource_item(resource_item, w)
+        any_errors = true
       end
+      resource_item.errors.add(:base, :reimport_file) if any_errors
+    end
+
+    # see @duplicate_waste_errors_into_resource_item
+    # This handles the individual waste item
+    # @param resource_item [Object] The resource item being processed
+    # @param waste [Object] The imported waste
+    def duplicate_single_waste_errors_into_resource_item(resource_item, waste)
+      resource_item.errors.add(:base, t(:import_row_error, description: waste.ewc_code_and_description,
+                                                           count: waste.errors.full_messages.count,
+                                                           messages: waste.errors.full_messages.join(', ')))
     end
 
     # Copy the imported wastes into the site
-    def copy_import_into_site
-      @imported_wastes.each { |w| @site.wastes[w.uuid] = w }
-      @wastes = @site.wastes
-      @imported_wastes = []
+    def copy_import_into_site(imported_wastes)
+      imported_wastes.each { |w| @site.wastes[w.uuid] = w }
     end
 
     # Call back from FileUploadHandler, which returns file types are allowed to be uploaded.
@@ -228,12 +231,6 @@ module Returns
     # type would be application/vnd.ms-excel
     def alias_content_type
       Rails.configuration.x.slft_waste_file_upload_alias_content_type_whitelist.split(/\s*,\s*/)
-    end
-
-    # Call back from FileUploadHandler, which returns valid file extensions - used when the content
-    # type is unknown
-    def file_extension_whitelist
-      Rails.configuration.x.slft_waste_file_upload_file_extension_whitelist.split(/\s*,\s*/)
     end
 
     # Sets up wizard model if it doesn't already exist in the cache
@@ -249,7 +246,7 @@ module Returns
       load_site
 
       # load existing or setup new Waste on first entering the step
-      unless params[:submitted]
+      unless params[:continue]
 
         # load existing waste entry and save to the wizard cache for use
         unless params[:waste].nil? || waste_new?
@@ -285,13 +282,13 @@ module Returns
 
     # Loads existing wizard models from the wizard cache or redirects to the first step.
     # @return [Waste] the model for wizard saving
-    def load_step
+    def load_step(_sub_object_attribute = nil)
       @post_path = wizard_post_path(SlftController.name)
       @waste = wizard_load_or_redirect(returns_slft_summary_url)
     end
 
     # Return the parameter list filtered for the attributes of the SlftReturn model.
-    def filter_params
+    def filter_params(_sub_object_attribute = nil)
       required = :returns_slft_waste
       attribute_list = Slft::Waste.attribute_list
       params.require(required).permit(attribute_list) if params[required]

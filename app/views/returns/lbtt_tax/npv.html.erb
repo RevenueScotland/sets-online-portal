@@ -1,10 +1,10 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @tax, url: @post_path, :method => 'post', local: true do |f| %>
-   <%= form_errors_for @tax %>
-   <%= f.currency_field :npv, text_link: { t('.npv') => link_to(t('.npv'), "#{Rails.configuration.x.external_links.lbtt6011_npv}", target: '_blank')} %> 
-   <% if @lbtt_return.linked_ind == 'Y' %>
-      <%= f.currency_field :linked_npv %>
-   <% end %>
-   <%= f.button 'next', { :name => 'submitted' }  %>
+  <%= form_errors_for @tax %>
+  <%= f.currency_field :npv, text_link: { t('.npv') => link_to(t('.npv'), "#{Rails.configuration.x.external_links.lbtt6011_npv}", target: '_blank')} %>
+  <% if @lbtt_return.linked_ind == 'Y' %>
+    <%= f.currency_field :linked_npv %>
+  <% end %>
+  <%= f.button %>
 <% end %>

@@ -1,5 +1,4 @@
 <%# Used for fields that can be toggled visible/hidden on click of text. %>
-
 <%# @example Initially shows an underlined text, when clicked will expand and show the 3 hidden fields  %>
 <%#   (text, select and check box fields) %>
 <%# <%= render '/layouts/hideable_details/', { clickable_text: 'Show more filter options' } do % > %>
@@ -7,21 +6,19 @@
 <%#   <%= form.select :status, ReferenceData::ReferenceValue.list('RETURN_STATUS', 'SYS', 'RSTU'), { include_blank: true }, {} % > %>
 <%#   <%= form.check_box_field :all_versions % > %>
 <%# <% end % > %>
-
 <%# For the :clickable_text pass in a list of two strings so that it will toggle between the two texts %>
 <details class="govuk-details" data-module="govuk-details">
-    <summary class="govuk-details__summary">
-        <% toggle_text = Array(clickable_text) %>
-        <% if toggle_text.size > 1 %>
-            <%# the class 'filter_text' is used for toggling between the texts %>
-            <%= content_tag(:span, toggle_text[0], class: 'govuk-details__summary-text filter_text') %>
-            <%= content_tag(:span, toggle_text[1], class: 'govuk-details__summary-text filter_text js-hidden') %>
-        <% else %>
-            <%= content_tag(:span, toggle_text[0], class: 'govuk-details__summary-text') %>
-        <% end %>        
-    </summary>
-
-    <div class="govuk-details__text">
-        <%= yield %>
-    </div>
+  <summary class="govuk-details__summary">
+    <% toggle_text = Array(clickable_text) %>
+    <% if toggle_text.size > 1 %>
+      <%# the class 'filter_text' is used for toggling between the texts %>
+      <%= content_tag(:span, toggle_text[0], class: 'govuk-details__summary-text filter_text') %>
+      <%= content_tag(:span, toggle_text[1], class: 'govuk-details__summary-text filter_text js-hidden') %>
+    <% else %>
+      <%= content_tag(:span, toggle_text[0], class: 'govuk-details__summary-text') %>
+    <% end %>
+  </summary>
+  <div class="govuk-details__text">
+    <%= yield %>
+  </div>
 </details>

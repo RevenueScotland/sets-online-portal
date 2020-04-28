@@ -60,8 +60,7 @@ module AddressHelper
     # A search here is an initial search based on postcode, whereas a find is
     # a detailed search based on the address identifier
     if params[:search]
-      # Carry forward the default country otherwise it gets lost
-      do_address_identifier_search(params[:address][:default_country])
+      do_address_identifier_search
     elsif params[:manual_address]
       set_for_manual_address
     elsif params[:change_postcode]
@@ -80,19 +79,19 @@ module AddressHelper
 
   # Performs an address search based on the search parameters
   # and displays the results (if any)
-  # @param default_country [String] the default country to carry forward
-  def do_address_identifier_search(default_country)
+  def do_address_identifier_search
     @address_summary = AddressSummary.new(search_params)
     @search_results = @address_summary.search
     # We need to carry the default country set up forward as the address currently
-    @address_detail = Address.new(default_country: default_country)
+    @address_detail = Address.new(default_country: params[:address][:default_country])
   end
 
   # Given an address identifier get the detail of that address
   # that matches the identifier
   def find_address_details
     @address_summary = AddressSummary.new
-    @address_detail = Address.find(find_params[:search_results])
+    # Carry forward the default country otherwise it gets lost
+    @address_detail = Address.find(find_params[:search_results], params[:address][:default_country])
     if @address_detail.nil?
       @address_summary.errors.add(:postcode, (I18n.t '.no_address_find_results'))
     else

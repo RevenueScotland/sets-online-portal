@@ -87,25 +87,25 @@ en:
         authority_ind_ASSIGN: "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         authority_ind_TERMINATE: "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         declaration: "The declaration"
-        declaration_CONVEY_AGENT: "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): <br/> (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br/> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct."
-        declaration_LEASERET_AGENT: "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): <br/> (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br/> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct."
-        declaration_LEASEREV_AGENT: "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): <br/> (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br/> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct."
-        declaration_ASSIGN_AGENT: "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): <br/> (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br/> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct."
-        declaration_TERMINATE_AGENT: "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): <br/> (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br/> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct."
-        declaration_CONVEY_TAXPAYER: "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete."
-        declaration_LEASERET_TAXPAYER: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete."
-        declaration_LEASEREV_TAXPAYER: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete."
-        declaration_ASSIGN_TAXPAYER: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete."
-        declaration_TERMINATE_TAXPAYER: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete."
-        declaration_CONVEY_PUBLIC: "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete."
-        declaration_LEASERET_PUBLIC: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete."
-        declaration_LEASEREV_PUBLIC: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete."
-        declaration_ASSIGN_PUBLIC: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete."
-        declaration_TERMINATE_PUBLIC: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete."
+        declaration_CONVEY_AGENT: "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): <br> (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct"
+        declaration_LEASERET_AGENT: "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): <br> (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct"
+        declaration_LEASEREV_AGENT: "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): <br> (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct"
+        declaration_ASSIGN_AGENT: "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): <br> (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct"
+        declaration_TERMINATE_AGENT: "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): <br> (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct"
+        declaration_CONVEY_TAXPAYER: "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete"
+        declaration_LEASERET_TAXPAYER: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
+        declaration_LEASEREV_TAXPAYER: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
+        declaration_ASSIGN_TAXPAYER: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
+        declaration_TERMINATE_TAXPAYER: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
+        declaration_CONVEY_PUBLIC: "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete"
+        declaration_LEASERET_PUBLIC: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
+        declaration_LEASEREV_PUBLIC: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
+        declaration_ASSIGN_PUBLIC: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
+        declaration_TERMINATE_PUBLIC: "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
         lease_declaration: "The review declaration"
-        lease_declaration_AGENT: "I, the agent of the tenant(s), confirm that I have made my client(s) aware of their obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date."
-        lease_declaration_TAXPAYER: "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date."
-        lease_declaration_PUBLIC: "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date."
+        lease_declaration_AGENT: "I, the agent of the tenant(s), confirm that I have made my client(s) aware of their obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date"
+        lease_declaration_TAXPAYER: "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date"
+        lease_declaration_PUBLIC: "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date"
       returns/lbtt/tax:
         calculated: "LBTT calculated"
         ads_due: "ADS calculated"
@@ -156,22 +156,22 @@ en:
         relevant_rent: This is your annual rent, including VAT. If you have linked transactions, it will be the total of all rents
         account_number: "This should be 8 digits"
         branch_code: "The sort code should be entered in the format 99-99-99"
-        effective_date_CONVEY: "This is usually the date the land transaction is completed (e.g. the date of settlement). See guidance LBTT1004 - The effective date (opens in a new window) for further details."
-        effective_date_LEASERET: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details."
-        effective_date_LEASEREV: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details."
-        effective_date_ASSIGN: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details."
-        effective_date_TERMINATE: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details."
-        relevant_date_CONVEY: "This is usually the same as the effective date. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details."
-        relevant_date_LEASERET: "This is usually the same as the effective date. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details."
-        relevant_date_LEASEREV: "This is the date of the triennial anniversary. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details."
-        relevant_date_ASSIGN: "This is the date the lease was assigned. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details.."
-        relevant_date_TERMINATE: "This is the date the lease was terminated or came to an end. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details."
+        effective_date_CONVEY: "This is usually the date the land transaction is completed (e.g. the date of settlement). See guidance LBTT1004 - The effective date (opens in a new window) for further details"
+        effective_date_LEASERET: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details"
+        effective_date_LEASEREV: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details"
+        effective_date_ASSIGN: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details"
+        effective_date_TERMINATE: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details"
+        relevant_date_CONVEY: "This is usually the same as the effective date. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details"
+        relevant_date_LEASERET: "This is usually the same as the effective date. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details"
+        relevant_date_LEASEREV: "This is the date of the triennial anniversary. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details"
+        relevant_date_ASSIGN: "This is the date the lease was assigned. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details"
+        relevant_date_TERMINATE: "This is the date the lease was terminated or came to an end. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details"
         fpay_method: "The payment method will only be used if a payment is actually due on this return"
-        property_type: "See guidance LBTT4010 - Meaning of residential property (opens in a new window) and LBTT4012 - Meaning of non-residential property and treatment of ‘mixed’ property (opens in a new window) for further details."
-        previous_option_ind: "See guidance LBTT1007 - Options and rights of pre-emption (opens in a new window) for further details."
-        linked_ind: "See guidance LBTT2008 - Linked transactions (opens in a new window) for further details."
-        non_ads_reliefclaim_option_ind: "See guidance LBTT3010 - Tax Reliefs (opens in a new window) for further details."
-        contingents_event_ind: "See guidance LBTT2005 - Contingent, uncertain or unascertained consideration (opens in a new window) for further details."
+        property_type: "See guidance LBTT4010 - Meaning of residential property (opens in a new window) and LBTT4012 - Meaning of non-residential property and treatment of ‘mixed’ property (opens in a new window) for further details"
+        previous_option_ind: "See guidance LBTT1007 - Options and rights of pre-emption (opens in a new window) for further details"
+        linked_ind: "See guidance LBTT2008 - Linked transactions (opens in a new window) for further details"
+        non_ads_reliefclaim_option_ind: "See guidance LBTT3010 - Tax Reliefs (opens in a new window) for further details"
+        contingents_event_ind: "See guidance LBTT2005 - Contingent, uncertain or unascertained consideration (opens in a new window) for further details"
         linked_consideration: "See guidance LBTT2008 - Linked transactions (opens in a new window) for further details"
         non_chargeable: "See guidance LBTT2009 - What is not chargeable consideration (opens in a new window) for further details"
         remaining_chargeable: "See guidance LBTT2001 - Determining the chargeable consideration (opens in a new window) for further details"
@@ -213,6 +213,7 @@ en:
               missing_new_tenant_entries: "Please fill in at least one new tenant"
               missing_agent_details: "Please fill in the 'Contact details for agent' section"
               missing_ads: "Please fill in the 'About the Additional Dwelling Supplement (ADS)' section"
+              has_already_been_submitted: "This return has already been submitted. If you are unsure that the return has been submitted, save a draft version and check on the dashboard"
 
         returns/lbtt/relief_claim:
           attributes:
@@ -284,9 +285,6 @@ en:
           <li>a recalculation of the total LBTT payable on the lease</li>
           <li>how much LBTT has already been paid on the lease</li>"
         start_warning: "Once you have started the return you must complete it. You will not be able to save a draft and go back to it later."
-        public_lbtt_return: "Create LBTT lease review"
-        link:
-          cancel: "Cancel"
       public_return_type:
         title: "About the return"
       return_type:
@@ -331,9 +329,9 @@ en:
         relief_type_auto: "Type of relief"
         relief_amount: Amount of tax saved by relief
         description:
-          "Certain reliefs amounts will be calculated as part of the return and therefore cannot be entered at this point.<br/>
+          "Certain reliefs amounts will be calculated as part of the return and therefore cannot be entered at this point.<br>
           For all others, if you know the values for any relief you are claiming, enter it into the ‘Amount of tax saved by relief’ field, if you don’t know the value now enter 0.
-          <br/>All Reliefs amounts can be seen later in this return and can be changed as required before submission"
+          <br>All Reliefs amounts can be seen later in this return and can be changed as required before submission"
       ads_repay_address:
         rrep_ads_sold_address: Confirm the address of the previous main residence that has been sold or disposed of
       ads_repay_details:
@@ -354,8 +352,8 @@ en:
         relief_type_auto: "Type of relief"
         relief_amount: "Amount of tax saved by relief"
         description:
-          "Certain reliefs amounts will be calculated as part of the return and therefore cannot be entered at this point.<br/>
-          For all others, if you know the values for any relief you are claiming, enter it into the ‘Amount of tax saved by relief’ field, if you don’t know the value now then enter 0.<br/>
+          "Certain reliefs amounts will be calculated as part of the return and therefore cannot be entered at this point.<br>
+          For all others, if you know the values for any relief you are claiming, enter it into the ‘Amount of tax saved by relief’ field, if you don’t know the value now then enter 0.<br>
           All Reliefs amounts can be seen later in this return and can be changed as required before submission"
         non_ads_reliefclaim_option_ind: "LBTT3010 - Tax Reliefs (opens in a new window)"
       conveyance_values:

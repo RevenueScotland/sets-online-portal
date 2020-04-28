@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'service_client'
+
 # Be sure to restart your server when you modify this file.
 # Filename starts with "_" so that this file is run first.
 module RevScot

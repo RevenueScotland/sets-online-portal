@@ -1,14 +1,10 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= content_for :page_description, t('.description') %>
-
 <%= form_for @slft_return, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @slft_return %>
-  
   <%= f.currency_field(:total_tax_due, {}, { readonly: true }) %>
   <%= f.currency_field(:total_credit, {}, { readonly: true }) %>
   <%= f.currency_field(:tax_payable, {}, { readonly: true }) %>
-
-  <%= f.button 'next', { :name => 'submitted' } unless @slft_return.errors.any? %>
+  <%= f.button unless @slft_return.errors.any? %>
 <% end %>

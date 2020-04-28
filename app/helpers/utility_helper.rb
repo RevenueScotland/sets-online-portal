@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Utility helpers keep method used across application
-module UtilityHelper
+module UtilityHelper # rubocop:disable Metrics/ModuleLength
   # Regex that identifies if text is an english question
   QUESTION_REGEX = /\A((ARE |DO |DOES |HAS |HAVE |HOW |IF |IS |SHOULD |WHAT |WHICH |WHO ))/i.freeze
   # The html_options of most fields which includes the standard html options such as the class.
@@ -20,7 +20,7 @@ module UtilityHelper
   # @return [String] standard gds class(es) for a field.
   def self.field_css_classes(options = {}, html_options = {}, field_class)
     # Determines whether the default standard width class is to be used or not.
-    width_class = options[:is_not_default_width] ? '' : gds_css_class_for_width(options[:width]) + ' '
+    width_class = gds_css_class_for_width(options[:width]) + ' '
     class_output = width_class + field_class
     # This will ensure that the class that we get from the html_options will always be '' instead of nil
     html_class = html_options[:class] || ''
@@ -46,17 +46,9 @@ module UtilityHelper
     css_class_name
   end
 
-  # Creates the standard functional options for a button or submit.
-  # @example UtilityHelper.submit_options(options)
-  # @return [Hash] the options with added data.
-  def self.submit_options(options = {})
-    options[:is_not_default_width] = true
-    options
-  end
-
   # Creates the standard html options for a button or submit.
   # @example UtilityHelper.submit_html_options(id, options, html_options)
-  # @return [Hash] the html optins with added data.
+  # @return [Hash] the html options with added data.
   def self.submit_html_options(id, options = {}, html_options = {})
     html_options[:data] = { disable_with: I18n.t('working') } if options[:not_disable].nil?
     html_options[:id] = id || 'submit'
@@ -89,6 +81,29 @@ module UtilityHelper
     label = get_translation(object, attribute, options)
     label = make_question(label, options)
     UtilityHelper.swap_texts(append_optional_keyword(label, options), options)
+  end
+
+  # Generates a hint text for an attribute of the object.
+  # It can optionally override the attribute name by calling the object's translation_attribute method, similarly to
+  # the label_text.
+  # It can optionally include value(s) from the object by calling the object's translation_variables method.
+  # It supports the following hash keys:
+  #   :hint [String] to hard code the hint for that attribute
+  #   :translation_options [String|Symbol] to be used for doing the translation_variables and
+  #   translation_attribute method.
+  # @param object [Object] the object being processed
+  # @param attribute [Symbol] is the attribute of the object that's being processed.
+  # @param options [Hash] may contain a hash with instructions to further modify the hint text
+  # @return [String] the hint value of an attribute.
+  def self.hint_text(object, attribute, options = {})
+    options ||= {}
+    return options[:hint] unless options[:hint].nil?
+
+    hint_translation_options = UtilityHelper.get_attribute_extra_translation_options(object, attribute, options)
+                                            .merge(default: '',
+                                                   scope: [object.i18n_scope, :hints, object.model_name.i18n_key])
+    hint = I18n.t(UtilityHelper.get_attribute_key(object, attribute, options), hint_translation_options)
+    UtilityHelper.swap_texts(hint, options)
   end
 
   # By passing in a label and options with text_link populated by a hash, it should then iterate through that hash
@@ -141,6 +156,70 @@ module UtilityHelper
     object.translation_attribute(attribute, options[:translation_options])
   end
 
+  # Gets the extra options for the translation based on the current attribute we're pointing to.
+  # The user can get values from within the model to be passed down to the texts in labels or hints.
+  # They can also use this to pass options from the model to get the translation done in a specific way.
+  # @return [Hash] translation extra options.
+  def self.get_attribute_extra_translation_options(object, attribute, options = {})
+    return {} unless object.respond_to?(:translation_variables)
+
+    object.translation_variables(attribute, options[:translation_options])
+  end
+
+  # Utility helper to give the full path for the given translation key.
+  # Effectively this returns the full path that would be used by the normal t(.<key>) Rails operation
+  # Used when passing view keys into a partial
+  # @see https://github.com/rails/rails/blob/56832e791f3ec3e586cf049c6408c7a183fdd3a1/actionview/lib/action_view/helpers/translation_helper.rb#L123
+  # @param key [String] the key to be used
+  def full_lazy_lookup_path(key)
+    if key.to_s.first == '.'
+      raise "Cannot use t(#{key.inspect}) short cut because path is not available" unless @virtual_path
+
+      @virtual_path.gsub(%r{/_?}, '.') + key.to_s
+    else
+      key
+    end
+  end
+
+  # Modifies the html text to give each elements the correct standard classes
+  # @param html_text [HTML block element] contains the html which the correct classes will be added to.
+  # @return [HTML block element] the elements modified to have the correct classes per element.
+  def self.standardize_elements(html_text)
+    html_text.gsub!('<div>', '<div class="govuk-form-group">')
+    html_text.gsub!('<h1>', '<h1 class="govuk-heading-l">')
+    html_text.gsub!('<h2>', '<h2 class="govuk-heading-m">')
+    html_text.gsub!('<h3>', '<h3 class="govuk-heading-s">')
+    html_text.gsub!('<p>', '<p class="govuk-body">')
+    html_text.gsub!('<ul>', '<ul class="govuk-list govuk-list--bullet">')
+    standardize_table_elements(html_text)
+    # Regex means to look for ("<a") + (zero or more characters thats not ">") + (">")
+    html_text.gsub!(/<a[^>]*>/) { |link_tag| standardize_link_tag(link_tag) }
+    html_text
+  end
+
+  # Modifies the html text to give each table elements the correct standard classes
+  # @param html_text [HTML block element] see standardize_elements
+  # @return [HTML block element] the elements modified to have the correct classes per element.
+  private_class_method def self.standardize_table_elements(html_text)
+    html_text.gsub!('<table>', '<table class="govuk-table">')
+    html_text.gsub!('<thead>', '<thead class="govuk-table__head">')
+    html_text.gsub!('<tbody>', '<tbody class="govuk-table__body">')
+    html_text.gsub!('<th>', '<th class="govuk-table__header">')
+    html_text.gsub!('<tr>', '<tr class="govuk-table__row">')
+    html_text.gsub!('<td>', '<td class="govuk-table__cell">')
+    html_text
+  end
+
+  # Modifies the link tag's properties to have the correct standard properties.
+  # @param link_tag [HTML block tag] specific link tag to be modified.
+  # @return [HTML block tag] the link tag modified so that it has the correct standard properties.
+  private_class_method def self.standardize_link_tag(link_tag)
+    link_tag.gsub!('<a', '<a class="govuk-link"') unless link_tag.include?('class=')
+    # Added to prevent the anchor tag's security issue of 'reverse tabnabbing'
+    link_tag.gsub!('target="_blank"', 'target="_blank" rel="noopener noreferrer"') unless link_tag.include?('rel=')
+    link_tag
+  end
+
   # add optional keyword if optional: true is send from view
   # @param label [String] the label of the optional item
   # @param options [Array] an array of options to look for the symbol :optional to determine whether its optional or not
@@ -159,7 +238,9 @@ module UtilityHelper
   private_class_method def self.get_translation(object, attribute, options = {})
     attribute_key = UtilityHelper.get_attribute_key(object, attribute, options)
     key_scope = options[:key_scope] || [object.i18n_scope, :attributes, object.model_name.i18n_key]
-    I18n.t(attribute_key, default: attribute_key.to_s.humanize, scope: key_scope).html_safe
+    label_translation_options = UtilityHelper.get_attribute_extra_translation_options(object, attribute, options)
+                                             .merge(default: attribute_key.to_s.humanize, scope: key_scope)
+    I18n.t(attribute_key, label_translation_options).html_safe
   end
 
   # Adds a ? to the label string if needed by parsing the string to see if it looks like a question
@@ -173,5 +254,12 @@ module UtilityHelper
       label += '?'
     end
     label
+  end
+
+  # Utility helper to use translation on page description
+  # Effectively this returns the t(.<key>) Rails operation
+  # @param key [String] the key to be used and @param index of buyer
+  def translation_for_index(key, index)
+    key + '_' + (index.to_i > 4 ? 'other' : index.to_s)
   end
 end

@@ -24,42 +24,14 @@ module ReferenceData
         html_text == other.html_text)
     end
 
-    # Modifies the html text to give each elements the correct standard classes
-    def modify_elements
-      @html_text.gsub!('<div>', '<div class="govuk-form-group">')
-      @html_text.gsub!('<h1>', '<h1 class="govuk-heading-l">')
-      @html_text.gsub!('<h2>', '<h2 class="govuk-heading-m">')
-      @html_text.gsub!('<h3>', '<h3 class="govuk-heading-s">')
-      @html_text.gsub!('<p>', '<p class="govuk-body">')
-      @html_text.gsub!('<ul>', '<ul class="govuk-list govuk-list--bullet">')
-      modify_table_elements
-      modify_link_elements
-      self
-    end
-
-    # Modifies the html text to give each table elements the correct standard classes
-    def modify_table_elements
-      @html_text.gsub!('<table>', '<table class="govuk-table">')
-      @html_text.gsub!('<thead>', '<thead class="govuk-table__head">')
-      @html_text.gsub!('<tbody>', '<tbody class="govuk-table__body">')
-      @html_text.gsub!('<th>', '<th class="govuk-table__header">')
-      @html_text.gsub!('<tr>', '<tr class="govuk-table__row">')
-      @html_text.gsub!('<td>', '<td class="govuk-table__cell">')
-    end
-
-    # Modifies the html text to give each of the elements, related to a link, the correct standard properties.
-    def modify_link_elements
-      @html_text.gsub!('<a href="', '<a class="govuk-link" href="')
-      @html_text.gsub!('target="_blank"', 'target="_blank" rel="noreferrer noopener"')
-    end
-
     # Create a new instance of this class using the back office data given.
     # @param data [Hash] data from the back office response
     # @note return [Object] a new instance
     private_class_method def self.make_object(data)
       PwsText.new(domain_code: data[:pws_text_type_code], service_code: data[:service_code],
                   workplace_code: data[:workplace_code],
-                  text_code: data[:pws_text_type_code], html_text: data[:pws_text]).modify_elements
+                  text_code: data[:pws_text_type_code],
+                  html_text: UtilityHelper.standardize_elements(data[:pws_text]))
     end
 
     # Calls the correct service and specifies where the results are in the response body

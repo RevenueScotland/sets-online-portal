@@ -54,7 +54,8 @@ module Returns
     def reliefs_calculation
       wizard_list_step(returns_lbtt_summary_url,
                        merge_list: :merge_relief_list_data,
-                       after_merge: :update_relief_type_calculation)
+                       after_merge: :update_relief_type_calculation,
+                       list_attribute: :relief_claims, new_list_item_instance: :new_list_item_relief_claims)
     end
 
     # Summary of returns.
@@ -252,8 +253,13 @@ module Returns
     # Send the return to the back office (and wizard_save unless there were errors returned.)
     # @return [Boolean] true if successful
     def submit_return
+      return false unless @lbtt_return.prepare_to_save_latest
+
+      # Save the prepared return in the cache in case the user navigates back and re-tries
+      wizard_save(@lbtt_return)
       success = @lbtt_return.save_latest(current_user)
-      wizard_save(@lbtt_return) unless @lbtt_return.errors.any? || !success
+      # need to save even if not successful so the saved flag is cleared
+      wizard_save(@lbtt_return)
       success
     end
 
@@ -281,7 +287,7 @@ module Returns
 
     # Loads existing wizard models from the wizard cache or redirects to the dashboard page
     # @return [LbttReturn] the model for wizard saving
-    def load_step
+    def load_step(_sub_object_attribute = nil)
       @post_path = wizard_post_path
       # redirects to the dashboard or public landing as needed
       @lbtt_return = wizard_load_or_redirect(current_user.nil? ? returns_lbtt_public_landing_url : dashboard_url)
@@ -297,30 +303,31 @@ module Returns
       model
     end
 
+    # Used in wizard_list_step as part of the merging of data.
+    # @return [Object] new instance of ReliefClaim class that has attributes with value.
+    def new_list_item_relief_claims(hash_attributes = {})
+      Lbtt::ReliefClaim.new(hash_attributes)
+    end
+
     # merge and validate relief claim amount
     # @return [Boolean] true if the merge was successful and all the items were valid
     def merge_relief_list_data
-      record_array = filter_params_relief_claims[:relief_claims].values
+      # The :relief_override_amount validation is only triggered on the edit page.
+      # So this will apply all the validation and the on: :relief_override_amount.
+      # @see merge_params_and_validate_with_list to learn more about how this is being used
+      @list_item_validation_key = :relief_override_amount
 
-      valid = true
-      reliefs = []
-      record_array&.each_with_index do |record, i|
-        reliefs[i] = Lbtt::ReliefClaim.new(record)
-        # The :relief_override_amount validation is only triggered on the edit page.
-        # So this will apply all the validation and the on: :relief_override_amount.
-        valid = false unless reliefs[i].valid?(:relief_override_amount)
-      end
-      # in order to allow for the split we have to assign the array of reliefs in one go
-      @lbtt_return.relief_claims = reliefs
-      valid
+      # Merges the params values with the wizard object's list attribute and validates each as they're merged
+      # @see merge_params_and_validate_with_list to know more
+      yield
     end
 
-    # Return the parameter list filtered for the attributes of the non ads relief claims model
+    # Return the parameter list filtered for the attributes in list_attribute
     # note we have to permit everything because we get a hash of the records returned e.g. "0" => details
-    def filter_params_relief_claims
-      return unless params[:returns_lbtt_lbtt_return] && params[:returns_lbtt_lbtt_return][:relief_claims]
+    def filter_list_params(list_attribute, _sub_object_attribute = nil)
+      return unless params[:returns_lbtt_lbtt_return] && params[:returns_lbtt_lbtt_return][list_attribute]
 
-      params.require(:returns_lbtt_lbtt_return).permit(relief_claims: {})
+      params.require(:returns_lbtt_lbtt_return).permit(list_attribute => {})[list_attribute].values
     end
 
     # Return the parameter list filtered for the attributes of the Calculate model

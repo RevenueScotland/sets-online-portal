@@ -13,8 +13,8 @@ Feature: Secure Communication
         And "Subject" should contain the option "General question"
         And "Subject" should contain the option "Application for bad debt relief"
         And "Subject" should not contain the option "ADS repayment submission confirmation"
-        When I upload "testdocx.docx" to "resource_item_file_data"
-        And I enter "This is a docx file" in the "Description of the uploaded file (Optional)" field
+        When I upload "testdocx.docx" to "resource_item_default_file_data"
+        And I enter "This is a docx file" in the "Description of the uploaded file (optional)" field
         And I click on the "Upload document" button
         Then I should see a link with text "testdocx.docx"
         And I should see the text "This is a docx file"
@@ -30,39 +30,39 @@ Feature: Secure Communication
         And I should not see the text "This is a docx file"
 
         # Uploading a valid jpg attachment
-        When I upload "testjpg.jpg" to "resource_item_file_data"
+        When I upload "testjpg.jpg" to "resource_item_default_file_data"
         And I click on the "Upload document" button
         Then I should see a link with text "testjpg.jpg"
         When I click on the "Remove file" button
         Then I should not see a link with text "testjpg.jpg"
 
         # Uploading a valid jpeg attachment
-        When I upload "testjpeg.jpeg" to "resource_item_file_data"
+        When I upload "testjpeg.jpeg" to "resource_item_default_file_data"
         And I click on the "Upload document" button
         Then I should see a link with text "testjpeg.jpeg"
         When I click on the "Remove file" button
         Then I should not see a link with text "testjpeg.jpeg"
 
         # Uploading file with file size that is too big
-        When I upload "testimage_over_size_limit.jpg" to "resource_item_file_data" on the browser
+        When I upload "testimage_over_size_limit.jpg" to "resource_item_default_file_data" on the browser
         Then I should receive the message "File should be less than 10 mb" on the browser
 
         # Uploading invalid file type
-        When I upload "testtxt_invalid_file_type.txt" to "resource_item_file_data"
+        When I upload "testtxt_invalid_file_type.txt" to "resource_item_default_file_data"
         And I click on the "Upload document" button
         Then I should receive the message "Invalid file type"
 
         # Uploading a valid docx attachment
-        When I upload "testdocx.docx" to "resource_item_file_data"
-        And I enter "This is a docx file" in the "Description of the uploaded file (Optional)" field
+        When I upload "testdocx.docx" to "resource_item_default_file_data"
+        And I enter "This is a docx file" in the "Description of the uploaded file (optional)" field
         And I click on the "Upload document" button
 
         # File uploads on the confirmation page of messages
-        When I click on the "Next" button
+        When I click on the "Send message" button
         And I check the "Yes" radio button
 
-        And I upload "testdoc.doc" to "resource_item_file_data"
-        And I enter "This is a doc file" in the "Description of the uploaded file (Optional)" field
+        And I upload "testdoc.doc" to "resource_item_default_file_data"
+        And I enter "This is a doc file" in the "Description of the uploaded file (optional)" field
         And I click on the "Upload document" button
         Then I should see the text "testdoc.doc"
         And I should see the text "This is a doc file"
@@ -71,17 +71,17 @@ Feature: Secure Communication
         And I should not see the text "This is a doc file"
 
         # Uploading file with file size that is too big
-        When I upload "testimage_over_size_limit.jpg" to "resource_item_file_data" on the browser
+        When I upload "testimage_over_size_limit.jpg" to "resource_item_default_file_data" on the browser
         Then I should receive the message "File should be less than 10 mb" on the browser
 
         # Uploading invalid file type
-        When I upload "testtxt_invalid_file_type.txt" to "resource_item_file_data"
+        When I upload "testtxt_invalid_file_type.txt" to "resource_item_default_file_data"
         And I click on the "Upload document" button
         Then I should receive the message "Invalid file type"
 
         # Upload valid file types
-        When I upload "testpng.png" to "resource_item_file_data"
-        And I enter "Test png image file" in the "Description of the uploaded file (Optional)" field
+        When I upload "testpng.png" to "resource_item_default_file_data"
+        And I enter "Test png image file" in the "Description of the uploaded file (optional)" field
         And I click on the "Upload document" button
         Then I should see a link with text "testpng.png"
         And I should see the text "Test png image file"
@@ -90,7 +90,7 @@ Feature: Secure Communication
             | File uploaded | Description         |             |
             | testpng.png   | Test png image file | Remove file |
 
-        And I click on the "Continue" button
+        And I click on the "Finish" button
 
         # Checking to see that the uploaded files from both the new and confirmation pages are there
         And I click on the 1 st "view" link
@@ -149,7 +149,7 @@ Feature: Secure Communication
         And I should see the text "<p>Body for Test Message 1</p>"
         And I should see the text "<p>Reply to Response</p>"
 
-        And I should see the text "Related Messages:"
+        And I should see the text "Related messages"
         And the table of data is displayed
             | Date & time      | Name             | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
             | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | no         | sent | view     |
@@ -166,7 +166,7 @@ Feature: Secure Communication
         And I should see the text "Test Message 1"
         And I should see the text "Body for Test Message 1"
 
-        And I should see the text "Related Messages:"
+        And I should see the text "Related messages"
         And the table of data is displayed
             | Date & time      | Name             | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
             | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | no         | sent | view     |
@@ -205,7 +205,7 @@ Feature: Secure Communication
         Then I should see the "Messages" page
 
         # This shows the New Message page with the empty fields
-        When I click on the "New Message" button
+        When I click on the "New message" button
         Then I should see the "New message" page
         And I should see the empty field "Subject"
         And I should see the empty field "Reference"
@@ -213,7 +213,7 @@ Feature: Secure Communication
         And I should see the empty field "Message body"
 
         # No fields have data
-        When I click on the "Next" button
+        When I click on the "Send message" button
         Then I should receive the message "Subject can't be blank"
         And I should receive the message "Message title can't be blank"
         And I should receive the message "Message body can't be blank"
@@ -224,13 +224,13 @@ Feature: Secure Communication
         When I enter "1234567890" in the "Reference" field
         And I enter "This is my title" in the "Message title" field
         And I enter "This is my message" in the "Message body" field
-        And I click on the "Next" button
+        And I click on the "Send message" button
         Then I should receive the message "Subject can't be blank"
 
         # All fields except the message title field has data
         When I select "Query a penalty" from the "Subject"
         And I clear the "Message title" field
-        And I click on the "Next" button
+        And I click on the "Send message" button
         Then I should receive the message "Message title can't be blank"
 
 
@@ -238,14 +238,14 @@ Feature: Secure Communication
         When I select "Query a penalty" from the "Subject"
         And I enter "This is my title" in the "Message title" field
         And I clear the "Message body" field
-        And I click on the "Next" button
+        And I click on the "Send message" button
         Then I should receive the message "Message body can't be blank"
 
         # All fields except the reference field has data
         When I select "Query a penalty" from the "Subject"
         And I enter "This is my message" in the "Message body" field
         And I clear the "Reference" field
-        And I click on the "Next" button
+        And I click on the "Send message" button
         Then I should receive the message "Reference can't be blank"
 
         Then I should see the "New message" page
@@ -255,9 +255,9 @@ Feature: Secure Communication
         And I enter "RANDOM_REFERENCE_NAME,10,UPCASE" in the "Reference" field
         And I enter "My title" in the "Message title" field
         And I enter "Hello this is my text" in the "Message body" field
-        And I click on the "Next" button
+        And I click on the "Send message" button
         Then I should see the text "Thank you for your secure message."
-        And I click on the "Continue" button
+        And I click on the "Finish" button
 
         Then I should see the "Messages" page
 
@@ -276,9 +276,9 @@ Feature: Secure Communication
         # Now I'm in looking at the New messages page
         When I enter "Here is my test text" in the "Message body" field
         And I enter "My response title" in the "Message title" field
-        And I click on the "Next" button
+        And I click on the "Send message" button
         Then I should see the text "Thank you for your secure message."
-        And I click on the "Continue" button
+        And I click on the "Finish" button
         Then I should see the "Messages" page
         Then the table of data is displayed
             | Date & time | Name                  | Message title     | Reference             | Subject          | Attachment | Read | Action_1 |

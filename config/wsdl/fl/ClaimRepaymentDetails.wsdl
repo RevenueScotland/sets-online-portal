@@ -214,25 +214,32 @@
 								<xs:documentation>ADS Sale Date</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="ADSFamilyInd" type="core:YesNoType" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Indicator if ADS Claim is about Family Unit changes</xs:documentation>
-							</xs:annotation>
-						</xs:element>
 						<xs:element name="PrintData" type="xs:string"/>
 						<xs:element name="TaxPayer" type="TaxPayerStructure" minOccurs="0"/>
-						<xs:element name="SecondTaxPayer" type="TaxPayerStructure" minOccurs="0"/>
-						<xs:element name="Agent" type="AgentStructure" minOccurs="0"/>
-						<xs:element name="Document" minOccurs="0">
-							<xs:annotation>
-								<xs:documentation>Attached document</xs:documentation>
-							</xs:annotation>
+						<xs:element name="AdditionalTaxPayers" minOccurs="0">
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element name="FileName" type="xs:string"/>
-									<xs:element name="FileType" type="xs:string"/>
-									<xs:element name="Description" type="xs:string" minOccurs="0"/>
-									<xs:element name="BinaryData" type="xs:base64Binary"/>
+									<xs:element name="AdditionalTaxPayer" type="TaxPayerStructure" minOccurs="0" maxOccurs="unbounded"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="Agent" type="AgentStructure" minOccurs="0"/>
+						<xs:element name="Documents" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Document" maxOccurs="2">
+										<xs:annotation>
+											<xs:documentation>Attached document</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="FileName" type="xs:string"/>
+												<xs:element name="FileType" type="xs:string"/>
+												<xs:element name="Description" type="xs:string" minOccurs="0"/>
+												<xs:element name="BinaryData" type="xs:base64Binary"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
@@ -278,9 +285,9 @@
 							<xs:documentation>The address moniker is provided when the address has been searched via the address search, otherwise it is a manual address</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="ContactTelNo" type="xs:string"/>
-					<xs:element name="ContactEmailAddress" type="xs:string"/>
-					<xs:element name="ParPerNiNo" type="xs:string"/>
+					<xs:element name="ContactTelNo" type="xs:string" minOccurs="0"/>
+					<xs:element name="ContactEmailAddress" type="xs:string" minOccurs="0"/>
+					<xs:element name="ParPerNiNo" type="xs:string" minOccurs="0"/>
 					<xs:choice>
 						<xs:element name="Individual" minOccurs="0">
 							<xs:annotation>

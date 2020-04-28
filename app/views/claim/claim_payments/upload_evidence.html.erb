@@ -1,7 +1,20 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
+<% content_for :page_title, t('.' + @claim_payment.translation_prefix + '_title') %>
+<% type = @claim_payment.reason == 'ADS' ? 'ads' : 'non_ads'%>
+<% content_for :page_description, t('.' + type +'_description') %>
 <%= form_for @claim_payment, url: @post_path,html: { multipart: true }, method: :post, local: true do |f| %>
-  <%= form_errors_for [@claim_payment, @resource_item] %> 
-    <%= render "/layouts/file_upload_component", file_upload_label: t('.file_upload_label') %>
-    <%= f.button 'next', { :name => 'submitted' , :class => 'scot-rev-button file-upload-check'}  %>
+  <%= form_errors_for [@claim_payment, @resource_items_hash] %>
+  <% if @claim_payment.reason == 'ADS' %>
+    <p class="govuk-body">
+      <%= t('.more_upload') %>
+    </p>
+    <%= render "/layouts/file_upload_component", file_upload_label: full_lazy_lookup_path('.label'),
+                                                 file_upload_hint: { hint_key: full_lazy_lookup_path('.hint'),
+                                                                     date_range_start: l(@claim_payment.filing_date - 18.months, format: :long),
+                                                                     date_range_end: l(@claim_payment.filing_date, format: :long) },
+                                                 hide_description: true, hide_size_hint: true %>
+  <% else %>
+    <%= render "/layouts/file_upload_component", hide_size_hint: true %>
+  <% end %>
+  <%= f.button 'continue', {:class => 'scot-rev-button file-upload-check'} %>
 <% end %>

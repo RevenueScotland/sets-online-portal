@@ -1,11 +1,10 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @slft_return, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @slft_return %>
   <%= f.collection_radio_buttons_fields(:repayment_yes_no, @slft_return.list_ref_data(:repayment_yes_no)) %>
   <div id='hideable'>
     <%= f.currency_field :amount_claimed %>
   </div>
-  <%= f.button 'next', { :name => 'submitted' }  %>
+  <%= f.button %>
 <% end %>

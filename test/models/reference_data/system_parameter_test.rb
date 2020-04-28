@@ -8,6 +8,15 @@ module ReferenceData
   class SystemParameterTest < ActiveSupport::TestCase
     include MemoryCacheHelper
 
+    # This tests caching behaviour so we need known cache state
+    setup do
+      set_memory_cache
+    end
+
+    teardown do
+      restore_original_cache
+    end
+
     # actual_cache[ReferenceData::SystemParameter.cache_key][COMP_KEY_1][HASH_KEY]=TEST_HASH_VALUE
     COMP_KEY_1 = 'dom>$<ser>$<wor'
     COMP_KEY_2 = 'dom>$<ser>$<waa'
@@ -16,17 +25,6 @@ module ReferenceData
     TEST_VALUE_1 = ReferenceData::SystemParameter.new(code: 'T', value: 'test value data1')
     TEST_VALUE_2 = ReferenceData::SystemParameter.new(code: 'U', value: 'test value data2')
     TEST_VALUE_3 = ReferenceData::SystemParameter.new(code: 'V', value: 'test value data3')
-
-    # Test requires an in-memory cache regardless of what the default environment setup is
-    # ie so we don't try to access Redis in unit tests.
-    setup do
-      set_memory_cache
-    end
-
-    # Put cache configuration back
-    teardown do
-      restore_original_cache
-    end
 
     # Extend SystemParameter class so we can overwrite methods to make it safe for testing
     # (ie never contacts the back office or redis cache) and to populate it with test data.

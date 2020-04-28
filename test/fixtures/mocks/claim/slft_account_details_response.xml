@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <GetPartyDetailsResponse xmlns="http://northgateps.com/FL/GetPartyDetailsResponse" 
+      xmlns:flc="http://northgateps.com/FLCommonTypes" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xmlns:core="http://northgate-is.com/FL/Core">
+      <core:Success>true</core:Success>
+      <CompanyName>Test Portal Company Waste</CompanyName>
+      <Address>
+        <core:AddressLine1>The landfill site</core:AddressLine1>
+        <core:AddressLine2>Some Village</core:AddressLine2>
+        <core:AddressTownOrCity>Some Town</core:AddressTownOrCity>
+        <core:AddressCountyOrRegion>Northshire</core:AddressCountyOrRegion>
+        <core:AddressPostcodeOrZip>NP7 8LB</core:AddressPostcodeOrZip>
+        <core:AddressCountryCode>GB</core:AddressCountryCode>
+      </Address>
+      <MarketingIndicator>N</MarketingIndicator>
+      <PartyAccountType>TAXPAYER</PartyAccountType>
+      <CurrDDInstructionAvail>false</CurrDDInstructionAvail>
+      <UserServices>
+        <UserService>SLFT</UserService>
+      </UserServices>
+    </GetPartyDetailsResponse>
+  </soap:Body>
+</soap:Envelope>

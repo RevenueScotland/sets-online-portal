@@ -89,6 +89,11 @@
   margin-bottom: 0;
 }
 
+// override the font globally
+* {
+    font-family: "Raleway", Verdana, Helvetica, Arial, sans-serif !important;
+}
+
 .govuk-header__link:link,
 .govuk-header__link:visited {
     color: #000;
@@ -99,31 +104,10 @@
 }
 .govuk-header {
     background: #fff;
-    font-family: "Raleway", Verdana, Helvetica, Arial, sans-serif;
 }
 
 .govuk-header__container {
     border-bottom: #ebebeb 5px solid;
-    font-family: "Raleway", Verdana, Helvetica, Arial, sans-serif;
-}
-
-.custom-combobox-toggle,
-.custom-combobox-input,
-.custom-combobox,
-.govuk-textarea,
-.govuk-header__navigation,
-.govuk-fieldset__heading,
-.govuk-label,
-.govuk-header__link,
-.govuk-hint,
-.error-message,
-.govuk-table,
-.govuk-input,
-.govuk-button,
-.scot-rev-button,
-.govuk-warning-text__text,
-.govuk-link {
-    font-family: "Raleway", Verdana, Helvetica, Arial, sans-serif;
 }
 
 .govuk-textarea {
@@ -189,12 +173,6 @@ html body {
     display: none;
 }
 
-.serial_number
-{
-  border-bottom: 0px;
-  width:5%;
-}
-
 .text_align_right
 {
   text-align: right;
@@ -235,29 +213,6 @@ html body {
   color: #1d70b8;
   background-color: transparent;
   cursor: pointer; 
-}
-
-.icon {
-  display: inline-block;
-  background-position: 0 0;
-  background-repeat: no-repeat;
-}
-
-.icon-caution {
-  width: 36px;
-  height: 36px;
-  background-image: image-url("icons/caution.png");
-}
-
-.submitted {
-    background-color: #dee0e2;
-    text-align: center;
-    padding-top: 10px;
-    padding-bottom: 20px;
-}
-
-.margin-0{
-    margin: 0px;
 }
 
 .govuk-header__menu-button

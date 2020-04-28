@@ -3,7 +3,6 @@
 <% content_for :page_description, t('.description') %>
 <!-- Applies the CSS class 'external-link' to the navigation bar options, see return-form-dirty.js for details -->
 <% content_for :nav_bar_html_options, { class: 'external-link' } %>
-
 <% if @lbtt_return.show_repayment? %>
   <div class='govuk-body'>
     <%= t('.repayment_description') %>
@@ -11,7 +10,6 @@
 <% end %>
 <%= govuk_warning( t('.warning') ) if current_user %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <% if User.account_type(current_user) != 'PUBLIC' %>
   <%= display_table_region( {
       header: { label: t('.add_agent_description'), link: :edit_agent_details,  path: returns_lbtt_agent_details_path(party_id: 'new'), options: { id: 'amend_details' } }, 
@@ -19,7 +17,6 @@
       },
       { header: { link_cell_class: 'text_align_right' } } ) %>
 <% end %>
-
 <% if @lbtt_return.flbt_type == 'CONVEY' %>
   <%= display_table_region( {
       header: { label: t('.add_buyer_description'), link: :add_buyer, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'BUYER'), link_options: { id: 'add_buyer' } }, 
@@ -28,8 +25,6 @@
                         { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete buyer?" } } }] }
       }, 
       { header: { link_cell_class: 'text_align_right' } } ) %>
-
-
   <%= display_table_region( {
       header: { label: t('.add_seller_description'), link: :add_seller, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'SELLER'), link_options: { id: 'add_seller' } }, 
       table: { models: @lbtt_return.sellers&.values, attributes: [:full_name, :display_type, :display_address], 
@@ -45,7 +40,6 @@
                         { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete tenant?" } } }] }
       }, 
       { header: { link_cell_class: 'text_align_right' } } ) %>
-  
   <% if @lbtt_return.flbt_type == 'LEASERET' %>
     <%= display_table_region( { 
       header: { label: t('.add_landlord_description'), link: :add_landlord, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'LANDLORD'), link_options: { id: 'add_landlord' } }, 
@@ -55,7 +49,6 @@
       }, 
       { header: { link_cell_class: 'text_align_right' } } ) %>
   <% end %>
-
   <% if @lbtt_return.flbt_type == 'ASSIGN' %>
     <%= display_table_region( { 
       header: { label: t('.add_new_tenant_description'), link: :add_new_tenant, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'NEWTENANT'), link_options: { id: 'add_new_tenant' } }, 
@@ -66,7 +59,6 @@
       { header: { link_cell_class: 'text_align_right' } } ) %>
   <% end %>
 <% end %>
-
 <%= display_table_region( { 
       header: { label: t('.add_properties_description'), link: :add_property, path: returns_lbtt_property_address_path(property_id: 'new'), link_options: { id: 'add_property' } }, 
       table: { models: @lbtt_return.properties&.values, attributes: [:address, :ads_due_ind], 
@@ -94,7 +86,6 @@
   { header: { link_cell_class: 'text_align_right' },
     data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } ) %>
 <% end %>
-
 <%= display_region( {
   header: { label: t('.add_transaction_description'),
             link: (@lbtt_return.property_type.blank? && @lbtt_return.linked_ind.nil?) ? :add_transaction : :edit_transaction, 
@@ -166,7 +157,6 @@
   { header: { link_cell_class: 'text_align_right' },
     data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
 %>
-
 <!-- See return-form-dirty.js for details of the application of form-dirty-warning-message values of data property -->
 <%= form_for @lbtt_return, url: returns_lbtt_summary_path, method: :post, :data => { 'form-dirty-warning-message' => t('.form_dirty_warning_message') } , local: true do |f| %>
   <%= form_errors_for @lbtt_return %>

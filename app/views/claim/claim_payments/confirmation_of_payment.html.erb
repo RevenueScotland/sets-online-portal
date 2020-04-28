@@ -1,30 +1,30 @@
 <% content_for :hide_back_link, true %>
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @claim_payment %> 
-  <% if current_user.nil? %>
-  <p class="govuk-body" if >
-    <%= t('.public_secure_message', return_reference: @claim_payment.tare_reference) %>
-  </p>
-  <% else %>
-  <p class="govuk-body">
-    <%= t('.secure_message', return_reference: @claim_payment.tare_reference) %>
-  </p>
-  <% end %>
-  <p class="govuk-body">
-    <%= t('.date_text', system_date: DateFormatting.to_display_date_format(Date.today)) %>
-  </p>
-  <p class="govuk-body">
-    <%= UtilityHelper.swap_texts(t('.paragraph2').html_safe,
-                                 text_link: { t('.paragraph2_link_text') =>
-                                               link_to(t('.paragraph2_link_text'), 'http://www.revenue.scot/', target: '_blank') }) %>
-  </p>
-  <p class="govuk-body">
-    <%= t('.caution') %>
-  </p>
-<% end %>
-<%= link_to t('.print'), nil, class: 'print govuk-link' %>
-<p/>
-<%= link_to t('.download_claim_details'), claim_download_claim_path, target: "_blank" %>
+<%= form_for @claim_payment, url:@post_path, html: { multipart: true }, method: :post, local: true do |f| %>
+  <%= form_errors_for [@claim_payment, @resource_items_hash] %>
+  <%= display_region( {
+          data: [
+            { model: @claim_payment, attributes: [ { attribute: :case_reference } ] },
+            { model: @claim_payment, attributes: [ { attribute: :submitted_date, format: :full_month_date } ] },
+          ]
+      },
+      { data: { heading_cell_class: 'govuk-!-width-one-quarter' } } 
+      ) %>
+  <%= display_paragraph_components(body: t('.' + @claim_payment.translation_prefix + '_confirmation_note')) %>
+  <%= link_to t('.print'), nil, class: 'print govuk-link' %>
+  <br/>
+  <br/>
+  <%= link_to t('.download_claim_details'), claim_download_claim_path, target: "_blank" %>
+  <br/>
+  <br/>
+  <%= display_paragraph_components(heading: t('.what_next'),
+                                   body: UtilityHelper.swap_texts(t('.contact_us').html_safe,
+                                                                  text_link: { t('.contact_us_link_text') => link_to(t('.contact_us_link_text'), 
+                                                                                                                       'https://www.revenue.scot/contact-us/contact-us/',
+                                                                                                                       target: '_blank') })) %>
 
+  <%= display_paragraph_components(heading: t('.additional_documents'), body: t('.' + @claim_payment.translation_prefix + '_upload_note')) %>
+  <%= render "/layouts/file_upload_component", multiple: true, hide_description: true, hide_size_hint: true %>
+<% end %>
+<%= link_to t('go_to_dashboard'), dashboard_path if current_user %> 

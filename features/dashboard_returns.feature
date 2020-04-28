@@ -9,18 +9,26 @@ Feature: Dashboard All Returns
     Scenario: View list of all returns
         Given I have signed in 'PORTAL.WASTE' and password 'Password1!'
         Then I should see the "Dashboard" page
+        And the table of data is displayed
+            | Return reference | Description | Version | Action_1     | Action_2               | Action_3               | Action_4        |
+            | RS100002AAAAA    | Q2 2019     | 1       | Continue     | Download PDF           | Download waste details | Delete          |
+            | RS1008002WAUW    | Q4 2019     | 1       | Continue     | Download PDF           | Download waste details | Delete          |
+            | RS1008003OKAY    | Q3 2018     | 3       | Download PDF | Download waste details | Delete                 | Ongoing Enquiry |
+        And the table of data is displayed
+            | Return reference | Submitted date | Description | Version | Balance  | Status        | Action_1     | Action_2     | Action_3               | Action_4 | Action_5 |
+            | RS100001AAAAA    | 03/07/2019     | Q1 2019     | 2       | £1000.00 | Filed (Debit) | Transactions | Download PDF | Download waste details | Amend    | Message  |
 
         When I click on the "All returns" link
         Then I should see the "All returns" page
         And the table of data is displayed
-            | Return reference | Submitted date | Description | Version | Balance | Status       | Action_1     | Action_2               | Action_3     | Action_4        | Action_5        |
-            | RS1008002WAUW    |                | Q4 2019     | 1       | £0.00   | Draft        | Download PDF | Download waste details | Continue     | Delete          |                 |
-            | RS1008003OKAY    |                | Q3 2018     | 3       | £0.00   | Draft        | Download PDF | Download waste details | Delete       | Ongoing Enquiry |                 |
-            | RS100002AAAAA    |                | Q2 2019     | 1       | £0.00   | Draft        | Download PDF | Download waste details | Continue     | Delete          |                 |
-            | RS1008004HMMM    | 03/07/2019     | Q2 2019     | 1       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Transactions | Amend           | Message         |
-            | RS1008001HALO    | 03/07/2019     | Q1 2016     | 2       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Transactions | Claim           | Message         |
-            | RS1008003OKAY    | 03/07/2019     | Q3 2018     | 2       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Transactions | Message         | Ongoing Enquiry |
-            | RS100001AAAAA    | 03/07/2019     | Q1 2019     | 2       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Transactions | Amend           | Message         |
+            | Return reference | Submitted date | Description | Version | Balance  | Status        | Action_1     | Action_2               | Action_3     | Action_4        | Action_5        |
+            | RS1008002WAUW    |                | Q4 2019     | 1       | £0.00    | Draft         | Download PDF | Download waste details | Continue     | Delete          |                 |
+            | RS1008003OKAY    |                | Q3 2018     | 3       | £0.00    | Draft         | Download PDF | Download waste details | Delete       | Ongoing Enquiry |                 |
+            | RS100002AAAAA    |                | Q2 2019     | 1       | £0.00    | Draft         | Download PDF | Download waste details | Continue     | Delete          |                 |
+            | RS1008004HMMM    | 03/07/2019     | Q2 2019     | 1       | £0.00    | Filed (Paid)  | Download PDF | Download waste details | Transactions | Amend           | Message         |
+            | RS1008001HALO    | 03/07/2019     | Q1 2016     | 2       | £0.00    | Filed (Paid)  | Download PDF | Download waste details | Transactions | Claim           | Message         |
+            | RS1008003OKAY    | 03/07/2019     | Q3 2018     | 2       | £0.00    | Filed (Paid)  | Download PDF | Download waste details | Transactions | Message         | Ongoing Enquiry |
+            | RS100001AAAAA    | 03/07/2019     | Q1 2019     | 2       | £1000.00 | Filed (Debit) | Download PDF | Download waste details | Transactions | Amend           | Message         |
 
     # Index page tests
     Scenario: Check draft stops amend link being shown
@@ -29,6 +37,7 @@ Feature: Dashboard All Returns
         And the table of data is displayed
             | Return reference | Your reference          | Description            | Version | Action_1 | Action_2     | Action_3 |
             | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 | Conveyance or transfer | 2       | Continue | Download PDF | Delete   |
+        And I should not see a link with text "Download waste details"
 
         When I click on the "All returns" link
         Then I should see the "All returns" page
@@ -43,6 +52,7 @@ Feature: Dashboard All Returns
             | RS2000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
             | RS2000003BBBB    | XXXXX02-99              | 01/06/2017     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
             | RS3000003EEEE    | XXXXX02-99              | 01/06/2017     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
+        And I should not see a link with text "Download waste details"
         When I enter "b" in the "Your reference" field
         And I click on the "Find" button
         Then the table of data is displayed
@@ -134,7 +144,7 @@ Feature: Dashboard All Returns
         And I enter "RS100001AAAAA" in the "Return reference" field
         And I select "Filed" from the "Return status"
         And I click on the "Find" button
-        Then I should see the text "Filed (Paid)"
+        Then I should see the text "Filed (Debit)"
         And I should see the text "Q1 2019"
         And I should see a link with text "Download PDF"
         And I should see a link with text "Download waste details"
@@ -150,7 +160,7 @@ Feature: Dashboard All Returns
         And I enter "01-07-2019" in the "Submitted to date" date field
         And I check the "Include previous versions" checkbox
         And I click on the "Find" button
-        Then I should see the text "Filed (Paid)"
+        Then I should see the text "Filed (Debit)"
         And I should see a link with text "Download PDF"
         And I should see a link with text "Download waste details"
         And I should not see a link with text "Transactions"

@@ -50,14 +50,25 @@ en:
         is_acting_as_trustee: "If they are acting as a trustee or representative partner for tax purposes"
         BUYER_full_name: "Buyer"
         TENANT_full_name: "Tenant"
+        UNAUTHENTICATED_same_address: "Is this the same as the first buyer's address"
+        AUTHENTICATED_same_address: "Is this the same as the first taxpayer's address"
+        UNAUTHENTICATED_telephone: "Telephone number"
+        AUTHENTICATED_telephone: "Telephone number"
+        UNAUTHENTICATED_email_address: "Email address"
+        AUTHENTICATED_email_address: "Email address"
+        claim_org_name: "Organisation name"
 
     hints:
       returns/lbtt/party:
         agent_reference: "This is your reference for this return"
         BUYER_buyer_seller_linked_ind: "The buyer and seller are connected if they have an existing personal or business relationship. See Section 1122 of the Corporation Tax Act 2010 (opens in a new window) for further details"
-        TENANT_buyer_seller_linked_ind: "The tenant and landlord are connected if they have an existing personal or business relationship. See Section 1122 of the Corporation Tax Act 2010 (opens in a new window) for further details."
-        is_acting_as_trustee_BUYER: "See guidance LBTT7001 - Partnerships (opens in a new window) and LBTT8001 - Trusts (opens in a new window) for further details."
-        is_acting_as_trustee_TENANT: "See guidance LBTT7001 - Partnerships (opens in a new window) and LBTT8001 - Trusts (opens in a new window) for further details."
+        TENANT_buyer_seller_linked_ind: "The tenant and landlord are connected if they have an existing personal or business relationship. See Section 1122 of the Corporation Tax Act 2010 (opens in a new window) for further details"
+        is_acting_as_trustee_BUYER: "See guidance LBTT7001 - Partnerships (opens in a new window) and LBTT8001 - Trusts (opens in a new window) for further details"
+        is_acting_as_trustee_TENANT: "See guidance LBTT7001 - Partnerships (opens in a new window) and LBTT8001 - Trusts (opens in a new window) for further details"
+        UNAUTHENTICATED_telephone: "To contact you in case we have any queries about this application"
+        AUTHENTICATED_telephone: "To contact the tax payer in case we have any queries about this application"
+        UNAUTHENTICATED_email_address: "We'll use this to send you an email confirmation"
+        AUTHENTICATED_email_address: "We'll use this to send the tax payer an email confirmation"
 
     errors:
       models:

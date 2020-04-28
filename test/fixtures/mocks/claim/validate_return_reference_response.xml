@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+        <ValidateReturnReferenceResponse xmlns="http://www.northgateps.com/RSTS/ValidateReturnReference" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+            <core:Success>true</core:Success>
+            <TareRefNo>197</TareRefNo>
+            <TareVersion>1</TareVersion>
+            <ServiceCode>LBTT</ServiceCode>
+            <Status>L</Status>
+            <SubmittedDate>2017-07-01</SubmittedDate>
+            <ADSIncluded>Y</ADSIncluded>
+            <FlbtType>CONVEY</FlbtType>
+            <FilingDate>2017-07-31</FilingDate>
+            <NoOfBuyers>5</NoOfBuyers>
+            <ADSAmount>100</ADSAmount>
+            <EffectiveDate>2017-07-01</EffectiveDate>
+        </ValidateReturnReferenceResponse>
+    </soap:Body>
+</soap:Envelope>

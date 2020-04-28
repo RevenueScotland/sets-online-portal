@@ -1,11 +1,10 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <% content_for :page_description, t('.description').html_safe %>
-
 <%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f|  %>
   <%= form_errors_for @lbtt_return %>
   <%= f.collection_radio_buttons_fields(:non_ads_reliefclaim_option_ind, @lbtt_return.list_ref_data(:non_ads_reliefclaim_option_ind), text_link: { t('.non_ads_reliefclaim_option_ind') =>
-                                                    link_to(t('.non_ads_reliefclaim_option_ind'), "#{Rails.configuration.x.external_links.lbtt3010_reliefs}", target: '_blank')}) %> 
+                                                    link_to(t('.non_ads_reliefclaim_option_ind'), "#{Rails.configuration.x.external_links.lbtt3010_reliefs}", target: '_blank')}) %>
   <div class='govuk-radios__conditional--hidden' id='hideable'>
     <%= f.table_fields(@lbtt_return.non_ads_relief_claims, :non_ads_relief_claims) do |table_form | %>
       <% table_form.select(:relief_type_auto, @relief_types, { :code => :code_auto, :value => :description, include_blank: true }, 
@@ -13,6 +12,5 @@
       <% table_form.currency_field(:relief_amount,{},{readonly: table_form.object.auto_calculated? }) %>
     <% end %>
   </div>
-
-  <%= f.button 'next', { :name => 'submitted' }  %>
+  <%= f.button %>
 <% end %>

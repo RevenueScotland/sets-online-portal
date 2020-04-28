@@ -40,7 +40,6 @@ en:
   forgotten_usernames:
     new:
       title: "Forgotten username"
-      confirm: "Confirm"    
     new-confirmation:
       title: "Forgotten username confirmation"
       description: "Check your email, your username information has being sent to the registered email address."

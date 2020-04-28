@@ -1,11 +1,11 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @lbtt_return, url: returns_lbtt_property_type_path, :method => 'post', local: true do |f| %>
-   <%= form_errors_for @lbtt_return %>
-   <%= f.collection_radio_buttons_fields(:property_type, @lbtt_return.list_ref_data(:property_type),
+  <%= form_errors_for @lbtt_return %>
+  <%= f.collection_radio_buttons_fields(:property_type, @lbtt_return.list_ref_data(:property_type),
                                          text_link: { t('.property_type_residential') =>
                                                     link_to(t('.property_type_residential'), "#{Rails.configuration.x.external_links.lbtt4010_residential_definition}", target: '_blank'),
                                                      t('.property_type_non_residential') =>
                                                     link_to(t('.property_type_non_residential'), "#{Rails.configuration.x.external_links.lbtt4012_non_residential_definition}", target: '_blank')}) %>
-<%= f.button 'next', { :name => 'submitted' }  %>
+  <%= f.button %>
 <% end %>
