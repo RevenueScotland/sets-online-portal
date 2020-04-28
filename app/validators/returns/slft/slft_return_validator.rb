@@ -69,7 +69,7 @@ module Returns
 
       # Validate individual waste object from the list for particular site
       def validate_wastes(site, errors)
-        site.wastes.values.each do |waste|
+        site.wastes.each_value do |waste|
           next if waste.valid? Waste.attribute_list
 
           error_msg = waste.ewc_code.blank? ? 'Waste details for ' + site.site_name : error_msg_for_site(waste, site)

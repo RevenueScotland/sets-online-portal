@@ -575,7 +575,7 @@ module Returns
 
       # Takes the hash from the back office response and transform to make it compatible with our models
       # ie this method is like the opposite of @see #request_save.
-      private_class_method def self.convert_back_office_hash(lbtt) # rubocop:disable Metrics/AbcSize, Metrics/LineLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength
+      private_class_method def self.convert_back_office_hash(lbtt) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength
         # separate output object so that back office changes won't break FL record loading
         output = {}
         output[:form_type] = lbtt[:form_type]
@@ -828,7 +828,7 @@ module Returns
       # Called by @see Returns::AbstractReturn#save
       # @param requested_by [Object] details for the current user
       # @return a hash suitable for use in a save request to the back office
-      def request_save(requested_by) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/LineLength,  Metrics/MethodLength, Metrics/PerceivedComplexity
+      def request_save(requested_by) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         output = {
           'ins1:FlbtType': @flbt_type, 'ins1:PropertyType': property_type
         }

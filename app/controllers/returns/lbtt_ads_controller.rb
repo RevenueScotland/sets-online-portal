@@ -60,8 +60,8 @@ module Returns
     # Navigates to the LBTT summary page after submitted.
     def ads_reliefs
       wizard_list_step(returns_lbtt_summary_url, setup_step: :setup_ads_reliefs_step,
-                                                 add_row_handler: :add_relief_data_row,
-                                                 delete_row_handler: :delete_relief_data_row,
+                                                 list_attribute: :ads_relief_claims,
+                                                 new_list_item_instance: :new_list_item_ads_relief_claims,
                                                  merge_list: :merge_list_data, after_merge: :update_tax_calculations)
     end
 
@@ -75,23 +75,10 @@ module Returns
       ['ads_repay_reason', STEPS.first]
     end
 
-    # Add new ReliefClaim object in its array
-    def add_relief_data_row
-      # need to save data in cache before adding new object otherwise we'll lose any new data on the form
-      # but don't add row if there are errors
-      return unless merge_list_data
-
-      @ads.ads_relief_claims.push(Lbtt::ReliefClaim.new)
-      wizard_save(@lbtt_return)
-    end
-
-    # Remove ReliefClaim object in its array
-    def delete_relief_data_row(index)
-      # need to save data in cache before adding new object otherwise we'll lose any new data on the form
-      merge_list_data
-
-      @ads.ads_relief_claims.delete_at(index)
-      wizard_save(@lbtt_return)
+    # Used in wizard_list_step as part of the merging of data.
+    # @return [Object] new instance of ReliefClaim class that has attributes with value.
+    def new_list_item_ads_relief_claims(hash_attributes = {})
+      Lbtt::ReliefClaim.new(hash_attributes)
     end
 
     # Merge relief array hash data submitted in the params into the right ReliefClaim objects in the model
@@ -99,12 +86,10 @@ module Returns
     def merge_list_data
       return true unless @ads.ads_reliefclaim_option_ind == 'Y'
 
-      record_array = filter_params_ads_relief_claims[:ads_relief_claims].values
-      record_array&.each_with_index do |record, i|
-        relief = Lbtt::ReliefClaim.new(record)
-        relief.valid?
-        @ads.ads_relief_claims[i] = relief
-      end
+      # Merges the params values with the wizard object's list attribute and validates each as they're merged
+      # @see merge_params_and_validate_with_list to know more
+      yield
+
       # Special case we need to validated that we don't have duplicated now we can only do this once
       # they are all loaded then trigger validation again on the model
       @ads.valid?(:ads_reliefclaim_option_ind)
@@ -122,7 +107,7 @@ module Returns
 
     # Loads existing wizard models (@lbtt_return and @ads) from the wizard cache or redirects to the summary page
     # @return [Tax] the model for wizard saving
-    def load_step
+    def load_step(_sub_object_attribute = nil)
       @post_path = wizard_post_path(LbttController.name)
       @lbtt_return = wizard_load(Returns::LbttController)
       Lbtt::Ads.setup_ads(@lbtt_return)
@@ -144,18 +129,18 @@ module Returns
     end
 
     # Return the parameter list filtered for the attributes of the Calculate model
-    def filter_params
+    def filter_params(_sub_object_attribute = nil)
       required = :returns_lbtt_ads
       output = params.require(required).permit(Lbtt::Ads.attribute_list) if params[required]
       output
     end
 
-    # Return the parameter list filtered for the attributes of the non ads relief claims model
+    # Return the parameter list filtered for the attributes in list_attribute
     # note we have to permit everything because we get a hash of the records returned e.g. "0" => details
-    def filter_params_ads_relief_claims
-      return unless params[:returns_lbtt_ads] && params[:returns_lbtt_ads][:ads_relief_claims]
+    def filter_list_params(list_attribute, _sub_object_attribute = nil)
+      return unless params[:returns_lbtt_ads] && params[:returns_lbtt_ads][list_attribute]
 
-      params.require(:returns_lbtt_ads).permit(ads_relief_claims: {})
+      params.require(:returns_lbtt_ads).permit(list_attribute => {})[list_attribute].values
     end
   end
 end

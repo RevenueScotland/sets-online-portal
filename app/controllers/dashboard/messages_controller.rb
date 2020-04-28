@@ -41,24 +41,21 @@ module Dashboard
       # need to call return
       return render_confirmation_page(msg_refno) if success
 
-      initialize_fileupload_variables
       render 'new'
     end
 
     # Handle confirmation related message
     def confirmation
-      if params[:add_resource] || params[:delete_resource]
-        handle_confirmation_file_upload
-      elsif params[:continue]
-        # clear cache
-        file_upload_end
-        redirect_to dashboard_messages_path
-      else
-        # clear previous cache
-        file_upload_end
-        initialize_fileupload_variables
-        @message.additional_file = 'Y'
-      end
+      @message = Message.new(message_params)
+      handle_file_upload('confirmation',
+                         before_add: :add_document,
+                         before_delete: :delete_document)
+
+      return unless params[:finish]
+
+      # clear cache
+      clear_resource_items
+      redirect_to dashboard_messages_path
     end
 
     # Call delete attachment method of message to delete document from backoffice
@@ -68,11 +65,11 @@ module Dashboard
       @message.delete_attachment(current_user, doc_refno)
     end
 
-    # Send document to backoffice
-    # @return [Boolean][String] true if document store successfully backoffice else false and
-    #   document reference id
-    def add_document
-      @message.add_attachment(current_user, @resource_item, @message.smsg_refno)
+    # Send document to back office
+    # @return [Boolean] true if document stored successfully in the back office else false and
+    # @return [String] the documents reference
+    def add_document(resource_item)
+      @message.add_attachment(current_user, resource_item, @message.smsg_refno)
     end
 
     # Retrieve file from backoffice
@@ -89,10 +86,8 @@ module Dashboard
     # Processes some data to initially load up for the sending a message page.
     # If it is a reply then carry over the :subject, :origin_id, :title and :reference.
     def new
-      # clear previous cache
-      file_upload_end if request.get?
       @message = Message.initialise_message(current_user, params[:smsg_refno], params[:reference])
-      initialize_fileupload_variables
+      handle_file_upload(nil, clear_cache: true)
     end
 
     private
@@ -124,19 +119,9 @@ module Dashboard
     # sent to back-office
     def render_confirmation_page(msg_refno)
       @message.smsg_refno = msg_refno
-      # clear cache
-      file_upload_end
-      initialize_fileupload_variables
+      # Need to clear the resource items for the initial submission
+      clear_resource_items
       render 'confirmation', id: msg_refno
-    end
-
-    # This method is specific to handle the file add and delete functionality
-    # on confirmation page
-    def handle_confirmation_file_upload
-      @message = Message.new(message_params)
-      handle_file_upload('confirmation',
-                         after_add: :add_document,
-                         before_delete: :delete_document)
     end
   end
 end

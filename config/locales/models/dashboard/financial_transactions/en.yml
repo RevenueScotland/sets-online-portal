@@ -46,8 +46,8 @@ en:
         actual_date: "Created date"
         effective_date: "Effective date"
         description: "Description"
-        matched_amount: "Allocated<br/>amount"
-        original_amount: "Original<br/>amount"
+        matched_amount: "Allocated<br>amount"
+        original_amount: "Original<br>amount"
 
       dashboard/financial_transaction_filter:
         actual_date: "Created date"

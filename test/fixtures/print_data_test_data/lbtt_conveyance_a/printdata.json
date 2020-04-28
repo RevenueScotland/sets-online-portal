@@ -1048,7 +1048,7 @@
                 {
                     "itemcode": "declaration",
                     "itemformat": null,
-                    "itemlabel": "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): \n (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and \n (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct.",
+                    "itemlabel": "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): \n (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and \n (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct",
                     "itemdata": "Yes"
                 }
             ],

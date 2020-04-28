@@ -1,12 +1,11 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @party, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @party %>
   <%# Remove registered company code from organisation type list received from back-office, no need to display on this page %>
   <%= f.collection_radio_buttons_fields(:org_type, @party.list_ref_data(:org_type).delete_if { |r| r.code == 'REG_COM' }, { alignment: 'vertical' }) %>
   <div id='hideable'width="100%">
     <%= f.text_area_field :other_type_description %>
-  </div>  
-<%= f.button 'next', { :name => 'submitted' }  %>
+  </div>
+  <%= f.button %>
 <% end %>

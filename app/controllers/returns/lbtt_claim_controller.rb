@@ -42,9 +42,9 @@ module Returns
     private
 
     # Sets up variables for the form to use based on the main LBTT controller
-    def load_step
+    def load_step(_sub_object_attribute = nil)
       @post_path = wizard_post_path(LbttController.name)
-      @lbtt_return = wizard_load_or_redirect(returns_slft_summary_url, Returns::LbttController)
+      @lbtt_return = wizard_load_or_redirect(returns_slft_summary_url, {}, Returns::LbttController)
     end
 
     # Custom step to default the amount to claim in the ADS repayment case

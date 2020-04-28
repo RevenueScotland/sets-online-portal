@@ -22,11 +22,28 @@ module Returns
       save(requested_by)
     end
 
+    # Gets the return ready to save
+    # primarily checks if it is being/has already been submitted and raises an error if it has
+    # This is doing optimistic locking where we assume the save latest will work. We have to do this in case the user
+    # loses the connection. The return needs to be saved to the cache after calling this routine
+    # @return [Boolean] true if the return is prepared
+    def prepare_to_save_latest
+      errors.add(:base, :has_already_been_submitted) && (return false) if @already_submitted
+      @already_submitted = true
+      true
+    end
+
     # Sets form type to latest and calls #save
+    # Resets the saved flag if there is an error
     # @param requested_by [User] the user saving the return (ie current_user)
     def save_latest(requested_by)
       @form_type = 'L'
-      save(requested_by)
+      success = save(requested_by)
+      # if errors have been added then save failed
+      success = false if errors.any?
+      # only clear the saving flag if the save failed
+      @already_submitted = false unless success
+      success
     end
 
     # @!method self.abstract_find(operation, id, requested_by, response_element)

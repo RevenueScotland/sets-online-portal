@@ -29,7 +29,6 @@ module CompanyHelper
   # @param company [Object] : parameter use to view exiting companies details on the company view
   def initialize_company_variables(company = nil)
     @company = company || Company.new
-    @company_read_only = true
   end
 
   # Performs a company search based on the search parameters and displays the results (if any)

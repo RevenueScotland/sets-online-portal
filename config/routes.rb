@@ -189,34 +189,33 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     # Claim_Payments
-    namespace :claim do # rubocop:disable Metrics/BlockLength
+    namespace :claim do
       get '/download_claim',                             to: 'claim_payments#view_claim_pdf'
       get 'claim_payments/download-file',                to: 'claim_payments#download_file'
       match 'claim_payments/claim_reason',               to: 'claim_payments#claim_reason',         via: %i[get post]
       match 'claim_payments/date_of_sale',               to: 'claim_payments#date_of_sale',         via: %i[get post]
-      match 'claim_payments/further_claim_info',         to: 'claim_payments#further_claim_info',   via: %i[get post]
       match 'claim_payments/claiming_amount',            to: 'claim_payments#claiming_amount',      via: %i[get post]
-      match 'claim_payments/taxpayer_details',           to: 'claim_payments#taxpayer_details',     via: %i[get post]
-      match 'claim_payments/taxpayer_address',           to: 'claim_payments#taxpayer_address', via: %i[get post]
       match 'claim_payments/claim_payment_bank_details', to: 'claim_payments#claim_payment_bank_details',
                                                          via: %i[get post]
       match 'claim_payments/main_residence_address',     to: 'claim_payments#main_residence_address',
                                                          via: %i[get post]
-      match 'claim_payments/taxpayer_declaration',       to: 'claim_payments#taxpayer_declaration', via: %i[get post]
+      match 'claim_payments/final_declaration',          to: 'claim_payments#final_declaration', via: %i[get post]
       match 'claim_payments/confirmation_of_payment',    to: 'claim_payments#confirmation_of_payment',
                                                          via: %i[get post]
-      match 'claim_payments/second_tax_payer',           to: 'claim_payments#second_tax_payer',     via: %i[get post]
-      match 'claim_payments/second_taxpayer_info',       to: 'claim_payments#second_taxpayer_info', via: %i[get post]
-      match 'claim_payments/additional_tax_payer',       to: 'claim_payments#additional_tax_payer', via: %i[get post]
       match 'claim_payments/upload_evidence',            to: 'claim_payments#upload_evidence',      via: %i[get post]
-      match 'claim_payments/more_uploads',               to: 'claim_payments#more_uploads',         via: %i[get post]
       match 'claim_payments/confirmation',               to: 'claim_payments#confirmation',         via: %i[get post]
-      match 'claim_payments/public_claim_landing',          to: 'claim_payments#public_claim_landing', via: %i[get post]
-      match 'claim_payments/return_reference_number',       to: 'claim_payments#return_reference_number',
-                                                            via: %i[get post]
-      match 'claim_payments/claimant_info',                 to: 'claim_payments#claimant_info',        via: %i[get post]
-      match 'claim_payments/agent_info',                    to: 'claim_payments#agent_info',           via: %i[get post]
-      match 'claim_payments/agent_address',                 to: 'claim_payments#agent_address',        via: %i[get post]
+      match 'claim_payments/before_you_start',           to: 'claim_payments#before_you_start',     via: %i[get post]
+      match 'claim_payments/public_claim_landing',       to: 'claim_payments#public_claim_landing', via: %i[get post]
+      match 'claim_payments/eligibility',                to: 'claim_payments#eligibility',          via: %i[get post]
+      match 'claim_payments/return_reference_number',    to: 'claim_payments#return_reference_number',
+                                                         via: %i[get post]
+
+      match 'claim_payments/taxpayer_details/(:sub_object_index)', to: 'claim_payments#taxpayer_details',
+                                                                   as: 'claim_payments_taxpayer_details',
+                                                                   via: %i[get post]
+      match 'claim_payments/taxpayer_address/(:sub_object_index)', to: 'claim_payments#taxpayer_address',
+                                                                   as: 'claim_payments_taxpayer_address',
+                                                                   via: %i[get post]
     end
   end
 end

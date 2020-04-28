@@ -109,6 +109,15 @@ module Returns
         @uuid
       end
 
+      # Comparison operator for wastes, used when sorting on the page
+      def <=>(other)
+        ewc_comp = (ewc_code <=> other.ewc_code)
+        return ewc_comp if ewc_comp != 0
+
+        # if ewc code is the same use total tonnage but descending
+        other.total_tonnage <=> total_tonnage
+      end
+
       # EWC description 'attribute' getter.
       # @return [String] the EWC description that corresponds to the ewc_code
       # Used to support CSV imports and exports.

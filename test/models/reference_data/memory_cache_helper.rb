@@ -17,27 +17,5 @@ module ReferenceData
       Rails.logger.info('Restoring previous cache')
       Rails.cache = @original_cache
     end
-
-    # Overwrite SystemParameter's call_ok? method so we don't go to the back office for SystemParameters in the test.
-    # If you want it to return specific data, see that done in @see SystemParameterTest class TestSystemParameter.
-    def prevent_system_parameter_calling_back_office
-      ReferenceData::SystemParameter.class_eval do
-        # Save the original method
-        alias_method :call_ok_original_method, :call_ok?
-
-        # Redefine it
-        def self.call_ok?(_dummy, _dummy1)
-          {}
-        end
-      end
-    end
-
-    # Restore original method and clean up.
-    def restore_system_parameter_calling_back_office
-      ReferenceData::SystemParameter.class_eval do
-        alias_method :call_ok?, :call_ok_original_method
-        remove_method :call_ok_original_method
-      end
-    end
   end
 end

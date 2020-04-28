@@ -85,15 +85,15 @@ en:
       index:
         title: "Messages"
         show: "view"
-        new: "Create New Message"
+        new: "New message"
         link:
-          new: "New Message"
+          new: "New message"
           dashboard: "Dashboard"
         find: "Find"
         no_data_found: "There are no messages to be shown..."
       show:
         title: "Message full details"
-        heading: "Related Messages:"
+        heading: "Related messages"
         show: "view"
         reply: "Reply"
         link:
@@ -102,14 +102,12 @@ en:
       new:
         title: "New message"
         created_datetime: "Date & Time"
-        send: "Send Message"
-        cancel: "Cancel"
-        file_upload_label: Upload a supporting file (optional)
-        file_upload_label_hint: You will be able to upload more documents on the next page
+        send: "Send message"
+        file_upload_label_default: Upload a supporting file (optional)
+        file_upload_hint_default: You will be able to upload more documents on the next page
       confirmation:
-        title: Confirmation
+        title: Thank you for your secure message.
         paragraph_heading: What happens next
-        paragraph1: Thank you for your secure message.
         paragraph2: We aim to respond as quickly as possible. In the meantime, full information and guidance is available on the Revenue Scotland website (opens in a new window).
         paragraph2_link_text: website (opens in a new window)
-        file_upload_label: Upload a document to support your secure message
+        file_upload_label_default: Upload a document to support your secure message

@@ -26,51 +26,64 @@ module ReferenceData
     # (the result is suitable for iterating over).
     # If you need to call this method multiple times, consider calling cached_values once to get the raw data and
     # operate on that rather than making multiple calls to the cache.
-    # @param [String] domain_code - back office key
-    # @param [String] service_code - back office key
-    # @param [String] workplace_code - back office key
+    # @param domain_code [String] back office key
+    # @param service_code [String] back office key
+    # @param workplace_code [String] back office key
+    # @param safe_lookup [Boolean] Default false if set to true don't raise and error if no data
     # @return a list for the given domain, service and workplace codes.
-    def self.list(domain_code, service_code, workplace_code)
-      output = lookup(domain_code, service_code, workplace_code).values.sort_by(&:sort_key)
-
+    def self.list(domain_code, service_code, workplace_code, safe_lookup = false)
+      output = lookup(domain_code, service_code, workplace_code, safe_lookup)&.values&.sort_by(&:sort_key)
       comp_key = format_composite_key(domain_code, service_code, workplace_code)
-      raise Error::AppError.new(500, "No  #{name} list data found for #{comp_key}") if output.blank?
+      log_or_raise_lookup_error(output, comp_key, safe_lookup, :list)
 
-      output
+      output || []
     end
 
     # Get the data from the cache and return the hash associated with the parameters
     # (We can't call this method "hash" since that's a reserved word in Rails.)
-    # @param [String] domain_code - back office key
-    # @param [String] service_code - back office key
-    # @param [String] workplace_code - back office key
+    # @param domain_code [String] back office key
+    # @param service_code [String] back office key
+    # @param workplace_code [String] back office key
     # @raise [Error::AppError] if the data doesn't exist.
     # @return [Hash] the hash for the given domain, service and workplace codes.
-    def self.lookup(domain_code, service_code, workplace_code)
+    def self.lookup(domain_code, service_code, workplace_code, safe_lookup = false)
       comp_key = format_composite_key(domain_code, service_code, workplace_code)
-      lookup_composite_key(comp_key)
-    end
+      output = lookup_multiple([comp_key], true)[comp_key]
+      log_or_raise_lookup_error(output, comp_key, safe_lookup)
 
-    # Get the data from the cache and return the hash associated with the key.
-    # @param [String] comp_key in the format returned by #composite_key (ie <domain>.>service>.<workplace>)
-    # @return [Hash] the hash for the given composite key
-    def self.lookup_composite_key(comp_key)
-      Rails.logger.debug("Looking up #{comp_key}")
-      output = cached_values[comp_key]
-      raise Error::AppError.new(500, "No #{name} lookup data found for #{comp_key}") if output.blank?
-
-      output
+      output || {}
     end
 
     # Helper method to get the cached data for multiple keys at once (ie only 1 call to the cache).
     # @param [Array] composite_keys - list of composite keys made from calling @see composite_key.
     # @return [Hash] output[composite_key] = <result>
-    def self.lookup_multiple(composite_keys)
+    def self.lookup_multiple(composite_keys, safe_lookup = false)
       Rails.logger.debug("Looking up multiple keys #{composite_keys}")
       output = cached_values.slice(*composite_keys)
-      raise Error::AppError.new(500, "No #{name} lookup multiple data found for #{composite_keys}") if output.blank?
+      log_or_raise_lookup_error(output, composite_keys, safe_lookup, :multiple)
 
-      output
+      output || {}
+    end
+
+    # Used for raising or logging an error depending on the output and if we want to do a safe lookup.
+    # This can be used for any of the lookup, just ensure that you pass in the lookup_type to get a more appropriate
+    # error message.
+    # @param output [Hash|Array] the output of the method where this is called
+    # @param comp_key [Array|String] the single or multiple composite key(s)
+    # @param safe_lookup [Boolean] if true this will do a safe look up which means that we will only log the error
+    #   and not raise one if it meets the certain condition.
+    # @param lookup_type [Symbol] is used to get the appropriate message when logging or throwing an error.
+    #   - :default is used for lookup method
+    #   - :multiple is used for lookup_multiple method
+    #   - :list is used for list method
+    private_class_method def self.log_or_raise_lookup_error(output, comp_key, safe_lookup, lookup_type = :default)
+      # If we have an output then we don't need to log any error
+      return unless output.blank?
+
+      type = { default: 'lookup', multiple: 'lookup multiple', list: 'list' }[lookup_type]
+      return Rails.logger.error("No #{name} #{type} data found for #{comp_key}") if safe_lookup
+
+      raise Error::AppError.new(500, "No #{name} #{type} data found for #{comp_key}")
     end
 
     # Returns lists of reference data value arrays indexed by their composite keys ie so you only hit the cache once.

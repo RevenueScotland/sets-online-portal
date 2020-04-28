@@ -1,14 +1,10 @@
-
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @party, url: @post_path, method: :post, local: true do |f| %>
   <% content_for :page_title, t('.'+@party.party_type+ '_title') %>
   <%= form_errors_for [@party, @address_summary, @address_detail] %>
-
   <%= f.collection_radio_buttons_fields(:is_contact_address_different, @party.list_ref_data(:is_contact_address_different)) %>
   <div id='hideable'>
     <%= render "/layouts/address" %>
   </div>
-  <%= f.button 'next', { :name => 'submitted' }  %>
+  <%= f.button %>
 <% end %>
-

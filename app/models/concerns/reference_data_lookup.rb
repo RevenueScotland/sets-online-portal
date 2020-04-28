@@ -134,10 +134,11 @@ module ReferenceDataLookup
     raise Error::AppError.new('LOOKUP', 'uncached_ref_data_codes not defined') unless
          respond_to?(:uncached_ref_data_codes)
 
-    Rails.logger.debug("Model ref data uncached lookup for #{attribute} #{uncached_ref_data_codes[attribute]}")
+    comp_key = uncached_ref_data_codes[attribute]
+    Rails.logger.debug("Model ref data uncached lookup for #{attribute} #{comp_key}")
 
-    return ReferenceDataLookup.lookup_yesno if uncached_ref_data_codes[attribute] == comp_key('YESNO', 'SYS', 'RSTU')
+    return ReferenceDataLookup.lookup_yesno if comp_key == comp_key('YESNO', 'SYS', 'RSTU')
 
-    ReferenceData::ReferenceValue.lookup_composite_key(uncached_ref_data_codes[attribute])
+    ReferenceData::ReferenceValue.lookup_multiple([comp_key])[comp_key]
   end
 end

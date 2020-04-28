@@ -123,11 +123,13 @@ module Returns
       end
 
       # Export the site's wastes details as separate CSV files into the supplied parent folder
+      # The waste is sorted in the same order as the page site_waste_summary
       # @param filename_prefix [String] used to prefix the output filename
       # @param parent_folder [String] the folder to put the CSV files into
       def export_waste_csv_data(filename_prefix, parent_folder)
         output_filename = csv_output_filename parent_folder, filename_prefix
-        csv_export output_filename, Returns::Slft::Waste, @wastes.values
+        # @see waste.<=> to learn about how the sorting works for @wastes.values.sort
+        csv_export output_filename, Returns::Slft::Waste, @wastes.values.sort
       end
 
       # Create a new instance based on a back office style hash (@see SlftReturn.convert_back_office_hash).

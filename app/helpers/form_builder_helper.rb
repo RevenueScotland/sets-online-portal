@@ -153,10 +153,11 @@ module FormBuilderHelper
     # @param id [Object] id of button, and used to get the value from the translations
     # @param html_options [Hash] options (element attributes/properties) to be passed into the creation of the element.
     # @return [HTML block element] the standard button field with the correct class
-    def button(id, html_options = {})
-      button_class = html_options[:class].nil? ? 'scot-rev-button' : ''
-      options = UtilityHelper.submit_options
-      html_options = UtilityHelper.field_html_options(options, html_options, button_class)
+    def button(id = 'continue', html_options = {})
+      html_options[:class] ||= 'scot-rev-button'
+      # if not id provided assume this is a continue button and set if and name accordingly
+      id ||= 'continue'
+      html_options[:name] ||= 'continue' if id == 'continue'
       html_options = UtilityHelper.submit_html_options(id, options, html_options)
       if !id.nil?
         super @template.t(id, html_options), html_options
@@ -166,7 +167,7 @@ module FormBuilderHelper
     end
 
     # Create a submit field with the correct class
-    # Default button will be disabled when the form is submitted. It can be override with
+    # Default button will be disabled when the form is submitted. It can be overridden with
     # 'not_disable' option
     # Example to override this:
     # <%= f.submit 'submit', {not_disable:''}%>
@@ -175,8 +176,6 @@ module FormBuilderHelper
     # @return [HTML block element] the standard submit field with the correct class
     def submit(id = nil, html_options = {})
       span = @template.content_tag(:span, '', class: 'scot-rev-submit-image')
-      options = UtilityHelper.submit_options
-      html_options = UtilityHelper.field_html_options(options, html_options, '')
       html_options = UtilityHelper.submit_html_options(id, options, html_options)
       submit = if !id.nil?
                  super @template.translate(id, html_options), html_options
