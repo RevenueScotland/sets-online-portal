@@ -16,7 +16,7 @@ def RUBY_VERSION="2.6.5"
 	* 	and aren't available to the functions
 	*/
 MAN_BACKOFFICE = "RSTSTST3"
-REL_BACKOFFICE = "RSTSTST3"
+REL_BACKOFFICE = "RSTSSCRM"
 BOT_BACKOFFICE = "RSTSSMOK"
 
 properties ([

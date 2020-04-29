@@ -5,4 +5,4 @@
 <%= display_paragraph_components(heading: t('.ads_heading'), body: t('.ads_description')) %>
 <%= display_paragraph_components(heading: t('.eligibility_heading'), body: t('.eligibility_description')) %>
 <%= display_paragraph_components(heading: t('.receive_repayment_heading'), body: t('.receive_repayment_description')) %>
-<p><%= link_to(t('continue'), claim_claim_payments_eligibility_path, class: 'scot-rev-button') %></p>
+<p><%= link_to(t('continue'), claim_claim_payments_eligibility_path(new: true), class: 'scot-rev-button') %></p>
