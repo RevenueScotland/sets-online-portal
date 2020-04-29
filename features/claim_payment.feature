@@ -6,21 +6,49 @@ Feature: Claim payment
 
         When I go to the "claim/claim_payments/public_claim_landing" page
         Then I should see the "Claim a repayment of Additional Dwelling Supplement" page
+
         When I click on the "Continue" link
         Then I should see the "Eligibility checker" page
-        And I click on the "Continue" button
 
+        When I click on the "Continue" button
         Then I should see the text "Please confirm the following criteria are met in order to proceed with the application must be accepted"
-        And I check the "ADS was paid on the new property purchase" checkbox
+
+        When I check the "ADS was paid on the new property purchase" checkbox
         And I check the "The previous property was sold within 18 months of buying the new one" checkbox
         And I check the "The new property is, or has been, the only or main residence of all buyers" checkbox
         And I check the "The previous property was the only or main residence of all buyers of the new property at some time in the 18 month period before the new property was purchased" checkbox
-
         And I click on the "Continue" button
-
         Then I should see the "Before you start" page
-        And I click on the "Start now" button
 
+        When I click on the "Start now" button
+        Then I should see the "Return reference" page
+
+        # Check back behaviour
+        When I click on the "Back" link
+        Then I should see the "Before you start" page
+        When I click on the "Back" link
+        Then I should see the "Eligibility checker" page
+        # Check we haven't lost the data on the eligibility check page
+        And I click on the "Continue" button
+        Then I should see the "Before you start" page
+        When I click on the "Back" link
+        Then I should see the "Eligibility checker" page
+        When I click on the "Back" link
+        Then I should see the "Claim a repayment of Additional Dwelling Supplement" page
+        # Now data is lost
+        When I click on the "Continue" link
+        Then I should see the "Eligibility checker" page
+
+        When I click on the "Continue" button
+        Then I should see the text "Please confirm the following criteria are met in order to proceed with the application must be accepted"
+
+        When I check the "ADS was paid on the new property purchase" checkbox
+        And I check the "The previous property was sold within 18 months of buying the new one" checkbox
+        And I check the "The new property is, or has been, the only or main residence of all buyers" checkbox
+        And I check the "The previous property was the only or main residence of all buyers of the new property at some time in the 18 month period before the new property was purchased" checkbox
+        And I click on the "Continue" button
+        Then I should see the "Before you start" page
+        When I click on the "Start now" button
         Then I should see the "Return reference" page
 
         # check error where ads claim is open
@@ -43,7 +71,7 @@ Feature: Claim payment
         And I click on the "Continue" button
 
         Then I should see the "Evidence to support your claim" page
-        And I should see the text "Evidence all buyers occupied the previous property as their only or main residence at any time between January 31, 2016 and July 31, 2017"
+        And I should see the text "Evidence all buyers occupied the previous property as their only or main residence at any time between January 01, 2016 and July 01, 2017"
 
         When I click on the "Continue" button
         Then I should receive the message "A document must be uploaded for each category in order to make a valid ADS Repayment request"
@@ -193,11 +221,16 @@ Feature: Claim payment
         And I click on the "Find" button
         Then I should see the text "Filed"
         And I should see a link with text "Claim"
+
         # Claim payment wizard and validation
-        And I click on the "Claim" link
+        When I click on the "Claim" link
         Then I should see the "Claim repayment" page
         And I should not see the text "ADS repayment following a sale or disposal of previous main residence"
-        And I click on the "Back" link
+        When I click on the "Back" link
+        Then I should see the "All returns" page
+        And I should see the text "RS2000003BBBB"
+        And I should see the text "Filed"
+        And I should see a link with text "Claim"
 
         # A latest filed return that is over 12 months old
         And I enter "RS2000002AAAA" in the "Return reference" field
@@ -327,6 +360,7 @@ Feature: Claim payment
 
         When I click on the "Continue" button
         Then I should see the "Your request has been sent to Revenue Scotland" page
+
     Scenario: Checking Claim repayment wizard functionality for SLFT returns one tax payer
         Given I have signed in 'PORTAL.WASTE' and password 'Password1!'
         # A draft return

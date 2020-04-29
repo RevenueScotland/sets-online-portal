@@ -9,7 +9,7 @@ module Claim
 
     # Not included in the list allowed from forms so it can't be posted and changed, ie to prevent data injection.
     attr_accessor :srv_code, :version, :current_user, :ads_included, :ads_amount,
-                  :flbt_type, :submitted_date, :filing_date, :number_of_buyers
+                  :flbt_type, :submitted_date, :effective_date, :filing_date, :number_of_buyers
 
     # Attributes for this class, in list so can re-use as permitted params list in the controller
     def self.attribute_list
@@ -42,7 +42,7 @@ module Claim
     validate :validate_amount, on: :claiming_amount, if: :ads_included
     validate :validate_unauthenticated_declaration, on: :declaration, if: :claim_public?
     validate :validate_evidence_files, on: :evidence_files
-    validate :validate_eligibility_checker, on: :eligibility_checker
+    validate :validate_eligibility_checker, on: :eligibility_checkers
 
     # Layout to print the data in this model
     # This defines the sections that are to be printed and the content and layout of those sections
@@ -115,9 +115,9 @@ module Claim
       @current_user.nil?
     end
 
-    # Is the claim amount required, which is when the full_repayment_of_ads is 'N'
+    # A claim amount is required unless they are claiming the full ads amount
     def claim_amount_required?
-      @full_repayment_of_ads == 'N' || @srv_code == 'SLFT'
+      @full_repayment_of_ads != 'Y'
     end
 
     # Builds and returns the ads declarations if not already populated
@@ -201,8 +201,8 @@ module Claim
       @srv_code = nil
       @version = nil
       @submitted_date = nil
+      @effective_date = nil
       @filing_date = nil
-      @reason = nil
       @ads_included = nil
       @ads_amount = nil
       @number_of_buyers = nil
@@ -214,17 +214,11 @@ module Claim
       @srv_code = response[:service_code]
       @version = response[:tare_version]
       @submitted_date = response[:submitted_date]
+      @effective_date = response[:effective_date]
       @filing_date = response[:filing_date]
-      @reason = 'ADS' if pre_claim? || (response[:ads_included] == 'Y')
       @number_of_buyers = response[:no_of_buyers].to_i
-      assign_ads_back_office_data(response)
-    end
-
-    # saving data came from back office in response of validate_return_reference service of ads
-    def assign_ads_back_office_data(response)
       @ads_included = (response[:ads_included] == 'Y')
       @ads_amount = response[:ads_amount]
-      @full_repayment_of_ads = 'N' if @reason != 'ADS'
     end
 
     # Is this claim within 12 months of the filed date

@@ -42,29 +42,21 @@ module Claim
 
     # wizard page for unauthenticated user to check eligibility
     def eligibility
-      wizard_step(NEW_STEPS) { { setup_step: :return_reference_setup_step, validates: :eligibility_checker } }
-    end
-
-    # return next step to follow for unauthenticated user claim
-    def public_claim_landing_next_step
-      claim_claim_payments_return_reference_number_path(new: true)
-    end
-
-    # wizard page for unauthenticated user to check eligibility
-    def before_you_start
-      wizard_step(NEW_STEPS) { { next_step: :public_claim_landing_next_step } }
-    end
-
-    # First step in the unAuthenticated user wizard
-    def return_reference_number
       # Call clear_cache whenever params[:new] is there
       clear_cache = params[:new].present?
       Rails.logger.debug('New Claim Repayment') if clear_cache
 
-      wizard_step(NEW_STEPS) do
-        { setup_step: :return_reference_setup_step, next_step: :show_ads_main_address_step, clear_cache: clear_cache,
-          validates: :return_reference }
-      end
+      wizard_step(NEW_STEPS) { { setup_step: :setup_eligibility_step, clear_cache: clear_cache } }
+    end
+
+    # wizard page for unauthenticated user to check eligibility
+    def before_you_start
+      wizard_step(NEW_STEPS)
+    end
+
+    # First step in the unAuthenticated user wizard
+    def return_reference_number
+      wizard_step(NEW_STEPS) { { next_step: :show_ads_main_address_step } }
     end
 
     # First step in the authenticated claim (also in in unauthenticated)
@@ -161,14 +153,6 @@ module Claim
 
     private
 
-    # Sets up wizard model if it doesn't already exist in the cache
-    # @see #clean_on_new_type if you change this method, they need to match up
-    # @return [LbttReturn] the model for wizard saving
-    def return_reference_setup_step
-      @post_path = wizard_post_path
-      @claim_payment = wizard_load || Claim::ClaimPayment.new(current_user: current_user)
-    end
-
     # Save the evidence_file in the claim_payment model
     # calls back-office to send data collected in claim_payment wizard
     # @return [Boolean] was the after merge process successful
@@ -246,41 +230,52 @@ module Claim
     # Loads existing wizard models from the wizard cache or redirects to the dashboard page
     def load_step(sub_object_attribute = nil)
       @post_path = wizard_post_path
+      redirect_url = (current_user.nil? ? claim_claim_payments_public_claim_landing_url : dashboard_url)
       if sub_object_attribute.nil?
-        @claim_payment = wizard_load_or_redirect(dashboard_url)
+        @claim_payment = wizard_load_or_redirect(redirect_url)
       elsif sub_object_attribute == :taxpayers
-        @claim_payment, @party = wizard_load_or_redirect(dashboard_url, sub_object_attribute: sub_object_attribute)
+        @claim_payment, @party = wizard_load_or_redirect(redirect_url, sub_object_attribute: sub_object_attribute)
       end
     end
 
-    # specific setup for claim_reason method
-    # When the "new" parameter is passed, calls @see #setup_payment_from_params to create the model.
-    # Otherwise loads the model from the wizard cache.
+    # Sets up wizard model if it doesn't already exist in the cache this is for unauthenticated
+    # We set to ADS and LBTT as that is the only supported reason, this relies on the later validation to stop
+    # the user going forward
+    # This does rely on the clear cache having been called the main step
+    # @return [LbttReturn] the model for wizard saving
+    def setup_eligibility_step
+      @post_path = wizard_post_path
+      @claim_payment = wizard_load
+
+      return @claim_payment unless @claim_payment.nil?
+
+      # Set up the new claim including saving it back, otherwise it is lost when we post back to the same page
+      # Set reason to ADS and LBTT as this is always the case in the unauthenticated flow, it does rely on reference
+      # validation to enforce this
+      # We need to set LBTT as well so the claim reason lookup is initialised correctly
+      @claim_payment = Claim::ClaimPayment.new(current_user: current_user, reason: 'ADS', srv_code: 'LBTT')
+      wizard_save(@claim_payment)
+      @claim_payment
+    end
+
+    # Specific set up for the claim reason step.
+    # Loads the claim payment if it exists else creates a new one
+    # This does rely on clear cache having been called for a new claim
     # Follows the same pattern as @see LbttPropertiesController#setup_step
     # @return [ClaimPayment] model for the wizard to use
     def setup_claim_reason_step
       @post_path = wizard_post_path
+      @claim_payment = wizard_load
 
-      # load existing or setup new claim on first entering the step
-      @claim_payment = if params[:new]
-                         setup_payment_from_params
-                       else
-                         wizard_load
-                       end
-    end
+      return @claim_payment unless @claim_payment.nil?
 
-    # Handles setting up a new ClaimPayment and saving it in the wizard cache.
-    # For lbtt these details are overridden by getting details from the back office based on the reference
-    # @return [ClaimPayment] new object
-    # @raise [Error::AppError] if the required parameters were not passed
-    def setup_payment_from_params
+      # Set up the new claim including saving it back, otherwise it is lost when we post back to the same page
       setup_payment_check_params
-
-      # create new model
-      claim_payment = ClaimPayment.new(srv_code: params[:srv_code], tare_reference: params[:reference],
-                                       version: params[:version], current_user: current_user, reason: nil)
-      wizard_save(claim_payment)
-      claim_payment
+      @claim_payment = Claim::ClaimPayment.new(srv_code: params[:srv_code],
+                                               tare_reference: params[:reference],
+                                               version: params[:version], current_user: current_user)
+      wizard_save(@claim_payment)
+      @claim_payment
     end
 
     # checks the parameters are correct to setup a claim payment
