@@ -37,14 +37,17 @@ en:
   edit_row: Edit row
   delete_row: Delete row
   AddResource: Upload document
+  AddResources: Upload documents
   DeleteResource: Remove file
   upload_column_filename: File uploaded
   upload_column_file_description: Description
   file_upload_hint:
-    other: The file must be one of %{supported_types} with maximum size %{supported_max_size_mb} mb per file
-    one: The file must be a %{supported_types} file with maximum size %{supported_max_size_mb} mb per file
-  file_upload_hint_without_supported_item: The file must be with maximum size %{supported_max_size_mb} mb per file
+    other: The file must be one of %{supported_types} with a maximum size of %{supported_max_size_mb} mb per file
+    one: The file must be a %{supported_types} file with a maximum size of %{supported_max_size_mb} mb per file
+  file_upload_hint_without_supported_item: The file must be a maximum size of %{supported_max_size_mb} mb per file
   file_upload_warning_message: "You have selected a file to upload but haven't uploaded it. Do you still want to continue without uploading the file?"
+  # The translated texts below are being used as the whitelist of suffixes for file uploads,
+  # depending on which page it is some may not be used.
   label_application/vnd:
     ms-excel: xls
     openxmlformats-officedocument:
@@ -76,6 +79,8 @@ en:
   account-details: "Account details"
   select_prompt: "Choose from list"
   continue: "Continue"
+  cancel: "Cancel"
+  start_now: "Start now"
   none_provided: "None provided"
   error_title: "Something has gone wrong"
   error_advice: "There is a problem"
@@ -83,12 +88,13 @@ en:
   close: "Close"
   forbidden: "You are not authorised to view this page"
   forbidden_text: "You may have mistyped the address or the page may have moved. If you are the application owner check the logs for more information."
-  optional: "Optional"
+  optional: "optional"
   no_address_search_results: "The postcode doesn't return any addresses"
   no_company_search_results: "The company number doesn't return a company"
   no_address_find_results: "Address could not be found"
   previous: "Previous"
-  next: "Next"
+  continue: "Continue"
+  confirm: "Confirm"
   finish: "Finish"
   session_ttl_warning_message: "Your session is about to time out"
   save_draft: "Save draft"
@@ -108,12 +114,12 @@ en:
   credit_claimed: "Credits claimed"
   print_confirmation_text: Receipt
   send_secure_message_text: Send secure message
-  public_landing_heading: "To complete this return, you will need the following information:"
   lbtt_acknowledgment: "Acknowledgment of validated LBTT return"
   lbtt_amend_acknowledgment: "Acknowledgment of LBTT return amendment"
   include_transaction_ref: "The transaction ID must be included with any payment submitted or in any correspondence regarding this transaction. This acknowledgment should <b>not</b> be sent to Registers of Scotland as part of the land registration process."
   invalid_csv: "File is invalid CSV file: %{message}"
   csv_too_many_errors: "File is invalid, greater than %{failure}% of rows had the wrong number of columns"
+
   import_row_error:
     one: "%{description} has the following error: %{messages}"
     other: "%{description} has the following errors: %{messages}"

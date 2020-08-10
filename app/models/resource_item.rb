@@ -6,7 +6,7 @@ class ResourceItem
   include ActiveModel::Translation
 
   attr_accessor :original_filename, :file_name, :content_type, :description, :file_data, :uploaded_by, :upload_datetime,
-                :doc_refno, :size
+                :doc_refno, :size, :type
 
   validates :description, length: { maximum: 200 }
   validates :original_filename, length: { maximum: 500 }
@@ -15,6 +15,11 @@ class ResourceItem
   validate :content_type?
 
   # check if resource_item is valid
+  # @param max_file_size [Integer] @see file_upload_expected_max_size_mb to find where this is being set.
+  # @param content_type_whitelist [Array] contains strings of MIME types which will be used to match against
+  #   the content_type of the file being validated.
+  # @param file_extension_whitelist [Array] contains strings which is the conversion of the content_type_whitelist
+  #   to the suffix equivalent, for example ".csv" and ".docx"
   def valid?(max_file_size, content_type_whitelist, file_extension_whitelist)
     @max_file_size = max_file_size
     @content_type_whitelist = content_type_whitelist
@@ -23,7 +28,7 @@ class ResourceItem
   end
 
   # create new resource item object
-  def self.create(file_data, username, description = nil)
+  def self.create(type, file_data, username, description = nil)
     uuid = SecureRandom.uuid
     resource_item = ResourceItem.new
     from_uploaded_file_data resource_item, file_data
@@ -31,6 +36,8 @@ class ResourceItem
     resource_item.uploaded_by = username
     resource_item.upload_datetime = DateTime.current
     resource_item.description = description
+    resource_item.type = type
+    Rails.logger.debug("Creating Resource Item #{type} for file #{file_data.original_filename}")
     resource_item
   end
 
@@ -77,8 +84,7 @@ class ResourceItem
 
   # Checks if the file extension is valid. This is only check if the content type is the unknown.
   def valid_file_extension?
-    false unless @content_type == Rails.configuration.x.file_upload_unknown_content_type
-    false if @file_extension_whitelist.nil? || @file_extension_whitelist.empty?
+    return false if @content_type != Rails.configuration.x.file_upload_unknown_content_type
 
     @file_extension_whitelist.include? File.extname(@original_filename).downcase
   end

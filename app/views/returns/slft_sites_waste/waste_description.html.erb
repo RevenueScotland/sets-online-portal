@@ -2,16 +2,13 @@
 <% content_for :page_subtitle, t('.subtitle') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <% content_for :hide_back_link, :slft_waste_description_url %>
-
 <%= form_for @waste, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @waste %>
   <%= f.select :ewc_code, @waste.list_ref_data(:ewc_code), { :code => :code, :value => :to_s, text_auto_complete: true }, {} %>
   <%= f.text_field :description %>
   <%= f.select :lau_code, @waste.list_ref_data(:lau_code), {}, {} %>
   <%= f.select :fmme_method,  @waste.list_ref_data(:fmme_method), {}, {} %>
-  
   <%= f.collection_radio_buttons_fields(:from_non_disposal_ind, @waste.list_ref_data(:from_non_disposal_ind)) %>
   <%= f.collection_radio_buttons_fields(:pre_treated_ind, @waste.list_ref_data(:pre_treated_ind)) %>
-
-  <%= f.button 'next', { :name => 'submitted' }  %>
+  <%= f.button %>
 <% end %>

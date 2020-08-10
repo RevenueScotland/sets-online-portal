@@ -28,32 +28,39 @@ module WizardCompanyHelper
   #
   def wizard_company_step(steps, overrides = {})
     model = wizard_setup_step(overrides)
+    model, sub_object = model if model.is_a?(Array)
 
-    if params[:submitted]
-      wizard_navigation_step(steps, overrides) if wizard_store_company(model, overrides)
+    if params[:continue]
+      # POST
+      return unless wizard_store_company(model, sub_object, overrides)
+
+      return wizard_navigation_step(steps, overrides, collection_of_sub_object_size(model, overrides))
     elsif company_search?
-      wizard_company_pre_search(model, false)
-      search_for_companies
-    else
-      wizard_load_company(model, overrides)
+      # Special POST and GET - Find Company
+      wizard_company_pre_search(model, sub_object, overrides, false)
+      return search_for_companies
     end
+
+    # GET
+    wizard_load_company(sub_object || model, overrides)
   end
 
   private
 
   # Standard store company code to handle storing company in the current model
   # @param model [Object] the model being processed
+  # @param sub_object [Object|Nil] a sub-object of the model, which will be processed too if it exists
   # @param overrides [Hash] an array of overrides see @wizard_address_step
-  def wizard_store_company(model, overrides)
+  def wizard_store_company(model, sub_object, overrides)
     # we may also have main model parameters so store these and validate them first
     # the standard company search does the save
-    model_valid = wizard_company_pre_search(model, true)
+    model_valid = wizard_company_pre_search(model, sub_object, overrides, true)
 
     company = Company.new(company_detail_params)
 
     # @note order is important as we want to validate the company even if the main model isn't valid
     if company.valid?(%i[company_number company_selected]) && model_valid
-      wizard_save_company(model, company, overrides)
+      wizard_save_company(model, sub_object, company, overrides)
     else
       Rails.logger.debug "Validation on company failed model_valid: #{model_valid}"
       # @see company_helper
@@ -67,33 +74,43 @@ module WizardCompanyHelper
   # it can optionally validate the model
   # it is also used @see standard_company_store_company to store parameters prior to company validation
   # @param model [Object] the parent model being processed
+  # @param sub_object [Object|Nil] a sub-object of the model, which will be processed too if it exists
+  # @param overrides [Hash] uses the :sub_object_attribute to deal with things related to the sub-object
   # @param validate [Boolean] do we need to validate the parent model as part of the process
-  def wizard_company_pre_search(model, validate)
-    unless filter_params.nil?
-      model.assign_attributes(filter_params)
+  def wizard_company_pre_search(model, sub_object, overrides, validate)
+    page_params = resolve_params(overrides)
+    unless page_params.nil?
+      wizard_page_object = overrides[:sub_object_attribute].present? ? sub_object : model
+      merge_params_with_object(wizard_page_object, page_params)
+
       return true unless validate
 
-      return model.valid?(filter_params.keys.map(&:to_sym))
+      valid = validate_model_after_sub_object_merge(model, sub_object, overrides, true)
+      return wizard_page_object.valid?(page_params.keys.map(&:to_sym)) && valid
     end
     true
   end
 
   # This is the standard company load. Primarily it populates the company detail from the model
-  # @param model [Object] the parent model being processed
+  # @param wizard_page_object [Object] the parent model being processed
   # @param overrides [Hash] an array of overrides see @wizard_company_step
-  def wizard_load_company(model, overrides)
-    company = model.send(overrides[:company_attribute] || :company)
+  def wizard_load_company(wizard_page_object, overrides)
+    company = wizard_page_object.send(overrides[:company_attribute] || :company)
     initialize_company_variables(company)
   end
 
   # Actually saves the company in the model at either the company attribute or the attribute given in the override
   # @param model [Object] the parent model being processed
+  # @param sub_object [Object|Nil] a sub-object of the model, which will be processed too if it exists
   # @param company [Object] the company being processed
   # @param overrides [Hash] an array of overrides see @wizard_company_step
-  def wizard_save_company(model, company, overrides)
+  def wizard_save_company(model, sub_object, company, overrides)
     company_attribute = overrides[:company_attribute] || :company
+    wizard_page_object = sub_object || model
+
     Rails.logger.debug "Storing company in model at #{model.class.name}##{company_attribute}"
-    model.send((company_attribute.to_s + '=').to_sym, company)
+    wizard_page_object.send((company_attribute.to_s + '=').to_sym, company)
+
     wizard_save(model, overrides[:cache_index])
     true
   end

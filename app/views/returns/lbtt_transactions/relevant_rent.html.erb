@@ -3,5 +3,5 @@
 <%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
   <%= f.currency_field :relevant_rent %>
-  <%= f.button 'next', { :name => 'submitted' }  %>
+  <%= f.button %>
 <% end %>

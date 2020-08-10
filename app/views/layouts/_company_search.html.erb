@@ -1,20 +1,17 @@
 <%= fields_for @company do |cs| %>
-
   <%= cs.text_field :company_number %>
   <div class="govuk-form-group">
-    <%= cs.submit '.search', { :name => 'company_search', autofocus: (@on_company_search && !@form_error_found) } %> 
+    <%= cs.submit '.search', { :name => 'company_search', autofocus: (@on_company_search && !@form_error_found) } %>
   </div>
-
   <% unless @company.company_name.nil? %>
     <div class="govuk-form-group">
-      <%= cs.text_field :company_name, {}, { :readonly => @company_read_only } %>
-      <%= cs.text_field :address_line1, {}, { :readonly => @company_read_only } %>
-      <%= cs.text_field :address_line2, {}, { :readonly => @company_read_only } %>
-      <%= cs.text_field :locality, {}, { :readonly => @company_read_only } %>
-      <%= cs.text_field :county, {}, { :readonly => @company_read_only } %>
-      <%= cs.text_field :postcode, {}, { :readonly => @company_read_only } %>
-      <%= cs.text_field :country, {}, { :readonly => @company_read_only } %>
+      <%= cs.text_field :company_name,  { width: 'one-half' }, { :readonly => true } %>
+      <%= cs.text_field :address_line1, { width: 'one-half' }, { :readonly => true } %>
+      <%= cs.text_field :address_line2, { width: 'one-half' }, { :readonly => true } %>
+      <%= cs.text_field :locality,      { width: 'one-half' }, { :readonly => true } %>
+      <%= cs.text_field :county,        { width: 'one-half' }, { :readonly => true } %>
+      <%= cs.text_field :postcode,      { width: 'one-quarter' }, { :readonly => true } %>
+      <%= cs.hidden_field :country, {}, {} %>
     </div>
-  <% end %>  
-
+  <% end %>
 <% end %>

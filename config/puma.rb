@@ -19,6 +19,9 @@ port ENV.fetch('PORT') { 3000 }
 #
 environment ENV.fetch('RAILS_ENV') { 'development' }
 
+# Specifies the `pidfile` that Puma will use.
+pidfile ENV.fetch('PIDFILE') { 'tmp/pids/server.pid' }
+
 web_concurrency = ENV.fetch('WEB_CONCURRENCY') { 1 }.to_i
 
 unless Gem.win_platform? || web_concurrency <= 1

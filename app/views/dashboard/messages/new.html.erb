@@ -1,16 +1,16 @@
 <%= content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @message, url: dashboard_messages_path,html: { multipart: true } , method: :post do |u|%>
-<%= form_errors_for [@message, @resource_item] %>
-    <%= u.hidden_field :original_smsg_refno %>
-    <%= u.select :subject_code, @message.subject_description_list(current_user), { selected: @message.subject_code, :code => :full_key_code, :value => :value }, {} %>
-    <%= u.text_field :reference %>
-    <%= u.text_field :title, width: 'three-quarters' %>
-    <%= u.text_area_field :body %>
-    <% if can? AuthorisationHelper::CREATE_ATTACHMENT %>
-        <%= render "/layouts/file_upload_component", file_upload_label: t('.file_upload_label'), file_upload_label_hint: t('.file_upload_label_hint') , file_control_name: self.params[:controller], remove_remove: cannot?(AuthorisationHelper::DELETE_ATTACHMENT) %>
-    <% end %>
-    <div class="govuk-form-group">
-        <%= u.submit 'next', autofocus: (@resource_items.length > 0 && !@form_error_found) , class: 'file-upload-check' %>
-    </div>    
-   <% end %>
+  <%= form_errors_for [@message, @resource_items_hash] %>
+  <%= u.hidden_field :original_smsg_refno %>
+  <%= u.select :subject_code, @message.subject_description_list(current_user), { selected: @message.subject_code, :code => :full_key_code, :value => :value }, {} %>
+  <%= u.text_field :reference %>
+  <%= u.text_field :title, width: 'three-quarters' %>
+  <%= u.text_area_field :body %>
+  <% if can? AuthorisationHelper::CREATE_ATTACHMENT %>
+    <%= render "/layouts/file_upload_component", file_upload_label: full_lazy_lookup_path('.file_upload_label'), file_upload_hint: full_lazy_lookup_path('.file_upload_hint') , file_control_name: self.params[:controller], remove_remove: cannot?(AuthorisationHelper::DELETE_ATTACHMENT) %>
+  <% end %>
+  <div class="govuk-form-group">
+    <%= u.submit '.send', autofocus: (@resource_items.length > 0 && !@form_error_found) , class: 'file-upload-check' %>
+  </div>
+<% end %>

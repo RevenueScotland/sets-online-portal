@@ -1,17 +1,14 @@
 <% content_for :hide_back_link, true %>
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <% if can? AuthorisationHelper::CREATE_MESSAGE %>
   <%= form_with url: new_dashboard_message_path, method: :get, local: true do |f| %>
-      <%= hidden_field_tag :original_smsg_refno, @message_filter.reference %>
-       <%= hidden_field_tag :reference, @message_filter.reference %>
-      <%= f.button '.new' %>
+    <%= hidden_field_tag :original_smsg_refno, @message_filter.reference %>
+    <%= hidden_field_tag :reference, @message_filter.reference %>
+    <%= f.button '.new' %>
   <% end %>
-  <br/>
-   
+  <br>
 <% end %>
-
 <%= form_for @message_filter, url: dashboard_messages_path, :method => 'get', local: true do |form| %>
   <%= form_errors_for @message_filter %>
   <% form.current_browser = application_browser %>
@@ -23,11 +20,9 @@
     <%= form.select :direction_code, @message_filter.list_ref_data(:direction_code), { include_blank: true }, {} %>
     <%= form.select :subject_code, @message_filter.subject_description_list(current_user), { selected: @message_filter.subject_code, :code => :full_key_code, :value => :value, include_blank: true }, {} %>
   <% end %>
-    
   <%= form.button t('.find'), autofocus: (@on_filter_find && !@form_error_found) %>
 <% end %>
-<br/>
-
+<br>
 <%= display_table(@messages,
                   [:created_date, :full_name, :title, :reference, :subject_description, :has_attachment, :read_indicator],
                   [
@@ -38,7 +33,6 @@
   <p> <%= t('.no_data_found') %> </p>
 <% end %>
 <%= paginate @pagination_collection %>
-
 <% link = [
             { link: :dashboard, path: dashboard_path }
             ] %>

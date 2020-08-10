@@ -1,25 +1,57 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'json'
 require 'print_data_test_helper'
+require 'savon/mock/spec_helper'
+require 'models/reference_data/memory_cache_helper'
 
 # Run tests that are included only in this file by:
 #   $ ruby -I test test/models/returns/slft/print_data_test.rb
 module Returns
   # Part of the slft module
   module Slft
-    # Reopen the slft return class to ensure that the sites aren't deleted.
-    SlftReturn.class_eval do
-      # Overriding the setup_sites method as the sites are getting deleted when initialised.
-      def setup_sites
-        nil
-      end
-    end
-
     # Tests PrintData data
     class PrintDataTest < ActiveSupport::TestCase
+      include ReferenceData::MemoryCacheHelper
       include PrintDataTestHelper
+
+      # This test relies on the cache so clear the cache first
+      # and mock the calls to the back office to populate
+      setup do
+        set_memory_cache
+
+        @savon ||= Savon::SpecHelper::Interface.new
+        @savon.mock!
+        fixture = File.read('test/fixtures/mocks/reference_data/reference_values_response.xml')
+        @savon.expects(:get_reference_values_wsdl).returns(fixture)
+        fixture = File.read('test/fixtures/mocks/reference_data/system_parameters_response.xml')
+        @savon.expects(:get_system_parameters_wsdl).returns(fixture)
+        Rails.logger.debug { 'Mocking started' }
+
+        # Overriding the setup_sites method as it calls the back office
+        # We can't mock it as the object load ends up loading the site reference as a string while the webservice
+        # returns a number and then they still don't match
+        SlftReturn.class_eval do
+          alias_method :setup_sites_original_method, :setup_sites
+          def setup_sites
+            nil
+          end
+        end
+      end
+
+      # Stop the mocking and reset the cache
+      teardown do
+        @savon&.unmock!
+        Rails.logger.debug { 'Mocking ended' }
+        restore_original_cache
+
+        # Reset the set up sites
+        SlftReturn.class_eval do
+          alias_method :setup_sites, :setup_sites_original_method
+          remove_method :setup_sites_original_method
+        end
+      end
+
       # SLfT return that includes the following details:
       # - Newly created
       # - No waste details added

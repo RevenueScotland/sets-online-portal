@@ -92,7 +92,7 @@ Feature: Login and authentication
         And I click on the "Sign in" button
 
         Then I should see the "Terms and Conditions" page
-        And I should see the text "In order to proceed you must read and accept the terms and conditions."
+        And I should see the text "In order to proceed you must read and accept the terms and conditions"
         And I click on the "Confirm" button
 
         Then I should see the "Terms and Conditions" page
@@ -240,7 +240,7 @@ Feature: Login and authentication
         And I click on the "Sign in" button
 
         Then I should see the "Terms and Conditions" page
-        And I should see the text "In order to proceed you must read and accept the terms and conditions."
+        And I should see the text "In order to proceed you must read and accept the terms and conditions"
         And I click on the "Confirm" button
 
         Then I should see the "Terms and Conditions" page

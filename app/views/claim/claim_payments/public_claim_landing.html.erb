@@ -1,16 +1,8 @@
 <%= content_for :hide_back_link, true %>
-<%= content_for :public_landing_return_link, link_to(t('cancel'), Rails.configuration.x.external_links.public_landing_return_page, class: 'govuk-back-link') %>
+<%= content_for :public_landing_return_link, t('cancel')%>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= content_for :page_title, t('.title') %>
-
-<ul class="govuk-body">
-    <%= t('.info_needed').html_safe %>
-</ul> 
-<p  class="govuk-body">
-    <%= t('.start_warning') %>
-</p>
-<p  class="govuk-body">
-    <%=t('.second_warning',  
-   ref_link: link_to(t('.ref_message'), login_path)).html_safe %>
-</p>
-<p><%= link_to(t('.public_lbtt_return'), claim_claim_payments_return_reference_number_path(new: true), class: 'scot-rev-button') %></p>
+<%= display_paragraph_components(heading: t('.ads_heading'), body: t('.ads_description')) %>
+<%= display_paragraph_components(heading: t('.eligibility_heading'), body: t('.eligibility_description')) %>
+<%= display_paragraph_components(heading: t('.receive_repayment_heading'), body: t('.receive_repayment_description')) %>
+<p><%= link_to(t('continue'), claim_claim_payments_eligibility_path(new: true), class: 'scot-rev-button') %></p>

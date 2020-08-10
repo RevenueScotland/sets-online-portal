@@ -3,10 +3,9 @@
 # FileUploadHandler is a concern designed as a helper for file operation within the project.
 #
 # This concern contains 4 public method
-# 1. handle_file_upload: which handles file upload and delete functionality
+# 1. handle_file_upload: which handles file upload and delete functionality, normally this should be enough on its own
 # 2. download_file: This method deletes files from the server also delete session cache file metadata.
-# 3. initialize_fileupload_variables: This method initialize required variables for this functionality
-# 4. file_upload_end : Clear cache file metadata
+# 4. clear_resource_items : Clears the resource items and cache file metadata
 #
 # It stores file metadata in a session cache to maintain a state of the file when the page gets submitted or refreshed.
 # @see "SessionCacheHandler" for details.
@@ -51,31 +50,44 @@
 #    handle_file_upload('confirmation',before_delete: :delete_document)
 #
 # There is separate job called DeleteAttachmentFilesJob which deletes those all the uploaded files from the server.
-module FileUploadHandler # rubocop:disable ModuleLength
+module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   extend ActiveSupport::Concern
   include SessionCacheHandler
   include DownloadHelper
 
   @resource_items = []
   # This is main method handle file upload and delete functionality
-  # @param redirect_path [String] redirect path after uploading or deleting the file
+  # @param redirect_path [String] redirect path after uploading or deleting the file, this is regardless of if they
+  #   are successful or not. It is usually used to redirect back to the current page on load or delete
   # @param overrides [Hash] hash of optional overrides with the following keys :
-  #  :after_add  - pointer to method to run after adding file in cache
-  #  :before_delete - pointer to method to run before deleting file
-  #  :post_upload_process - pointer to a method to run before adding to perform any post upload processing
-  # @return [Boolean] return true if file add or delete operation perform successfully
+  #  :before_add - pointer to method to run before saving the file to the disk, use this if you still want to
+  #                view the file after load, otherwise you can use add processing
+  #  :add_processing  - pointer to method to run instead of saving on disk (e.g. saving in the back office)
+  #  :before_delete - pointer to method to run before deleting file from the disk  (e.g. deleting in the back office)
+  #  :types - an array of file types to upload
+  # @return [Boolean] return true if file processing was required
   def handle_file_upload(redirect_path, overrides = {})
-    initialize_fileupload_variables
+    # Clear the cache if indicated but not for an add or delete
+    clear_resource_items if overrides[:clear_cache]
+
+    initialise_fileupload_variables
+
+    # If adding files then the below will create entries in the resource_items_hash
+    # from the requests parameters.
+    add_or_delete_files(overrides)
+
+    # Add or delete files will have created items in the hash if they were uploaded (or are missing)
+    # We call again after validation to make sure we have all the expected file types in the list
+    # so the screen shows the expected file types
+    initialise_resource_items_hash(overrides)
+
     return false unless params[:add_resource] || params[:delete_resource]
 
-    if params[:add_resource]
-      add_file(overrides)
-    else
-      delete_file(overrides)
-    end
     # update data in cache
     session_cache_data_save(@resource_items, file_upload_session_key)
+
     render redirect_path unless redirect_path.nil?
+    true
   end
 
   # This method send file to browser.
@@ -86,109 +98,164 @@ module FileUploadHandler # rubocop:disable ModuleLength
   def download_file
     return send_file_to_browser if params[:doc_refno]
 
-    Rails.logger.error("\file parameter is missing:")
+    Rails.logger.error('file parameter is missing:')
     raise Error::AppError.new('download file', 'file not found')
+  end
+
+  # Clear the resource items from the session, and local variable, whilst keeping the last uploaded file
+  # @param force [Boolean] Force a clear even if processing and add or delete
+  # i.e. @resource_item
+  def clear_resource_items(force = true)
+    return if !force && (params[:add_resource] || params[:delete_resource])
+
+    file_upload_end
+    @resource_items = []
   end
 
   private
 
-  # This method upload file on temporary location on server
+  # This method handles add file(s) or deleting a file
   # @param overrides [Hash] check handle_file_upload
-  def add_file(overrides)
-    return_status = add_resource_item(overrides)
-    if return_status
-      if overrides[:after_add]
-        return_status, doc_refno = send(overrides[:after_add])
-        @resource_item.doc_refno = doc_refno
-      end
-      save_attachment(@resource_item) if return_status
+  def add_or_delete_files(overrides)
+    if params[:add_resource]
+      add_files(overrides)
+    elsif params[:delete_resource]
+      delete_file(overrides)
     end
-    return_status
+  end
+
+  # This method handles file uploads, multiple files may be uploaded in one go
+  # The files are either stored locally for later processing and added to the model
+  # OR you can specify a process to handle them directly via the add_files override
+  # @param overrides [Hash] check handle_file_upload
+  def add_files(overrides)
+    create_resource_items(overrides).each do |resource_item|
+      if resource_item.valid? expected_max_size, valid_content_types, valid_file_extensions
+        add_valid_individual_file(overrides, resource_item)
+      end
+    end
+  end
+
+  # @see add_files
+  # This method handles processing an individual file/resource_item
+  # note that errors may have been added to the resource items
+  # @param overrides [Hash] check handle_file_upload
+  # @param resource_item [Object] process an individual file
+  def add_valid_individual_file(overrides, resource_item)
+    success = run_add_file_overrides(resource_item, overrides)
+    # The routines run as part of the overrides may end up adding errors
+    # so handle this or if the call failed
+    return if !success || resource_item.errors.any?
+
+    save_attachment(resource_item) unless overrides[:add_processing]
+    @resource_items << resource_item
+    # Clear the stored resource item
+    @resource_items_hash[resource_item.type] = ResourceItem.new(type: resource_item.type)
   end
 
   # This method will delete file from server and removed object from list.
   # It will run a pointer method if specified in overrides key before delete
   # @param overrides [Hash] check handle_file_upload
   def delete_file(overrides)
-    success = if overrides[:before_delete]
-                # handle delete event raise by parent controller
-                send(overrides[:before_delete], params[:delete_resource])
-              else
-                true
-              end
+    success = true
+    # handle delete event raise by parent controller
+    success = send(overrides[:before_delete], params[:delete_resource]) if overrides[:before_delete]
 
     delete_resource_item(params[:delete_resource]) if success
-
-    success
   end
 
   # This method retrieves the file from the server base on a selected document from screen
   # and send it to the browser as 'attachment.'
   # @return [file] return file to browser  for download
   def send_file_to_browser
-    initialize_fileupload_variables
+    resource_items = session_cache_data_load(file_upload_session_key) || []
     doc_refno = params[:doc_refno]
-    resource_item = @resource_items.select { |u| u.doc_refno == doc_refno }
+    resource_item = resource_items.select { |u| u.doc_refno == doc_refno }
     file_path = FileStorageHelper.file_temp_storage_path(:upload, sub_directory, resource_item[0].file_name)
     send_file_from_path file_path,
                         filename: resource_item[0].original_filename,
                         disposition: 'attachment'
   end
 
-  # Initialize file upload required variables
+  # Initialise file upload required variables
+  # The resource items hash is more complex and is processed separately
   # @return [Array][ResourceItem] array of resource items
-  def initialize_fileupload_variables
+  def initialise_fileupload_variables
     @supported_types = if respond_to?(:content_type_whitelist, true)
+                         # @see locales/defaults/en.yml to learn about where this is getting the translated texts from.
                          content_type_whitelist.map { |name| (I18n.t 'label_' + name) }.join(', ')
                        else
                          ''
                        end
     @supported_max_size_mb = expected_max_size
-    session_key = file_upload_session_key
-    @resource_items = session_cache_data_load(session_key) || []
-    @resource_item = ResourceItem.new
-    delete_old_error_resource_item
+
+    @resource_items = session_cache_data_load(file_upload_session_key) || []
   end
 
-  # Clear the resource items from the session, and local variable, whilst keeping the last uploaded file
-  # i.e. @resource_item
-  def clear_resource_items
-    file_upload_end
-    @resource_items = []
+  # Make sure we have the correct types in the resource items hash
+  # They also need to be in the correct order (otherwise they can swap around on the screen)
+  # @param overrides [Hash] hash of optional overrides with the following keys :
+  #  :types - an array of file types to upload
+  # @param check_resource_items [Boolean] Only create a blank resource item if not already loaded
+  #   if set to true then an item is not created in the hash if it exists in the already loaded resource items
+  # @return [Array][ResourceItem] array of resource items
+  def initialise_resource_items_hash(overrides, check_resource_items = false)
+    old_resource_items_hash = @resource_items_hash || {}
+    @resource_items_hash = {}
+    types = expected_file_types(overrides)
+
+    types.each do |type|
+      # Copy the resource item if it has just been created
+      # Note this is cleared in the validation processing if it validates
+      type = type.to_sym
+
+      @resource_items_hash[type] = old_resource_items_hash[type] unless old_resource_items_hash[type].nil?
+      next unless old_resource_items_hash[type].nil?
+
+      # if we are in validation processing this type exists in the main list skip
+      next if check_resource_items && @resource_items.any? { |r| r.type == type }
+
+      # If we get here make sure we have a blank entry
+      @resource_items_hash[type] = ResourceItem.new(type: type)
+    end
   end
 
-  # This method remove old resource item containing validation error
-  def delete_old_error_resource_item
-    return unless !@resource_items.empty? && @resource_items.last.errors.any?
-
-    resource_item = @resource_items.last
-    @resource_items.delete(resource_item)
-  end
-
-  # Validate and add resource item object in Array list.
+  # Runs the overrides as part of the save processing
+  # @param resource_item [Object] the resource_item being processed, may be changed as part of processing
   # @param overrides [Hash] check handle_file_upload
-  # @return [Boolean] return true if file add perform successfully
-  def add_resource_item(overrides)
-    return_status = true
-    if params[:add_resource]
-      resource_item = create_resource_item(params)
-      return_status = resource_item.valid? expected_max_size, valid_content_types, valid_file_extensions
-      return_status = send(overrides[:post_upload_process]) if overrides[:post_upload_process] && return_status
-      @resource_items << resource_item if return_status
+  # @return [Boolean] return true if the file was added successfully
+  def run_add_file_overrides(resource_item, overrides)
+    success = true
+    if overrides[:before_add]
+      success, doc_refno = send(overrides[:before_add], resource_item)
+      resource_item.doc_refno = doc_refno
     end
-    return_status
+    if overrides[:add_processing]
+      success, doc_refno = send(overrides[:add_processing], resource_item)
+      resource_item.doc_refno = doc_refno
+    end
+    success
   end
 
-  # Create resource item  object based on input params
-  # @param params [Array] holding uploaded file detail
+  # Create resource item objects based on input params
+  # As we may not get a resource item of a particular type if we are only loading a file
+  # @param overrides [Hash] check handle_file_upload
   # @return [Array] update list of resource items
-  def create_resource_item(params)
-    file_data = description = nil
+  def create_resource_items(overrides)
+    # We need to clear the hash as if the previous attempt had one failed and one succeeded the successful file is still
+    # in the hash and would get loaded to the resource item list again
+    @resource_items_hash = {}
     if params.key?(:resource_item)
-      file_data = params[:resource_item][:file_data]
-      description = params[:resource_item][:description]
+      params[:resource_item].each_pair do |type, object|
+        type = type.to_sym
+        @resource_items_hash[type] = ResourceItem.create(type, object[:file_data], sub_directory, object[:description])
+      end
     end
-    @resource_item = ResourceItem.create(file_data, sub_directory, description)
+    # The below line will add in any missing resource item types if we don't have one in the hash
+    # i.e. the user loaded only one file, the true means don't create one if the file loaded previously
+    # (and is in the resource items list)
+    initialise_resource_items_hash(overrides, true)
+    @resource_items_hash.values
   end
 
   # returns the username if current user is authorized
@@ -211,20 +278,18 @@ module FileUploadHandler # rubocop:disable ModuleLength
   def save_attachment(resource_item)
     return if resource_item.nil? || resource_item.file_data.nil? || resource_item.file_name.nil?
 
-    File.open(FileStorageHelper.file_temp_storage_path(:upload, sub_directory, resource_item.file_name), 'wb') do |file|
+    File.open(FileStorageHelper.file_temp_storage_path(:upload, sub_directory, resource_item.file_name),
+              'wb') do |file|
       file.write(resource_item.file_data)
     end
   end
 
-  # Delete file from server.
+  # Delete file from server, if file not found then continue
   # @param file_name [String]  name of the file to be deleted
   # @return nil
   def delete_attachment(file_name)
     file_path = FileStorageHelper.file_temp_storage_path(:upload, sub_directory, file_name)
-    return File.delete(file_path)  if File.exist?(file_path)
-
-    Rails.logger.error("File not found: ##{file_name}")
-    raise Error::AppError.new('Delete attachment', 'file not found')
+    File.delete(file_path) if File.exist?(file_path)
   end
 
   # Retrieve file size limit from configuration
@@ -243,6 +308,7 @@ module FileUploadHandler # rubocop:disable ModuleLength
   # Fails safe, won't throw exceptions if the deletion is unsuccessful due to a StandardError.
   # @param cache_index [String] the identifier for the cache index, defaults to the class name (the controller)
   def file_upload_end(cache_index = self.class.name)
+    Rails.logger.debug('Clearing file session cache')
     session_key = file_upload_session_key(cache_index)
     clear_session_cache(session_key, cache_index)
   end
@@ -259,6 +325,20 @@ module FileUploadHandler # rubocop:disable ModuleLength
   # Returns a list of valid file extensions. File extensions are only checked if the content type
   # sent by the browser to the application matches that defined in config.x.file_upload_unknown_content_type
   def valid_file_extensions
-    respond_to?(:file_extension_whitelist, true) ? file_extension_whitelist : []
+    # This uses the list of the content_type_whitelist and alias_content_type to translate it into texts.
+    # @see locales/defaults/en.yml to learn about where this is getting the translated texts from, which is
+    #   used as the whitelist of suffixes for file uploads.
+    valid_content_types.map { |name| '.' + (I18n.t 'label_' + name) }
+  end
+
+  # Returns the list of file types (symbols) to load (e.g. proof of sale, proof of occupancy)
+  # If non provided in the overrides returns an array with one item of :default
+  # Note: The file type should not be confused with the content type
+  # The file type details the type of document to be upload e.g. passport, driving license
+  # The content type is the format of the file e.g. jpeg, png, doc etc
+  # @param overrides [Hash] check handle_file_upload
+  # @return [Array] the array of file types
+  def expected_file_types(overrides)
+    overrides[:types] || [:default]
   end
 end

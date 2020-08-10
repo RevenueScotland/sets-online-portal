@@ -1,11 +1,10 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 <% content_for :page_title, t('.title') %>
-
 <%= form_for @account, url: update_address_account_path, html:{autocomplete: "on"}, method: :post, local: true do |f| %>
   <%= form_errors_for [@account, @address_summary, @address_detail] %>
   <div id="account_address">
     <span class='govuk-error-message'><%= @account.class.human_attribute_name(:address) + ' ' + @account.errors.messages[:address][0] unless @account.errors.messages[:address][0].nil?%></span>
     <%= render "/layouts/address" %>
   </div>
-  <%= f.button '.confirm' , {:name => 'update-address'}  %>
+  <%= f.button 'confirm' , {:name => 'update-address'}  %>
 <% end %>

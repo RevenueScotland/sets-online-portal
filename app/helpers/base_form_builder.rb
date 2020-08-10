@@ -24,10 +24,7 @@ class BaseFormBuilder < ActionView::Helpers::FormBuilder # rubocop:disable Metri
   # @return [HTML block element] the standard hint text; consists of span (with the translated text)
   def hint_text(attribute, options = {}, html_options = {})
     hint_html_options = { class: 'govuk-hint', id: "#{field_id(attribute, options, html_options)}-hint" }
-    hint = @template.t(UtilityHelper.get_attribute_key(@object, attribute),
-                       default: '', scope: [@object.i18n_scope, :hints, @object.model_name.i18n_key])
-    hint = options[:hint] unless options[:hint].nil?
-    hint = UtilityHelper.swap_texts(hint, options)
+    hint = UtilityHelper.hint_text(@object, attribute, options)
     return '' if hint == ''
 
     set_aria_describedby(hint_html_options[:id], html_options)
@@ -306,6 +303,7 @@ class BaseFormBuilder < ActionView::Helpers::FormBuilder # rubocop:disable Metri
   # @return [HTML block element] the standard legend wrapper; consists of the headings of the content.
   def collection_legend_wrapper(attribute, options)
     legend = UtilityHelper.label_text(@object, attribute, options)
+    legend += visually_hidden_label(attribute, options, {}) || ''
     h1_tag = @template.content_tag(:h1, legend.html_safe, class: 'govuk-fieldset__heading')
     legend_tag = @template.content_tag(:legend, h1_tag,
                                        class: 'govuk-fieldset__legend govuk-fieldset__legend',
@@ -411,6 +409,6 @@ class BaseFormBuilder < ActionView::Helpers::FormBuilder # rubocop:disable Metri
     # The hidden error tag for the start of an error message
     error_start = '<span class="govuk-visually-hidden">' + I18n.t('.error') + ':</span>'
 
-    (error_start + @object.errors[attribute].join('<br/>' + error_start)).html_safe
+    (error_start + @object.errors[attribute].join('<br>' + error_start)).html_safe
   end
 end

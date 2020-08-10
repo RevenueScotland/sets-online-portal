@@ -39,7 +39,7 @@ module ReferenceData
     # CV lists which we need for the application but which don't exist in the back office.
     # @param existing_values [Hash] the existing values in case we need to reference them
     # @return [Hash] a hash of objects needed for the application
-    private_class_method def self.application_values(existing_values)
+    private_class_method def self.application_values(existing_values) # rubocop:disable Metrics/AbcSize
       output = {}
       # example code :
       # output[composite_key] = { 'code' => System_Parameter.new(code: 'code', value: 'value') }
@@ -52,6 +52,7 @@ module ReferenceData
       output[format_composite_key('DIRECTION', 'SYS', 'RSTU')] = direction
       output[format_composite_key('RETURN_STATUS', 'SYS', 'RSTU')] = return_status
       output[format_composite_key('BUYER TYPES', 'SYS', 'RSTU')] = buyer_types
+      output[format_composite_key('ELIGIBILITY_LIST', 'SYS', 'RSTU')] = eligibility_checkers
       # merge the two EWC hashes into one
       output[format_composite_key('EWC_LIST', 'SLFT', 'RSTU')] = merge_ewc_codes(existing_values)
       # merge the three message subject lists into one
@@ -92,6 +93,20 @@ module ReferenceData
         'REG_COM' => ReferenceValue.new(code: 'REG_COM', value: 'An organisation registered with Companies House',
                                         sequence: '20'),
         'OTHERORG' => ReferenceValue.new(code: 'OTHERORG', value: 'An other organisation', sequence: '30')
+      }
+    end
+
+    # @return [hash] The internal buyer_types
+    def self.eligibility_checkers
+      {
+        '0' => ReferenceValue.new(code: '0', value: 'ADS was paid on the new property purchase.', sequence: '10'),
+        '1' => ReferenceValue.new(code: '1', value: 'The previous property was sold within 18 months
+                                              of buying the new one.', sequence: '20'),
+        '2' => ReferenceValue.new(code: '2', value: 'The new property is, or has been,
+                                              the only or main residence of all buyers.', sequence: '30'),
+        '3' => ReferenceValue.new(code: '3', value: 'The previous property was the only or main residence of
+                                                     all buyers of the new property at some time in the 18 month period
+                                                     before the new property was purchased.', sequence: '40')
       }
     end
 

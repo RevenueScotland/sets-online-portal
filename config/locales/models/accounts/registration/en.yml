@@ -31,7 +31,6 @@ en:
         subtitle: "Your individual account details"
         description: "Enter user details here."
         you_will_be_sent_confirmation_email: "After you register you will be sent a confirmation email with instructions on how to complete your registration."
-        confirm: "Confirm"
       confirmation:
         title: "Sign up to file tax returns"
         subtitle: "Complete sign up"

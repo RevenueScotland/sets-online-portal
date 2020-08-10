@@ -10,6 +10,8 @@ require 'active_job/railtie'
 # require "active_storage/engine"
 require 'action_controller/railtie'
 require 'action_mailer/railtie'
+# require 'action_mailbox/engine'
+# require 'action_text/engine'
 require 'action_view/railtie'
 require 'action_cable/engine'
 require 'sprockets/railtie'
@@ -23,7 +25,7 @@ module RevScot
   # Main application class
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.2
+    config.load_defaults 6.0
 
     # override Rails default behaviour of adding <div class=\"field_with_errors\"> in html tag when there is
     # validation failure
@@ -49,18 +51,18 @@ module RevScot
     # REVSCOT Specific config below this line
 
     # back office config
-    config.x.fl_endpoint.root = ENV['FL_ENDPOINT_ROOT']
+    config.x.fl_endpoint.root = ENV['FL_ENDPOINT_ROOT'] || ''
     config.x.fl_endpoint.uid = ENV['FL_USERNAME']
     config.x.fl_endpoint.pwd = ENV['FL_PASSWORD']
     config.x.fl_endpoint.timeout = (ENV['FL_TIMEOUT'] || '60').to_i
 
-    config.x.nadr_endpoint.root = ENV['ADDRESS_SEARCH_ENDPOINT']
+    config.x.nadr_endpoint.root = ENV['ADDRESS_SEARCH_ENDPOINT'] || ''
     config.x.nadr_endpoint.uid = ENV['ADDRESS_SEARCH_UID']
     config.x.nadr_endpoint.pwd = ENV['ADDRESS_SEARCH_PWD']
     config.x.nadr_endpoint.proxy = ENV['ADDRESS_SEARCH_PROXY']
     config.x.nadr_endpoint.timeout = (ENV['ADDRESS_SEARCH_TIMEOUT'] || '60').to_i
 
-    config.x.ch_endpoint.root = ENV['COMPANY_SEARCH_ENDPOINT']
+    config.x.ch_endpoint.root = ENV['COMPANY_SEARCH_ENDPOINT'] || ''
     config.x.ch_endpoint.uid = ENV['COMPANY_SEARCH_UID']
     config.x.ch_endpoint.pwd = ENV['COMPANY_SEARCH_PWD']
     config.x.ch_endpoint.proxy = ENV['COMPANY_SEARCH_PROXY']
@@ -85,6 +87,7 @@ module RevScot
     config.x.external_links.foi = 'http://www.revenue.scot/contact-us/freedom-information-guide'
     config.x.external_links.external_home = 'https://www.revenue.scot/'
     config.x.external_links.public_landing_return_page = 'https://www.revenue.scot/'
+    config.x.external_links.eligibility_checker = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/worked-examples-additional/exam-63'
 
     config.x.external_links.tax_act_2010 = 'http://www.legislation.gov.uk/ukpga/2010/4/section/1122'
     config.x.external_links.lbtt7001_partnerships = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/partnerships'
@@ -120,9 +123,6 @@ module RevScot
     # alias as CSV files are seen as Excel files if excel is installed on the users device
     # not combined with the above so that this is not shown to the users as a valid file type to upload.
     config.x.slft_waste_file_upload_alias_content_type_whitelist = 'application/vnd.ms-excel'
-
-    # CSV file upload file extension limit type (CSV)
-    config.x.slft_waste_file_upload_file_extension_whitelist = '.csv'
 
     # When a file is uploaded but the client doesn't know it's content/mime type, it sends it with the following
     # content type

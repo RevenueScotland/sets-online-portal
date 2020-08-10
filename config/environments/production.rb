@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'request_summary_log/log_middleware'
+require 'request_summary_logging/log_middleware'
 require_relative '../cache.rb'
 
 Rails.application.configure do # rubocop:disable Metrics/BlockLength
@@ -33,9 +33,6 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
-  # Compress JavaScripts and CSS.
-  # used harmony syntax https://github.com/lautis/uglifier/issues/127
-  config.assets.js_compressor = Uglifier.new(harmony: true)
   # For now do not compress the css see https://github.com/sass/libsass/issues/2701
   config.assets.css_compressor = nil
 
@@ -111,18 +108,39 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # Start ActiveJobs
   config.after_initialize do
     # GetReferenceData/ReferenceValues refresh job
-    RefreshRefDataJob.schedule_next_run(1.second)
+    RefreshRefDataJob.schedule_next_run(1.seconds)
 
     # GetSystemParameters refresh job
-    RefreshSystemParametersJob.schedule_next_run(1.minute)
+    RefreshSystemParametersJob.schedule_next_run(10.seconds)
 
     # GetSystemParameters refresh job
-    RefreshPwsTextJob.schedule_next_run(2.minutes)
+    RefreshPwsTextJob.schedule_next_run(20.seconds)
 
     # Tax Relief Type refresh job
-    TaxReliefTypeJob.schedule_next_run(3.minutes)
+    TaxReliefTypeJob.schedule_next_run(30.seconds)
 
     # Delete the temporary files job
-    DeleteTempFilesJob.schedule_next_run(4.minutes)
+    DeleteTempFilesJob.schedule_next_run(40.seconds)
   end
+
+  # Inserts middleware to perform automatic connection switching.
+  # The `database_selector` hash is used to pass options to the DatabaseSelector
+  # middleware. The `delay` is used to determine how long to wait after a write
+  # to send a subsequent read to the primary.
+  #
+  # The `database_resolver` class is used by the middleware to determine which
+  # database is appropriate to use based on the time delay.
+  #
+  # The `database_resolver_context` class is used by the middleware to set
+  # timestamps for the last write to the primary. The resolver uses the context
+  # class timestamps to determine how long to wait before reading from the
+  # replica.
+  #
+  # By default Rails will store a last write timestamp in the session. The
+  # DatabaseSelector middleware is designed as such you can define your own
+  # strategy for connection switching and pass that into the middleware through
+  # these configuration options.
+  # config.active_record.database_selector = { delay: 2.seconds }
+  # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
+  # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 end

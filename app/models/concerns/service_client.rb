@@ -69,7 +69,7 @@ module ServiceClient # rubocop:disable Metrics/ModuleLength
   # @note: See also {#class_methods.call_ok?} at the class level
   def call_ok?(config_key, request)
     config = RevScot::ServiceClientConfiguration.configuration[config_key]
-    Rails.logger.debug { "Calling (instance) #{config[:endpoint]} with #{request}" }
+    Rails.logger.debug { "Calling (instance) #{config[:endpoint]}" }
     success, response_body = ServiceClient.call(config, request)
     Rails.logger.debug { 'Call Failed' } unless success
 
@@ -106,7 +106,7 @@ module ServiceClient # rubocop:disable Metrics/ModuleLength
     # NOTE: See also {#call_ok?} at the instance level
     def call_ok?(config_key, request)
       config = RevScot::ServiceClientConfiguration.configuration[config_key]
-      Rails.logger.debug { "Calling (class) #{config[:endpoint]} with #{request}" }
+      Rails.logger.debug { "Calling (class) #{config[:endpoint]}" }
       success, response_body = ServiceClient.call(config, request)
       Rails.logger.debug { 'Call Failed' } unless success
 
