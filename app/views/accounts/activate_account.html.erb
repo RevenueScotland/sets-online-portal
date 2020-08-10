@@ -1,8 +1,8 @@
 <%= content_for :hide_back_link, true %>
 <% content_for :page_title,  t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @account, url: process_activate_account_account_path, local: true do |f| %>    
+<%= form_for @account, url: process_activate_account_account_path, local: true do |f| %>
   <%= form_errors_for @account %>
-  <%= f.text_field :registration_token %>  
-  <%= f.button '.activate_registration' %>  
+  <%= f.text_field :registration_token %>
+  <%= f.button '.activate_registration' %>
 <% end %>

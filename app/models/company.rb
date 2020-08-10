@@ -172,7 +172,9 @@ class Company # rubocop:disable Metrics/ClassLength
   # if the company is not found, the flag will be true, but the company summary will be nil
   # in all other cases, the flag will be false.
   def parse_response(response)
-    return [false, nil] if response.nil? || response.parsed_response.nil? || response.response.nil?
+    if response.body.nil? || response.body.empty? || response.parsed_response.nil? || response.response.nil?
+      return [false, nil]
+    end
     return [true, nil] if response.response.is_a?(Net::HTTPNotFound)
 
     Rails.logger.debug { "Companies house response #{response}" }

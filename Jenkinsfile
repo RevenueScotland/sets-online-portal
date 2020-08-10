@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="2.6.4"
+def RUBY_VERSION="2.6.5"
 
 /*
 	* Back office names
@@ -16,7 +16,7 @@ def RUBY_VERSION="2.6.4"
 	* 	and aren't available to the functions
 	*/
 MAN_BACKOFFICE = "RSTSTST3"
-REL_BACKOFFICE = "RSTSMAP"
+REL_BACKOFFICE = "RSTSSCRM"
 BOT_BACKOFFICE = "RSTSSMOK"
 
 properties ([
@@ -263,7 +263,30 @@ def prepareBuildEnvironment() {
  */
 def runUnitTests() {
 	stage ('Run Unit Tests') {
-		sh 'bundle exec rake UNIT_TEST=1 test'
+        try {
+            sh '''
+                rm -f log/test.log
+                bundle exec rake UNIT_TEST=1 test
+            '''
+        } catch (err) {
+    	    currentBuild.result = "FAILURE"
+
+			def RELEASE_TEXT = this.isReleaseBuild() ? "Release " : ""
+			emailext attachLog: true, 
+				body: """${RELEASE_TEXT}Unit testing of the ${this.getAppName()} build ${this.getFullBuildVersion()} has failed.
+
+The full console output can be found here: ${env.BUILD_URL}consoleFull
+
+The log files from the test target can be found attached to this email.
+
+""", 
+				compressLog: true, 
+				subject: "Unit test of the ${this.getAppName()} application, on the ${env.BRANCH_NAME} branch, has failed",
+				to: "${REVSCOT_DEVELOPERS}",
+                attachmentsPattern: "log/test.log"
+
+            throw err
+        }
 	}
 }
 
@@ -357,7 +380,7 @@ def codeStaticAnalysis() {
  */
 def precompileAssets() {
 	stage ('Precompile Assets') {
-		sh 'RAILS_ENV=production bundle exec rake assets:precompile'
+		sh 'RAILS_ENV=production NODE_ENV=production bundle exec rake assets:precompile'
 	}
 }
 
@@ -396,18 +419,19 @@ def dockerImageBuild() {
 			withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APP_NAME=${this.getAppName()}", "RELEASE_VERSION=${this.releaseVersion()}"]) {
 				sh '''
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
-					if [[ ! -z "${RELEASE_VERSION}" ]]; then export BASE_REG="10.102.71.97:443"; fi
-					export DOCKER_HOST=tcp://$(hostname):2376
-					export DOCKER_REG=10.102.16.121:443
-					export DOCKER_RELEASE_REG=10.102.16.121:444
+					export DOCKER_HOST=tcp://$(hostname -f):2376
+					export DOCKER_REG=vm-rstp-bld01.global.internal:443
+					export DOCKER_RELEASE_REG=vm-rstp-bld01.global.internal:444
 					cd NdsEnvironment/environment/apps/${APP_NAME}/app-servers-config/redis
 					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-redis redis "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../ui
 					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-app app "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../proxy
-					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-proxy proxy "${RELEASE_VERSION}" AAA${APP_NAME} ${BASE_REG}
+					SRC_DOCKER_REG=vm-nds-bld02.global.internal:443 SRC_DOCKER_RELEASE_REG=vm-rstp-bld01.global.internal:444\
+						../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-proxy proxy "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../selenium-firefox
-					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-firefox firefox "${RELEASE_VERSION}" AAA${APP_NAME} ${BASE_REG}
+					SRC_DOCKER_REG=vm-nds-bld02.global.internal:443 SRC_DOCKER_RELEASE_REG=vm-rstp-bld01.global.internal:444\
+						../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-firefox firefox "${RELEASE_VERSION}" AAA${APP_NAME}
 				'''
 			}
 		}
@@ -483,11 +507,11 @@ def deployAutotestEnvironment(String environment = "autotest") {
 			         "ENVIRONMENT=${environment}", "USER=${this.getAppUser()}", "RELEASE_VERSION=${this.releaseVersion()}"]) {
 				sh '''
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
-					export DOCKER_HOST=tcp://$(hostname -i):2376
-					export DOCKER_REG=10.102.16.121:443
-					export DOCKER_RELEASE_REG=10.102.16.121:444
+					export DOCKER_HOST=tcp://$(hostname -f):2376
+					export DOCKER_REG=vm-rstp-bld01.global.internal:443
+					export DOCKER_RELEASE_REG=vm-rstp-bld01.global.internal:444
 					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
-					../../run-app+shib-env.sh $FULL_BUILD_VERSION  ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
+					../../run-app-env.sh $FULL_BUILD_VERSION  ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
 					sleep ${TEST_DELAY}
 				'''
 			}
@@ -517,15 +541,18 @@ def deployManualTestEnvironment(String environment, String environmentLabel, Str
 				sh '''
 					#!/bin/bash
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
-					export DOCKER_HOST=tcp://$(hostname -i):2376
-					export DOCKER_REG=10.102.16.121:443
-					export DOCKER_RELEASE_REG=10.102.16.121:444
+					export DOCKER_HOST=tcp://$(hostname -f):2376
+					
+                    docker network prune -f
+					export DOCKER_REG=vm-rstp-bld01.global.internal:443
+					export DOCKER_RELEASE_REG=vm-rstp-bld01.global.internal:444
 					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
 					[ ! -z "$(docker ps -qa --filter name=${APP}.*--${ENVIRONMENT})" ] && docker stop $(docker ps -qa --filter "name=${APP}.*--${ENVIRONMENT}") && docker rm -f $(docker ps -qa --filter "name=${APP}.*--${ENVIRONMENT}")
-					../../run-mt-app+shib-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
+					../../run-mt-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
 					sleep ${TEST_DELAY}
 					export IMAGE_VERSION=${FULL_BUILD_VERSION}
-					echo IMAGES_USED=\\"$(grep image scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/docker-compose.yml | envsubst | cut -d':' -f2- | tr -d ' ' | paste -sd ' ')\\" >> scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/env.properties
+					containers=$(grep -Po "container_name:\\s*\\K.+" scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/docker-compose.yml | paste -sd " ")
+					echo IMAGES_USED=\\"$(docker inspect --format='{{.Config.Image}}' ${containers} | paste -sd ' ')\\" >> scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/env.properties
     				sed 's/>/\\\\\\>/g;s/</\\\\\\</g' scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/env.properties > scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/escaped-env.properties
     				source scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/escaped-env.properties
 					cd ../..
@@ -560,7 +587,7 @@ def generateReleaseNotes(environment) {
 			sh '''
 				#!/bin/bash
 				set +e
-				export DOCKER_HOST=tcp://$(hostname -i):2376
+				export DOCKER_HOST=tcp://$(hostname -f):2376
 				cd tools
 				./simpleReleaseNotes.sh app--${ENVIRONMENT} ${APP} latest RSTP > ${OUTPUT}
 				echo
@@ -598,17 +625,17 @@ def runAutotest(String host, String port, String seleniumPort, String environmen
 					 "COVERAGE_DIR=log/coverage", "COVERAGE_MERGE=true", "CAPYBARA_SAVE_PATH=log/tmp/screenshots"]) {
 				sh '''
 					#!/bin/bash
-					export DOCKER_HOST=tcp://$(hostname -i):2376
+					export DOCKER_HOST=tcp://$(hostname -f):2376
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} mkdir -p /var/tmp/share/upload /var/tmp/share/download
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} chmod 777 -R /var/tmp/share/
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
 						CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} CAPYBARA_SAVE_PATH=${CAPYBARA_SAVE_PATH}\
 						TEST_FILE_UPLOAD_PATH=/var/tmp/share/upload TEST_FILE_DOWNLOAD_PATH=/var/tmp/share/download \
-						RAILS_ENV=test cucumber
+						RAILS_ENV=test NODE_ENV=test cucumber
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} chmod -R u+w ${COVERAGE_DIR}
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} mv log/test.log log/${ENVIRONMENT}.log
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
-				    	CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} RAILS_ENV=test test
+				    	UNIT_TEST=1 CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} RAILS_ENV=test test
 					'''
 			}
 		}
@@ -621,6 +648,7 @@ def runAutotest(String host, String port, String seleniumPort, String environmen
 	} finally {
 		emailModSecFailures(environment)
 		emailLogErrors(environment, host)
+        emailDepreciatedMessages(environment, host)
 	}
 }
 
@@ -756,7 +784,6 @@ def emailLogErrors(String environment, String host) {
 					sudo mv app/test.log app/${ENVIRONMENT}.log
 				fi
 			fi
-			echo "# ui issues" > ${wd}/issues.env
 			echo > ${wd}/issues.txt
 			chmod o+w ${wd}/issues.txt
 
@@ -781,6 +808,43 @@ def emailLogErrors(String environment, String host) {
 			emailext attachmentsPattern: "${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.txt", 
 				body: "Application failures in ${this.getAppName()} during ${RELEASE_TEXT}${environment}. A summary is attached.\n\nThe full log files can be found on ${host}, under:\n\nApplication:	   /var/log/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/app/\n", 
 				subject: "Application failures in ${this.getAppName()} during ${RELEASE_TEXT}${environment}", 
+				to: "${REVSCOT_DEVELOPERS}"
+		}
+	}
+}
+
+def emailDepreciatedMessages(String environment, String host) {
+	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
+		sh '''
+			export wd=$PWD/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
+			mkdir -p ${wd}
+			chmod o+w ${wd}
+			pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
+
+			echo > ${wd}/issues.txt
+			chmod o+w ${wd}/issues.txt
+
+			if [ -d 'app' ] ; then 
+				sudo chmod go+r app/${ENVIRONMENT}.log*
+				if grep -q -e "DEPRECATION" app/${ENVIRONMENT}.log*; then 
+					echo "#### DEPRECATION WARNINGS ####" >> ${wd}/issues.txt
+					grep -B 1 -A 6 -e "DEPRECATION" app/${ENVIRONMENT}.log* >> ${wd}/issues.txt
+					echo DEPRECATION=1 >> ${wd}/issues.env
+				else
+					echo DEPRECATION=0 >> ${wd}/issues.env
+				fi
+			else
+				echo DEPRECATION=0 >> ${wd}/issues.env
+			fi
+			popd
+		'''
+		def props = readProperties file: "./${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.env"
+
+		if (props["DEPRECATION"] == "1") {
+			def RELEASE_TEXT = this.isReleaseBuild() ? "Release " : ""
+			emailext attachmentsPattern: "${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.txt", 
+				body: "Deprecation messages in ${this.getAppName()} during ${RELEASE_TEXT}${environment}. A summary is attached.\n\nThe full log files can be found on ${host}, under:\n\nApplication:	   /var/log/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/app/\n", 
+				subject: "Deprecation messages in ${this.getAppName()} during ${RELEASE_TEXT}${environment}", 
 				to: "${REVSCOT_DEVELOPERS}"
 		}
 	}
@@ -1025,7 +1089,7 @@ def stopEnvironment(String environment) {
 def doDockerCmdOnEnvironment(String environment, String cmd) {
 	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}", "COMMAND=${cmd}"]) {
 		sh '''
-			export DOCKER_HOST=tcp://$(hostname):2376
+			export DOCKER_HOST=tcp://$(hostname -f):2376
 			export ENV_NAME=${APPLICATION}.*${FULL_BUILD_VERSION//\\./\\\\.}.*${ENVIRONMENT}
 			[ ! -z "$(docker ps -qa --filter name=${ENV_NAME})" ] && docker ${COMMAND} $(docker ps -qa --filter name=${ENV_NAME}) || true
 			export ENV_NAME=${APPLICATION}.*${FULL_BUILD_VERSION//\\./-}.*${ENVIRONMENT}
@@ -1041,7 +1105,7 @@ def doDockerCmdOnEnvironment(String environment, String cmd) {
 def removeDockerNetwork(String environment) {
 	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 		sh '''
-			export DOCKER_HOST=tcp://$(hostname):2376
+			export DOCKER_HOST=tcp://$(hostname -f):2376
 			export NETWORK_NAME=${APPLICATION}${FULL_BUILD_VERSION}${ENVIRONMENT}_common
 			docker network rm ${NETWORK_NAME} || true
 		'''
@@ -1056,7 +1120,7 @@ def removeDockerNetwork(String environment) {
 def deleteOldEnvironments(String environment) {
 	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 		sh '''
-			export DOCKER_HOST=tcp://$(hostname):2376
+			export DOCKER_HOST=tcp://$(hostname -f):2376
 			cd environment/NdsEnvironment/environment/apps/
 			bash ./remove-all-old-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APPLICATION}
 			'''

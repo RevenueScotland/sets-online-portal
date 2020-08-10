@@ -131,13 +131,13 @@ module Accounts
 
     # Loads existing wizard models from the wizard cache or redirects to the summary page
     # @return [Account] the model for wizard saving
-    def load_step
+    def load_step(_sub_object_attribute = nil)
       @post_path = wizard_post_path
       @account = wizard_load_or_redirect(accounts_registration_account_for_url)
     end
 
     # Return the parameter list filtered for the attributes of the registration model
-    def filter_params
+    def filter_params(_sub_object_attribute = nil)
       filtered_params = register_user_params
       if params[:account]
         filtered_params.merge!(register_account_params)

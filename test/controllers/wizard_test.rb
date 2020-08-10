@@ -2,22 +2,26 @@
 
 require 'test_helper'
 require 'models/reference_data/memory_cache_helper'
+require 'savon/mock/spec_helper'
 
 # Unit tests for the wizard code that can't be tested via autotests.
 class WizardTest < ActionController::TestCase
   include ReferenceData::MemoryCacheHelper
 
-  # Test sets an in-memory cache regardless of what the default environment setup is
-  # ie so we don't try to access Redis in unit tests.
+  # This tests caching behaviour so use memory cache
+  # Also make sure that back office call returns nothing
   setup do
     set_memory_cache
-    prevent_system_parameter_calling_back_office
+
+    @savon ||= Savon::SpecHelper::Interface.new
+    @savon.mock!
+    Rails.logger.debug { 'Mocking started' }
   end
 
-  # Put cache configuration back
   teardown do
     restore_original_cache
-    restore_system_parameter_calling_back_office
+    @savon&.unmock!
+    Rails.logger.debug { 'Mocking ended' }
   end
 
   # Test version of the controller, includes Wizard.
@@ -51,6 +55,7 @@ class WizardTest < ActionController::TestCase
 
   # Wizard model based on Abstract to override the lookup cache method
   class TestWizardModel < Returns::AbstractReturn
+    attr_accessor :value
   end
 
   test 'cache_key provides unique id based on class name and wizard caching and merging works' do
@@ -62,7 +67,7 @@ class WizardTest < ActionController::TestCase
     controller.wizard_save(slft)
 
     # merge in something else
-    controller.wizard_merge_and_save(controller.wizard_load, 'tare_reference' => 'mars') { true }
+    controller.wizard_merge_and_save(controller.wizard_load, nil, 'tare_reference' => 'mars') { true }
 
     # save a decoy under another controller in the same session
     another = AnotherWizardController.new
@@ -74,7 +79,7 @@ class WizardTest < ActionController::TestCase
     assert_equal('mars', cached_data.tare_reference, 'Saved and loaded data should exist')
 
     # change the value
-    controller.wizard_merge_and_save(controller.wizard_load, 'tare_reference' => 'under the sea') { true }
+    controller.wizard_merge_and_save(controller.wizard_load, nil, 'tare_reference' => 'under the sea') { true }
     cached_data = controller.wizard_load
     assert_equal('under the sea', cached_data.tare_reference, 'Overriding values should be allowed')
 
@@ -88,21 +93,22 @@ class WizardTest < ActionController::TestCase
     controller.session = {}
 
     # save something
-    controller.wizard_save('hello' => 'world')
+    model = TestWizardModel.new(value: 'world')
+    controller.wizard_save(model)
     # save something completely different
-    controller.wizard_save('harry' => 'potter')
+    model.value = 'potter'
+    controller.wizard_save(model)
 
     # check cache (should only have the last entry)
-    cached = controller.wizard_load
-    assert_equal(1, cached.length, 'Cache should only contain the last saved value since was not merged')
-    assert_equal('potter', cached['harry'])
+    model = controller.wizard_load
+    assert_equal('potter', model.value)
   end
 
   # We shouldn't be going to the back office in this (or any) unit test so wizard_cache_expiry_time should
-  # failsafe and return 10.hrs.  If the failsafe time is changed, this test should be updated.
-  test 'wizard_cache_expiry_time returns the failsafe time of 10 hrs' do
+  # fail safe and return 10.hrs.  If the fail safe time is changed, this test should be updated.
+  test 'wizard_cache_expiry_time returns the fail safe time of 10 hrs' do
     controller = WizardTestController.new
-    assert_equal(10.hours, controller.wizard_cache_expiry_time, 'wizard_cache_expiry_time should return failsafe time')
+    assert_equal(10.hours, controller.wizard_cache_expiry_time, 'wizard_cache_expiry_time should return fail safe time')
   end
 
   test 'keys reproduction scenarios' do

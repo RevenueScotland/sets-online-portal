@@ -46,7 +46,7 @@ class ApplicationController < ActionController::Base
 
   # set as a before_action to make sure the user is logged in when required
   def require_user
-    manage_session_expiry(safe_lookup)
+    manage_session_expiry(ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU', true))
     return if current_user
 
     Rails.logger.debug('User needs to be logged in')
@@ -56,7 +56,7 @@ class ApplicationController < ActionController::Base
 
   # before action that calls manage_session_expiry to check if session has run out of time.
   def check_session_expiry
-    manage_session_expiry(safe_lookup)
+    manage_session_expiry(ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU', true))
   end
 
   # Enforce session time to live (ie max time between activity) and maximum over-all session length.
@@ -79,19 +79,6 @@ class ApplicationController < ActionController::Base
 
     # user has done something so update session TTL
     update_ttl(:SESSION_TTL_INDEX, max_idle_mins, true)
-  end
-
-  # Lookup the system parameters for session management.
-  # Reports and swallow any StandardError.
-  # @return [Hash] system parameters or else empty hash to allow failsafe values to be used.
-  def safe_lookup
-    sys_params = {}
-    begin
-      sys_params = ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU')
-    rescue StandardError => e
-      Rails.logger.error(e)
-    end
-    sys_params
   end
 
   # Sets the selected session variable to the current time plus the provided value to

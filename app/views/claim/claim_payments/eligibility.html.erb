@@ -1,0 +1,9 @@
+<% content_for :page_view, render_page_view(__FILE__) %>
+<%= content_for :page_title, t('.title') %>
+<% content_for :hide_back_link, :remove_param_new %>
+<%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for @claim_payment %>
+  <%= f.collection_check_boxes_fields(:eligibility_checkers, ReferenceData::ReferenceValue.list('ELIGIBILITY_LIST', 'SYS', 'RSTU')) %>
+  <%= display_paragraph_components( body: t('.unsure_description', ref_link: link_to(t('.ref_message'), "#{Rails.configuration.x.external_links.eligibility_checker}", target: '_blank'))) %>
+  <%= f.button %>
+<% end %>

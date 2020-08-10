@@ -19,25 +19,25 @@ Feature: SLfT CSV File Upload
     Then I should see the text "File can't be blank"
     And I should not see the text "Imported file contains validation errors. Correct these in the file, and the import the file again"
 
-    When I upload "testdocx.docx" to "resource_item_file_data"
+    When I upload "testdocx.docx" to "resource_item_default_file_data"
     And I click on the "Upload document" button
     Then I should see the text "Invalid file type"
     And I should not see the text "Imported file contains validation errors. Correct these in the file, and the import the file again"
     And I should not see the text "testdocx.docx"
 
-    When I upload "test-not-a-csv-file.csv" to "resource_item_file_data"
+    When I upload "test-not-a-csv-file.csv" to "resource_item_default_file_data"
     And I click on the "Upload document" button
     Then I should see the text "File is invalid CSV file: Illegal quoting in line 1"
     And I should not see the text "Imported file contains validation errors. Correct these in the file, and the import the file again"
     And I should not see the text "test-not-a-csv-file.csv"
 
-    When I upload "test-csv-wrong-no-cols.csv" to "resource_item_file_data"
+    When I upload "test-csv-wrong-no-cols.csv" to "resource_item_default_file_data"
     And I click on the "Upload document" button
     Then I should see the text "File is invalid, greater than 60% of rows had the wrong number of columns"
     And I should not see the text "Imported file contains validation errors. Correct these in the file, and the import the file again"
     And I should not see the text "test-csv-wrong-no-cols.csv"
 
-    When I upload "test-invalid-slft-waste-upload.csv" to "resource_item_file_data"
+    When I upload "test-invalid-slft-waste-upload.csv" to "resource_item_default_file_data"
     And I click on the "Upload document" button
     Then I should see the text "Imported file contains validation errors. Correct these in the file, and the import the file again"
     And I should see the text "01 01 01/Entry 1 has the following errors: Standard tonnage cannot be set when other tonnages are set, Lower tonnage cannot be set when other tonnages are set, Water discount tonnage cannot exceed the waste tonnage"
@@ -59,7 +59,7 @@ Feature: SLfT CSV File Upload
     Then I should see the "Waste details summary" page
     And I should see the text "Waste details summary for Waste Site 1"
 
-    When I upload "test-valid-slft-waste-upload.csv" to "resource_item_file_data"
+    When I upload "test-valid-slft-waste-upload.csv" to "resource_item_default_file_data"
     And I click on the "Upload document" button
     Then I should not see the text "Invalid file type"
     And I should not see the text "File can't be blank"
@@ -92,14 +92,14 @@ Feature: SLfT CSV File Upload
     And the radio button "returns_slft_waste_from_non_disposal_ind_n" should be selected
     And the radio button "returns_slft_waste_pre_treated_ind_n" should be selected
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the sub-title "Provide tonnage details for this waste type"
     And I should see the text "0" in field "Standard tonnage"
     And I should see the text "0" in field "Lower tonnage"
     And I should see the text "40" in field "Exempt tonnage"
     And I should see the text "0" in field "Water discount tonnage"
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the sub-title "Why is some tonnage exempt?"
     And the radio button "returns_slft_waste_nda_ex_yes_no_y" should be selected
     And I should see the text "20" in field "NDA tonnage"
@@ -108,7 +108,7 @@ Feature: SLfT CSV File Upload
     And I should see the text "20" in field "Other tonnage"
     And I should see the text "Some Reason" in field "Description of other exemption reason"
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the "Waste details summary" page
 
     When I click on the 4 th "Edit row" link
@@ -120,25 +120,25 @@ Feature: SLfT CSV File Upload
     And the radio button "returns_slft_waste_from_non_disposal_ind_n" should be selected
     And the radio button "returns_slft_waste_pre_treated_ind_n" should be selected
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the sub-title "Provide tonnage details for this waste type"
     And I should see the text "0" in field "Standard tonnage"
     And I should see the text "0" in field "Lower tonnage"
     And I should see the text "40" in field "Exempt tonnage"
     And I should see the text "0" in field "Water discount tonnage"
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the sub-title "Why is some tonnage exempt?"
     And the radio button "returns_slft_waste_nda_ex_yes_no_n" should be selected
     And the radio button "returns_slft_waste_restoration_ex_yes_no_y" should be selected
     And I should see the text "40" in field "Restoration tonnage"
     And the radio button "returns_slft_waste_other_ex_yes_no_n" should be selected
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the "Waste details summary" page
     When I click on the "Delete all waste types" link
     And if available, click the confirmation dialog
-    And I wait for 1 seconds
+    And I wait for 2 seconds
     Then I should see the "Waste details summary" page
     And I should not see the text "01 01 01/Entry 1"
     And I should not see the text "01 03 99/Entry 2"
@@ -156,28 +156,33 @@ Feature: SLfT CSV File Upload
     And I select "Landfill" from the "Management method"
     And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
     And I check the "returns_slft_waste_pre_treated_ind_y" radio button
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     And I enter "15" in the "Standard tonnage" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
     Then I should see the "Waste details summary" page
 
     And I should see the text "06 13 04/don't breath it"
     When I click on the "Add new waste type" link
-    And I click on the "Back" link
+    Then I should see the "Details of the waste for Waste Site 1" page
 
+    When I click on the "Back" link
     # The delete_all query string should not be retained
     Then I should see the text "06 13 04/don't breath it"
 
     When I click on the "Save draft" button
     And I click on the "Add new waste type" link
-    And I click on the "Back" link
+    Then I should see the "Details of the waste for Waste Site 1" page
+
+    When I click on the "Back" link
     # The save_draft query string should not be retained
     Then I should see the text "06 13 04/don't breath it"
 
     When I click on the "Upload document" button
     And I click on the "Add new waste type" link
-    And I click on the "Back" link
+    Then I should see the "Details of the waste for Waste Site 1" page
+
+    When I click on the "Back" link
     # The csv_upload query string should not be retained
     Then I should see the text "06 13 04/don't breath it"
 

@@ -133,6 +133,28 @@ module Returns
         slft_return
       end
 
+      # The credit limit percentage values that are found from the back office's system parameter, we get them from
+      # the back office so that if they have changed their values then we will still be in sync.
+      # To prevent it from doing the lookup all the time, we will be setting the global variable to
+      # the value of the lookup.
+      # @return [Hash] contains the two percentage limit values (in string) for both the env_contrib_cut_off
+      #   and liability_cut_off. These percentage limit values are used with the :slcf_credit_claimed attribute.
+      def self.slcf_credit_claimed_limits
+        if @slcf_credit_claimed_limits.nil?
+          reference_hash = ReferenceData::SystemParameter.lookup('COMMON', 'SLFT', 'RSTU', true)
+
+          # If the reference_hash with the key 'ENV_CONTRIB_CUT_OFF' is nil then we'll use the default value that we
+          # know, which is the value 90.
+          env_contrib_cut_off = reference_hash['ENV_CONTRIB_CUT_OFF']&.value || '90'
+          # Similarly with the key 'LIABILITY_CUT_OFF' of reference_hash, the value we know here is 5.6 so that will
+          # be the default if we don't find anything from the reference_hash.
+          liability_cut_off = reference_hash['LIABILITY_CUT_OFF']&.value || '5.6'
+          @slcf_credit_claimed_limits =
+            { env_contrib_cut_off: env_contrib_cut_off, liability_cut_off: liability_cut_off }
+        end
+        @slcf_credit_claimed_limits
+      end
+
       # Layout to print the data in this model
       # This defines the sections that are to be printed and the content and layout of those sections
       def print_layout
@@ -209,7 +231,9 @@ module Returns
       # Calculates the limit to the credit claimed based on the contribution
       def credit_claimed_limit
         # Need to convert back to a float for comparison in validation
-        from_pence((to_pence(slcf_contribution) * 0.90)).to_f
+        percentage = SlftReturn.slcf_credit_claimed_limits[:env_contrib_cut_off].to_f / 100.0
+
+        from_pence((to_pence(slcf_contribution) * percentage)).to_f
       end
 
       # performs the validation when the user presses save draft
@@ -283,6 +307,20 @@ module Returns
         return attribute unless %i[declaration].include?(attribute)
 
         :SLFT_declaration
+      end
+
+      # Returns the extra options to be passed into when doing the translating, so that the values can be passed on
+      # to the hint or label.
+      # see https://guides.rubyonrails.org/i18n.html#passing-variables-to-translations
+      # @return [Hash] the extra options for the translation.
+      def translation_variables(attribute, _translation_options = nil)
+        if attribute == :slcf_credit_claimed
+          percentage_hash = SlftReturn.slcf_credit_claimed_limits
+          return { env_contrib_cut_off: percentage_hash[:env_contrib_cut_off],
+                   liability_cut_off: percentage_hash[:liability_cut_off] }
+        end
+
+        {}
       end
 
       # Note: As used in print data these need to be public

@@ -6,7 +6,7 @@ require 'fileutils'
 if Rails.env.test? && ENV['UNIT_TEST'].nil? && !ENV['TEST_FILE_UPLOAD_PATH'].nil?
   Rails.logger.info('Copying the files to the upload file folder')
 
-  copy_from_path = Rails.root.join('test/fixtures/files/upload/')
+  copy_from_path = Rails.root.join('test/fixtures/upload/')
   # On our local windows computer we have set this up with the directory separator as '\\'
   upload_path = Pathname.new(ENV['TEST_FILE_UPLOAD_PATH'])
   Rails.logger.debug("  Here is a list of files to be copied: #{Dir[File.join(copy_from_path, '*.*')].inspect}")

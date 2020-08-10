@@ -43,33 +43,39 @@ module WizardAddressHelper
   def wizard_address_step(steps, overrides = {})
     wizard_handle_clear_cache(overrides)
     model = wizard_setup_step(overrides)
+    model, sub_object = model if model.is_a?(Array)
 
-    if params[:submitted]
-      wizard_navigation_step(steps, overrides) if wizard_store_address(model, overrides)
-    elsif address_search?
-      # The standard pre-search makes sure any non address items are saved in the model before the search
-      # for the address
-      wizard_address_pre_search(model, false)
+    # POST
+    if params[:continue]
+      return unless wizard_store_address(model, sub_object, overrides)
 
-      search_for_addresses
-    else
-      wizard_load_address(model, overrides)
+      return wizard_navigation_step(steps, overrides, collection_of_sub_object_size(model, overrides))
     end
+
+    # special POST and GET
+    # The standard pre-search makes sure any non address items are saved in the model before the search
+    # for the address. Then sets global variables about the address used for the rendered address layout
+    return wizard_address_pre_search(model, sub_object, overrides, false) && search_for_addresses if address_search?
+
+    # GET
+    wizard_load_address(model, sub_object, overrides)
   end
 
   private
 
   # Standard store address code to handle storing address in the current mode
   # @param model [Object] the parent model being processed
+  # @param sub_object [Object|NilClass] a sub-object of the model that the wizard page is currently referring to,
+  #   if it's nil then there's no such object.
   # @param overrides [Hash] an array of overrides see @wizard_address_step
   # returns [Boolean] true if the model was valid and saved, false otherwise
-  def wizard_store_address(model, overrides)
+  def wizard_store_address(model, sub_object, overrides)
     # we may also have main model parameters so store these and validate them first
     # the standard address search does the save
-    model_valid = wizard_address_pre_search(model, true)
+    model_valid = wizard_address_pre_search(model, sub_object, overrides, true)
 
     # check the address required flags
-    address_required = wizard_address_required?(model, overrides)
+    address_required = wizard_address_required?(model, sub_object, overrides)
 
     # if the model is valid and an address isn't required then exit now
     return true if model_valid && !address_required
@@ -77,7 +83,9 @@ module WizardAddressHelper
     address = Address.new(address_params.merge!(default_country: overrides[:default_country]))
 
     # exit with false if the save failed
-    return false unless wizard_address_save_or_initialise(model, address, address_required, model_valid, overrides)
+    unless wizard_address_save_or_initialise([model, sub_object], address, address_required, model_valid, overrides)
+      return false
+    end
 
     success = run_after_merge(overrides)
     # save the model if all successful
@@ -86,19 +94,20 @@ module WizardAddressHelper
   end
 
   # saves the address in the model on the parent or initialises as required
-  # @param model [Object] the parent model being processed
+  # @param wizard_objects [Array] two objects: first one is the parent model being processed, and second is
+  #   the sub-object of the parent model which should be nil if it doesn't exist.
   # @param address [Object] the actual address we are trying to save
   # @param address_required [Boolean] Is an address required on this page
   # @param model_valid [Boolean] is the parent model valid
   # @param overrides [Hash] an array of overrides see @wizard_address_step
   # returns [Boolean] true if the model was valid and saved, false otherwise
-  def wizard_address_save_or_initialise(model, address, address_required, model_valid, overrides)
+  def wizard_address_save_or_initialise(wizard_objects, address, address_required, model_valid, overrides)
     # @note order is important as we want to validate the address even if the main model isn't valid
     # we use address required to stop it validating an address that isn't required atm
     success = false
     if address_required && address.valid?(add_validation_contexts(address_validation_contexts, overrides)) &&
        model_valid
-      success = wizard_save_address_in_model(model, address, overrides)
+      success = wizard_save_address_in_model(wizard_objects[0], wizard_objects[1], address, overrides)
     end
 
     Rails.logger.debug("Validation on address: #{success}, required: #{address_required}, model_valid: #{model_valid}")
@@ -111,13 +120,19 @@ module WizardAddressHelper
   # on the model. It can optionally validate the model
   # It is also used @see standard_store_address to store parameters prior to address validation
   # @param model [Object] the parent model being processed
+  # @param sub_object [Object|NilClass] a sub-object of the model that the wizard page is currently referring to,
+  #   if it's nil then there's no such object.
   # @param validate [Boolean] do we need to validate the parent model as part of the process
-  def wizard_address_pre_search(model, validate)
-    unless filter_params.nil?
-      model.assign_attributes(filter_params)
+  def wizard_address_pre_search(model, sub_object, overrides, validate)
+    page_params = resolve_params(overrides)
+    unless page_params.nil?
+      wizard_page_object = overrides[:sub_object_attribute].present? ? sub_object : model
+      merge_params_with_object(wizard_page_object, page_params)
+
       return true unless validate
 
-      return model.valid?(filter_params.keys.map(&:to_sym))
+      valid = validate_model_after_sub_object_merge(model, sub_object, overrides, true)
+      return wizard_page_object.valid?(page_params.keys.map(&:to_sym)) && valid
     end
     true
   end
@@ -130,14 +145,19 @@ module WizardAddressHelper
   #   No they need another address
   # If an address isn't required then save the model (see @save_address_if_not_required)
   # @param model [Object] the parent model being processed
+  # @param sub_object [Object|NilClass] a sub-object of the model that the wizard page is currently referring to,
+  #   if it's nil then there's no such object.
   # @param overrides [Hash] an array of overrides see @wizard_address_step
   # @return [Boolean] is an address required
-  def wizard_address_required?(model, overrides)
+  def wizard_address_required?(model, sub_object, overrides)
     address_required = overrides[:address_required]
     address_not_required = overrides[:address_not_required]
     return true if address_required.nil? && address_not_required.nil?
 
-    value = (address_required.nil? ? model.send(address_not_required) : model.send(address_required))
+    # Depending on the object we're using on current wizard page, we'll use that to check if the address
+    # is required or not required.
+    wizard_page_object = sub_object || model
+    value = wizard_page_object.send(address_required || address_not_required)
     check = (address_required.nil? ? 'Y' : 'N')
 
     save_address_if_not_required(model, value, check, overrides)
@@ -162,24 +182,35 @@ module WizardAddressHelper
 
   # This is the standard address load. Primarily it populates the address detail from  the model
   # @param model [Object] the parent model being processed
+  # @param sub_object [Object|NilClass] a sub-object of the model that the wizard page is currently referring to,
+  #   if it's nil then there's no such object.
   # @param overrides [Hash] an array of overrides see @wizard_address_step
-  def wizard_load_address(model, overrides)
-    address = model.send(overrides[:address_attribute] || :address)
+  def wizard_load_address(model, sub_object, overrides)
+    address = (sub_object || model).send(overrides[:address_attribute] || :address)
     initialize_address_variables(address, search_postcode, overrides[:default_country])
   end
 
   # Populated the model with the address it doesn't save in the cache as later stages may error
   # @param model [Object] The model where the address will be stored at an address attribute or the attribute
   #   provided in the override
+  # @param sub_object [Object|NilClass] a sub-object of the model that the wizard page is currently referring to,
+  #   if it's nil then there's no such object. So if this is present then the address will be stored in an attribute
+  #   of it, then that sub-object will be merged back to the model.
   # @param address [Object] the address being processed
   # @param overrides [Hash] an array of overrides see @wizard_address_step
   # @return [Boolean] always returns true
-  def wizard_save_address_in_model(model, address, overrides)
+  def wizard_save_address_in_model(model, sub_object, address, overrides)
     address_attribute = overrides[:address_attribute] || :address
-    Rails.logger.debug "Storing address in model at #{model.class.name}##{address_attribute}"
-    model.send((address_attribute.to_s + '=').to_sym, address)
+    wizard_page_object = sub_object || model
+
+    Rails.logger.debug "Storing address in object #{wizard_page_object.class.name}##{address_attribute}"
+
+    wizard_page_object.send((address_attribute.to_s + '=').to_sym, address)
     # revalidate the parent model to allow for any cross address validation
-    return false unless wizard_valid?(model, resolve_params(overrides), overrides)
+    valid = wizard_valid?(wizard_page_object, resolve_params(overrides), overrides)
+    valid = validate_model_after_sub_object_merge(model, sub_object, overrides, valid)
+
+    return false unless valid
 
     true
   end

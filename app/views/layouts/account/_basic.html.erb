@@ -44,10 +44,10 @@
       <% end %>
     <% end %>
   <% end %>
-  <p/>
+  <br>
   <% if local_assigns[:confirm] %>
-    <%= f.button '.confirm' , {:name => 'update-basic'}  %>
+    <%= f.button 'confirm' , {:name => 'update-basic'}  %>
   <% else %>
-    <%= f.button '.next', { :name => 'submitted' }  %>
+    <%= f.button %>
   <% end %>
 <% end %>

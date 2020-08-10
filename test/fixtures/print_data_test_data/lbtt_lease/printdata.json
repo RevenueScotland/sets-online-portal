@@ -933,13 +933,13 @@
                 {
                     "itemcode": "declaration",
                     "itemformat": null,
-                    "itemlabel": "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): \n (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and \n (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct.",
+                    "itemlabel": "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): \n (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and \n (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct",
                     "itemdata": "Yes"
                 },
                 {
                     "itemcode": "lease_declaration",
                     "itemformat": null,
-                    "itemlabel": "I, the agent of the tenant(s), confirm that I have made my client(s) aware of their obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date.",
+                    "itemlabel": "I, the agent of the tenant(s), confirm that I have made my client(s) aware of their obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date",
                     "itemdata": "Yes"
                 }
             ],

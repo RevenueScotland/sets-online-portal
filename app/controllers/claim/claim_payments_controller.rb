@@ -11,12 +11,11 @@ module Claim
     include FileUploadHandler
 
     # all public pages, wizard steps for the public part of Claim repayment
-    PUBLIC_PAGES = %I[public_claim_landing return_reference_number claim_reason date_of_sale
-                      main_residence_address further_claim_info claiming_amount claimant_info agent_info
-                      agent_address taxpayer_details taxpayer_address additional_tax_payer
-                      second_taxpayer_info second_tax_payer claim_payment_bank_details upload_evidence
-                      taxpayer_declaration more_uploads confirmation_of_payment download_claim download_file
-                      view_claim_pdf].freeze
+    PUBLIC_PAGES = %I[before_you_start return_reference_number claim_reason date_of_sale
+                      main_residence_address claiming_amount taxpayer_details taxpayer_address
+                      claim_payment_bank_details upload_evidence public_claim_landing
+                      final_declaration confirmation_of_payment download_claim download_file
+                      view_claim_pdf eligibility].freeze
 
     authorise requires: AuthorisationHelper::CLAIM_REPAYMENT + AuthorisationHelper::CLAIM_REPAYMENT_ATTACHMENT,
               allow_if: :public
@@ -30,31 +29,34 @@ module Claim
     # Agent steps unless unauthenticated and they says they are an agent
     # Second tax payer details unless there is a second tax payer, never for SLFT
     # see specific steps below
-    STEPS = %w[return_reference_number claim_reason
-               date_of_sale main_residence_address further_claim_info
-               claiming_amount
-               claimant_info agent_info agent_address
-               taxpayer_details taxpayer_address
-               additional_tax_payer second_taxpayer_info second_tax_payer
-               claim_payment_bank_details upload_evidence taxpayer_declaration
-               more_uploads confirmation_of_payment].freeze
+    NEW_STEPS = %w[eligibility before_you_start return_reference_number claim_reason main_residence_address
+                   date_of_sale upload_evidence claiming_amount taxpayer_details taxpayer_address
+                   claim_payment_bank_details final_declaration
+                   confirmation_of_payment].freeze
 
     # Create the standard wizard step actions
-    standard_wizard_step_actions(STEPS, %i[date_of_sale further_claim_info agent_info taxpayer_details
-                                           second_taxpayer_info claim_payment_bank_details confirmation_of_payment])
+    standard_wizard_step_actions(NEW_STEPS, %i[claim_payment_bank_details])
 
     # Home page for unauthenticated wizard
     def public_claim_landing; end
 
-    # First step in the unAuthenticated user wizard
-    def return_reference_number
+    # wizard page for unauthenticated user to check eligibility
+    def eligibility
       # Call clear_cache whenever params[:new] is there
       clear_cache = params[:new].present?
       Rails.logger.debug('New Claim Repayment') if clear_cache
 
-      wizard_step(STEPS) do
-        { setup_step: :return_reference_setup_step, next_step: :show_reason_step, clear_cache: clear_cache }
-      end
+      wizard_step(NEW_STEPS) { { setup_step: :setup_eligibility_step, clear_cache: clear_cache } }
+    end
+
+    # wizard page for unauthenticated user to check eligibility
+    def before_you_start
+      wizard_step(NEW_STEPS)
+    end
+
+    # First step in the unAuthenticated user wizard
+    def return_reference_number
+      wizard_step(NEW_STEPS) { { next_step: :show_ads_main_address_step } }
     end
 
     # First step in the authenticated claim (also in in unauthenticated)
@@ -64,46 +66,39 @@ module Claim
       clear_cache = params[:new].present?
       Rails.logger.debug('New Claim Repayment') if clear_cache
 
-      wizard_step(STEPS) do
+      wizard_step(NEW_STEPS) do
         { setup_step: :setup_claim_reason_step, clear_cache: clear_cache, next_step: :show_ads_steps }
       end
     end
 
     # Only shown when reason is ADS
     def main_residence_address
-      wizard_address_step(STEPS, validates: :postcode_matches)
+      wizard_address_step(NEW_STEPS)
     end
 
     # Collects the amount of the claim, always shown
     # next step may be to get tax payer details (for authenticated LBTT), to ask if this is an agent (for authenticated)
     # or straight to bank details for SLFT
     def claiming_amount
-      wizard_step(STEPS) { { next_step: :calculate_claiming_amount_next_step } }
-    end
-
-    # For unauthenticated only is this a tax payer or agent
-    def claimant_info
-      wizard_step(STEPS) { { next_step: :show_agent_info_step } }
-    end
-
-    # For unauthenticated only shown if this is an agent
-    def agent_address
-      wizard_address_step(STEPS, address_attribute: :agent_address)
+      wizard_step(NEW_STEPS) { { loop: :start_next_step } }
     end
 
     # Gets the tax payer details (skipped for SLFT)
+    def taxpayer_details
+      wizard_step(NEW_STEPS) { { sub_object_attribute: :taxpayers, loop: :continue } }
+    end
+
+    # Gets the tax payer address details
     def taxpayer_address
-      wizard_address_step(STEPS, address_attribute: :tax_address)
+      options = { sub_object_attribute: :taxpayers, loop: :taxpayer_details }
+      options.merge!(address_not_required: :same_address) if params[:sub_object_index].to_i != 1
+
+      wizard_address_step(NEW_STEPS, options)
     end
 
-    # Is there a second tax payer
-    def additional_tax_payer
-      wizard_step(STEPS) { { next_step: :show_second_taxpayer_step } }
-    end
-
-    # Second tax payer details
-    def second_tax_payer
-      wizard_address_step(STEPS, address_attribute: :s_tax_address)
+    # get date of sale for ADS and decide which should be the next page after date of sale
+    def date_of_sale
+      wizard_step(NEW_STEPS) { { next_step: :calculate_date_of_sale_next_step } }
     end
 
     # For all types upload evidence
@@ -112,34 +107,32 @@ module Claim
       @claim_payment ||= wizard_load
       # clearing previous file upload cache if its new get request
       # second && condition to avoid clear cache on back
-      file_upload_end if request.get? && @claim_payment.upload_attachment.nil?
+      file_upload_end if request.get? && @claim_payment.evidence_files.nil?
 
-      handle_file_upload(nil)
-      wizard_step(STEPS) { { after_merge: :save_attachment_in_model } }
+      handle_file_upload(nil, types: evidence_files_file_types)
+
+      save_evidence_files_in_model
+
+      wizard_step(NEW_STEPS) { { validates: :evidence_files } }
+    end
+
+    # Last step in the authenticated and unauthenticated claim
+    def confirmation_of_payment
+      wizard_step(NEW_STEPS)
+
+      # Clear the cache to remove previously upload resource files
+      handle_file_upload('confirmation_of_payment',
+                         before_add: :add_additional_document,
+                         before_delete: :delete_additional_document,
+                         clear_cache: request.get? ? true : false)
     end
 
     # For all types do the declaration, this also triggers the submit
     # Ensures the correct validation context is checked on clicking Next (ie so won't submit until declaration ticked).
-    def taxpayer_declaration
-      wizard_step(STEPS) do
+    def final_declaration
+      wizard_step(NEW_STEPS) do
         { cache_index: true, setup_step: :taxpayer_declaration_setup_step,
           validates: :declaration, after_merge: :save_data_in_back_office }
-      end
-    end
-
-    # For all types get any more files
-    def more_uploads
-      wizard_step(STEPS)
-      if params[:add_resource] || params[:delete_resource]
-        handle_confirmation_file_upload
-      elsif params[:continue]
-        # clear cache
-        file_upload_end
-        redirect_to claim_claim_payments_confirmation_of_payment_path
-      else
-        # clear previous cache
-        file_upload_end
-        initialize_fileupload_variables
       end
     end
 
@@ -148,11 +141,11 @@ module Claim
     # to its details.
     def view_claim_pdf
       @claim_payment ||= wizard_load
-      success, attachment = @claim_payment.view_claim_pdf
+      success, evidence_file = @claim_payment.view_claim_pdf
       return unless success
 
       # Download the file
-      send_file_data(attachment[:document_claim])
+      send_file_data(evidence_file[:document_claim])
     rescue StandardError => e
       Rails.logger.error(e)
       redirect_to controller: '/home', action: 'file_download_error'
@@ -160,21 +153,13 @@ module Claim
 
     private
 
-    # Sets up wizard model if it doesn't already exist in the cache
-    # @see #clean_on_new_type if you change this method, they need to match up
-    # @return [LbttReturn] the model for wizard saving
-    def return_reference_setup_step
-      @post_path = wizard_post_path
-      @claim_payment = wizard_load || Claim::ClaimPayment.new(is_public: (current_user.nil? ? true : false))
-
-      @claim_payment
-    end
-
-    # save the attachment in the claim_payment model
+    # Save the evidence_file in the claim_payment model
     # calls back-office to send data collected in claim_payment wizard
     # @return [Boolean] was the after merge process successful
-    def save_attachment_in_model
-      @claim_payment.upload_attachment = @resource_items[0] unless @resource_items.nil?
+    def save_evidence_files_in_model
+      @claim_payment.evidence_files = []
+      @claim_payment.evidence_files = @resource_items unless @resource_items.nil?
+      wizard_save(@claim_payment)
       true
     end
 
@@ -194,20 +179,15 @@ module Claim
     # Send document to back office
     # @return [Boolean][String] true if document store successfully back office else false and
     #   document reference id
-    def add_claim_document
-      @claim_payment.add_claim_attachment(@resource_item)
+    def add_additional_document(resource_item)
+      @claim_payment.add_additional_document(resource_item)
     end
 
-    # Call delete attachment method of message to delete document from backoffice
-    # @param doc_refno [String] document reference number to be delete from backoffice
-    # @return [Boolean] true if document delete successfully from backoffice else false
-    def delete_document(doc_refno)
-      @claim_payment.delete_attachment(doc_refno)
-    end
-
-    # Permits the access to the data passed on the .permit of :claim_payment objects
-    def claim_payment_params
-      params.require(:claim_claim_payment).permit(:more_uploads)
+    # Call delete evidence_file method of message to delete document from back office
+    # @param doc_refno [String] document reference number to be delete from back office
+    # @return [Boolean] true if document delete successfully from back office else false
+    def delete_additional_document(doc_refno)
+      @claim_payment.delete_additional_document(doc_refno)
     end
 
     # Overwrites the user method to pass unique id for unauthenticated user to create folder on server
@@ -219,95 +199,83 @@ module Claim
       current_user.username
     end
 
-    # This method is specific to handle the file add and delete functionality
-    # on confirmation page
-    def handle_confirmation_file_upload
-      @claim_payment.more_uploads = params[:claim_claim_payment][:more_uploads] if
-       params[:claim_claim_payment][:more_uploads]
-      handle_file_upload('more_uploads',
-                         after_add: :add_claim_document,
-                         before_delete: :delete_document)
-    end
-
     # Sends file to browser for download, which automatically downloads the file.
-    def send_file_data(attachment)
-      send_data Base64.decode64(attachment[:binary_data]),
-                type: attachment[:file_type], filename: attachment[:file_name],
+    def send_file_data(evidence_file)
+      send_data Base64.decode64(evidence_file[:binary_data]),
+                type: evidence_file[:file_type], filename: evidence_file[:file_name],
                 # This means to download the file, if we want to just view the file
                 # this would have to be disposition: 'inline'
-                disposition: 'attachment'
+                disposition: 'evidence_file'
     end
 
-    # Calculates which wizard steps to be followed if return is PRE/POST
-    def show_reason_step
-      return claim_claim_payments_date_of_sale_path if @claim_payment.pre_claim? == true
-
-      STEPS
+    # Calculates which wizard steps to be followed if return is conveyance with ADS
+    def show_ads_main_address_step
+      claim_claim_payments_main_residence_address_path if @claim_payment.reason == 'ADS'
     end
 
     # Calculates which wizard steps to be followed
     def show_ads_steps
-      return claim_claim_payments_claiming_amount_path if @claim_payment.reason != 'ADS'
+      return claim_claim_payments_upload_evidence_path if @claim_payment.reason != 'ADS'
 
-      STEPS
+      NEW_STEPS
     end
 
-    # Calculates which wizard steps to be followed
-    def calculate_claiming_amount_next_step
-      return claim_claim_payments_claim_payment_bank_details_path if @claim_payment.srv_code != 'LBTT'
-      return claim_claim_payments_taxpayer_details_path unless current_user.blank?
+    # Calculates which wizard steps to be followed after date_of_sale
+    def calculate_date_of_sale_next_step
+      return claim_claim_payments_upload_evidence_path if @claim_payment.post_date_of_sale?
 
-      STEPS
-    end
-
-    # Calculates which wizard steps to be followed
-    def show_agent_info_step
-      return claim_claim_payments_taxpayer_details_path if @claim_payment.claimant_info == 'Y'
-
-      STEPS
-    end
-
-    # Calculates which wizard steps to be followed if :additional_taxpayer = yes
-    def show_second_taxpayer_step
-      return claim_claim_payments_claim_payment_bank_details_path if @claim_payment.additional_tax_payer == 'N'
-
-      STEPS
+      claim_claim_payments_claiming_amount_path
     end
 
     # Loads existing wizard models from the wizard cache or redirects to the dashboard page
-    def load_step
+    def load_step(sub_object_attribute = nil)
       @post_path = wizard_post_path
-      @claim_payment = wizard_load_or_redirect(dashboard_url)
+      redirect_url = (current_user.nil? ? claim_claim_payments_public_claim_landing_url : dashboard_url)
+      if sub_object_attribute.nil?
+        @claim_payment = wizard_load_or_redirect(redirect_url)
+      elsif sub_object_attribute == :taxpayers
+        @claim_payment, @party = wizard_load_or_redirect(redirect_url, sub_object_attribute: sub_object_attribute)
+      end
     end
 
-    # specific setup for claim_reason method
-    # When the "new" parameter is passed, calls @see #setup_payment_from_params to create the model.
-    # Otherwise loads the model from the wizard cache.
+    # Sets up wizard model if it doesn't already exist in the cache this is for unauthenticated
+    # We set to ADS and LBTT as that is the only supported reason, this relies on the later validation to stop
+    # the user going forward
+    # This does rely on the clear cache having been called the main step
+    # @return [LbttReturn] the model for wizard saving
+    def setup_eligibility_step
+      @post_path = wizard_post_path
+      @claim_payment = wizard_load
+
+      return @claim_payment unless @claim_payment.nil?
+
+      # Set up the new claim including saving it back, otherwise it is lost when we post back to the same page
+      # Set reason to ADS and LBTT as this is always the case in the unauthenticated flow, it does rely on reference
+      # validation to enforce this
+      # We need to set LBTT as well so the claim reason lookup is initialised correctly
+      @claim_payment = Claim::ClaimPayment.new(current_user: current_user, reason: 'ADS', srv_code: 'LBTT')
+      wizard_save(@claim_payment)
+      @claim_payment
+    end
+
+    # Specific set up for the claim reason step.
+    # Loads the claim payment if it exists else creates a new one
+    # This does rely on clear cache having been called for a new claim
     # Follows the same pattern as @see LbttPropertiesController#setup_step
     # @return [ClaimPayment] model for the wizard to use
     def setup_claim_reason_step
       @post_path = wizard_post_path
+      @claim_payment = wizard_load
 
-      # load existing or setup new claim on first entering the step
-      @claim_payment = if params[:new]
-                         setup_payment_from_params
-                       else
-                         wizard_load
-                       end
-    end
+      return @claim_payment unless @claim_payment.nil?
 
-    # Handles setting up a new ClaimPayment and saving it in the wizard cache.
-    # For lbtt these details are overridden by getting details from the back office based on the reference
-    # @return [ClaimPayment] new object
-    # @raise [Error::AppError] if the required parameters were not passed
-    def setup_payment_from_params
+      # Set up the new claim including saving it back, otherwise it is lost when we post back to the same page
       setup_payment_check_params
-
-      # create new model
-      claim_payment = ClaimPayment.new(srv_code: params[:srv_code], tare_reference: params[:reference],
-                                       version: params[:version], current_user: current_user)
-      wizard_save(claim_payment)
-      claim_payment
+      @claim_payment = Claim::ClaimPayment.new(srv_code: params[:srv_code],
+                                               tare_reference: params[:reference],
+                                               version: params[:version], current_user: current_user)
+      wizard_save(@claim_payment)
+      @claim_payment
     end
 
     # checks the parameters are correct to setup a claim payment
@@ -321,18 +289,36 @@ module Claim
     # Custom setup step to clear the declaration fields forcing them to tick it each time.
     # @return [ClaimPayment] result from load_step
     def taxpayer_declaration_setup_step
-      model = load_step
-      @claim_payment.declaration_public = false
-      @claim_payment.declaration = false
+      model = load_step(:taxpayers)
+      @claim_payment.authenticated_declaration_1 = false
+      @claim_payment.authenticated_declaration_2 = false
+      @claim_payment.unauthenticated_declarations = nil
 
-      model
+      # here it is returning array of two object one is claim_payments model and
+      # other is sub object we need just main model
+      model[0]
     end
 
     # Return the parameter list filtered for the attributes of the ClaimPayment model
-    def filter_params
-      required = :claim_claim_payment
+    def filter_params(sub_object_attribute = nil)
+      required, attributes = if sub_object_attribute == :taxpayers
+                               [:returns_lbtt_party, Returns::Lbtt::Party.attribute_list]
+                             else
+                               [:claim_claim_payment, Claim::ClaimPayment.attribute_list]
+                             end
+      params.require(required).permit(attributes, unauthenticated_declarations: [], eligibility_checkers: []) if
+                                                                                                params[required]
+    end
 
-      params.require(required).permit(Claim::ClaimPayment.attribute_list) if params[required]
+    # @return array of file types depend upon Authenticate user or not
+    # If there is a current_user present and it is a NON_ADS claim,
+    #  (i.e. AUTHENTICATED NON_ADS CLAIM) then that means it does not need to return an array
+    def evidence_files_file_types
+      return %i[sale occupancy] if current_user.nil?
+
+      return %i[portal_sale occupancy] if !current_user.nil? && @claim_payment.reason == 'ADS'
+
+      nil
     end
   end
 end

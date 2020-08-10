@@ -3,11 +3,16 @@ en:
     attributes:
       claim/claim_payment:
         version: "Version" # translation for print format
-        reason: "What is the reason for your claim for payment from Revenue Scotland"
-        date_of_sale: "What is the date of sale or disposal of the previous main residence"
+        reason: "What is the reason for the claim for payment from Revenue Scotland"
+        UNAUTHENTICATED_date_of_sale: "What is the date of sale or disposal of the previous main residence"
+        AUTHENTICATED_date_of_sale: "What was the date of sale or disposal of the previous main residence"
         main_residence_address: "What is the address of the previous main residence that has been sold or disposed of"
-        further_claim_info: "Is the tax payer claiming repayment as a result of the changes to the ADS rules around family units and replacing main residences"
-        claiming_amount: "How much are you claiming from Revenue Scotland"
+        UNAUTHENTICATED_full_repayment_of_ads: "I am claiming for a full repayment of ADS"
+        AUTHENTICATED_full_repayment_of_ads: "Are you claiming for a full repayment of ADS"
+        full_repayment_of_ads: "claiming for a full repayment of ADS"
+        AUTHENTICATED_claiming_amount: "The tax payer is eligible for partial repayment of ADS and wish to reclaim the following amount"
+        UNAUTHENTICATED_claiming_amount: "I am eligible for partial repayment of ADS and wish to reclaim the following amount"
+        AUTHENTICATED_claiming_amount_non_ads: "How much are you claiming from Revenue Scotland"
         email_address: "Email"
         firstname: "First name"
         claim_desc: "Claim description"
@@ -20,117 +25,173 @@ en:
         branch_code: "Branch sort code"
         bank_name: "Name of bank / building society"
         # declaration
-        declaration_public: "The declaration"
-        declaration: "The declaration"
-        declaration_public_TAXPAYER: "I (we), the tax payer(s) declare that this repayment or claim request is, to the best of my (our) knowledge, correct and complete and confirm that I (we) am (are) eligible for the refund claimed"
-        declaration_TAXPAYER: "I (we), the tax payer(s) declare that Revenue Scotland can contact me (us) regarding this repayment or claim request"
-        declaration_public_AGENT: "I, the agent for the buyer(s), confirm that the buyer(s) have authorised repayment to be made to these bank details"
-        declaration_AGENT: "I, the agent of the buyer(s), having been authorised to complete this repayment or claim request on behalf of the buyer(s), certify that the buyer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the buyer(s) is/are eligible for the refund claimed"
+        # these three are used for throwing an error message "The declaration must be accepted"
+        authenticated_declaration_1: "The declaration"
+        authenticated_declaration_2: "The declaration"
+        unauthenticated_declarations: "The declaration"
+        authenticated_declaration_1_TAXPAYER: "I (we), the tax payer(s) declare that this repayment or claim request is, to the best of my (our) knowledge, correct and complete and confirm that I (we) am (are) eligible for the refund claimed"
+        authenticated_declaration_2_TAXPAYER: "I (we), the tax payer(s) declare that Revenue Scotland can contact me (us) regarding this repayment or claim request"
+        authenticated_declaration_1_AGENT: "I, the agent for the tax payer(s), confirm that the tax payer(s) have authorised repayment to be made to these bank details"
+        authenticated_declaration_2_AGENT: "I, the agent of the tax payer(s), having been authorised to complete this repayment or claim request on behalf of the tax payer(s), certify that the tax payer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tax payer(s) is/are eligible for the refund claimed"
+        # reaturn reference number
+        tare_reference: "What was the tax return reference of your new property purchase "
+        case_reference: "Claim reference"
+        submitted_date: "Submission date"
+        # Taxpayer details and Taxpayer address
+        taxpayer: "Taxpayer"
+        your: "Your"
+        # eligibility checker
+        eligibility_checkers: "Please confirm the following criteria are met in order to proceed with the application"
 
-        additional_tax_payer: "Is there an additional tax payer included in the original return that is subject to the ADS repayment or claim request"
-        more_uploads: "Do you want to upload any more documents"
-        s_email_address: "Email"
-        s_firstname: "First name"
-        s_surname: "Last name"
-        s_telephone: "Telephone number"
-        s_nino: "National Insurance Number (NINO)"
-        s_org_name: "Organisation Name"
-        claimant_info: "Are you a tax payer"
-        tare_reference: "What was the original reference of the return that you are requesting an ADS repayment or claim for "
-        agent_email_address: "Email"
-        agent_firstname: "First name"
-        agent_surname: "Last name"
-        agent_telephone: "Telephone number"
-        agent_dx_number: "DX number and exchange"
-        agent_org_name: "Organisation name"
     hints:
       claim/claim_payment:
         account_number: "This should be 8 digits"
         branch_code: "The sort code should be entered in the format 99-99-99"
+        tare_reference: "This starts with the letters 'RS'. The solicitor who dealt with your new property purchase will have this"
+        UNAUTHENTICATED_full_repayment_of_ads: "If your new purchase involved only one property you can make a claim for full repayment of ADS"
+        AUTHENTICATED_full_repayment_of_ads: "If the new purchase involved only one property you can make a claim for full repayment of ADS"
+        telephone: "To contact you in case we have any queries about this application"
+        email_address: "We'll use this to send you an email confirmation"
     errors:
       models:
         claim/claim_payment:
-          open_ads_repayment: "An ADS repayment already exists for this return"
+          ads_amount: "Claim amount cannot be greater than the amount of ADS paid"
+          evidence_files_missing_categories: "A document must be uploaded for each category in order to make a valid ADS Repayment request"
           attributes:
             tare_reference:
-              pre_claim_not_conveyance: "Claim requests within 12 months of filing are not supported for this type of Return. Contact Revenue Scotland for more information"
               return_does_not_exist: "Return does not exist"
+              not_ads_return_reference: "This reference number is not recognised. Please contact us for assistance with this claim"
+    hidden_label:
+      claim/claim_payment:
+        unauthenticated_declarations: "The declaration"
+
   claim:
     claim_payments:
       claim_reason:
         title: Claim repayment
       date_of_sale:
-        title: "ADS repayment - date of sale or disposal"
+        UNAUTHENTICATED_title: "Your previous main residence"
+        AUTHENTICATED_title: "Previous main residence"
       main_residence_address:
-        title: "ADS repayment - previous main residence address"
-        address: "What is the address of the previous main residence that has been sold or disposed of?"
-      further_claim_info:
-        title: "ADS repayment - further claim information"
-      claiming_amount:
-        title: "Details about your claim for repayment"
-        public_user_title: "Details about your request for repayment"
+        UNAUTHENTICATED_title: "Your previous main residence"
+        AUTHENTICATED_title: "Previous main residence"
+        AUTHENTICATED_address: "What was the address of the previous main residence that has been sold or disposed of?"
+        UNAUTHENTICATED_address: "What is the address of the previous main residence that has been sold or disposed of?"
       taxpayer_details:
-        title: "Tax payer details"
-        subtitle: "Provide the details of the tax payer that is making this claim"
+        UNAUTHENTICATED_title:
+          one: Your details (buyer %{count} of %{total})
+          other: Buyer details (buyer %{count} of %{total})
+        UNAUTHENTICATED_SINGLE_title: Your details
+        UNAUTHENTICATED_PDF_title: Buyer details
+
+        AUTHENTICATED_title: Taxpayer details (taxpayer %{count} of %{total})
+        AUTHENTICATED_SINGLE_title: Taxpayer details
+        AUTHENTICATED_PDF_title: Taxpayer details
+
+        UNAUTHENTICATED_description_1: "Please provide details of the person making this claim. This must be a buyer of the new property"
+        UNAUTHENTICATED_description_2: "Please provide details of the second buyer of the new property"
+        UNAUTHENTICATED_description_3: "Please provide details of the third buyer of the new property"
+        UNAUTHENTICATED_description_4: "Please provide details of the fourth buyer of the new property"
+        UNAUTHENTICATED_description_other: "Please provide details of the additional buyer of the new property"
+
+        AUTHENTICATED_description_1: "Please provide details of the person making this claim. This must be a taxpayer of the new property"
+        AUTHENTICATED_description_2: "Please provide details of the second taxpayer of the new property"
+        AUTHENTICATED_description_3: "Please provide details of the third taxpayer of the new property"
+        AUTHENTICATED_description_4: "Please provide details of the fourth taxpayer of the new property"
+        AUTHENTICATED_description_other: "Please provide details of the additional taxpayer of the new property"
+
       taxpayer_address:
-        title: "Tax payer address"
-        subtitle: "Provide the address of the tax payer making this claim"
+        UNAUTHENTICATED_title:
+          one: Your address (buyer %{count} of %{total})
+          other: Buyer address (buyer %{count} of %{total})
+        UNAUTHENTICATED_SINGLE_title: Your address
+        UNAUTHENTICATED_PDF_title: Buyer address
+
+        AUTHENTICATED_title: Taxpayer address (taxpayer %{count} of %{total})
+        AUTHENTICATED_SINGLE_title: Taxpayer address
+        AUTHENTICATED_PDF_title: Taxpayer address
+
+        UNAUTHENTICATED_description_1: "Please provide your correspondence address for this claim"
+        UNAUTHENTICATED_description_2: "Please provide the second buyer's correspondence address for this claim"
+        UNAUTHENTICATED_description_3: "Please provide the third buyer's correspondence address for this claim"
+        UNAUTHENTICATED_description_4: "Please provide the fourth buyer's correspondence address for this claim"
+        UNAUTHENTICATED_description_other: "Please provide the additional buyer's correspondence address for this claim"
+
+        AUTHENTICATED_description_1: "Please provide the taxpayer's correspondence address for this claim"
+        AUTHENTICATED_description_2: "Please provide the second taxpayer's correspondence address for this claim"
+        AUTHENTICATED_description_3: "Please provide the third taxpayer's correspondence address for this claim"
+        AUTHENTICATED_description_4: "Please provide the fourth taxpayer's correspondence address for this claim"
+        AUTHENTICATED_description_other: "Please provide the additional taxpayer's correspondence address for this claim"
+
+      claiming_amount:
+        claiming_amount_title: "Claim amount"
+        non_ads_claiming_amount_title: "Details about your request for repayment"
       claim_payment_bank_details:
-        title: "Enter bank details"
-        subtitle: "Provide the details of the bank to which any repayment is to be paid"
-      taxpayer_declaration:
+        title: "Bank details"
+        description: "Please note that we will only make a payment to a bank account belonging to a named %{claimant_type}"
+        UNAUTHENTICATED_description: "Please note that we will only make a payment to a bank account belonging to a named buyer"
+        AUTHENTICATED_description: "Please note that we will only make a payment to a bank account belonging to a named taxpayer"
+      final_declaration:
+        single_declaration_title: "Declaration"
         title: "Declarations"
         warning: "If you give false information, you may face penalties and/or prosecution"
-      second_taxpayer_info:
-        title: "Tax payer details"
-        subtitle: "Provide the details of the tax payer that is making this claim"
-      second_tax_payer:
-        title: "Tax payer address"
-        subtitle: "Provide the address of the tax payer making this claim"
-      additional_tax_payer:
-        title: "Additional tax payer"
+        UNAUTHENTICATED_claim_declaration: "I, %{name}, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed"
       upload_evidence:
-        title: "Upload evidence to support your repayment request"
-        file_upload_label: "Please upload any evidence to support your claim for repayment. Your claim may be rejected if you do not provide evidence to support it."
-      more_uploads:
-        title: "Your claim has been sent to Revenue Scotland"
-        file_upload_label: "Upload evidence to support your repayment request"
-        # subtitle: "Provide the details of the taxpayer that is making the claim"
+        ads_description: "You will need to provide the following evidence to support this claim"
+        non_ads_description: "Provide any evidence to support the claim"
+        ads_more_upload: "If you need to upload more than two documents, you can do this at the end once the claim has been submitted"
+        non_ads_more_upload: "If you need to upload more than one document, you can do this at the end once the claim has been submitted"
+        UNAUTHENTICATED_title: "Evidence to support your claim"
+        AUTHENTICATED_title: "Evidence to support the claim"
+        label_sale: "1. Proof of sale of previous main residence"
+        hint_sale: "The following will be accepted as evidence:<br/><ul><li>The disposition of the sale</li><li>Land registration documents</li><li>A letter from your solicitor that clearly states the date of sale</li></ul>"
+        label_portal_sale: "1. Proof of sale of previous main residence"
+        hint_portal_sale: "The following will be accepted as evidence:<br/><ul><li>The disposition of the sale</li><li>Land registration documents</li><li>A letter from the agent that clearly states the date of sale</li></ul>"
+        label_occupancy: "2. Evidence of occupancy of previous main residence"
+        hint_occupancy: "Evidence all buyers occupied the previous property as their only or main residence at any time between %{date_range_start} and %{date_range_end}.<br/><br/>The following will be accepted as evidence:<ul><li>Council tax bill</li><li>Utilities bill</li><li>Bank statement</li></ul>"
       confirmation_of_payment:
-        title: "Your claim has been sent to Revenue Scotland"
+        title: "Your request has been sent to Revenue Scotland"
+        UNAUTHENTICATED_confirmation_note: "If you have provided an email address, a confirmation will be sent to this address"
+        AUTHENTICATED_confirmation_note: "A secure message confirming this claim submission has been sent to you"
+        what_next: "What happens next?"
+        contact_us: "We aim to process claims within 10 working days.<br/>If you have any queries, please contact us (opens in a new window)"
+        contact_us_link_text: "contact us (opens in a new window)"
+        additional_documents: "Additional documents"
+        UNAUTHENTICATED_upload_note: "Please provide any further documents to support your claim if required"
+        AUTHENTICATED_upload_note: "Please provide any further documents to support the claim if required"
         secure_message: Your repayment or claim request to your Land and Buildings Transaction Tax return %{return_reference} has now been submitted. A secure message confirming this claim submission has been sent to you.
         public_secure_message: Your repayment or claim request to your Land and Buildings Transaction Tax return %{return_reference} has now been submitted. A confirmation email will be sent to the email addresses provided.
-        date_text: The submission date is %{system_date}.
         caution: If you have any queries about this repayment or claim request, you can contact Revenue Scotland by calling the support desk on 03000 200 310
         paragraph2: We will aim to respond as quickly as possible. In the meantime, full information and guidance is available on the Revenue Scotland website (opens in a new window) We will contact you if we need further information.
         paragraph2_link_text: Revenue Scotland website (opens in a new window)
         print: "Print confirmation details"
-        download_claim_details: "Download details of repayment claim"
-      public_claim_landing:
-        title: "To complete this ADS repayment/ claim request, you will need the following information:"
-        info_needed:
-          "<li>The reference for original return that was submitted</li>
-          <li>The reason for repayment or claim request</li>
-          <li>For Additional Dwelling Supplement(ADS) repayment requests;
+        download_claim_details: "Download a copy of your claim"
+      before_you_start:
+        title: "Before you start"
+        info_needed_heading: "What you will need"
+        info_needed_description:
+          "<p>To complete this form, you’ll need the following:</p>
           <ul>
-          <li>The ADS property address and title details(Optional)</li>
-          <li>The date of sale</li>
+          <li>tax return reference (the solicitor who dealt with your new property purchase will have this)</li>
+          <li>address and date of sale of the previous main residence</li>
+          <li>name, contact details and address of all buyers of the new property</li>
+          <li>your bank details</li>
           </ul>
-          </li>
-          <li>The account details into which any approved request or claim will be paid </li>
-          <li>Evidence to support the repayment or claim request</li>
-          <li>As a tax payer your contact details for future correspondence</li>"
-        start_warning: " Once you have started the request you must complete it. You will not be able to save a draft and go back to it later. You will not be able to amend any submissions made through this form but will need to contact Revenue Scotland directly."
-        second_warning: "This online form may also be used by authorized Agents upon behalf of Tax Payers. As an Agent, if you have registered with Revenue Scotland, please do not use this form but instead use login using following link and submit using this method. %{ref_link}"
+          <p>You may also need to provide proof of sale of the previous property and evidence that all buyers occupied it as their only or main residence. We'll let you know if we need this once the first 3 questions have been answered.</p>"
+        form_completion_heading: "Completing the form"
+        form_completion_description: "If more than one buyer was involved in the new property purchase, all buyers should be present when completing this form. Once you have started the form you will need to complete it - you won't be able to save a draft and go back to it later. If you have all the information to hand, the form should take 5-10 minutes to complete.<br/><br/> If you are an agent, please %{ref_link} to make this claim."
         ref_message: Sign in
-        public_lbtt_return: "Create repayment request"
       return_reference_number:
-        title: "Return reference number"
-      claimant_info:
-        title: "Claimant information"
-      agent_info:
-        title: Agent details
-        subtitle: Provide your details
-      agent_address:
-        title: Agent address
-        subtitle: Provide agent address
+        title: "Return reference"
+      public_claim_landing:
+        title: "Claim a repayment of Additional Dwelling Supplement"
+        ads_heading: "What is Additional Dwelling Supplement?"
+        ads_description: "Additional Dwelling Supplement (ADS) is a tax applicable to persons who own more than one residential property when they buy a new residential property. If you bought a new home before selling your previous home, you may have paid ADS."
+        eligibility_heading: "Am I eligible to claim a repayment of ADS?"
+        eligibility_description: "If you sold your previous home within 18 months of buying a new one, you may be eligible to claim a repayment of ADS. Find out more using our eligibility checker on the next page."
+        receive_repayment_heading: "When will I receive my repayment?"
+        receive_repayment_description: "We aim to process claims within 10 working days."
+      eligibility:
+        title: "Eligibility checker"
+        unsure_description: "If you’re unsure whether or not you are eligible for a refund, %{ref_link}."
+        ref_message: look at these examples (opens in a new window)

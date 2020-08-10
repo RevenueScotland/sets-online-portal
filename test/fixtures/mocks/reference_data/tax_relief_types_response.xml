@@ -1,0 +1,254 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<soap:Body>
+		<GetTaxReliefTypesResponse xmlns="http://www.northgateps.com/RSTS/GetTaxReliefTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+			<core:Success>true</core:Success>
+			<ReliefTypes>
+				<ReliefType>
+					<Type>GROUPP</Type>
+					<Service>LBTT</Service>
+					<Description>Group relief (Partial Relief)</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>no</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>CHARITIESP</Type>
+					<Service>LBTT</Service>
+					<Description>Charities relief (Partial Relief)</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>no</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>GROUP</Type>
+					<Service>LBTT</Service>
+					<Description>Group relief (Full relief)</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>RESIDENTP</Type>
+					<Service>LBTT</Service>
+					<Description>Relief for certain acquisitions of residential property (Partial Relief)</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>no</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>INCLLP</Type>
+					<Service>LBTT</Service>
+					<Description>Relief for incorporation of limited liability partnership</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>CHARITIES</Type>
+					<Service>LBTT</Service>
+					<Description>Charities relief (Full Relief)</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>COMMRIGHT</Type>
+					<Service>LBTT</Service>
+					<Description>Crofting community right to buy relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>LEASEBACK</Type>
+					<Service>LBTT</Service>
+					<Description>Sale and Leaseback Relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>MILITARY</Type>
+					<Service>LBTT</Service>
+					<Description>Visiting forces and international military headquarters reliefs</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>LIGHTHOUSE</Type>
+					<Service>LBTT</Service>
+					<Description>Lighthouses relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>SUBSALE</Type>
+					<Service>LBTT</Service>
+					<Description>Sub-sale development relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>DIPLOMATIC</Type>
+					<Service>LBTT</Service>
+					<Description>Diplomatic Premises relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>SOVBODIES</Type>
+					<Service>LBTT</Service>
+					<Description>Sovereign Bodies and International Organisations relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>INVESTCOMP</Type>
+					<Service>LBTT</Service>
+					<Description>Openended Investment Companies relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>ADSRELIEF</Type>
+					<Service>LBTT</Service>
+					<Description>ADS  Relief for 6 or more dwellings</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>ADS</Class>
+					<FullReliefInd>yes</FullReliefInd>
+					<ReturnTypes>CONVEY</ReturnTypes>
+				</ReliefType>
+				<ReliefType>
+					<Type>COMPPUR</Type>
+					<Service>LBTT</Service>
+					<Description>Relief for certain compulsory purchases</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>PLANOBLI</Type>
+					<Service>LBTT</Service>
+					<Description>Relief for compliance with planning obligations</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>RECON</Type>
+					<Service>LBTT</Service>
+					<Description>Reconstruction relief and acquisition relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>PUBBODIES</Type>
+					<Service>LBTT</Service>
+					<Description>Public bodies relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>SOCLAND</Type>
+					<Service>LBTT</Service>
+					<Description>Relief for certain acquisitions by registered social landlords</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>ALTPROP</Type>
+					<Service>LBTT</Service>
+					<Description>Alternative property finance relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>FININVBOND</Type>
+					<Service>LBTT</Service>
+					<Description>Relief for alternative finance investment bonds</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>MULTIPLE</Type>
+					<Service>LBTT</Service>
+					<Description>Multiple dwellings relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>no</FullReliefInd>
+					<ReturnTypes>CONVEY</ReturnTypes>
+				</ReliefType>
+				<ReliefType>
+					<Type>RESIDENT</Type>
+					<Service>LBTT</Service>
+					<Description>Relief for certain acquisitions of residential property (Full Relief)</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>FRIENDSOC</Type>
+					<Service>LBTT</Service>
+					<Description>Friendly societies relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>BUILDSOC</Type>
+					<Service>LBTT</Service>
+					<Description>Building societies relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>HERITAGE</Type>
+					<Service>LBTT</Service>
+					<Description>Property accepted in satisfaction of tax relief (heritage bodies)</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<FullReliefInd>yes</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>ADSREPAY</Type>
+					<Service>LBTT</Service>
+					<Description>ADS - Repayment of ADS paid</Description>
+					<CurrentInd>no</CurrentInd>
+					<Class>ADS</Class>
+					<FullReliefInd>no</FullReliefInd>
+				</ReliefType>
+				<ReliefType>
+					<Type>ADSFAMUNIT</Type>
+					<Service>LBTT</Service>
+					<Description>ADS - Family units</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>ADS</Class>
+					<FullReliefInd>yes</FullReliefInd>
+					<ReturnTypes>CONVEY</ReturnTypes>
+				</ReliefType>
+				<ReliefType>
+					<Type>FIRSTTIME</Type>
+					<Service>LBTT</Service>
+					<Description>First-Time Buyer Relief</Description>
+					<CurrentInd>yes</CurrentInd>
+					<Class>STANDARD</Class>
+					<UpperLimit>600</UpperLimit>
+					<FullReliefInd>no</FullReliefInd>
+				</ReliefType>
+			</ReliefTypes>
+		</GetTaxReliefTypesResponse>
+	</soap:Body>
+</soap:Envelope>

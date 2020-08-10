@@ -4,28 +4,25 @@
     <title><%= page_title_text(yield(:page_title)) %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" >
     <meta name="session_ttl_warning" content="<%= @session_ttl_warning %>">
     <meta name="session_ttl_warning_message" content="<%= t('session_ttl_warning_message') %>">
     <meta name="analytic_tracking_id" content="<%= ENV['ANALYTIC_TRACKING_ID'] %>">
     <% unless content_for(:turbolinks_cache_control).nil? %>
       <meta name="turbolinks-cache-control" content="<%= yield(:turbolinks_cache_control) %>">
     <% end %>
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
     <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:300,700&amp;subset=latin" media="all">
-    <link rel="shortcut icon" href="https://www.revenue.scot/sites/default/files/favicon.ico" type="image/vnd.microsoft.icon" />
+    <link rel="shortcut icon" href="https://www.revenue.scot/sites/default/files/favicon.ico" type="image/vnd.microsoft.icon" >
   </head>
-
   <body class="home">
-   <%= render "/layouts/header" %>
-   <div class="govuk-width-container">
-    <main class="govuk-main-wrapper">
+    <%= render "/layouts/header" %>
+    <div class="govuk-width-container">
+      <main class="govuk-main-wrapper">
         <% # @see BackHelper.rb for more information %>
         <%= yield(:hide_back_link) == 'true' ? clear_previous_stack : previous_page_link{ yield(:hide_back_link) } %>
-        <% if yield(:page_title) == t('public_landing_heading') %>
-          <%= content_for?(:public_landing_return_link) ? yield(:public_landing_return_link) : '' %>
-        <% end %>
+        <%= content_for?(:public_landing_return_link) ? link_to(yield(:public_landing_return_link), Rails.configuration.x.external_links.public_landing_return_page, class: 'govuk-back-link') : '' %>
         <%= yield :form_errors %>
         <%# The tabindex='-1' property is needed for the <h1> so that the screen reader can read the heading 1 of
             the page, by putting the focus on it %>
@@ -34,10 +31,10 @@
         <%= content_for?(:page_subtitle) ? content_tag(:h2, yield(:page_subtitle)) : '' %>
         <%= content_for?(:page_description) ? content_tag(:div, yield(:page_description), class:'govuk-body') : '' %>
         <%= yield %>
-    </main>
-   </div>
-   <% raise ScriptError, 'page view missing, add: content_for :page_view, render_page_view(__FILE__) to your page' unless content_for?(:page_view) %>
-   <%= content_for :page_view %>
-   <%= render "/layouts/footer" %>
+      </main>
+    </div>
+    <% raise ScriptError, 'page view missing, add: content_for :page_view, render_page_view(__FILE__) to your page' unless content_for?(:page_view) %>
+    <%= content_for :page_view %>
+    <%= render "/layouts/footer" %>
   </body>
 </html>

@@ -2,16 +2,16 @@
 <% content_for :page_subtitle, t('.subtitle') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
-   <%= form_errors_for @lbtt_return %>
-   <% f.current_browser = application_browser %>
-   <%= f.date_field :effective_date, text_link: { t('.effective_date_CONVEY') =>
+  <%= form_errors_for @lbtt_return %>
+  <% f.current_browser = application_browser %>
+  <%= f.date_field :effective_date, text_link: { t('.effective_date_CONVEY') =>
                                                     link_to(t('.effective_date_CONVEY'), "#{Rails.configuration.x.external_links.lbtt1004_effective_date}", target: '_blank') } %>
-   <%= f.date_field :relevant_date, text_link: { t('.relevant_date') =>
+  <%= f.date_field :relevant_date, text_link: { t('.relevant_date') =>
                                                     link_to(t('.relevant_date'), "#{Rails.configuration.x.external_links.scotland_tax_act_2013}", target: '_blank') }  %>
-   <%= f.date_field :contract_date , { optional:true } %>  
-   <% unless @lbtt_return.flbt_type == 'CONVEY' %>
-      <%= f.date_field :lease_start_date %>
-      <%= f.date_field :lease_end_date %>
-   <% end %>
-   <%= f.button 'next', { :name => 'submitted' }  %>
+  <%= f.date_field :contract_date , { optional:true } %>
+  <% unless @lbtt_return.flbt_type == 'CONVEY' %>
+    <%= f.date_field :lease_start_date %>
+    <%= f.date_field :lease_end_date %>
+  <% end %>
+  <%= f.button %>
 <% end %>

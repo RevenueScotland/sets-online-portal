@@ -2,12 +2,11 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_description, t('.description') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @forgotten_password, url: forgotten_password_path, local: true do |f| %>
   <%= form_errors_for @forgotten_password %>
   <%= f.text_field :username %>
   <%= f.text_field :email_address %>
   <%= f.password_field :new_password %>
   <%= f.password_field :new_password_confirmation %>
-  <%= f.button '.change_password' %> 
- <% end %> 
+  <%= f.button '.change_password' %>
+<% end %> 

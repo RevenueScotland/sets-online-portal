@@ -1,9 +1,10 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_subtitle, t('.subtitle' ,site_name: @site.site_name ) %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
+<%# See the {#waste.<=>} to learn more about how the sorting works for @site.wastes&.values.sort %>
+<%# See also export_waste_csv_data as the sorts need to be the same %>
 <%= display_table(
-  @site.wastes&.values.sort_by(&:ewc_code),
+  @site.wastes&.values.sort,
   [:ewc_code_and_description, :lower_tonnage, :standard_tonnage, :exempt_tonnage, :water_tonnage, :total_tonnage],  
   [ { label: t('.edit_row'), path: :returns_slft_waste_description_path },
     # For the contents of the data: { confirm: [<...>] } see table_helper's action_options method
@@ -11,23 +12,21 @@
   { ewc_code_and_description: { label: t('.description'), cell_class: 'govuk-!-width-one-third' },
     water_tonnage: { label: t('.water_tonnage') } }
 ) %>
-
 <%= navigational_links [{ link: '.add_new_waste_type', path: returns_slft_waste_description_path(waste: 'new') },
                         { link: '.delete_all_waste_types', path: returns_slft_site_waste_summary_path(site: @site, delete_all: true), link_html_options: { data: { confirm: t('.delete_all') } } }] %>
- <p />
- <%= form_for :csv_upload, url: returns_slft_site_waste_summary_path(site: @site, csv_upload: true), html: { multipart: true } , method: :post, local: true do |f| %>
-   <%= form_errors_for @resource_item %>
-   <%= render "/layouts/file_upload_component", file_upload_label: t('.file_upload_label'), hide_description: true %>
- <% end %>
-<p />
+<br>
+<%= form_for :csv_upload, url: returns_slft_site_waste_summary_path(site: @site, csv_upload: true), html: { multipart: true } , method: :post, local: true do |f| %>
+  <%= form_errors_for @resource_items_hash %>
+  <%= render "/layouts/file_upload_component", file_upload_label: full_lazy_lookup_path('.file_upload_label'), hide_description: true %>
+<% end %>
+<br>
 <%= link_to t('back_to_return_summary'), returns_slft_summary_path %>
 <% if can? AuthorisationHelper::SLFT_SAVE %>
-<p />
+  <br>
   <%= form_with url: returns_slft_site_waste_summary_path(site: @site, save_draft: true), method: :post, local: true do |f| %>
     <%= form_errors_for @slft_return %>
     <%= f.hidden_field :save_draft, {}, { :value => 'save_draft' } %>
-    <%= f.button 'save_draft', { :name => 'submitted' } %>
-
+    <%= f.button 'save_draft', { :name => 'continue' } %>
     <% if @site_summary_save_reference.present? %>
       <%= t('returns.slft.save_draft.return_html') %>
       <b><span id="ret_ref_val"><%= @site_summary_save_reference %></span>.</b>
