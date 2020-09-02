@@ -1,9 +1,7 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @tax, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @tax %>
-
   <% if @lbtt_return.flbt_type == 'CONVEY' %>
     <%= f.currency_field :calculated %>
     <%= f.currency_field :ads_due if @lbtt_return.show_ads? %>
@@ -13,9 +11,8 @@
     <%= f.currency_field :npv_tax_due %>
     <%= f.currency_field :premium_tax_due %>
     <% if 'LEASERET' == @lbtt_return.flbt_type %>
-     <%= display_field @tax,:total_reliefs , format: :money %>
+      <%= display_field @tax,:total_reliefs , format: :money %>
     <% end %>
   <% end %>
-
-  <%= f.button 'next', { :name => 'submitted' } %>
+  <%= f.button %>
 <% end %>

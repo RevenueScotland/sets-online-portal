@@ -1,0 +1,204 @@
+{
+  "section": [
+    {
+      "sectioncode": "claim_reason",
+      "sectiontype": "list",
+      "sectiondivider": true,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Claim repayment",
+      "listitem": [
+        {
+          "itemcode": "tare_reference",
+          "itemformat": null,
+          "itemlabel": "What was the tax return reference of your new property purchase ?",
+          "itemdata": "RS2000003BBBB"
+        },
+        {
+          "itemcode": "case_reference",
+          "itemformat": null,
+          "itemlabel": "Claim reference",
+          "itemdata": "\u003c%CASE_REFERENCE%\u003e"
+        },
+        {
+          "itemcode": "version",
+          "itemformat": null,
+          "itemlabel": "Version",
+          "itemdata": "1"
+        },
+        {
+          "itemcode": "reason",
+          "itemformat": null,
+          "itemlabel": "What is the reason for the claim for payment from Revenue Scotland?",
+          "itemdata": "Impact of legislation change"
+        }
+      ],
+      "itemcount": 4
+    },
+    {
+      "sectioncode": "claiming_amount",
+      "sectiontype": "list",
+      "sectiondivider": true,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Details about your request for repayment",
+      "listitem": [
+        {
+          "itemcode": "claiming_amount",
+          "itemformat": "money",
+          "itemlabel": "How much are you claiming from Revenue Scotland?",
+          "itemdata": "90"
+        }
+      ],
+      "itemcount": 1
+    },
+    {
+      "sectioncode": "taxpayer_details",
+      "sectiontype": "list",
+      "sectiondivider": true,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Taxpayer details",
+      "listitem": [
+        {
+          "itemcode": "firstname",
+          "itemformat": null,
+          "itemlabel": "First name",
+          "itemdata": "First name"
+        },
+        {
+          "itemcode": "surname",
+          "itemformat": null,
+          "itemlabel": "Last name",
+          "itemdata": "Last tname"
+        },
+        {
+          "itemcode": "telephone",
+          "itemformat": null,
+          "itemlabel": "Telephone",
+          "itemdata": "0111456789"
+        },
+        {
+          "itemcode": "email_address",
+          "itemformat": null,
+          "itemlabel": "Email address",
+          "itemdata": "noreply5@northgateps.com"
+        }
+      ],
+      "itemcount": 4
+    },
+    {
+      "sectioncode": "taxpayer_alternate_address",
+      "sectiontype": "list",
+      "sectiondivider": null,
+      "pagebreak": null,
+      "displaytitle": null,
+      "sectiontitle": "Taxpayer address",
+      "listitem": [],
+      "itemcount": 0
+    },
+    {
+      "sectioncode": "address",
+      "sectiontype": "list",
+      "sectiondivider": false,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Taxpayer address",
+      "listitem": [
+        {
+          "itemcode": "address_line1",
+          "itemformat": null,
+          "itemlabel": "Building and street",
+          "itemdata": "Royal Mail"
+        },
+        {
+          "itemcode": "address_line2",
+          "itemformat": null,
+          "itemdata": "Luton Delivery Office 9-11"
+        },
+        {
+          "itemcode": "address_line3",
+          "itemformat": null,
+          "itemdata": "Dunstable Road"
+        },
+        {
+          "itemcode": "town",
+          "itemformat": null,
+          "itemlabel": "Town",
+          "itemdata": "LUTON"
+        },
+        {
+          "itemcode": "county",
+          "itemformat": null,
+          "itemlabel": "County",
+          "itemdata": ""
+        },
+        {
+          "itemcode": "postcode",
+          "itemformat": null,
+          "itemlabel": "Postcode",
+          "itemdata": "LU1 1AA"
+        }
+      ],
+      "itemcount": 6
+    },
+    {
+      "sectioncode": "bank_details",
+      "sectiontype": "list",
+      "sectiondivider": true,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Bank details",
+      "listitem": [
+        {
+          "itemcode": "account_holder_name",
+          "itemformat": null,
+          "itemlabel": "Name of the account holder",
+          "itemdata": "Fred Flintstone"
+        },
+        {
+          "itemcode": "account_number",
+          "itemformat": null,
+          "itemlabel": "Bank / building society account number",
+          "itemdata": "12345678"
+        },
+        {
+          "itemcode": "branch_code",
+          "itemformat": null,
+          "itemlabel": "Branch sort code",
+          "itemdata": "10-11-12"
+        },
+        {
+          "itemcode": "bank_name",
+          "itemformat": null,
+          "itemlabel": "Name of bank / building society",
+          "itemdata": "Natwest"
+        }
+      ],
+      "itemcount": 4
+    },
+    {
+      "sectioncode": "declarations",
+      "sectiontype": "list",
+      "sectiondivider": true,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Declarations",
+      "listitem": [
+        {
+          "itemcode": "authenticated_declaration_1",
+          "itemformat": null,
+          "itemlabel": "I, the agent for the tax payer(s), confirm that the tax payer(s) have authorised repayment to be made to these bank details",
+          "itemdata": "Yes"
+        },
+        {
+          "itemcode": "authenticated_declaration_2",
+          "itemformat": null,
+          "itemlabel": "I, the agent of the tax payer(s), having been authorised to complete this repayment or claim request on behalf of the tax payer(s), certify that the tax payer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tax payer(s) is/are eligible for the refund claimed",
+          "itemdata": "Yes"
+        }
+      ],
+      "itemcount": 2
+    }
+  ]
+}

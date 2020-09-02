@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <MaintainUserResponse xmlns="http://northgate-is.com/FL/MaintainUser" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xmlns:core="http://northgate-is.com/FL/Core">
+      <core:Success>true</core:Success>
+      <Users>
+        <User>
+          <Username>PORTAL.ONE</Username>
+          <UserIsCurrent>Yes</UserIsCurrent>
+          <Forename>Portal User</Forename>
+          <Surname>One</Surname>
+          <EmailAddress>noreply@northgateps.com</EmailAddress>
+          <PreferredLanguage>ENG</PreferredLanguage>
+          <UserRoles>
+            <UserRole>ACCADMN</UserRole>
+            <UserRole>ACCSECADMN</UserRole>
+            <UserRole>PWSAMEND</UserRole>
+            <UserRole>PWSCLAIM</UserRole>
+            <UserRole>PWSDASH</UserRole>
+            <UserRole>PWSDRNEW</UserRole>
+            <UserRole>PWSDRSUB</UserRole>
+            <UserRole>PWSDRUPD</UserRole>
+            <UserRole>PWSMESSAGE</UserRole>
+          </UserRoles>
+        </User>
+        <User>
+          <Username>PORTAL.TWO</Username>
+          <UserIsCurrent>Yes</UserIsCurrent>
+          <Forename>Portal User</Forename>
+          <Surname>Two</Surname>
+          <EmailAddress>noreply@northgateps.com</EmailAddress>
+          <PreferredLanguage>ENG</PreferredLanguage>
+          <UserRoles>
+            <UserRole>ACCADMN</UserRole>
+            <UserRole>ACCSECADMN</UserRole>
+            <UserRole>PWSAMEND</UserRole>
+            <UserRole>PWSCLAIM</UserRole>
+            <UserRole>PWSDASH</UserRole>
+            <UserRole>PWSDRNEW</UserRole>
+            <UserRole>PWSDRSUB</UserRole>
+            <UserRole>PWSDRUPD</UserRole>
+            <UserRole>PWSMESSAGE</UserRole>
+          </UserRoles>
+        </User>
+        <User>
+          <Username>PORTAL.NON.CURRENT</Username>
+          <UserIsCurrent>No</UserIsCurrent>
+          <Forename>Portal User</Forename>
+          <Surname>Non Current</Surname>
+          <EmailAddress>noreply@northgateps.com</EmailAddress>
+          <PreferredLanguage>ENG</PreferredLanguage>
+          <UserRoles>
+            <UserRole>ACCADMN</UserRole>
+            <UserRole>ACCSECADMN</UserRole>
+            <UserRole>PWSAMEND</UserRole>
+            <UserRole>PWSCLAIM</UserRole>
+            <UserRole>PWSDASH</UserRole>
+            <UserRole>PWSDRNEW</UserRole>
+            <UserRole>PWSDRSUB</UserRole>
+            <UserRole>PWSDRUPD</UserRole>
+            <UserRole>PWSMESSAGE</UserRole>
+          </UserRoles>
+        </User>
+        <User>
+          <Username>PORTAL.CHANGE@DETAILS</Username>
+          <UserIsCurrent>No</UserIsCurrent>
+          <Forename>Portal User</Forename>
+          <Surname>Change Details</Surname>
+          <EmailAddress>noreply@northgateps.com</EmailAddress>
+          <UserRoles>
+            <UserRole>PWSAMEND</UserRole>
+            <UserRole>PWSCLAIM</UserRole>
+            <UserRole>PWSDASH</UserRole>
+            <UserRole>PWSDRNEW</UserRole>
+            <UserRole>PWSDRSUB</UserRole>
+            <UserRole>PWSDRUPD</UserRole>
+            <UserRole>PWSMESSAGE</UserRole>
+          </UserRoles>
+        </User>
+        <User>
+          <Username>PORTAL.NO.ACCESS</Username>
+          <UserIsCurrent>Yes</UserIsCurrent>
+          <Forename>Portal User</Forename>
+          <Surname>No Access</Surname>
+          <EmailAddress>noreply@northgateps.com</EmailAddress>
+          <PreferredLanguage>ENG</PreferredLanguage>
+          <UserRoles>
+            <UserRole>PWSDASH</UserRole>
+          </UserRoles>
+        </User>
+      </Users>
+    </MaintainUserResponse>
+  </soap:Body>
+</soap:Envelope>

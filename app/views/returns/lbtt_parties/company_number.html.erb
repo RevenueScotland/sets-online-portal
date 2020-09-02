@@ -1,9 +1,8 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 <% content_for :page_title, t('.title') %>
 <% content_for :page_subtitle, t('.subtitle') %>
-
 <%= form_for @party, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for [@party, @company] %> 
-  <%= render "/layouts/company_search" %> 
-  <%= f.button 'next', { :name => 'submitted' }  %>
+  <%= form_errors_for [@party, @company] %>
+  <%= render "/layouts/company_search" %>
+  <%= f.button %>
 <% end %>

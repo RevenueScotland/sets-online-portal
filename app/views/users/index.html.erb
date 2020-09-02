@@ -1,14 +1,12 @@
 <%= content_for :hide_back_link, true %>
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @user_filter, url: users_path, :method => 'get', local: true do |form| %>
   <%= form_errors_for @user_filter %>
   <%= form.text_field :full_name %>
   <%= form.select :user_is_current, @user_filter.list_ref_data(:user_is_current), { include_blank: true, width: 'width-10' } %>
   <%= form.button t('.find'), autofocus: (@on_filter_find && !@form_error_found) %>
 <% end %>
-
 <%= display_table(@users,
                   [:username, :user_is_current, :full_name, :email_address, :phone_number],
                   [
@@ -18,5 +16,3 @@
 <% if !account_has_no_service? %>
   <%= navigational_links [{link: :new_user, path: new_user_path}] %>
 <% end %>
-
-

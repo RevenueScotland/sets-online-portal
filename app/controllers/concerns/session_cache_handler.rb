@@ -12,9 +12,7 @@ module SessionCacheHandler
   def session_cache_data_load(session_key, cache_index = self.class.name)
     key = session_cache_key(cache_index, session_key)
     Rails.logger.debug "Loading data for #{key}"
-    output = Rails.cache.read(key)
-
-    output
+    Rails.cache.read(key)
   end
 
   # _Overwrite_ cache object.  Use with caution.

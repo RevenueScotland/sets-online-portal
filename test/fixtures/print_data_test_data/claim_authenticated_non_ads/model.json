@@ -1,0 +1,65 @@
+{
+  "json_class": "Claim::ClaimPayment",
+  "srv_code": "LBTT",
+  "tare_reference": "RS2000003BBBB",
+  "flbt_type": "LEASERET",
+  "version": "1",
+  "number_of_buyers": 1,
+  "ads_included": false,
+  "ads_amount": "0",
+  "full_repayment_of_ads": "N",
+  "taxpayers": [
+    {
+      "json_class": "Returns::Lbtt::Party",
+      "party_type": "CLAIMANT",
+      "new_record": true,
+      "surname": "Last tname",
+      "firstname": "First name",
+      "telephone": "0111456789",
+      "email_address": "noreply5@northgateps.com",
+      "org_name": "My organisation",
+      "address": {
+        "json_class": "Address",
+        "address_line1": "Royal Mail",
+        "address_line2": "Luton Delivery Office 9-11",
+        "address_line3": "Dunstable Road",
+        "town": "LUTON",
+        "postcode": "LU1 1AA",
+        "country": "EN",
+        "new_record": true,
+        "address_identifier": "14174279"
+      }
+    }
+  ],
+  "current_user": {
+    "json_class": "User",
+    "new_record": true,
+    "username": "PORTAL.ONE",
+    "password_change_required": false,
+    "password_expiry_date": "2020-05-31",
+    "work_place_refno": "3",
+    "party_refno": "350",
+    "user_roles": {
+      "user_role": [
+        "ACCADMN",
+        "ACCSECADMN",
+        "PWSAMEND",
+        "PWSCLAIM",
+        "PWSDASH",
+        "PWSDRNEW",
+        "PWSDRSUB",
+        "PWSDRUPD",
+        "PWSMESSAGE"
+      ]
+    }
+  },
+  "reason": "LEGAL",
+  "new_record": true,
+  "claiming_amount": "90",
+  "account_holder_name": "Fred Flintstone",
+  "account_number": "12345678",
+  "branch_code": "10-11-12",
+  "bank_name": "Natwest",
+  "authenticated_declaration_1": "Y",
+  "authenticated_declaration_2": "Y"
+}

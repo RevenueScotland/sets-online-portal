@@ -10,6 +10,7 @@ module Dashboard
     include Pagination
     include AllMessageSubject
 
+    # see AllMessageSubject for accessors for subject_code
     attr_accessor :created_datetime, :created_by,
                   :party_refno, :reference, :title, :body,
                   :selected,
@@ -17,9 +18,8 @@ module Dashboard
                   :original_smsg_refno, :direction, :wrk_refno, :created_date,
                   :srv_code, :read_indicator, :subject_domain, :has_attachment,
                   :read_datetime, :attachments, :forename, :surname
-    # see AllMessageSubject for accessors for subject_code
 
-    validates :reference, presence: true, length: { maximum: 255 }
+    validates :reference, presence: true, length: { maximum: 30 }
     validates :title, presence: true, length: { maximum: 255 }
     validates :body, presence: true, length: { maximum: 4000 }
     validates :subject_code, presence: true
@@ -162,8 +162,7 @@ module Dashboard
     # @param doc_refno [String] document reference number to be delete from backoffice
     # @return [Boolean] true if document delete successfully from backoffice else false
     def delete_attachment(requested_by, doc_refno)
-      success = call_ok?(:delete_attachment, request_delete_attachment(requested_by, doc_refno))
-      success
+      call_ok?(:delete_attachment, request_delete_attachment(requested_by, doc_refno))
     end
 
     # retrieve document from backoffice

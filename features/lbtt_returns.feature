@@ -9,19 +9,19 @@ Feature: LBTT Returns
         Then I should see the "About the return" page
 
         # Mandatory validation for selection of lbtt return type
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Which return do you want to submit can't be blank"
 
         # Pick the wrong type at first to check the whole model validation on Submit return (later) works
         # with the correct type (ie doesn't get stuck with the old type)
         When I check the "Lease" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
         When I click on the "Back" link
         And if available, click the confirmation dialog
         Then I should see the "About the return" page
         When I check the "Conveyance or transfer" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
         When I click on the "Submit return" button
         Then I should receive the message "Please fill in at least one property"
@@ -38,29 +38,42 @@ Feature: LBTT Returns
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
         When I check the "An other organisation" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Organisation details" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Type of organisation can't be blank"
 
         When I check the "Other" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Organisation description can't be blank"
 
+        When I enter "RANDOM_text,256" in the "Organisation description" field
+        And I click on the "Continue" button
+        Then I should receive the message "Organisation description is too long (maximum is 255 characters)"
+
+        When I enter "RANDOM_text,255" in the "Organisation description" field
+        And I click on the "Continue" button
+        Then I should see the "Organisation details" page
+        And I should not see the text "Type of organisation"
+
+        When I click on the "Back" link
+        Then I should see the "Organisation details" page
+        And I should see the text "Type of organisation"
+
         When I check the "Charity" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the sub-title "Charity details"
-        When I click on the "Next" button
+        When I click on the "Continue" button
 
         Then I should receive the message "What country's law is the organisation governed by can't be blank"
         And I should receive the message "Name can't be blank"
         And I should receive the message "Charity number can't be blank"
         And I should receive the message "Use the postcode search or enter the address manually"
 
-        When I enter "Charity name" in the "Name" field
+        When I enter "Marks & Spencer Fund" in the "Name" field
         And I enter "ALBANIA" in the "What country's law is the organisation governed by" select or text field
-        And I enter "123456" in the "Charity number" field
+        And I enter "RANDOM_text,101" in the "Charity number" field
 
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find Address" button
@@ -72,10 +85,14 @@ Feature: LBTT Returns
         And I should see the text "LUTON" in field "address_town"
         And I should see "ENGLAND" in the "address_country" select or text field
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
+
+        Then I should receive the message "Charity number is too long (maximum is 100 characters)"
+        When I enter "123456" in the "Charity number" field
+        And I click on the "Continue" button
 
         Then I should see the "Contact details" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Contact phone number can't be blank"
         And I should receive the message "Last name can't be blank"
         And I should receive the message "First name can't be blank"
@@ -86,9 +103,11 @@ Feature: LBTT Returns
         #invalid name, contact email and phone number
         When I enter "RANDOM_text,51" in the "First name" field
         And I enter "RANDOM_text,101" in the "Last name" field
+        And I enter "RANDOM_text,256" in the "Job title or position" field
         And I enter "012" in the "Contact phone number" field
         And I enter "noreplynorthgateps.com" in the "Email" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
+        And I should receive the message "Job title or position is too long (maximum is 255 characters)"
         Then I should receive the message "First name is too long (maximum is 50 characters)"
         And I should receive the message "Last name is too long (maximum is 100 characters)"
         And I should receive the message "Contact phone number is invalid"
@@ -109,22 +128,22 @@ Feature: LBTT Returns
         And I should see the text "LUTON" in field "address_town"
         And I should see "ENGLAND" in the "address_country" select or text field
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Buyer details" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "If they are linked can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Buyer details" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
-        And I should see the text "Charity name"
+        And I should see the text "Marks & Spencer Fund"
         And I should see the text "Charity"
 
         When I click on the "Submit return" button
@@ -138,19 +157,19 @@ Feature: LBTT Returns
         Then I should see the "About the seller" page
 
         When I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Seller details" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I should receive the message "Last name can't be blank"
         And I should receive the message "First name can't be blank"
         When I enter "surname" in the "Last name" field
         And I enter "firstname" in the "First name" field
         And I select "Mr" from the "Title"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Seller address" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find Address" button
@@ -162,7 +181,7 @@ Feature: LBTT Returns
         And I should see the text "LUTON" in field "address_town"
         And I should see "ENGLAND" in the "address_country" select or text field
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         Then I should see the text "Mr firstname surname"
@@ -175,7 +194,7 @@ Feature: LBTT Returns
         Then I should see the "Property address" page
 
         # validation to select address
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
 
         When I click on the "Enter an address manually" button
@@ -183,26 +202,30 @@ Feature: LBTT Returns
         And I enter "CIRENCESTER" in the "address_town" field
         And I enter "GL7 1PP" in the "address_postcode" field
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Property must be in Scotland for LBTT"
         Then I enter "EH1 1BE" in the "address_postcode" field
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the sub-title "Provide property details"
-        And I click on the "Next" button
+        And I enter "12345678901234567890123456789012345678901" in the "returns_lbtt_property_title_number" field
+        And I enter "12345678901234567890123456789012345678901" in the "returns_lbtt_property_parent_title_number" field
+        And I click on the "Continue" button
         Then I should receive the message "Local authority can't be blank"
+        And I should receive the message "Title number is too long (maximum is 40 characters)"
+        And I should receive the message "Parent title number is too long (maximum is 40 characters)"
         When I select "Aberdeen City" from the "Local authority"
         And I select "ABN" from the "returns_lbtt_property_title_code"
         And I enter "1234" in the "returns_lbtt_property_title_number" field
         And I select "ANG" from the "returns_lbtt_property_parent_title_code"
         And I enter "4567" in the "returns_lbtt_property_parent_title_number" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         # validation for ADS applies
         Then I should see the "Does Additional Dwelling Supplement (ADS) apply to this transaction?" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Does Additional Dwelling Supplement (ADS) apply to this transaction can't be blank"
         And I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         # Verify entered details on return summary page
         Then I should see the "Return Summary" page
@@ -224,7 +247,7 @@ Feature: LBTT Returns
         And I should see the text "Dunstable Road" in field "address_address_line3"
         And I should see the text "LUTON" in field "address_town"
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Property must be in Scotland for LBTT"
 
         And I click on the "Change" button
@@ -236,7 +259,7 @@ Feature: LBTT Returns
         And I should see the text "Waverley Railway Station" in field "address_address_line2"
         And I should see the text "EDINBURGH" in field "address_town"
         And I should see the text "EH1 1BE" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the sub-title "Provide property details"
         Then "Local authority" should contain the option "Aberdeen City"
         Then I should see the text "1234" in field "returns_lbtt_property[title_number]"
@@ -244,10 +267,10 @@ Feature: LBTT Returns
         When I select "Orkney" from the "Local authority"
         And I enter "4567" in the "returns_lbtt_property[title_number]" field
 
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Does Additional Dwelling Supplement (ADS) apply to this transaction?" page
         And I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         # Verify modified details on return summary page
         Then I should see the "Return Summary" page
@@ -259,21 +282,21 @@ Feature: LBTT Returns
         When I click on the "Add ADS" link
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "Is the buyer replacing their main residence?"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         And I should receive the message "Is the buyer replacing their main residence can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the text "Total consideration liable to ADS"
         And I should see the text "Amount of ADS liability from new main residence"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Total consideration liable to ADS can't be blank"
         And I should receive the message "Amount of ADS liability from new main residence can't be blank"
 
         # numeric validation
         When I enter "invalid" in the "Amount of ADS liability from new main residence" field
         And I enter "invalid" in the "Total consideration liable to ADS" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should receive the message "Total consideration liable to ADS is not a number"
         And I should receive the message "Amount of ADS liability from new main residence is not a number"
@@ -281,31 +304,31 @@ Feature: LBTT Returns
         # validation on negative and range check
         When I enter "-1" in the "Amount of ADS liability from new main residence" field
         And I enter "1000000000000000000" in the "Total consideration liable to ADS" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the text "Total consideration liable to ADS must be less than 1000000000000000000"
         And I should see the text "Amount of ADS liability from new main residence must be greater than or equal to 0"
 
         When I enter "123.4567" in the "Amount of ADS liability from new main residence" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Amount of ADS liability from new main residence must be a number to 2 decimal places"
 
         When I enter "40503" in the "Amount of ADS liability from new main residence" field
         And I enter "40750" in the "Total consideration liable to ADS" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the text "Does the buyer intend to sell their main residence within 18 months?"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Does the buyer intend to sell their main residence within 18 months can't be blank"
 
         # Check the radio button value is stored in wizard
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I click on the "Back" link
         Then the radio button "returns_lbtt_ads_ads_sell_residence_ind_n" should be selected
 
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
 
         And I enter "EH1 1BE" in the "address_summary_postcode" field
@@ -316,10 +339,10 @@ Feature: LBTT Returns
         And I should see the text "Waverley Railway Station" in field "address_address_line2"
         And I should see the text "EDINBURGH" in field "address_town"
         And I should see the text "EH1 1BE" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Reliefs on ADS consideration" page
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Is relief being claimed from the ADS consideration can't be blank"
 
         When I check the "Yes" radio button
@@ -332,7 +355,7 @@ Feature: LBTT Returns
         # Relief claim validation
         # Delete button link should not be shown when there is only on row of data
         Then I should not see the button with text "Delete row"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Type of relief can't be blank"
         Then I should receive the message "Amount of tax saved by relief can't be blank"
         # check add row doesn't work with errors
@@ -347,7 +370,7 @@ Feature: LBTT Returns
         Then I should see the text "Calculated" in field "returns_lbtt_ads_ads_relief_claims_0_relief_amount"
         And field "returns_lbtt_ads_ads_relief_claims_0_relief_amount" should be readonly
 
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And the data is not displayed in table
             | About the reliefs | Edit reliefs                  |
@@ -364,39 +387,39 @@ Feature: LBTT Returns
         Then I should see the "About the transaction" page
 
         When I check the "Residential" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter "02-08-2019" in the "Effective date of transaction" date field
-        And I enter "03-08-2019" in the "Relevant date" date field
-        And I click on the "Next" button
+        When I enter "02-08-2020" in the "Effective date of transaction" date field
+        And I enter "03-08-2020" in the "Relevant date" date field
+        And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
         When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
         And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
         And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Linked Transactions" page
 
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
 
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About future events" page
 
         When I check the "returns_lbtt_lbtt_return_contingents_event_ind_n" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
         And I should not see the text "Linked transaction consideration"
 
         When I enter "1234565" in the "Total consideration" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Relief amount table
@@ -419,11 +442,11 @@ Feature: LBTT Returns
 
         #Validation on Max Amount reliefs
         When I enter "1631" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then  I should receive the message "The amount you are claiming for ADS reliefs cannot be more than the ADS liability of £1630"
         And I enter "1000" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         #Recalculate Return calculation after About Reliefs
         And the table of data is displayed
@@ -443,17 +466,17 @@ Feature: LBTT Returns
         # reset the value on ads wizard changes
         When I click on the "Edit ADS" link
         Then I should see the "Additional Dwelling Supplement (ADS)" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Total consideration liable to ADS"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Does the buyer intend to sell their main residence within 18 months?"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Reliefs on ADS consideration" page
 
         And I should see the text "Calculated" in field "returns_lbtt_ads_ads_relief_claims_0_relief_amount"
         And field "returns_lbtt_ads_ads_relief_claims_0_relief_amount" should be readonly
 
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Relief amount table
@@ -488,7 +511,7 @@ Feature: LBTT Returns
         # Check you can edit the calculated amounts and then edit the relief amounts
         When I enter "107000" in the "LBTT calculated" field
         And I enter "1700" in the "ADS calculated" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         When I click on the "Edit reliefs" link
@@ -496,11 +519,11 @@ Feature: LBTT Returns
         And I should see the text "1630" in field "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount"
 
         When I enter "1701" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then  I should receive the message "The amount you are claiming for ADS reliefs cannot be more than the ADS liability of £1700"
 
         When I enter "1700" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And the table of data is displayed
             | About the reliefs  | Edit reliefs                  |
@@ -529,14 +552,12 @@ Feature: LBTT Returns
         When I click on the "All returns" link
         And I enter stored reference number "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
-        Then I should see a link with text "Download PDF"
-        And I should not see a link with text "Download waste details"
         And I should see a link with text "Continue"
 
         # Buyer
         When I click on the "Continue" link
         Then I should see the "Return Summary" page
-        And I should see the text "Charity name"
+        And I should see the text "Marks & Spencer Fund"
         And I should see the text "Charity"
         # Seller
         And I should see the text "Mr firstname surname"
@@ -549,14 +570,14 @@ Feature: LBTT Returns
             | Abellio Scotrail Ltd, EDINBURGH, EH1 1BE | Yes  |
         When I click on the 4 th "Edit" link
         Then I should see the "Property address" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the sub-title "Provide property details"
         And "Local authority" should contain the option "Aberdeen City"
         And I should see the text "4567" in field "returns_lbtt_property[title_number]"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Does Additional Dwelling Supplement (ADS) apply to this transaction?" page
         And the radio button "Yes" should be selected
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Return Summary" page
         #ADS === YES
         And the table of data is displayed
@@ -578,7 +599,7 @@ Feature: LBTT Returns
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
         And I should not see the text "Direct Debit"
-        And I should see the text "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete."
+        And I should see the text "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete"
         And I should not see the text "I, the agent for the buyer(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         When I click on the "Submit return" button
         Then I should see the text "How are you paying can't be blank"
@@ -590,10 +611,9 @@ Feature: LBTT Returns
         Then I should see the text "Your Land and Buildings Transaction Tax return has now been submitted."
         And I click on the "Send secure message" link
         Then I should see the "New message" page
-        # When I click on the "Back" link
-        When I click on the "Back" link
 
         # test case to download Receipt on last return submit return
+        When I click on the "Back" link
         And I click on the "Receipt" link to download a file
         Then I should see the downloaded "PDF" content of "LBTT" by looking up "ret_ref_val"
 
@@ -605,9 +625,6 @@ Feature: LBTT Returns
 
         When I enter stored reference number "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
-
-        And I should see a link with text "Download PDF"
-        And I should not see a link with text "Download waste details"
         And I should see a link with text "Amend"
 
         # Buyer
@@ -616,27 +633,27 @@ Feature: LBTT Returns
         When I click on the "Submit return" button
         Then I should see the "Repayment details" page
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Do you want to request a repayment from Revenue Scotland can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Claim repayment" page
 
         # it should be blank to start with
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "How much are you claiming for repayment can't be blank"
         When I enter "750.000000" in the "How much are you claiming for repayment?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "How much are you claiming for repayment must be a number to 2 decimal places"
         When I enter "1000000000000000000" in the "How much are you claiming for repayment?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "How much are you claiming for repayment must be less than 1000000000000000000"
         When I enter "750" in the "How much are you claiming for repayment?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Enter bank details" page
 
         # details should be blank to start with
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "Name of the account holder can't be blank"
         And I should see the text "Bank / building society account number can't be blank"
         And I should see the text "Branch sort code can't be blank"
@@ -646,7 +663,7 @@ Feature: LBTT Returns
         And I enter "RANDOM_text,11" in the "Bank / building society account number" field
         And I enter "RANDOM_text,9" in the "Branch sort code" field
         And I enter "RANDOM_text,256" in the "Name of bank / building society" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should receive the message "Bank / building society account number is not a number"
         And I should receive the message "Bank / building society account number is the wrong length (should be 8 characters)"
@@ -656,16 +673,16 @@ Feature: LBTT Returns
         And I enter "12345678" in the "Bank / building society account number" field
         And I enter "10-11-12" in the "Branch sort code" field
         And I enter "Natwest" in the "Name of bank / building society" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Declaration" page
         Then I should not see the text "I, the agent for the buyer(s), confirm that the buyer(s) have authorised repayment to be made to these bank details"
         And I should see the text "I, the buyer, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "The refund declaration must be accepted"
         And I should not receive the message "The bank account declaration must be accepted"
         When I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
         # payment and submission
@@ -693,7 +710,7 @@ Feature: LBTT Returns
 
         # Check that no navigates to the original pages
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "Is the buyer replacing their main residence?"
 
@@ -702,22 +719,22 @@ Feature: LBTT Returns
         And I should see the text "Are you amending the return because the buyer has sold or disposed of the previous main residence?"
 
         When I check the "Yes" radio button
-        And I click on the "Next" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
+        And I click on the "Continue" button
         Then I should receive the message "What is the date of sale or disposal of the previous main residence can't be blank"
 
         When I enter "03-07-2019" in the "What is the date of sale or disposal of the previous main residence?" date field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Confirm the address of the previous main residence that has been sold or disposed of"
         When I enter "EH1 1BE" in the "address_summary_postcode" field
         And I click on the "Find Address" button
         And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
         And if available, click the "Select" button
         And I should see the text "Abellio Scotrail Ltd" in field "address_address_line1"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "When you submit the return you will be asked for the bank details for the repayment."
         When I enter "4321" in the "Amount of ADS you want to reclaim" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Save the draft and reload it with the ads details on
@@ -739,45 +756,45 @@ Feature: LBTT Returns
         When I click on the "Edit ADS" link
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And the radio button "returns_lbtt_ads_ads_sold_main_yes_no_y" should be selected
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "Abellio Scotrail Ltd" in field "address_address_line1"
         And I should see the text "Waverley Railway Station" in field "address_address_line2"
         And I should see the text "EDINBURGH" in field "address_town"
         And I should see the text "EH1 1BE" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "4321" in field "Amount of ADS you want to reclaim"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # request repayment and check amount is preset
         When I click on the "Submit return" button
         Then I should see the "Repayment details" page
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Claim repayment" page
         And I should see the text "4321" in field "How much are you claiming for repayment?"
 
         # validation checks
         When I clear the "How much are you claiming for repayment?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "How much are you claiming for repayment can't be blank"
         When I enter "abc" in the "How much are you claiming for repayment?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "How much are you claiming for repayment is not a number"
         When I enter "-1" in the "How much are you claiming for repayment?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "How much are you claiming for repayment must be greater than or equal to 0"
 
         When I enter "4321" in the "How much are you claiming for repayment?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Enter bank details" page
 
         # details should be blank to start with
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "Name of the account holder can't be blank"
         And I should see the text "Bank / building society account number can't be blank"
         And I should see the text "Branch sort code can't be blank"
@@ -787,7 +804,7 @@ Feature: LBTT Returns
         And I enter "RANDOM_text,11" in the "Bank / building society account number" field
         And I enter "RANDOM_text,9" in the "Branch sort code" field
         And I enter "RANDOM_text,256" in the "Name of bank / building society" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should receive the message "Bank / building society account number is not a number"
         And I should receive the message "Bank / building society account number is the wrong length (should be 8 characters)"
@@ -797,15 +814,15 @@ Feature: LBTT Returns
         And I enter "12345678" in the "Bank / building society account number" field
         And I enter "10-11-12" in the "Branch sort code" field
         And I enter "Natwest" in the "Name of bank / building society" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Declaration" page
 
         # Declarations and re-submit
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "The refund declaration must be accepted"
 
         When I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
         # Submit amendment
@@ -822,16 +839,16 @@ Feature: LBTT Returns
 
             | Title number (if provided) | ABN 4567                                                           |
             | Property address           | Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE |
-            | Buyer                      | Charity name                                                       |
+            | Buyer                      | Marks & Spencer Fund                                               |
             | Description of transaction | Conveyance or transfer                                             |
-            | Effective date             | 02/08/2019                                                         |
+            | Effective date             | 02/08/2020                                                         |
 
     Scenario: Make a Conveyance return without ADS for an Agent
         Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
         When I click on the "Create LBTT return" link
         Then I should see the "About the return" page
         When I check the "Conveyance or transfer" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         And I click on the "Save draft" button
@@ -862,14 +879,14 @@ Feature: LBTT Returns
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
         When I check the "An other organisation" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Organisation details" page
 
         When I check the "Partnership" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the sub-title "Partnership details"
-        When I click on the "Next" button
+        When I click on the "Continue" button
 
         Then I should receive the message "What country's law is the organisation governed by can't be blank"
         And I should receive the message "Name can't be blank"
@@ -888,7 +905,7 @@ Feature: LBTT Returns
         And I should see the text "LUTON" in field "address_town"
         And I should see "ENGLAND" in the "address_country" select or text field
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Contact details" page
         When I enter "member" in the "Last name" field
@@ -900,19 +917,19 @@ Feature: LBTT Returns
         And I click on the "Find Address" button
         And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
         And if available, click the "Select" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Buyer details" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "If they are linked can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Buyer details" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         And I should see the text "Partnership name"
@@ -922,7 +939,7 @@ Feature: LBTT Returns
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
         When I check the "An organisation registered with Companies House" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Registered company" page
         When I enter "00233462" in the "Company number" field
@@ -934,12 +951,17 @@ Feature: LBTT Returns
         And I should see the text "London" in field "company_locality"
         And I should see the empty field "company_county"
         And I should see the text "SW1E 5NN" in field "company_postcode"
-        And I should see the text "GB" in field "company_country"
-        When I click on the "Next" button
+        And field "Company name" should be readonly
+        And field "Address" should be readonly
+        And field "Address line2" should be readonly
+        And field "Town" should be readonly
+        And field "County" should be readonly
+        And field "Postcode" should be readonly
+        When I click on the "Continue" button
 
         # Test the contact details as this is a new page
         Then I should see the "Contact details" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Job title or position can't be blank"
         And I should receive the message "First name can't be blank"
         And I should receive the message "Last name can't be blank"
@@ -950,7 +972,7 @@ Feature: LBTT Returns
 
         When I enter "012" in the "Contact phone number" field
         And I enter "noreplynorthgateps.com" in the "Email" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Contact phone number is invalid"
         And I should receive the message "Email is invalid"
 
@@ -969,14 +991,14 @@ Feature: LBTT Returns
         And I should see the text "READING" in field "address_town"
         And I should see "ENGLAND" in the "address_country" select or text field
         And I should see the text "RG30 6XT" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer details" page
 
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer details" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And I should see the text "JOHN LEWIS PLC"
 
@@ -984,7 +1006,7 @@ Feature: LBTT Returns
         When I click on the "Add a seller" link
         Then I should see the "About the seller" page
         When I check the "An organisation registered with Companies House" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Registered company" page
         And I click on the "Find Company" button
@@ -1000,7 +1022,7 @@ Feature: LBTT Returns
         And I click on the "Find Company" button
         Then I should receive the message "The company number doesn't return a company"
         And I clear the "Company number" field
-        When I click on the "Next" button
+        When I click on the "Continue" button
 
         Then I should receive the message "Company number can't be blank"
         And I should receive the message "Company number is too short (minimum is 8 characters)"
@@ -1014,7 +1036,7 @@ Feature: LBTT Returns
         And I should see the text "Hemel Hempstead" in field "company_locality"
         And I should see the text "Hertfordshire" in field "company_county"
         And I should see the text "HP2 4NW" in field "company_postcode"
-        When I click on the "Next" button
+        When I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         And I should see the text "NORTHGATE PUBLIC SERVICES LIMITED"
@@ -1023,7 +1045,7 @@ Feature: LBTT Returns
         When I click on the "Add a property" link
         Then I should see the "Property address" page
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
 
         When I enter "EH1 1BE" in the "address_summary_postcode" field
@@ -1034,7 +1056,7 @@ Feature: LBTT Returns
         And I should see the text "Waverley Railway Station" in field "address_address_line2"
         And I should see the text "EDINBURGH" in field "address_town"
         And I should see the text "EH1 1BE" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the sub-title "Provide property details"
         When I select "Aberdeen City" from the "Local authority"
@@ -1043,10 +1065,10 @@ Feature: LBTT Returns
         And I select "ANG" from the "returns_lbtt_property_parent_title_code"
         And I enter "4567" in the "returns_lbtt_property_parent_title_number" field
 
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Does Additional Dwelling Supplement (ADS) apply to this transaction?" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Transaction
@@ -1054,18 +1076,18 @@ Feature: LBTT Returns
         Then I should see the "About the transaction" page
 
         When I check the "Residential" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the dates" page
 
         When I enter "02-08-2019" in the "Effective date of transaction" date field
         And I enter "03-08-2019" in the "Relevant date" date field
         And I enter "03-08-2019" in the "Date of contract or conclusion of missives" date field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
         And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
         And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Linked Transactions" page
         When I check the "Yes" radio button
         Then I should not see the button with text "Delete row"
@@ -1077,67 +1099,74 @@ Feature: LBTT Returns
         And I should see the text "1000" in field "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount"
         When I click on the 1 st "Delete row" button
         Then I should not see the button with text "Delete row"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "Return consideration can't be blank"
         When I enter "RS123456" in the "returns_lbtt_lbtt_return_link_transactions_0_return_reference" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Return reference (if known) format is invalid"
         When I enter "RS1234567ABCD" in the "returns_lbtt_lbtt_return_link_transactions_0_return_reference" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Return consideration can't be blank"
         When I enter "-1000" in the "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Return consideration must be a number to 2 decimal places"
         When I enter "1000" in the "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I check the "Yes" radio button
         And I check the "Goodwill" checkbox
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
 
         # Check non ADS reliefs functionality
         When I check the "Yes" radio button
-
-        When I check the "Yes" radio button
-        # NOT FULL or MAX amount relief
         Then "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_type_auto" should contain the option "Multiple dwellings relief"
-        And I select "Multiple dwellings relief" from the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_type_auto"
-        And I click on the "Add row" button
 
+        # NOT FULL or MAX amount relief
+        When I select "Multiple dwellings relief" from the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_type_auto"
+        And I click on the "Add row" button
         Then I should receive the message "Amount of tax saved by relief can't be blank"
 
         When I enter "Calculated" in the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Amount of tax saved by relief is not a number"
 
         When I enter "-3" in the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Amount of tax saved by relief must be greater than or equal to 0"
 
         When I enter "1000000000000000000" in the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Amount of tax saved by relief must be less than 1000000000000000000"
 
-        And I enter "2087" in the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount" field
+        When I enter "2087" in the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount" field
         And I click on the "Add row" button
         # MAX amount relief
         And I select "First-Time Buyer Relief" from the "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_type_auto"
         And I click on the "Add row" button
         Then I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount"
         And field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount" should be readonly
-        When I click on the 3 rd "Delete row" button
-        And I click on the "Next" button
 
+        # Add a third relief that is full that will take the full amounts
+        # Note we delete as the above add row created a new row so still want to test delete
+        # but also need to use add row to trigger the calculated again
+        When I click on the 3 rd "Delete row" button
+        And I click on the "Add row" button
+        And I select "Public bodies relief" from the "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_type_auto"
+        And I click on the "Add row" button
+        Then I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount"
+
+        When I click on the 4 th "Delete row" button
+        And I click on the "Continue" button
         Then I should see the "About future events" page
 
         When I check the "returns_lbtt_lbtt_return_contingents_event_ind_n" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
         And I should see the text "1000" in field "Linked transaction consideration"
 
         When I clear the "Linked transaction consideration" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Total consideration can't be blank"
         And I should receive the message "Linked transaction consideration can't be blank"
         And I should receive the message "Non-chargeable consideration can't be blank"
@@ -1147,7 +1176,7 @@ Feature: LBTT Returns
         And I enter "b" in the "Linked transaction consideration" field
         And I enter "c" in the "Non-chargeable consideration" field
         And I enter "c" in the "Total consideration remaining" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Total consideration is not a number"
         And I should receive the message "Linked transaction consideration is not a number"
         And I should receive the message "Non-chargeable consideration is not a number"
@@ -1160,7 +1189,7 @@ Feature: LBTT Returns
         # Check the consideration has not been saved following the error
         When I click on the "Back" link
         Then I should see the "About future events" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
         And I should see the empty field "Total consideration"
         And I should see the text "1000" in field "Linked transaction consideration"
@@ -1171,45 +1200,48 @@ Feature: LBTT Returns
         When I enter "1100" in the "Linked transaction consideration" field
         And I enter "125" in the "Non-chargeable consideration" field
         And I enter "1234560" in the "Total consideration remaining" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # New 'About the Reliefs' detail*
         And the table of data is displayed
             | About the reliefs         | Edit reliefs                  |
             | Type of relief            | Amount of tax saved by relief |
-            | Multiple dwellings relief | £2087.00                      |
-            | First-Time Buyer Relief   | £600.00                       |
+            | Multiple dwellings relief | £0.00                         |
+            | First-Time Buyer Relief   | £0.00                         |
+            | Public bodies relief      | £106519.00                    |
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
             | LBTT calculated            | £106519.00       |
-            | Total LBTT reliefs claimed | £2687.00         |
-            | Total tax payable          | £103832.00       |
+            | Total LBTT reliefs claimed | £106519.00       |
+            | Total tax payable          | £0.00            |
         When I click on the "Edit reliefs" link
         Then I should see the "Reliefs on this transactions" page
-        And I should see the text "2087" in field "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount"
-        And I should see the text "600" in field "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount"
+        And I should see the text "0" in field "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount"
+        And I should see the text "0" in field "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount"
+        And I should see the text "106519" in field "returns_lbtt_lbtt_return_relief_claims_2_relief_override_amount"
 
 
         #Validation on relief amounts
         When I enter "700" in the "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Amount of tax saved by relief should not exceed £600"
 
         When I enter "Hello" in the "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Amount of tax saved by relief is not a number"
 
         When I clear the "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Amount of tax saved by relief can't be blank"
 
         #Validation on Max Amount reliefs
         When I enter "106498" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
         And I enter "600" in the "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount" field
+        And I enter "0" in the "returns_lbtt_lbtt_return_relief_claims_2_relief_override_amount" field
 
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "The amount you are claiming for reliefs cannot be more than the tax liability of £106519"
 
         # check the invalid relief value has not been saved
@@ -1218,88 +1250,159 @@ Feature: LBTT Returns
         And the table of data is displayed
             | About the reliefs         | Edit reliefs                  |
             | Type of relief            | Amount of tax saved by relief |
-            | Multiple dwellings relief | £2087.00                      |
-            | First-Time Buyer Relief   | £600.00                       |
+            | Multiple dwellings relief | £0.00                         |
+            | First-Time Buyer Relief   | £0.00                         |
+            | Public bodies relief      | £106519.00                    |
 
         When I click on the "Edit reliefs" link
         Then I should see the "Reliefs on this transactions" page
 
         #Recalculate Return calculation after About Reliefs
         When I enter "50228" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
-        And I click on the "Next" button
+        And I enter "600" in the "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount" field
+        And I enter "0" in the "returns_lbtt_lbtt_return_relief_claims_2_relief_override_amount" field
+        And I click on the "Continue" button
         And the table of data is displayed
             | About the reliefs         | Edit reliefs                  |
             | Type of relief            | Amount of tax saved by relief |
             | Multiple dwellings relief | £50228.00                     |
             | First-Time Buyer Relief   | £600.00                       |
+            | Public bodies relief      | £0.00                         |
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
             | LBTT calculated            | £106519.00       |
             | Total LBTT reliefs claimed | £50828.00        |
             | Total tax payable          | £55691.00        |
-        # Check the overridden transaction value isn't changed just by going through the wizard
+        # Check the overridden linked transaction value is not changed by going through the wizard
+        # The relief values are changed
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the dates" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Linked Transactions" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
-        And I should see the text "2087" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount"
+        And I should see the text "0" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount"
         And I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount"
         And field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount" should be readonly
-        When I click on the "Next" button
+        And I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount"
+        And field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount" should be readonly
+        When I click on the "Continue" button
         Then I should see the "About future events" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
         And I should see the text "1234560" in field "Total consideration"
         And I should see the text "1100" in field "Linked transaction consideration"
         And I should see the text "125" in field "Non-chargeable consideration"
         And I should see the text "1234560" in field "Total consideration remaining"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
-        # reset the claim amount
         And the table of data is displayed
             | About the reliefs         | Edit reliefs                  |
             | Type of relief            | Amount of tax saved by relief |
-            | Multiple dwellings relief | £2087.00                      |
+            | Multiple dwellings relief | £0.00                         |
+            | First-Time Buyer Relief   | £0.00                         |
+            | Public bodies relief      | £106519.00                    |
+
+        And the table of data is displayed
+            | About the calculation      | Edit calculation |
+            | LBTT calculated            | £106519.00       |
+            | Total LBTT reliefs claimed | £106519.00       |
+            | Total tax payable          | £0.00            |
+
+        # Check the calculation of the first time buyer relief before and after the 15th July 2020
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+        And I should see the text "0" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount"
+        And I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount"
+        And field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount" should be readonly
+        And I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount"
+        And field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount" should be readonly
+        When I click on the 3 rd "Delete row" button
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+        And I should see the text "1234560" in field "Total consideration"
+        And I should see the text "1100" in field "Linked transaction consideration"
+        And I should see the text "125" in field "Non-chargeable consideration"
+        And I should see the text "1234560" in field "Total consideration remaining"
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And the table of data is displayed
+            | About the reliefs         | Edit reliefs                  |
+            | Type of relief            | Amount of tax saved by relief |
+            | Multiple dwellings relief | £0.00                         |
             | First-Time Buyer Relief   | £600.00                       |
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
             | LBTT calculated            | £106519.00       |
-            | Total LBTT reliefs claimed | £2687.00         |
-            | Total tax payable          | £103832.00       |
-
-        # Check the overridden transaction value is changed by changing the linked value
+            | Total LBTT reliefs claimed | £600.00          |
+            | Total tax payable          | £105919.00       |
+        # check changing the date forces recalculation
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the dates" page
-        When I click on the "Next" button
+        When I enter "15-07-2020" in the "Effective date of transaction" date field
+        And I enter "14-07-2020" in the "Relevant date" date field
+        When I click on the "Continue" button
+        And I click on the "Back" link
+        And I click on the "Back" link
+        And I click on the "Back" link
+        Then I should see the "Return Summary" page
+        And the table of data is displayed
+            | About the reliefs         | Edit reliefs                  |
+            | Type of relief            | Amount of tax saved by relief |
+            | Multiple dwellings relief | £0.00                         |
+            | First-Time Buyer Relief   | £0.00                         |
+
+        And the table of data is displayed
+            | About the calculation      | Edit calculation |
+            | LBTT calculated            | £106519.00       |
+            | Total LBTT reliefs claimed | £0.00            |
+            | Total tax payable          | £106519.00       |
+
+        # Check the overridden linked transaction value is changed by changing the linked value
+        When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
         Then I should see the "Linked Transactions" page
         When I enter "2000" in the "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About future events" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
         And I should see the text "1234560" in field "Total consideration"
         And I should see the text "2000" in field "Linked transaction consideration"
         And I should see the text "125" in field "Non-chargeable consideration"
         And I should see the text "1234560" in field "Total consideration remaining"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
         # Submit the return
         When I click on the "Submit return" button
@@ -1324,7 +1427,14 @@ Feature: LBTT Returns
             | Property address           | Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE |
             | Buyer                      | Partnership name                                                   |
             | Description of transaction | Conveyance or transfer                                             |
-            | Effective date             | 02/08/2019                                                         |
+            | Effective date             | 15/07/2020                                                         |
+        # Check you can't submit again
+        When I go to the "returns/lbtt/declaration" page
+        Then I should see the "Payment and submission" page
+        When I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I click on the "Submit return" button
+        Then I should receive the message "This return has already been submitted. If you are unsure that the return has been submitted, save a draft version and check on the dashboard"
 
     Scenario: Make a lease return for a tax payer (and first check session cache data is deleted when start new return)
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
@@ -1333,20 +1443,20 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" link
         Then I should see the "About the return" page
         When I check the "Conveyance or transfer" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         # put party details into the wizard cache
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
         When I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer details" page
         When I enter "Victoria" in the "Last name" field
         And I enter "Dilbert" in the "First name" field
         And I enter "0123456789" in the "Telephone number" field
         And I enter "noreply@northgateps.com" in the "Email" field
         And I enter "AB123456C" in the "National Insurance Number (NINO)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer address" page
 
         # Now go back to the dashboard and click the create return button (should clear wizard caches)
@@ -1364,25 +1474,25 @@ Feature: LBTT Returns
         Then I should see the "About the return" page
 
         When I check the "Lease" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Tenant
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Who they are can't be blank"
         When I check the "An other organisation" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Organisation details" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Type of organisation can't be blank"
 
         When I check the "Trust" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the sub-title "Trust details"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
 
         When I enter "Trust name" in the "Name" field
@@ -1396,7 +1506,7 @@ Feature: LBTT Returns
         And I should see the text "Dunstable Road" in field "address_address_line3"
         And I should see the text "LUTON" in field "address_town"
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Contact details" page
         When I enter "member" in the "Last name" field
@@ -1413,15 +1523,15 @@ Feature: LBTT Returns
         And I should see the text "Dunstable Road" in field "address_address_line3"
         And I should see the text "LUTON" in field "address_town"
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         And I should see the text "Trust name"
@@ -1432,14 +1542,14 @@ Feature: LBTT Returns
         When I click on the "Add a landlord" link
         Then I should see the "About the landlord" page
         When I check the "An other organisation" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Organisation details" page
         # Company
         When I check the "Company" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the sub-title "Company details"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
 
         When I enter "Company name" in the "Name" field
@@ -1453,7 +1563,7 @@ Feature: LBTT Returns
         And I should see the text "Dunstable Road" in field "address_address_line3"
         And I should see the text "LUTON" in field "address_town"
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         And I should see the text "Company name"
@@ -1463,7 +1573,7 @@ Feature: LBTT Returns
         When I click on the "Add a property" link
         Then I should see the "Property address" page
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
 
         When I enter "EH1 1BE" in the "address_summary_postcode" field
@@ -1474,7 +1584,7 @@ Feature: LBTT Returns
         And I should see the text "Waverley Railway Station" in field "address_address_line2"
         And I should see the text "EDINBURGH" in field "address_town"
         And I should see the text "EH1 1BE" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the sub-title "Provide property details"
         When I select "Aberdeen City" from the "Local authority"
@@ -1482,7 +1592,7 @@ Feature: LBTT Returns
         And I enter "1234" in the "returns_lbtt_property_title_number" field
         And I select "ANG" from the "returns_lbtt_property_parent_title_code"
         And I enter "4567" in the "returns_lbtt_property_parent_title_number" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         #transaction
@@ -1491,7 +1601,7 @@ Feature: LBTT Returns
         Then I should see the "About the transaction" page
 
         When I check the "Residential" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the dates" page
 
         # Check the date validation
@@ -1500,7 +1610,7 @@ Feature: LBTT Returns
         And I enter "30-03-2015" in the "Date of contract or conclusion of missives" date field
         And I enter "11-10-2019" in the "Lease start date" date field
         And I enter "10-10-2019" in the "Lease end date" date field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Effective date of transaction must be on or after 1st April 2015"
         And I should receive the message "Relevant date must be on or after 1st April 2015"
         And I should receive the message "Date of contract or conclusion of missives must be on or after 1st April 2015"
@@ -1512,16 +1622,16 @@ Feature: LBTT Returns
         And I clear the "Date of contract or conclusion of missives" field
         And I enter "10-10-2019" in the "Lease start date" date field
         And I enter "08-10-2023" in the "Lease end date" date field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
         When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
         And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
         And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Linked Transactions" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Are there any linked transactions can't be blank"
         When I check the "Yes" radio button
         Then I should see the text "Return reference (if known)"
@@ -1529,41 +1639,41 @@ Feature: LBTT Returns
         And I should see the text "Premium (inc VAT)"
         When I enter "1234" in the "returns_lbtt_lbtt_return_link_transactions_0_npv_inc" field
         And I enter "456" in the "returns_lbtt_lbtt_return_link_transactions_0_premium_inc" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Reliefs on this transaction" page
 
         # reliefs on transaction
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Is relief being claimed for this transaction can't be blank"
         When I check the "Yes" radio button
         Then I should see the text "Type of relief"
         And I should see the text "Amount of tax saved by relief"
         And "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_type_auto" should not contain the option "Multiple dwellings relief"
         And I select "Friendly societies relief" from the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_type_auto"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
         # about the lease_values rental years
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "The rent for the first year can't be blank"
         When I enter "invalid" in the "How much is the rent for the first year (inc VAT)?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "The rent for the first year is not a number"
         When I enter "-1234" in the "How much is the rent for the first year (inc VAT)?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "The rent for the first year must be greater than or equal to 0"
         When I enter "1234.56789" in the "How much is the rent for the first year (inc VAT)?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "The rent for the first year must be a number to 2 decimal places"
         When I enter "1000000000000000000" in the "How much is the rent for the first year (inc VAT)?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "The rent for the first year must be less than 1000000000000000000"
         When I enter "350000" in the "How much is the rent for the first year (inc VAT)?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
 
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Is this the same value for all rental years can't be blank"
         # Validation for rental years
         When I check the "No" radio button
@@ -1574,50 +1684,70 @@ Feature: LBTT Returns
         When I clear the "returns_lbtt_lbtt_return_yearly_rents_1_rent" field
         When I clear the "returns_lbtt_lbtt_return_yearly_rents_2_rent" field
         When I clear the "returns_lbtt_lbtt_return_yearly_rents_3_rent" field
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Rent can't be blank"
 
         When I enter "750000" in the "returns_lbtt_lbtt_return_yearly_rents_0_rent" field
         When I enter "Hello" in the "returns_lbtt_lbtt_return_yearly_rents_1_rent" field
         When I enter "0" in the "returns_lbtt_lbtt_return_yearly_rents_2_rent" field
         When I clear the "returns_lbtt_lbtt_return_yearly_rents_3_rent" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Rent is not a number"
         And I should receive the message "Rent can't be blank"
         When I enter "350100" in the "returns_lbtt_lbtt_return_yearly_rents_1_rent" field
         And I enter "360200" in the "returns_lbtt_lbtt_return_yearly_rents_2_rent" field
         And I enter "370200" in the "returns_lbtt_lbtt_return_yearly_rents_3_rent" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
+        Then I should see the "About the lease values" page
         # Going back to the about the dates page to set the years
-        And I click on the "Back" link
-        And I click on the "Back" link
-        And I click on the "Back" link
-        And I click on the "Back" link
-        And I click on the "Back" link
-        And I click on the "Back" link
+        # checking the text on the page as the page name is the same for all
+        When I click on the "Back" link
+        Then I should see the text "Is this the same value for all rental years?"
+        When I click on the "Back" link
+        Then I should see the text "How much is the rent for the first year (inc VAT)?"
+        When I click on the "Back" link
+        Then I should see the "Reliefs on this transaction" page
+        When I click on the "Back" link
+        Then I should see the "Linked Transactions" page
+        When I click on the "Back" link
+        Then I should see the "About the transaction" page
+        When I click on the "Back" link
         Then I should see the "About the dates" page
         # Deducted two years
         When I enter "09-10-2021" in the "Lease end date" date field
-        And I click on the "Next" button
-        And I click on the "Next" button
-        And I click on the "Next" button
-        And I click on the "Next" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the text "How much is the rent for the first year (inc VAT)?"
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
         And I should see the text "Year 2"
         And I should not see the text "Year 3"
         # Then back to rental years page to re-add the rental year values
         When I click on the "Back" link
-        And I click on the "Back" link
-        And I click on the "Back" link
-        And I click on the "Back" link
-        And I click on the "Back" link
+        Then I should see the text "How much is the rent for the first year (inc VAT)?"
+        When I click on the "Back" link
+        Then I should see the "Reliefs on this transaction" page
+        When I click on the "Back" link
+        Then I should see the "Linked Transactions" page
+        When I click on the "Back" link
+        Then I should see the "About the transaction" page
+        When I click on the "Back" link
+        Then I should see the "About the dates" page
         And I enter "08-10-2023" in the "Lease end date" date field
-        And I click on the "Next" button
-        And I click on the "Next" button
-        And I click on the "Next" button
-        And I click on the "Next" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the text "How much is the rent for the first year (inc VAT)?"
+        And I click on the "Continue" button
         Then I should see the text "350000" in field "returns_lbtt_lbtt_return_yearly_rents_2_rent"
         And I should see the text "350000" in field "returns_lbtt_lbtt_return_yearly_rents_3_rent"
         And I should see the text "Year 3"
@@ -1625,49 +1755,49 @@ Feature: LBTT Returns
         And I should not see the text "Year 5"
         And I enter "32200" in the "returns_lbtt_lbtt_return_yearly_rents_2_rent" field
         And I enter "32200" in the "returns_lbtt_lbtt_return_yearly_rents_3_rent" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
         And I should see the text "456" in field "Premium for linked transactions"
         # Premium paid
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Is a premium being paid can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Premium amount (inc VAT) can't be blank"
         When I enter "invalid" in the "Premium amount (inc VAT)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Premium amount (inc VAT) is not a number"
         When I enter "-1300" in the "Premium amount (inc VAT)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Premium amount (inc VAT) must be greater than or equal to 0"
         When I enter "1300.123456" in the "Premium amount (inc VAT)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Premium amount (inc VAT) must be a number to 2 decimal places"
         When I enter "1000000000000000000" in the "Premium amount (inc VAT)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Premium amount (inc VAT) must be less than 1000000000000000000"
         When I enter "352000" in the "Premium amount (inc VAT)" field
         And I enter "654" in the "Premium for linked transactions" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
 
         # relevant_rent
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "What is the relevant rent amount for this transaction can't be blank"
         When I enter "invalid" in the "What is the relevant rent amount for this transaction?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "What is the relevant rent amount for this transaction is not a number"
         When I enter "-12300" in the "What is the relevant rent amount for this transaction?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "What is the relevant rent amount for this transaction must be greater than or equal to 0"
         When I enter "123.5600" in the "What is the relevant rent amount for this transaction?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "What is the relevant rent amount for this transaction must be a number to 2 decimal places"
         When I enter "1000000000000000000" in the "What is the relevant rent amount for this transaction?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "What is the relevant rent amount for this transaction must be less than 1000000000000000000"
         When I enter "351000" in the "What is the relevant rent amount for this transaction?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
 
         # NPV calculated tax
@@ -1675,24 +1805,24 @@ Feature: LBTT Returns
         And I should see the text "1234" in field "Net Present Value (NPV) for linked transactions"
 
         When I clear the "Net Present Value (NPV)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Net Present Value (NPV) can't be blank"
         When I enter "invalid" in the "Net Present Value (NPV)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Net Present Value (NPV) is not a number"
         When I enter "-12101" in the "Net Present Value (NPV)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Net Present Value (NPV) must be greater than or equal to 0"
         When I enter "12.101" in the "Net Present Value (NPV)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Net Present Value (NPV) must be a number to 2 decimal places"
         And I enter "1000000000000000000" in the "Net Present Value (NPV)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I should receive the message "Net Present Value (NPV) must be less than 1000000000000000000"
 
         When I enter "353000" in the "Net Present Value (NPV)" field
         And I enter "4321" in the "Net Present Value (NPV) for linked transactions" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And the table of data is displayed
             | About the reliefs         | Edit reliefs                  |
@@ -1708,31 +1838,31 @@ Feature: LBTT Returns
         # go back through the transaction details check we can still see the calculated npv before overriding
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the dates" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Linked Transactions" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
         And I should see the text "654" in field "Premium for linked transactions"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
         And I should see the text "353000" in field "Net Present Value (NPV)"
         And I should see the text "4321" in field "Net Present Value (NPV) for linked transactions"
 
         # Then go through and override the values so they work
         And I enter "4521" in the "Net Present Value (NPV) for linked transactions" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         And the table of data is displayed
@@ -1751,62 +1881,62 @@ Feature: LBTT Returns
         # Check the overridden transaction value isn't changed just by going through the wizard
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the dates" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Linked Transactions" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
         And I should see the text "654" in field "Premium for linked transactions"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
         And I should see the text "353000" in field "Net Present Value (NPV)"
         And I should see the text "4521" in field "Net Present Value (NPV) for linked transactions"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Check the overridden transaction value is changed by changing the linked value
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the dates" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Linked Transactions" page
         When I enter "1000" in the "returns_lbtt_lbtt_return_link_transactions_0_npv_inc" field
         And I enter "500" in the "returns_lbtt_lbtt_return_link_transactions_0_premium_inc" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
         When I enter "360100" in the "returns_lbtt_lbtt_return_yearly_rents_1_rent" field
         And I enter "370200" in the "returns_lbtt_lbtt_return_yearly_rents_2_rent" field
         And I enter "380200" in the "returns_lbtt_lbtt_return_yearly_rents_3_rent" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
         And I should see the text "500" in field "Premium for linked transactions"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
 
         # NPV calculated tax
         And I should see the text "1000" in field "Net Present Value (NPV) for linked transactions"
         And I should see the text "1726016.41" in field "Net Present Value (NPV)"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         And the table of data is displayed
@@ -1836,16 +1966,13 @@ Feature: LBTT Returns
 
         When I enter stored reference number "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
-
-        And I should see a link with text "Download PDF"
-        And I should not see a link with text "Download waste details"
         And I should see a link with text "Continue"
 
         And I click on the "Continue" link
 
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
-        And I should see the text "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete."
+        And I should see the text "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
         And I should not see the text "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
 
 
@@ -1855,10 +1982,10 @@ Feature: LBTT Returns
         Then I should see the "About the return" page
 
         And I check the "Assignation" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return reference number" page
         When I enter "RS1234567ABCD" in the "What was the original return reference" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # pre-calculate validation
@@ -1899,11 +2026,11 @@ Feature: LBTT Returns
         When I select "Mr" from the "Title"
         And I enter "Fred" in the "First name" field
         And I enter "Bloggs" in the "Last name" field
-        And I enter "my agent ref" in the "Your reference (Optional)" field
+        And I enter "my agent ref" in the "Your reference (optional)" field
         # Uk phone number start with '+442079460654'
         And I enter "+442079460654" in the "Telephone number" field
         And I enter "neverreply@northgateps.com" in the "Email" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Agent address" page
         And I should see the text "2 Park Lane" in field "address_address_line1"
         And I should see the text "Garden Village" in field "address_address_line2"
@@ -1916,7 +2043,7 @@ Feature: LBTT Returns
         And I click on the "Find Address" button
         And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
         And if available, click the "Select" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
         # Check you can see agent details
         And the table of data is displayed
@@ -1931,17 +2058,17 @@ Feature: LBTT Returns
         And I should see the text "Bloggs" in field "Last name"
         And I should see the text "+442079460654" in field "Telephone number"
         And I should see the text "neverreply@northgateps.com" in field "Email"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Agent address" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
         And I should see the text "Dunstable Road" in field "address_address_line3"
         And I should see the text "LUTON" in field "Town"
-        And I should see the text "" in field "County"
+        And I should see the empty field "County"
         And I should see "ENGLAND" in the "address_country" select or text field
         And I should see the text "LU1 1AA" in field "address_postcode"
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Property
@@ -1950,14 +2077,14 @@ Feature: LBTT Returns
         And I click on the "Find Address" button
         And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
         And if available, click the "Select" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the sub-title "Provide property details"
 
         When I select "Aberdeen City" from the "Local authority"
         And I select "ABN" from the "returns_lbtt_property_title_code"
         And I enter "1234" in the "returns_lbtt_property_title_number" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         # No does ADS apply page for non-conveyance returns
         Then I should see the "Return Summary" page
         # Verify entered details on return summary page do not include ADS
@@ -1971,13 +2098,13 @@ Feature: LBTT Returns
         # Tenant
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Who they are can't be blank"
         When I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I should receive the message "Last name can't be blank"
         And I should receive the message "First name can't be blank"
         And I should receive the message "Email can't be blank"
@@ -1994,29 +2121,29 @@ Feature: LBTT Returns
         And I select "ID Card" from the "Type of ID"
         And I enter "SPAIN" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant address" page
         When I click on the "Enter an address manually" button
         And I enter "Plaza del Ayuntamiento" in the "address_address_line1" field
         And I enter "1. 03002 Alicante" in the "Town" field
         And I enter "SPAIN" in the "Country" select or text field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Should we use a different address for future correspondence in relation to this return can't be blank"
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
         Then I should see the "Is the tenant connected to the landlord?" page
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         Then I should see the text "Mr TenantFirstname TenantSurname"
@@ -2029,10 +2156,10 @@ Feature: LBTT Returns
 
         Then I should see the "About the new tenant" page
         When I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "New tenant details" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I should receive the message "Last name can't be blank"
         And I should receive the message "First name can't be blank"
         And I should receive the message "Email can't be blank"
@@ -2046,10 +2173,10 @@ Feature: LBTT Returns
         And I enter "+34629629629" in the "Telephone number" field
         And I enter "noreply@northgateps.com" in the "Email" field
         And I enter "AB323456C" in the "National Insurance Number (NINO)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "New tenant address" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find Address" button
@@ -2060,25 +2187,25 @@ Feature: LBTT Returns
         And I should see the text "Dunstable Road" in field "address_address_line3"
         And I should see the text "LUTON" in field "address_town"
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "New tenant's contact address" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Should we use a different address for future correspondence in relation to this return can't be blank"
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "New tenant details" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "If they are linked can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "New tenant details" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         Then I should see the text "Mr TenantFirstname2 TenantSurname2"
@@ -2091,7 +2218,7 @@ Feature: LBTT Returns
 
         Then I should see the "About the new tenant" page
         When I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "New tenant details" page
         When I enter "lname" in the "Last name" field
@@ -2101,11 +2228,11 @@ Feature: LBTT Returns
         And I enter "0123456789" in the "Telephone number" field
         And I enter "noreply@northgateps.com" in the "Email" field
         And I enter "AB323456C" in the "National Insurance Number (NINO)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I should receive the message "National Insurance Number (NINO) is a duplicate of that for Mr TenantFirstname2 TenantSurname2"
 
         And I enter "AB323455C" in the "National Insurance Number (NINO)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "New tenant address" page
         And I enter "LU1 1AA" in the "address_summary_postcode" field
@@ -2117,19 +2244,19 @@ Feature: LBTT Returns
         And I should see the text "Dunstable Road" in field "address_address_line3"
         And I should see the text "LUTON" in field "address_town"
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "New tenant's contact address" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "New tenant details" page
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "New tenant details" page
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         And I should see the text "Mr fname lname"
@@ -2139,28 +2266,29 @@ Feature: LBTT Returns
 
         When I click on the 2 nd "Delete row" link
         And if available, click the confirmation dialog
+        And I wait for 2 seconds
         Then I should see the "Return Summary" page
         And I should not see the text "Mr TenantFirstname2 TenantSurname2"
 
         # Transaction
         When I click on the "Add transaction details" link
         Then I should see the "About the dates" page
-        When I enter "02-08-2019" in the "Effective date of transaction" date field
-        And I enter "03-08-2019" in the "Relevant date" date field
-        And I enter "03-08-2019" in the "Date of contract or conclusion of missives" date field
-        And I enter "10-10-2019" in the "Lease start date" date field
-        And I enter "08-10-2023" in the "Lease end date" date field
-        And I click on the "Next" button
+        When I enter "02-08-2020" in the "Effective date of transaction" date field
+        And I enter "03-08-2020" in the "Relevant date" date field
+        And I enter "03-08-2020" in the "Date of contract or conclusion of missives" date field
+        And I enter "10-10-2020" in the "Lease start date" date field
+        And I enter "08-10-2024" in the "Lease end date" date field
+        And I click on the "Continue" button
 
         Then I should see the "Linked Transactions" page
         # linked-transactions - select no to get positive calculation results
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
         # about the lease_values rental years
         When I enter "350000" in the "How much was the rent for the first year (inc VAT)?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
         When I check the "No" radio button
@@ -2170,31 +2298,31 @@ Feature: LBTT Returns
         And I enter "360200" in the "returns_lbtt_lbtt_return_yearly_rents_2_rent" field
         And I enter "370200" in the "returns_lbtt_lbtt_return_yearly_rents_3_rent" field
         And I enter "340200" in the "returns_lbtt_lbtt_return_yearly_rents_0_rent" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
         When I check the "Yes" radio button
         When I enter "352000" in the "Premium amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
         # relevant_rent
         When I enter "351000" in the "What is the relevant rent amount for this transaction?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Calculated Net Present Value (NPV)" page
         And I should not see the text "for linked transactions"
         # NPV calculated tax
         And I should see the text "1303005.42" in field "Net Present Value (NPV)"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         And the table of data is displayed
             | About the transaction                                  | Edit            |
-            | Effective date of transaction                          | 02 August 2019  |
-            | Relevant date                                          | 03 August 2019  |
-            | Lease start date                                       | 10 October 2019 |
-            | Lease end date                                         | 08 October 2023 |
+            | Effective date of transaction                          | 02 August 2020  |
+            | Relevant date                                          | 03 August 2020  |
+            | Lease start date                                       | 10 October 2020 |
+            | Lease end date                                         | 08 October 2024 |
             | Are there any linked transactions?                     | No              |
             | Premium amount (inc VAT)                               | £352000.00      |
             | What is the relevant rent amount for this transaction? | £351000.00      |
@@ -2214,27 +2342,27 @@ Feature: LBTT Returns
         When I click on the "Submit return" button
         Then I should see the "Repayment details" page
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Claim repayment" page
         When I enter "750" in the "How much are you claiming for repayment?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Enter bank details" page
 
         When I enter "Fred Flintstone" in the "Name of the account holder" field
         And I enter "12345678" in the "Bank / building society account number" field
         And I enter "10-11-12" in the "Branch sort code" field
         And I enter "Natwest" in the "Name of bank / building society" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Declaration" page
         And I should see the text "I, the agent for the tenant(s), confirm that the tenant(s) have authorised repayment to be made to these bank details"
         And I should see the text "I, the agent of the tenant(s), having been authorised to complete this claim on behalf of the tenant(s), certify that the tenant(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tenant(s) is/are eligible for the refund claimed"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "The refund declaration must be accepted"
         And I should receive the message "The bank account declaration must be accepted"
         When I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
         And I check the "returns_lbtt_lbtt_return_repayment_agent_declaration" checkbox
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Payment and submission" page
         And I should see the text "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s):"
@@ -2261,7 +2389,7 @@ Feature: LBTT Returns
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
         When I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I enter "Tenant3Surname" in the "Last name" field
         And I enter "Tenant3Firstname" in the "First name" field
@@ -2269,7 +2397,7 @@ Feature: LBTT Returns
         And I enter "0123456789" in the "Telephone number" field
         And I enter "noreply@northgateps.com" in the "Email" field
         And I enter "AB323455C" in the "National Insurance Number (NINO)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I should receive the message "National Insurance Number (NINO) is a duplicate of that for Mr fname lname"
         When I click on the "Back" link
         Then I should see the "About the tenant" page
@@ -2278,7 +2406,7 @@ Feature: LBTT Returns
         And I click on the "Submit return" button
         Then I should see the "Repayment details" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Payment and submission" page
         When I check the "returns_lbtt_lbtt_return_declaration" checkbox
@@ -2292,22 +2420,33 @@ Feature: LBTT Returns
             | Property address             | Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE |
             | Tenant                       | Mr TenantFirstname TenantSurname                                   |
             | Description of transaction   | Assignation                                                        |
-            | Effective date               | 02/08/2019                                                         |
+            | Effective date               | 02/08/2020                                                         |
             | Your reference (if provided) | my agent ref                                                       |
 
     Scenario: Make a lease review return return for a public user
+        # Check signed in user does not have access
+        Given I have signed in
         When I go to the "returns/lbtt/public_landing" page
-        Then I should see the "To complete this return, you will need the following information:" page
+        Then I should see the "Dashboard" page
+        When I go to the "returns/lbtt/public_return_type" page
+        Then I should see the "Dashboard" page
+        When I go to the "returns/lbtt/return_reference_number" page
+        Then I should see the "Dashboard" page
 
-        When I click on the "Create LBTT lease review" link
+        # Now test with public user
+        Given I have signed out
+        When I go to the "returns/lbtt/public_landing" page
+        Then I should see the "To complete this return, you will need the following information" page
+
+        When I click on the "Start now" link
         Then I should see the "About the return" page
 
         When I check the "3 year lease review" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return reference number" page
 
         When I enter "RS1234567ABAB" in the "What was the original return reference" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And I should not see the text "Contact details for this return"
         And I should not see the text "Save draft"
@@ -2315,7 +2454,7 @@ Feature: LBTT Returns
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
         When I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I enter "surname" in the "Last name" field
         And I enter "firstname" in the "First name" field
@@ -2328,23 +2467,23 @@ Feature: LBTT Returns
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
 
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant address" page
         When I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find Address" button
         And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
         And if available, click the "Select" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         When I click on the "Add a property" link
@@ -2353,12 +2492,12 @@ Feature: LBTT Returns
         And I click on the "Find Address" button
         And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
         And if available, click the "Select" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the sub-title "Provide property details"
         When I select "Aberdeen City" from the "Local authority"
         And I select "ABN" from the "returns_lbtt_property_title_code"
         And I enter "1234" in the "returns_lbtt_property_title_number" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         When I click on the "Add transaction details" link
@@ -2367,50 +2506,50 @@ Feature: LBTT Returns
         And I enter "03-08-2019" in the "Relevant date" date field
         And I enter "03-08-2019" in the "Lease start date" date field
         And I enter "03-08-2019" in the "Lease end date" date field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Linked Transactions" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "The rent for the first year can't be blank"
         When I enter "a" in the "How much was the rent for the first year (inc VAT)?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "The rent for the first year is not a number"
         When I enter "1234" in the "How much was the rent for the first year (inc VAT)?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Is this the same value for all rental years can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
         When I enter "123" in the "What is the relevant rent amount for this transaction?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
         When I enter "100" in the "Net Present Value (NPV)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         When I click on the "Edit calculation" link
         Then I should see the "Calculated tax" page
         And I enter "100" in the "Amount already paid" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Calculated tax" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # submit
         When I click on the "Submit return" button
         And I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
         And I should not see the text "Direct Debit"
         And I should not see the text "I, the agent for the buyer"
-        And I should see the text "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete."
+        And I should see the text "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
 
         When I check the "BACS" radio button
         And I check the "returns_lbtt_lbtt_return_declaration" checkbox
@@ -2425,10 +2564,10 @@ Feature: LBTT Returns
         Then I should see the "About the return" page
 
         And I check the "Termination" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return reference number" page
         When I enter "RS1234567ABCD" in the "What was the original return reference" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # pre-calculate validation
@@ -2441,18 +2580,18 @@ Feature: LBTT Returns
         When I click on the "Edit agent details" link
         Then I should see the "Agent details" page
         And I select "Mr" from the "Title"
-        And I enter "my agent ref" in the "Your reference (Optional)" field
+        And I enter "my agent ref" in the "Your reference (optional)" field
 
         # Uk phone number start with '+442079460654'
         And I enter "+442079460654" in the "Telephone number" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Agent address" page
 
         When I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find Address" button
         And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
         And if available, click the "Select" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Property
@@ -2462,18 +2601,19 @@ Feature: LBTT Returns
         And I click on the "Find Address" button
         And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
         And if available, click the "Select" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the sub-title "Provide property details"
 
         When I select "Aberdeen City" from the "Local authority"
         And I select "ABN" from the "returns_lbtt_property_title_code"
         And I enter "1234" in the "returns_lbtt_property_title_number" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         # No does ADS apply page for non-conveyance returns
         Then I should see the "Return Summary" page
         And I click on the 1 st "Delete row" link
         And if available, click the confirmation dialog
+        # no wait as the not implies a wait anyway
         Then I should not see the text "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE"
 
         When I click on the "Add a property" link
@@ -2481,14 +2621,14 @@ Feature: LBTT Returns
         And I click on the "Find Address" button
         And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
         And if available, click the "Select" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the sub-title "Provide property details"
 
         When I select "Aberdeen City" from the "Local authority"
         And I select "ABN" from the "returns_lbtt_property_title_code"
         And I enter "1234" in the "returns_lbtt_property_title_number" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         # No does ADS apply page for non-conveyance returns
         Then I should see the "Return Summary" page
         # Verify entered details on return summary page do not include ADS
@@ -2502,13 +2642,13 @@ Feature: LBTT Returns
         # Tenant
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Who they are can't be blank"
         When I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I should receive the message "Last name can't be blank"
         And I should receive the message "First name can't be blank"
         And I should receive the message "Email can't be blank"
@@ -2525,9 +2665,9 @@ Feature: LBTT Returns
         And I select "ID Card" from the "Type of ID"
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant address" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find Address" button
@@ -2538,23 +2678,23 @@ Feature: LBTT Returns
         And I should see the text "Dunstable Road" in field "address_address_line3"
         And I should see the text "LUTON" in field "address_town"
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Should we use a different address for future correspondence in relation to this return can't be blank"
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
         Then I should see the "Is the tenant connected to the landlord?" page
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         Then I should see the text "Mr firstname surname"
@@ -2571,17 +2711,17 @@ Feature: LBTT Returns
         And I enter "03-08-2019" in the "Date of contract or conclusion of missives" date field
         And I enter "10-10-2019" in the "Lease start date" date field
         And I enter "08-10-2023" in the "Lease end date" date field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Linked Transactions" page
         # linked-transactions - select no to get positive calculation results
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
         # about the lease_values rental years
         When I enter "350000" in the "How much was the rent for the first year (inc VAT)?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
         When I check the "No" radio button
@@ -2591,23 +2731,23 @@ Feature: LBTT Returns
         And I enter "360200" in the "returns_lbtt_lbtt_return_yearly_rents_2_rent" field
         And I enter "370200" in the "returns_lbtt_lbtt_return_yearly_rents_3_rent" field
         And I enter "340200" in the "returns_lbtt_lbtt_return_yearly_rents_0_rent" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
         When I check the "Yes" radio button
         When I enter "352000" in the "Premium amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
         # relevant_rent
         When I enter "351000" in the "What is the relevant rent amount for this transaction?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Calculated Net Present Value (NPV)" page
         And I should not see the text "for linked transactions"
         # NPV calculated tax
         And I should see the text "1303005.42" in field "Net Present Value (NPV)"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         And the table of data is displayed
@@ -2656,7 +2796,6 @@ Feature: LBTT Returns
         When I enter stored reference number "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         And I should see a link with text "Download PDF"
-        And I should not see a link with text "Download waste details"
         When I click on the 1 st "Download PDF" link to download a file
         Then I should see the downloaded "PDF" content of "LBTT" by looking up "ret_ref_val"
 
@@ -2690,7 +2829,7 @@ Feature: LBTT Returns
 
         Then I should see the "Repayment details" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Payment and submission" page
         When I check the "returns_lbtt_lbtt_return_declaration" checkbox
@@ -2714,14 +2853,14 @@ Feature: LBTT Returns
         Then I should see the "About the return" page
 
         When I check the "Lease" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Tenant
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
         When I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
         When I enter "surname" in the "Last name" field
@@ -2732,23 +2871,23 @@ Feature: LBTT Returns
         And I enter "AB123456C" in the "National Insurance Number (NINO)" field
         And I open the "Tenant does not have NINO" summary item
         And I select "ID Card" from the "Type of ID"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Country where ID was issued can't be blank"
         And I should receive the message "Reference number of the ID can't be blank"
         When I clear the "National Insurance Number (NINO)" field
         And I open the "Tenant does not have NINO" summary item
         And I select "Choose from list" from the "Type of ID"
         And I enter "1" in the "Reference number of the ID" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Type of ID can't be blank"
         And I should receive the message "Country where ID was issued can't be blank"
         When I open the "Tenant does not have NINO" summary item
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I select "ID Card" from the "Type of ID"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant address" page
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find Address" button
@@ -2759,25 +2898,25 @@ Feature: LBTT Returns
         And I should see the text "Dunstable Road" in field "address_address_line3"
         And I should see the text "LUTON" in field "address_town"
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Should we use a different address for future correspondence in relation to this return can't be blank"
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
         Then I should see the "Is the tenant connected to the landlord?" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "If they are linked can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         Then I should see the text "Mr firstname surname"
@@ -2789,7 +2928,7 @@ Feature: LBTT Returns
         When I click on the "Add a landlord" link
         Then I should see the "About the landlord" page
         When I check the "An organisation registered with Companies House" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Registered company" page
         When I enter "09338960" in the "Company number" field
@@ -2800,7 +2939,7 @@ Feature: LBTT Returns
         And I should see the text "Hemel Hempstead" in field "company_locality"
         And I should see the text "Hertfordshire" in field "company_county"
         And I should see the text "HP2 4NW" in field "company_postcode"
-        When I click on the "Next" button
+        When I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         And I should see the text "NORTHGATE PUBLIC SERVICES LIMITED"
@@ -2809,7 +2948,7 @@ Feature: LBTT Returns
         When I click on the "Add a property" link
         Then I should see the "Property address" page
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
 
         When I enter "EH1 1BE" in the "address_summary_postcode" field
@@ -2820,7 +2959,7 @@ Feature: LBTT Returns
         And I should see the text "Waverley Railway Station" in field "address_address_line2"
         And I should see the text "EDINBURGH" in field "address_town"
         And I should see the text "EH1 1BE" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the sub-title "Provide property details"
         When I select "Aberdeen City" from the "Local authority"
@@ -2828,7 +2967,7 @@ Feature: LBTT Returns
         And I enter "1234" in the "returns_lbtt_property_title_number" field
         And I select "ANG" from the "returns_lbtt_property_parent_title_code"
         And I enter "4567" in the "returns_lbtt_property_parent_title_number" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         #TRANSACTION
@@ -2836,7 +2975,7 @@ Feature: LBTT Returns
         Then I should see the "About the transaction" page
 
         When I check the "Residential" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the dates" page
 
         Then I should see the "About the dates" page
@@ -2845,39 +2984,39 @@ Feature: LBTT Returns
         And I enter "03-08-2019" in the "Date of contract or conclusion of missives" date field
         And I enter "10-10-2019" in the "Lease start date" date field
         And I enter "08-10-2023" in the "Lease end date" date field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
         And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
         And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Linked Transactions" page
         When I check the "No" radio button
-        When I click on the "Next" button
+        When I click on the "Continue" button
 
 
         Then I should see the "Reliefs on this transaction" page
         When I check the "No" radio button
-        When I click on the "Next" button
+        When I click on the "Continue" button
 
         Then I should see the "About the lease values" page
         When I enter "350000" in the "How much is the rent for the first year (inc VAT)?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About the lease values" page
 
         When I enter "351000" in the "What is the relevant rent amount for this transaction?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
 
         And I should see the text "1285577.72" in field "Net Present Value (NPV)"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And I click on the "Save draft" button
 
@@ -2895,9 +3034,6 @@ Feature: LBTT Returns
 
         When I enter stored reference number "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
-
-        And I should see a link with text "Download PDF"
-        And I should not see a link with text "Download waste details"
         And I should see a link with text "Continue"
 
         And I click on the "Continue" link
@@ -2934,7 +3070,7 @@ Feature: LBTT Returns
 
         When I click on the 1 st "Edit row" link
         Then I should see the "About the buyer" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer details" page
         When I enter "lastname" in the "Last name" field
         And I select "Mrs" from the "Title"
@@ -2942,17 +3078,17 @@ Feature: LBTT Returns
         And I select "ID Card" from the "Type of ID"
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer address" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer's contact address" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer details" page
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Buyer details" page
         And I should see the text "Is the buyer acting as a trustee or representative partner for tax purposes?"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And the table of data is displayed
             | Name                   | Type                 | Address                    |      |        |
@@ -2966,31 +3102,31 @@ Feature: LBTT Returns
         Then I should see the "About the transaction" page
 
         # get to page to enter incomplete data
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the dates" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Linked Transactions" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the transaction" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
 
         # fix the data
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "About future events" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # try again
         When I click on the "Submit return" button
         Then I should see the "Repayment details" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
         When I check the "BACS" radio button
 
@@ -3019,7 +3155,7 @@ Feature: LBTT Returns
         Then I should see the "About the return" page
 
         When I check the "Conveyance or transfer" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # First buyer with address selected
@@ -3027,7 +3163,7 @@ Feature: LBTT Returns
         Then I should see the "About the buyer" page
 
         When I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer details" page
 
         When I enter "Buyer" in the "Last name" field
@@ -3035,23 +3171,23 @@ Feature: LBTT Returns
         And I enter "0123456789" in the "Telephone number" field
         And I enter "noreply@northgateps.com" in the "Email" field
         And I enter "AB123456C" in the "National Insurance Number (NINO)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer address" page
 
         When I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find Address" button
         And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
         And if available, click the "Select" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer's contact address" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer details" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer details" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Second Buyer with edited address
@@ -3059,7 +3195,7 @@ Feature: LBTT Returns
         Then I should see the "About the buyer" page
 
         When I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer details" page
 
         When I enter "Buyer" in the "Last name" field
@@ -3067,7 +3203,7 @@ Feature: LBTT Returns
         And I enter "0123456780" in the "Telephone number" field
         And I enter "noreply2@northgateps.com" in the "Email" field
         And I enter "NP123456D" in the "National Insurance Number (NINO)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer address" page
 
         When I enter "LU1 1AA" in the "address_summary_postcode" field
@@ -3075,16 +3211,16 @@ Feature: LBTT Returns
         And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
         And if available, click the "Select" button
         And I click on the "Edit address" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer's contact address" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer details" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Buyer details" page
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         When I click on the "Save draft" button

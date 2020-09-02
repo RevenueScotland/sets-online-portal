@@ -14,25 +14,25 @@
       <%= asf.hidden_field :postcode %>
       <%= asf.button 'change_postcode', { :class => 'scot-rev-button_link govuk-link', :name => 'change_postcode' } %>
     </div>
-   <% else %>
-   <%= asf.text_field :postcode %>
+  <% else %>
+    <%= asf.text_field :postcode %>
     <div class="govuk-form-group">
       <%# An autofocus is added here so that when the user has clicked on this button, which should show the select
           field, it would then focus on this button. %>
       <%= asf.submit '.search', { :name => 'search', autofocus: !@search_results.nil? } %>
     </div>
-   <% end %>
-   <%= hidden_field_tag 'show_manual_address', @show_manual_address %>
-   <%= hidden_field_tag 'address_read_only', @address_read_only %>
+  <% end %>
+  <%= hidden_field_tag 'show_manual_address', @show_manual_address %>
+  <%= hidden_field_tag 'address_read_only', @address_read_only %>
   <% unless @search_results.nil? %>
-   <div class="govuk-form-group">
+    <div class="govuk-form-group">
       <%= label_tag "search_results", t('address_select'), class: 'govuk-label' %>
       <%= select_tag "search_results", options_for_select(@search_results.collect { |v| [v.formatted_address, v.address_identifier] }),
                      { width:'two-thirds' }, { include_blank: t('.no_of_address_select', count: @search_results.length ) } %>
-   </div>
-   <div class="js-hidden ">
+    </div>
+    <div class="js-hidden ">
       <%= asf.submit '.select', {:name => 'select'} %>
-   </div>
+    </div>
   <% end %>
   <div class="govuk-form-group">
     <% focus_on_line_1 = false %>
@@ -43,29 +43,26 @@
     <% end %>
   </div>
 <% end %>
-
-
 <div class="govuk-form-group <%= ' js-hidden' unless  @show_manual_address %>" id="address_detail">
   <%= fields_for @address_detail, html: { multipart: true } do |adf| %>
     <%# Autofocus is set to true when the address_line1 is an editable text field or when the user has selected an
         address through the select field options. %>
-    <%= adf.text_field :address_line1, {}, { readonly: @address_read_only, autofocus: ((!@address_summary.postcode.blank? || !@address_read_only) && !@form_error_found) } %>
-    <%= adf.text_field :address_line2, { label: '' }, { readonly: @address_read_only } %>
-    <%= adf.text_field :address_line3, { label: '' }, { readonly: @address_read_only } %>
-    <%= adf.text_field :address_line4, { label: '' }, { readonly: @address_read_only } %>
-    <%= adf.text_field :town, {}, { readonly: @address_read_only } %>
-    <%= adf.text_field :county, {}, { readonly: @address_read_only } %>
+    <%= adf.text_field :address_line1, { width: 'one-half' }, { readonly: @address_read_only, autofocus: ((!@address_summary.postcode.blank? || !@address_read_only) && !@form_error_found) } %>
+    <%= adf.text_field :address_line2, { width: 'one-half', label: '' }, { readonly: @address_read_only } %>
+    <%= adf.text_field :address_line3, { width: 'one-half', label: '' }, { readonly: @address_read_only } %>
+    <%= adf.text_field :address_line4, { width: 'one-half', label: '' }, { readonly: @address_read_only } %>
+    <%= adf.text_field :town, { width: 'one-half' }, { readonly: @address_read_only } %>
+    <%= adf.text_field :county, { width: 'one-half' }, { readonly: @address_read_only } %>
     <% if @country_code_required || @country_code_required.nil? %>
-      <%= adf.select :country, @address_detail.list_ref_data(:country), { text_auto_complete: !@address_read_only },
+      <%= adf.select :country, @address_detail.list_ref_data(:country), { width: 'one-half', text_auto_complete: !@address_read_only },
        { disabled: @address_read_only } %>
     <% end %>
     <%# Include the hidden country code field if the country code isn't shown or is disabled %>
     <% if !(@country_code_required || @country_code_required.nil?) || @address_read_only %>
       <%= adf.hidden_field :country %>
     <% end %>
-    <%= adf.text_field :postcode, {}, { readonly: @address_read_only } %>
+    <%= adf.text_field :postcode, { width: 'one-quarter' }, { readonly: @address_read_only } %>
     <%= adf.hidden_field :default_country %>
     <%= adf.hidden_field :address_identifier %>
   <% end %>
 </div>
-

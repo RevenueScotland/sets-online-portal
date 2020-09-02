@@ -34,7 +34,7 @@ Feature: Forgotten Password
 
     Scenario: User provides the correct details
         When I go to the "Forgotten-password" page
-        And I enter "portal.change.details" in the "Username" field
+        And I enter "portal.change@details" in the "Username" field
         And I enter "noreply@northgateps.com" in the "Email address" field
         And I enter "AbcXyz123!" in the "New password" field
         And I enter "AbcXyz123!" in the "Confirm new password" field

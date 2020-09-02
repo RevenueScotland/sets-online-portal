@@ -42,7 +42,7 @@ module Dashboard
       return unless can? AuthorisationHelper::VIEW_RETURNS
 
       @dashboard_returns, @returns_pagination =
-        DashboardReturn.list_all_returns(current_user, returns_page, DashboardReturnFilter.new(draft_only: true), 3)
+        DashboardReturn.list_all_returns(current_user, returns_page, DashboardReturnFilter.new(draft_only: 'Y'), 3)
     end
 
     # get the outstanding
@@ -50,7 +50,7 @@ module Dashboard
       @outstanding, @outstanding_pagination =
         DashboardReturn.list_all_returns(current_user,
                                          outstanding_page,
-                                         DashboardReturnFilter.new(outstanding_balance: true, return_status: 'L'), 3)
+                                         DashboardReturnFilter.new(outstanding_balance: 'Y', return_status: 'L'), 3)
     end
   end
 end

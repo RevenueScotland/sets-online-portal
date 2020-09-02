@@ -14,9 +14,9 @@ When('I set a period of {string} and {string}') do |year, quarter|
   end
   select year, from: 'year'
   choose(quarter, visible: false)
-  click_button('Next')
+  click_button('Continue')
   choose('No', visible: false)
-  click_button('Next')
+  click_button('Continue')
   choose('No', visible: false)
-  click_button('Next')
+  click_button('Continue')
 end

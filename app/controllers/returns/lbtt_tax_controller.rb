@@ -48,7 +48,7 @@ module Returns
 
     # Loads existing wizard models (@lbtt_return and @tax) from the wizard cache or redirects to the summary page
     # @return [Tax] the model for wizard saving
-    def load_step
+    def load_step(_sub_object_attribute = nil)
       @post_path = wizard_post_path
       @lbtt_return = wizard_load(Returns::LbttController)
       Lbtt::Tax.setup_tax(@lbtt_return)
@@ -56,7 +56,7 @@ module Returns
     end
 
     # Return the parameter list filtered for the attributes of the Calculate model
-    def filter_params
+    def filter_params(_sub_object_attribute = nil)
       required = :returns_lbtt_tax
       attribute_list = Lbtt::Tax.attribute_list
       params.require(required).permit(attribute_list) if params[required]

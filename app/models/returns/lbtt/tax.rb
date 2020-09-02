@@ -347,9 +347,8 @@ module Returns
         end
 
         # duplicate the entries to save the original values
-        output.keys.each { |key| output["orig_#{key}"] = output[key]&.dup }
-
-        output
+        orig_hash = output.transform_keys { |key| "orig_#{key}" }
+        output.merge!(orig_hash)
       end
 
       # Extract back office tax response details for a conveyance type response

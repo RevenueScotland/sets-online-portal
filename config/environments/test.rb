@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'request_summary_log/log_middleware'
+require 'request_summary_logging/log_middleware'
 require_relative '../cache.rb'
 
 Rails.application.configure do # rubocop:disable Metrics/BlockLength
@@ -17,12 +17,6 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # pre-loads Rails for running tests, you may have to set it to true.
   config.eager_load = false
 
-  # Compress JavaScripts and CSS.
-  # used harmony syntax https://github.com/lautis/uglifier/issues/127
-  config.assets.js_compressor = Uglifier.new(harmony: true)
-  # For now do not compress the css see https://github.com/sass/libsass/issues/2701
-  config.assets.css_compressor = nil
-
   # Configure public file server for tests with Cache-Control for performance.
   config.public_file_server.enabled = true
   config.public_file_server.headers = {
@@ -37,6 +31,9 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
 
   # use Redis for caching
   config.cache_store = :redis_cache_store, cache_connection
+
+  # For now do not compress the css see https://github.com/sass/libsass/issues/2701
+  config.assets.css_compressor = nil
 
   # Raise exceptions instead of rendering exception templates.
   config.action_dispatch.show_exceptions = false
@@ -80,21 +77,25 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
 
   # Start ActiveJobs
   config.after_initialize do
-    unless ENV['PREVENT_JOBS_STARTING'] == 'Y'
+    if ENV['PREVENT_JOBS_STARTING'] == 'Y' || !ENV['UNIT_TEST'].nil?
+      Rails.logger.info do
+        "Jobs not started PREVENT_JOBS_STARTING=#{ENV['PREVENT_JOBS_STARTING']} UNIT_TEST=#{ENV['UNIT_TEST']}"
+      end
+    else
       # GetReferenceData/ReferenceValues refresh job
-      RefreshRefDataJob.schedule_next_run(1.second)
+      RefreshRefDataJob.schedule_next_run(1.seconds)
 
       # GetSystemParameters refresh job
-      RefreshSystemParametersJob.schedule_next_run(1.minutes)
+      RefreshSystemParametersJob.schedule_next_run(3.seconds)
 
       # GetSystemParameters refresh job
-      RefreshPwsTextJob.schedule_next_run(2.minutes)
+      RefreshPwsTextJob.schedule_next_run(5.seconds)
 
       # Tax Relief Type refresh job
-      TaxReliefTypeJob.schedule_next_run(3.minutes)
+      TaxReliefTypeJob.schedule_next_run(7.seconds)
 
       # Delete the temporary files job
-      DeleteTempFilesJob.schedule_next_run(4.minutes)
+      DeleteTempFilesJob.schedule_next_run(9.seconds)
     end
   end
 end

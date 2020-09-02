@@ -57,12 +57,12 @@ module Returns
 
     # Loads existing wizard models from the wizard cache or redirects to the summary page
     # @return model to use on the form/wizard
-    def load_step
+    def load_step(_sub_object_attribute = nil)
       @agent = wizard_load
     end
 
     # Return the parameter list filtered for the attributes of the Party model
-    def filter_params
+    def filter_params(_sub_object_attribute = nil)
       required = :returns_lbtt_party
       attribute_list = Lbtt::Party.attribute_list
       params.require(required).permit(attribute_list) if params[required]

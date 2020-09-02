@@ -56,10 +56,10 @@ module Returns
       # Define the ref data codes associated with the attributes but which won't be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
       def uncached_ref_data_codes
-        { ads_reliefclaim_option_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          ads_consideration_yes_no: comp_key('YESNO', 'SYS', 'RSTU'),
-          ads_sell_residence_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          ads_sold_main_yes_no: comp_key('YESNO', 'SYS', 'RSTU') }
+        { ads_reliefclaim_option_ind: YESNO_COMP_KEY,
+          ads_consideration_yes_no: YESNO_COMP_KEY,
+          ads_sell_residence_ind: YESNO_COMP_KEY,
+          ads_sold_main_yes_no: YESNO_COMP_KEY }
       end
 
       # Layout to print the data in this model

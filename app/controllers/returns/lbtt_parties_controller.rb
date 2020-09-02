@@ -90,7 +90,7 @@ module Returns
     # then clear details related to trust, so user can see blank option on next pages to enter club details.
     def organisation_type_details
       load_step
-      return unless params[:submitted]
+      return unless params[:continue]
 
       reset_party_details if filter_params.present? && @party.org_type != filter_params[:org_type]
       wizard_step_submitted(OTHER_ORG_STEPS)
@@ -205,13 +205,13 @@ module Returns
     # (The first step clears the cache and loads a specific party so this shouldn't ever see the wrong party's data!
     # @see #setup_step)
     # @return [Party] the model for wizard saving
-    def load_step
+    def load_step(_sub_object_attribute = nil)
       @post_path = wizard_post_path(LbttController.name)
       @party = wizard_load_or_redirect(returns_lbtt_summary_url)
     end
 
     # Return the parameter list filtered for the attributes of the Party model
-    def filter_params
+    def filter_params(_sub_object_attribute = nil)
       required = :returns_lbtt_party
       attribute_list = Lbtt::Party.attribute_list
       params.require(required).permit(attribute_list) if params[required]

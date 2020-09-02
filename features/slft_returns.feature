@@ -16,43 +16,43 @@ Feature: SLfT Returns
         #Set Period including validation checks
         Then I click on the "Add return period" link
         Then I should see the "What accounting period is this return for?" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "year can't be blank"
         And I should see the text "quarter can't be blank"
         When I check the "April to June (Quarter 1)" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "year can't be blank"
         When I select "2018/19" from the "year"
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Non disposal area information" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "non-disposal area on any of your sites can't be blank"
         When I check the "No" radio button
-        And I click on the "Next" button
-        When I click on the "Next" button
+        And I click on the "Continue" button
+        When I click on the "Continue" button
         Then I should see the text "Have you ceased to operate a non-disposal area on any of your sites can't be blank"
         And I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return summary" page
 
         When I click on the "Edit return period" link
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "which sites have a new non disposal area can't be blank"
         When I enter "RANDOM_text,4001" in the "Tell us which sites have a new non disposal area" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "which sites have a new non disposal area is too long"
         And I enter "Some really good sites" in the "Tell us which sites have a new non disposal area" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "removed a non-disposal area from can't be blank"
         When I enter "RANDOM_text,4001" in the "Tell us which sites you have removed a non-disposal area from" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "removed a non-disposal area from is too long"
         When I enter "Some really bad sites" in the "Tell us which sites you have removed a non-disposal area from" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return summary" page
 
         # Save Draft and re-load this means that by checking the mandatory validatoon
@@ -101,61 +101,61 @@ Feature: SLfT Returns
         # Fill in Credit Details with validation check
         When I click on the "Add credit details" link
         Then I should see the "Environmental credit" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "Are you claiming a credit in relation to an environmental contribution can't be blank"
         And I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Contribution to environmental bodies can't be blank"
         And I should see the text "Credit claimed in relation to the contribution can't be blank"
         And I enter "1000000000000000000" in the "Contribution to environmental bodies" field
         And I enter "1000000000000000000" in the "Credit claimed in relation to the contribution" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Contribution to environmental bodies must be less than 1000000000000000000"
-        And I should see the text "Credit claimed must be less than 90% of the contribution to environmental bodies"
+        And I should see the text "Credit claimed must be less than the specified percentage of the contribution to environmental bodies"
         And I enter "abc" in the "Contribution to environmental bodies" field
         And I enter "abc" in the "Credit claimed in relation to the contribution" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Contribution to environmental bodies is not a number"
         And I should see the text "Credit claimed in relation to the contribution is not a number"
         And I enter "0" in the "Contribution to environmental bodies" field
         And I enter "0" in the "Credit claimed in relation to the contribution" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Contribution to environmental bodies must be greater than 0"
         And I should see the text "Credit claimed in relation to the contribution must be greater than 0"
 
         And I enter "555.12" in the "Contribution to environmental bodies" field
         And I enter "499.62" in the "Credit claimed in relation to the contribution" field
-        And I click on the "Next" button
-        Then I should see the text "Credit claimed must be less than 90% of the contribution to environmental bodies"
+        And I click on the "Continue" button
+        Then I should see the text "Credit claimed must be less than the specified percentage of the contribution to environmental bodies"
 
         When I enter "59.3" in the "Credit claimed in relation to the contribution" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Bad debt credit" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "Do you have any claims to make in relation to bad debt can't be blank"
         And I check the "Yes" radio button
         And I enter "abc" in the "Bad debt claim amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Bad debt claim amount is not a number"
         And I check the "Yes" radio button
         And I enter "-123.44" in the "Bad debt claim amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Bad debt claim amount must be greater than 0"
         And I enter "7123" in the "Bad debt claim amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Permanent removal credit" page
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "Are you claiming a credit for permanent removal can't be blank"
         And I check the "Yes" radio button
         And I enter "abc.22" in the "Permanent removal claim amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Permanent removal claim amount is not a number"
         And I enter "0" in the "Permanent removal claim amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Permanent removal claim amount must be greater than 0"
         And I enter "564.22" in the "Permanent removal claim amount" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return summary" page
         And I should see the text "Edit credit details"
 
@@ -176,13 +176,13 @@ Feature: SLfT Returns
         When I click on the "Edit credit details" link
         Then I should see the text "555.12" in field "Contribution to environmental bodies"
         And I enter "1234" in the "Contribution to environmental bodies" field
-        When I click on the "Next" button
+        When I click on the "Continue" button
         # Check the formatted amount is shown
         Then I should see the text "7123" in field "Bad debt claim amount"
 
         When I check the "No" radio button
-        And I click on the "Next" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
+        And I click on the "Continue" button
         Then I should see the "Return summary" page
 
         # Check the data doesn't show but the previous stuff does
@@ -208,7 +208,7 @@ Feature: SLfT Returns
         When I click on the "Add new waste type" link
         Then I should see the "Details of the waste for Waste Site 1" page
         And I should see the sub-title "Provide the following waste details"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "EWC code can't be blank"
         Then I should see the text "Description of waste can't be blank"
         Then I should see the text "Geographical area can't be blank"
@@ -216,15 +216,19 @@ Feature: SLfT Returns
         Then I should see the text "Has this waste been moved out of a non-disposal area (NDA)"
         Then I should see the text "Is it pre-treated can't be blank"
 
-        When I enter "05 01 03 Tank bottom sludges" in the "EWC code" select or text field
-        And I enter "icky goo" in the "Description of waste" field
+        When I enter "05 01 02 Desalter sludges" in the "EWC code" select or text field
+        And I enter "RANDOM_text,256" in the "Description of waste" field
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
         And I check the "returns_slft_waste_pre_treated_ind_y" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
-        Then I should see the "Details of the 05 01 03 waste for Waste Site 1" page
+        Then I should receive the message "Description of waste is too long (maximum is 255 characters)"
+        And I enter "icky goo" in the "Description of waste" field
+        And I click on the "Continue" button
+
+        Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
         And I should see the sub-title "Provide tonnage details for this waste type"
 
         # They each have the same validation so check each combination in one go
@@ -232,7 +236,7 @@ Feature: SLfT Returns
         And I enter "0.213" in the "Lower tonnage" field
         And I enter "cc" in the "Exempt tonnage" field
         And I enter "-4" in the "Water discount tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Standard tonnage is not a number"
         And I should receive the message "Lower tonnage must be a number to 2 decimal places"
         And I should receive the message "Water discount tonnage must be greater than or equal to 0"
@@ -241,7 +245,7 @@ Feature: SLfT Returns
         And I enter "4" in the "Lower tonnage" field
         And I enter "13" in the "Exempt tonnage" field
         And I enter "aa" in the "Water discount tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Exempt tonnage cannot be set when other tonnages are set"
         And I should receive the message "Standard tonnage cannot be set when other tonnages are set"
         And I should receive the message "Lower tonnage cannot be set when other tonnages are set"
@@ -251,14 +255,14 @@ Feature: SLfT Returns
         And I enter "0" in the "Lower tonnage" field
         And I enter "13" in the "Exempt tonnage" field
         And I enter "11" in the "Water discount tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should receive the message "Water discount tonnage cannot be set when exempt tonnage is set"
 
         When I enter "0" in the "Water discount tonnage" field
-        And I click on the "Next" button
-        Then I should see the "Details of the 05 01 03 waste for Waste Site 1" page
+        And I click on the "Continue" button
+        Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
         And I should see the sub-title "Why is some tonnage exempt?"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "NDA can't be blank"
         Then I should see the text "Restoration can't be blank"
         Then I should see the text "Other can't be blank"
@@ -272,7 +276,7 @@ Feature: SLfT Returns
         And I enter "aa" in the "NDA tonnage" field
         And I enter "0.415" in the "Restoration tonnage" field
         And I enter "-1" in the "Other tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "NDA tonnage is not a number"
         Then I should see the text "Restoration tonnage must be a number to 2 decimal places"
         Then I should see the text "Other tonnage must be greater than 0"
@@ -281,18 +285,18 @@ Feature: SLfT Returns
         When I check the "returns_slft_waste_nda_ex_yes_no_n" radio button
         And I check the "returns_slft_waste_restoration_ex_yes_no_n" radio button
         And I enter "13" in the "Other tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Description of other exemption reason can't be blank"
         When I enter "RANDOM_text,256" in the "Description of other exemption reason" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Description of other exemption reason is too long"
         And I enter "my other exemption reason" in the "Description of other exemption reason" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the "Waste details summary" page
         And the table of data is displayed
             | EWC code          | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
-            | 05 01 03/icky goo | 0             | 0                | 13             | 0             | 13            |
+            | 05 01 02/icky goo | 0             | 0                | 13             | 0             | 13            |
 
         When I click on the "Add new waste type" link
         Then I should see the sub-title "Provide the following waste details"
@@ -303,19 +307,19 @@ Feature: SLfT Returns
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
         And I check the "returns_slft_waste_pre_treated_ind_y" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         # check 0 is seen as empty
         Then I should see the text "Standard tonnage or the lower or exempt tonnage must be entered"
         When I enter "0" in the "Standard tonnage" field
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "Standard tonnage or the lower or exempt tonnage must be entered"
 
         # Select tonnage AND water tonnage
         And I enter "18.45" in the "Lower tonnage" field
         And I enter "8" in the "Water discount tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Waste details summary" page
 
         # Add a value less than 1
@@ -327,15 +331,15 @@ Feature: SLfT Returns
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
         And I check the "returns_slft_waste_pre_treated_ind_y" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
         When I enter "0.78" in the "Standard tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Waste details summary" page
 
         And the table of data is displayed
             | EWC code                 | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
-            | 05 01 03/icky goo        | 0             | 0                | 13             | 0             | 13            |
+            | 05 01 02/icky goo        | 0             | 0                | 13             | 0             | 13            |
             | 06 13 04/don't breath it | 18.45         | 0                | 0              | 8             | 10.45         |
             | 08 01 15/something else  | 0             | 0.78             | 0              | 0             | 0.78          |
 
@@ -346,24 +350,26 @@ Feature: SLfT Returns
         And I select "Recycled" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_n" radio button
         And I check the "returns_slft_waste_pre_treated_ind_n" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         When I enter "1" in the "Standard tonnage" field
         And I enter "1" in the "Water discount tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Waste details summary" page
         And the table of data is displayed
             | EWC code                 | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
+            | 05 01 02/icky goo        | 0             | 0                | 13             | 0             | 13            |
             | 05 01 02/it gets worse   | 0             | 1                | 0              | 1             | 0             |
-            | 05 01 03/icky goo        | 0             | 0                | 13             | 0             | 13            |
             | 06 13 04/don't breath it | 18.45         | 0                | 0              | 8             | 10.45         |
             | 08 01 15/something else  | 0             | 0.78             | 0              | 0             | 0.78          |
 
         # This line will cause a fail if the order is wrong so this tests waste entries are orderd by EWC code correctly
-        When I click on the 2 nd "Edit row" link
+        When I click on the 1 st "Edit row" link
         And I enter "06 13 05 Soot" in the "EWC code" select or text field
-        And I click on the "Next" button
-        And I click on the "Next" button
-        And I click on the "Next" button
+        And I click on the "Continue" button
+        And I should see the "Details of the 06 13 05 waste for Waste Site 1" page
+        And I click on the "Continue" button
+        And I should see the text "Why is some tonnage exempt?"
+        And I click on the "Continue" button
         Then I should see the "Waste details summary" page
         And the table of data is displayed
             | EWC code                 | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
@@ -438,12 +444,12 @@ Feature: SLfT Returns
         And I select "Recycled" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_n" radio button
         And I check the "returns_slft_waste_pre_treated_ind_n" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Details of the 05 01 02 waste for Waste Site 2" page
         And I should see the sub-title "Provide tonnage details for this waste type"
         When I enter "13" in the "Standard tonnage" field
         And I enter "1" in the "Water discount tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Waste details summary" page
         And the table of data is displayed
             | EWC code               | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
@@ -459,11 +465,11 @@ Feature: SLfT Returns
         And I select "Incinerated" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_n" radio button
         And I check the "returns_slft_waste_pre_treated_ind_n" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
         When I enter "11.24" in the "Exempt tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         Then I should see the sub-title "Why is some tonnage exempt?"
         When I check the "returns_slft_waste_nda_ex_yes_no_n" radio button
@@ -471,7 +477,7 @@ Feature: SLfT Returns
         And I check the "returns_slft_waste_other_ex_yes_no_y" radio button
         And I enter "11.24" in the "Other tonnage" field
         And I enter "my other exemption reason" in the "Description of other exemption reason" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Waste details summary" page
         And the table of data is displayed
             | EWC code                   | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
@@ -564,14 +570,14 @@ Feature: SLfT Returns
         And I should see the text "1234" in field "Contribution to environmental bodies"
         And I should see the text "59.3" in field "Credit claimed in relation to the contribution"
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Bad debt credit" page
         And the radio button "returns_slft_slft_return_bad_debt_yes_no_n" should be selected
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Permanent removal credit" page
         And I should see the text "564.22" in field "Permanent removal claim amount"
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return summary" page
 
         # Check details for waste site 1
@@ -610,11 +616,11 @@ Feature: SLfT Returns
         And I should see the "Incinerated" option selected in "Management method"
         And the radio button "returns_slft_waste_from_non_disposal_ind_n" should be selected
         And the radio button "returns_slft_waste_pre_treated_ind_n" should be selected
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Details of the 01 01 01 waste for Waste Site 2" page
         And I should see the sub-title "Provide tonnage details for this waste type"
         And I should see the text "11.24" in field "Exempt tonnage"
-        When I click on the "Next" button
+        When I click on the "Continue" button
 
         Then I should see the "Details of the 01 01 01 waste for Waste Site 2" page
         And I should see the sub-title "Why is some tonnage exempt?"
@@ -623,7 +629,7 @@ Feature: SLfT Returns
         And the radio button "returns_slft_waste_other_ex_yes_no_y" should be selected
         And I should see the text "11.24" in field "Other tonnage"
         And I should see the text "my other exemption reason" in field "Description of other exemption reason"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Waste details summary" page
 
         When I click on the "Back" link
@@ -643,7 +649,7 @@ Feature: SLfT Returns
         And I should see the text "0" in field "Total credit"
         And I should see the text "1095" in field "Total payable"
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
         # Verify the fpay_method information has been cleared
@@ -679,18 +685,18 @@ Feature: SLfT Returns
         Then I should see the "Details of the 03 02 02 waste for Waste Site 1" page
         And I should see the sub-title "Provide the following waste details"
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Details of the 03 02 02 waste for Waste Site 1" page
         And I should see the sub-title "Provide tonnage details for this waste type"
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Details of the 03 02 02 waste for Waste Site 1" page
         And I should see the sub-title "Why is some tonnage exempt?"
         When I check the "returns_slft_waste_nda_ex_yes_no_n" radio button
         And I check the "returns_slft_waste_restoration_ex_yes_no_n" radio button
         And I check the "returns_slft_waste_other_ex_yes_no_y" radio button
         And I enter "18" in the "Other tonnage" field
-        When I click on the "Next" button
+        When I click on the "Continue" button
 
         Then I should see the "Waste details summary" page
         Then the table of data is displayed
@@ -712,10 +718,10 @@ Feature: SLfT Returns
         Then I should see the "Details of the 01 03 07 waste for Waste Site 2" page
         And I should see the sub-title "Provide the following waste details"
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Waste details summary" page
         Then the table of data is displayed
             | EWC code            | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
@@ -737,35 +743,35 @@ Feature: SLfT Returns
         And I should see the text "9" in field "Total credit"
         And I should see the text "8871" in field "Total payable"
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Repayment details" page
 
         # Repayment screen
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "Do you want to request a repayment from Revenue Scotland can't be blank"
 
         # without repayment
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
         When I click on the "Back" link
 
         # with repayment
         When I check the "Yes" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "How much are you claiming from Revenue Scotland can't be blank"
         When I enter "aaa" in the "How much are you claiming from Revenue Scotland?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "How much are you claiming from Revenue Scotland is not a number"
         When I enter "-34" in the "How much are you claiming from Revenue Scotland?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "How much are you claiming from Revenue Scotland must be greater than 0"
         When I enter "100.56" in the "How much are you claiming from Revenue Scotland?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Enter bank details" page
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the text "Name of the account holder can't be blank"
         And I should see the text "Bank / building society account number can't be blank"
         And I should see the text "Branch sort code can't be blank"
@@ -775,7 +781,7 @@ Feature: SLfT Returns
         And I enter "RANDOM_text,11" in the "Bank / building society account number" field
         And I enter "85-96-88-7" in the "Branch sort code" field
         And I enter "RANDOM_text,256" in the "Name of bank / building society" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the text "Bank / building society account number is not a number"
         And I should see the text "Bank / building society account number is the wrong length (should be 8 characters)"
         And I should see the text "Branch sort code is invalid"
@@ -784,30 +790,34 @@ Feature: SLfT Returns
         And I enter "12345678" in the "Bank / building society account number" field
         And I enter "10-11-12" in the "Branch sort code" field
         And I enter "Natwest" in the "Name of bank / building society" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Declaration" page
         And I should see the text "I am eligible for the refund claimed"
 
         # Repayment declaration
-        When I click on the "Next" button
-        Then I should see the text "am eligible for the refund claimed must be accepted"
+        When I click on the "Continue" button
+        Then I should see the "Declaration" page
+        And I should receive the message "I am eligible for the refund claimed must be accepted"
 
         When I check the "returns_slft_slft_return_rrep_bank_auth_ind" checkbox
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
         And I should see the text "I, the taxpayer, confirm that this return is, to the best of my knowledge, correct and complete"
 
         # Actual declaration page
         When I click on the "Submit return" button
-        Then I should see the text "How are you paying can't be blank"
-        And I should see the text "The declaration must be accepted"
+        Then I should receive the message "How are you paying can't be blank"
+        And I should receive the message "The declaration must be accepted"
 
         # go back and check we can choose to not do a repayment and instead go straight to the normal payment/submit page
         When I click on the "Back" link
-        And I click on the "Back" link
-        And I click on the "Back" link
+        Then I should see the "Declaration" page
+        When I click on the "Back" link
+        Then I should see the "Enter bank details" page
+        When I click on the "Back" link
+        Then I should see the "Repayment details" page
         And I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
     # Loads draft ie no repayment page
@@ -837,15 +847,15 @@ Feature: SLfT Returns
         Then I should see the "Environmental credit" page
 
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Bad debt credit" page
 
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Permanent removal credit" page
 
         When I check the "No" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Return summary" page
 
         # correct and complete waste details for site 1
@@ -857,11 +867,11 @@ Feature: SLfT Returns
         When I click on the 2 nd "Edit row" link
         Then I should see the sub-title "Provide the following waste details"
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
         When I enter "0" in the "Exempt tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Waste details summary" page
 
         # check saving draft repeatedly from site summary doesn't lose the tare_reference
@@ -882,11 +892,11 @@ Feature: SLfT Returns
 
         When I click on the "Edit row" link
         And I should see the sub-title "Provide the following waste details"
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
         When I enter "0" in the "Exempt tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Waste details summary" page
 
         When I click on the "Back" link
@@ -914,7 +924,7 @@ Feature: SLfT Returns
         And I should see the text "9" in field "Total credit"
         And I should see the text "8871" in field "Total payable"
 
-        When I click on the "Next" button
+        When I click on the "Continue" button
         Then I should see the "Payment and submission" page
         # Verify the fpay_method information has been cleared
         And the radio button "BACS" should not be selected
@@ -925,8 +935,17 @@ Feature: SLfT Returns
         And I click on the "Submit return" button
         Then I should see the text "Your amendment to your Scottish Landfill tax return RS1000947STMD has now been submitted."
         And I should see the text "The submission date is NOW_DATE"
-        And I click on the "Send secure message" link
+
+        When I click on the "Send secure message" link
         Then I should see the "New message" page
+
+        # Check we can't resubmit
+        When I go to the "returns/slft/declaration" page
+        Then I should see the "Payment and submission" page
+        And I check the "returns_slft_slft_return_declaration" checkbox
+        And I click on the "Submit return" button
+        Then I should receive the message "This return has already been submitted. If you are unsure that the return has been submitted, save a draft version and check on the dashboard"
+
 
     Scenario: About rounding down waste site value
         # About the transaction
@@ -951,11 +970,11 @@ Feature: SLfT Returns
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
         And I check the "returns_slft_waste_pre_treated_ind_y" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
         When I enter "5.9" in the "Standard tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Waste details summary" page
         And the table of data is displayed
             | EWC code          | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
@@ -970,11 +989,11 @@ Feature: SLfT Returns
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
         And I check the "returns_slft_waste_pre_treated_ind_y" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
         When I enter "5.9" in the "Standard tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Waste details summary" page
         And the table of data is displayed
             | EWC code           | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
@@ -1002,12 +1021,12 @@ Feature: SLfT Returns
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
         And I check the "returns_slft_waste_pre_treated_ind_y" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
         When I enter "4.22" in the "Lower tonnage" field
         And I enter "1.19" in the "Water discount tonnage" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Waste details summary" page
         And the table of data is displayed
             | EWC code          | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |

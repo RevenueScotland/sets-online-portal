@@ -9,18 +9,18 @@
         </a>
       </div>
       <div class="govuk-header__content">
-      <% unless yield(:hide_menu_link) == 'true' %>
-        <% unless current_page?(controller: '/login', action: 'new')   %>
-          <button role="button" class="govuk-header__menu-button js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation" id="menu" >Menu</button>
-          <nav>
-            <ul id="navigation" class="govuk-header__navigation " aria-label="Top Level Navigation">
-            <% if yield(:hide_nav_bar) != 'true'  %>
-              <%= account_links eval(CGI.unescapeHTML(yield(:nav_bar_options))) || {}, eval(CGI.unescapeHTML(yield(:nav_bar_html_options))) || {} %>
-            <% end %>  
-            </ul>
-          </nav>
-        <% end %>  
-      <% end %>  
+        <% unless yield(:hide_menu_link) == 'true' %>
+          <% unless current_page?(controller: '/login', action: 'new')   %>
+            <button role="button" class="govuk-header__menu-button js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation" id="menu" >Menu</button>
+            <nav>
+              <ul id="navigation" class="govuk-header__navigation " aria-label="Top Level Navigation">
+                <% if yield(:hide_nav_bar) != 'true'  %>
+                  <%= account_links eval(CGI.unescapeHTML(yield(:nav_bar_options))) || {}, eval(CGI.unescapeHTML(yield(:nav_bar_html_options))) || {} %>
+                <% end %>
+              </ul>
+            </nav>
+          <% end %>
+        <% end %>
       </div>
     </div>
   </div>

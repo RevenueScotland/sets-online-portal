@@ -1,7 +1,6 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_subtitle, t('.subtitle') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @account, url: @post_path, local: true do |f| %>
   <%= form_errors_for @account %>
   <%= f.fields_for @account.company do |c| %>
@@ -12,5 +11,5 @@
       <%= f.text_field :nino %>
     <% end %>
   <% end %>
-  <%= f.button 'next', { :name => 'submitted' }  %>
-<% end %>  
+  <%= f.button %>
+<% end %>

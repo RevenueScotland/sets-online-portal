@@ -15,11 +15,12 @@ Feature: Back Link
         # Then I should be in page B
         Then I should see the "About the return" page
         When I check the "3 year lease review" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         # Now I should be in page C
         Then I should see the "Return reference number" page
         # Going back to page B
         When I click on the "Back" link
+        Then I should see the "About the return" page
         # Lastly back to page A
         And I click on the "Back" link
         Then I should see the "Dashboard" page
@@ -27,12 +28,12 @@ Feature: Back Link
         # Scenario's test part 2 - Page reload doesn't affect the back link
         When I click on the "Create LBTT return" link
         And I check the "3 year lease review" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I enter "RS1234567Helo" in the "What was the original return reference?" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         And I click on the "Add a tenant" link
         And I check the "A private individual" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant details" page
         # Page A
 
@@ -42,7 +43,7 @@ Feature: Back Link
         And I enter "01344 407703" in the "Telephone number" field
         And I enter "north.gate@nps.co.uk" in the "Email" field
         And I enter "AB 12 34 56 C" in the "National Insurance Number (NINO)" field
-        And I click on the "Next" button
+        And I click on the "Continue" button
         Then I should see the "Tenant address" page
         # Page B
 
@@ -56,26 +57,29 @@ Feature: Back Link
         And I should see the text "Dunstable Road" in field "address_address_line3"
         And I should see the text "LUTON" in field "address_town"
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Next" button
+        And I click on the "Continue" button
 
         # Going to page C
         Then I should see the "Tenant's contact address" page
 
         # Now go back to page B
         When I click on the "Back" link
-        Then I should see the text "Tenant address"
+        Then I should see the "Tenant address" page
 
         # Then back to page A
         When I click on the "Back" link
-        Then I should see the text "Tenant details"
+        Then I should see the "Tenant details" page
 
         # Check the back link is working on the customised back link for agent details page
         When I click on the "Back" link
-        And I click on the "Back" link
-        And I click on the "Edit agent details" link
+        Then I should see the "About the tenant" page
+        When I click on the "Back" link
+        Then I should see the "Return Summary" page
+        When I click on the "Edit agent details" link
         Then I should see the "Agent details" page
-        When I click on the "Next" button
-        And I click on the "Back" link
+        When I click on the "Continue" button
+        Then I should see the "Agent address" page
+        When I click on the "Back" link
         Then I should see the "Agent details" page
 
     Scenario: Finish filling in a form and then going back to main page
@@ -94,19 +98,19 @@ Feature: Back Link
 
         When I select "2015/16" from the "returns_slft_slft_return[year]"
         And I check the "April to June (Quarter 1)" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         # Page D
         Then I should see the "Non disposal area information" page
         And I should see the text "Have you designated a new non-disposal area on any of your sites?"
 
         When I check the "returns_slft_slft_return_non_disposal_add_ind_n" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         # Page E
         Then I should see the "Non disposal area information" page
         And I should see the text "Have you ceased to operate a non-disposal area on any of your sites?"
 
         When I check the "returns_slft_slft_return_non_disposal_delete_ind_n" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         # Now looped back to Page B
         Then I should see the "Return summary" page
 
@@ -127,7 +131,7 @@ Feature: Back Link
 
         When I select "2015/16" from the "returns_slft_slft_return[year]"
         And I check the "April to June (Quarter 1)" radio button
-        And I click on the "Next" button
+        And I click on the "Continue" button
         # Page C
         Then I should see the "Non disposal area information" page
         And I should see the text "Have you designated a new non-disposal area on any of your sites?"

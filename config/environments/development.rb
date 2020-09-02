@@ -21,6 +21,7 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # This is a RAILS thing, we didn't invent it.
   if Rails.root.join('tmp', 'caching-dev.txt').exist?
     config.action_controller.perform_caching = true
+    config.action_controller.enable_fragment_cache_logging = true
 
     # use Redis for caching
     config.cache_store = :redis_cache_store, cache_connection
@@ -30,6 +31,7 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
     }
   else
     config.action_controller.perform_caching = false
+    config.action_controller.enable_fragment_cache_logging = true
     config.cache_store = :memory_store
   end
 
@@ -68,7 +70,11 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
 
   # Start ActiveJobs
   config.after_initialize do
-    unless ENV['PREVENT_JOBS_STARTING'] == 'Y'
+    if ENV['PREVENT_JOBS_STARTING'] == 'Y'
+      Rails.logger.info do
+        "Jobs not started PREVENT_JOBS_STARTING=#{ENV['PREVENT_JOBS_STARTING']}"
+      end
+    else
       # GetReferenceData/ReferenceValues refresh job
       RefreshRefDataJob.schedule_next_run(1.seconds)
 

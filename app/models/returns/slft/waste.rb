@@ -40,14 +40,14 @@ module Returns
       # Define the ref data codes associated with the attributes but which won't be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
       def uncached_ref_data_codes
-        { from_non_disposal_ind: comp_key('YESNO', 'SYS', 'RSTU'), pre_treated_ind:  comp_key('YESNO', 'SYS', 'RSTU'),
-          nda_ex_yes_no: comp_key('YESNO', 'SYS', 'RSTU'), restoration_ex_yes_no:  comp_key('YESNO', 'SYS', 'RSTU'),
-          other_ex_yes_no: comp_key('YESNO', 'SYS', 'RSTU'), ewc_code: comp_key('EWC_LIST', 'SLFT', 'RSTU') }
+        { from_non_disposal_ind: YESNO_COMP_KEY, pre_treated_ind:  YESNO_COMP_KEY,
+          nda_ex_yes_no: YESNO_COMP_KEY, restoration_ex_yes_no:  YESNO_COMP_KEY,
+          other_ex_yes_no: YESNO_COMP_KEY, ewc_code: comp_key('EWC_LIST', 'SLFT', 'RSTU') }
       end
 
       # waste-description validations
       validates :ewc_code, presence: true, InReferenceValues: true, on: %i[ewc_code]
-      validates :description, presence: true, on: %i[ewc_code]
+      validates :description, presence: true, length: { maximum: 255 }, on: %i[ewc_code]
       validates :lau_code, presence: true, InReferenceValues: true, on: %i[ewc_code]
       validates :fmme_method, presence: true, InReferenceValues: true, on: %i[ewc_code]
       validates :from_non_disposal_ind, presence: true, InReferenceValues: true, on: %i[ewc_code]
@@ -107,6 +107,15 @@ module Returns
       # as the parameter value of a path.
       def to_param
         @uuid
+      end
+
+      # Comparison operator for wastes, used when sorting on the page
+      def <=>(other)
+        ewc_comp = (ewc_code <=> other.ewc_code)
+        return ewc_comp if ewc_comp != 0
+
+        # if ewc code is the same use total tonnage but descending
+        other.total_tonnage <=> total_tonnage
       end
 
       # EWC description 'attribute' getter.
