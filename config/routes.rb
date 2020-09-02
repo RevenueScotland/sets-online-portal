@@ -5,7 +5,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   scope '(:locale)', Locale: /en|cy/ do # rubocop:disable Metrics/BlockLength
     get 'home/index'
     get 'home/error', to: 'home#error'
-    get 'home/file-download-error', to: 'home#file_download_error'
+    get 'home/new-page-error', to: 'home#new_page_error'
     get 'home/forbidden', to: 'home#forbidden'
 
     # This is generic page to display public website text retrieve from back office
@@ -15,7 +15,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :website_texts, param: :text_code, only: :show
 
     # use username as the key param and override constraint to allow non alpha characters.
-    resources :users, param: :username, except: %i[show destroy], constraints: { username: %r{[^\/]+} }
+    resources :users, param: :username, except: %i[show destroy], constraints: { username: %r{[^/]+} }
 
     get 'user/change-password', to: 'users#change_password'
     post 'user/update-password', to: 'users#update_password'

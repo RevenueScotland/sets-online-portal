@@ -4,7 +4,7 @@
 <%= form_for @claim_payment, url: @post_path, local: true do |f| %>
   <%= form_errors_for @claim_payment %>
   <%= f.collection_radio_buttons_fields(:reason, @claim_payment.reason_list, alignment: 'vertical') %>
-  <div id='hideable'>
+  <div id='hideable' class= 'govuk-radios__conditional'>
     <%= f.text_area_field :claim_desc %>
   </div>
   <%= f.button %>

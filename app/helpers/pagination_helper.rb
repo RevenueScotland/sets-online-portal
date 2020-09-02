@@ -20,10 +20,9 @@ module PaginationHelper
   # @return [HTML block element] render of pagination link, which is the html block of {#previous_tag},
   #   {#next_tag} and {#pages_tag} using the {#get_last_rows_collection}
   def render_pagination_link(paginate_collection, page_name)
-    content = previous_tag(page_name, paginate_collection.start_row, paginate_collection.current_page) +
-              next_tag(paginate_collection.more_rows_exists, paginate_collection.current_page, page_name) +
-              pages_tag(paginate_collection.start_row, get_last_rows_collection(paginate_collection))
-    content
+    previous_tag(page_name, paginate_collection.start_row, paginate_collection.current_page) +
+      next_tag(paginate_collection.more_rows_exists, paginate_collection.current_page, page_name) +
+      pages_tag(paginate_collection.start_row, get_last_rows_collection(paginate_collection))
   end
 
   # Create navigation tag
@@ -91,11 +90,10 @@ module PaginationHelper
   #   used to get the last rows
   # @return [Integer] the last row number in current page
   def get_last_rows_collection(paginate_collection)
-    last_row = if paginate_collection.total_rows.nil?
-                 paginate_collection.start_row + paginate_collection.num_rows - 1
-               else
-                 paginate_collection.total_rows
-               end
-    last_row
+    if paginate_collection.total_rows.nil?
+      paginate_collection.start_row + paginate_collection.num_rows - 1
+    else
+      paginate_collection.total_rows
+    end
   end
 end

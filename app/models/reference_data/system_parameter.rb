@@ -56,13 +56,12 @@ module ReferenceData
     # @param _existing_values [Hash] the existing values in case we need to reference them
     # @return [Hash] a hash of objects needed for the application
     private_class_method def self.application_values(_existing_values)
-      output = {}
+      {}
       # example code :
       # output[composite_key] = { 'code' => System_Parameter.new(code: 'code', value: 'value') }
       # or for multiple codes under the same composite key :
       # app_codes = { 'Y' => ReferenceValue.new(code: 'Y', value: 'Current') }
       # output[composite_key('domain', 'service', 'workplace')] = app_codes
-      output
     end
   end
 end

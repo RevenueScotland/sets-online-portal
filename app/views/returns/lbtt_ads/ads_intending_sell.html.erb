@@ -3,7 +3,7 @@
 <%= form_for @ads, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for [@ads, @address_summary, @address_detail] %>
   <%= f.collection_radio_buttons_fields(:ads_sell_residence_ind, @ads.list_ref_data(:ads_sell_residence_ind)) %>
-  <div class='govuk-radios__conditional--hidden' id='hideable' >
+  <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden' >
     <h3 class="govuk-fieldset__heading"><%= t('.address') %> </h3>
     <br>
     <%= render "/layouts/address" %>

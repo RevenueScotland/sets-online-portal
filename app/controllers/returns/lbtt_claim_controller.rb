@@ -29,7 +29,7 @@ module Returns
     # Ensures the correct validation context is checked on clicking Next (ie so won't submit until declaration ticked).
     def repayment_claim_declaration
       wizard_step(returns_lbtt_declaration_path) do
-        { setup_step: :repayment_claim_declaration_setup_step, validates: :repayment_declaration,
+        { validates: :repayment_declaration,
           cache_index: LbttController }
       end
     end
@@ -54,16 +54,6 @@ module Returns
       return model unless @lbtt_return.show_ads?
 
       @lbtt_return.repayment_amount_claimed ||= @lbtt_return.ads.ads_repay_amount_claimed
-      model
-    end
-
-    # Custom setup step to clear the declaration fields forcing them to tick it each time.
-    # @return [LbttReturn] result from load_step
-    def repayment_claim_declaration_setup_step
-      model = load_step
-      @lbtt_return.repayment_declaration = false
-      @lbtt_return.repayment_agent_declaration = false
-
       model
     end
 

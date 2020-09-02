@@ -42,6 +42,13 @@ DECLARE
   l_smsg_refno secure_messages.smsg_refno%TYPE; -- message reference for fiddling date
   l_case_refno cases.case_refno%TYPE; -- case refno (for messages)
   l_adr_refno addresses.adr_refno%TYPE; -- adr refno for ADS main address
+
+  -- The amendable and non amendable date need to be updated once a year at the beginning of august
+  -- Then update the same dates in the dashboard_returns.feature
+  AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2020';
+  NON_AMENDABLE_DATE VARCHAR2(12) := '01-JUN-2018';
+  -- This is set to a few days before the amendable date for older versions
+  SLFT_SUBMITTED_DATE VARCHAR2(12) := '19-JUN-2020';
   
       PROCEDURE create_or_maintain_cde(p_par_refno parties.par_refno%TYPE,
          p_cde_cme_code contact_details.cde_cme_code%TYPE,
@@ -283,10 +290,10 @@ BEGIN
   -- Note password is created by hashing the username and the password
   INSERT INTO users
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
-      usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
+      usr_int_user_ind,usr_par_refno,usr_per_title, usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
      ('PORTAL.ONE',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.ONE'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal User One','noreply@northgateps.com',3,
-      'N',l_par_Refno,'Portal User','One','ENG',TRUNC(SYSDATE));
+      'N',l_par_Refno,'MR','Portal User','One','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
     (rus_rol_code,rus_usr_username)
@@ -339,19 +346,19 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('PORTAL.CHANGE.DETAILS',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.CHANGE.DETAILS'||'Password3!'))),TRUNC(SYSDATE),'N','N','Portal Change Details','noreply@northgateps.com',3,
+     ('PORTAL.CHANGE@DETAILS',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.CHANGE@DETAILS'||'Password3!'))),TRUNC(SYSDATE),'N','N','Portal Change Details','noreply@northgateps.com',3,
       'N',l_par_Refno,'Portal User','Change Details','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
     (rus_rol_code,rus_usr_username)
-  (SELECT rus_rol_code,'PORTAL.CHANGE.DETAILS'
+  (SELECT rus_rol_code,'PORTAL.CHANGE@DETAILS'
     FROM role_users
    WHERE rus_usr_username = 'TEMPLATE_SELFSRV_USER');
    
    INSERT INTO user_services
     (use_username, use_service)
    VALUES
-    ('PORTAL.CHANGE.DETAILS','LBTT');
+    ('PORTAL.CHANGE@DETAILS','LBTT');
 
    -- User that has no access except dashboard
   INSERT INTO users
@@ -403,7 +410,7 @@ BEGIN
     l_tare_refno,1,'P','L','HS/XXX/TH/CO99999.0001',
     '1','PROPERTYTYPE','SYS',1, -- Residential
     'CONVEY','RETURN TYPE','LBTT',1,
-    '01-JUL-2019','01-JUL-2019','01-JUL-2019','01-JUL-2019',
+    AMENDABLE_DATE,AMENDABLE_DATE,AMENDABLE_DATE,AMENDABLE_DATE,
     'N','N','N','N','N',
     0,0,0,
     'N','N','N','N',
@@ -536,7 +543,7 @@ BEGIN
     l_tare_refno,2,'P','D','AAAA BB DDDDFFFF 9999.2',
     '1','PROPERTYTYPE','SYS',1, -- Residential
     'CONVEY','RETURN TYPE','LBTT',1,
-    '01-JUL-2019',NULL,'01-JUL-2019','01-JUL-2019',
+    AMENDABLE_DATE,NULL,AMENDABLE_DATE,AMENDABLE_DATE,
     'N','N','N','N','N',
     0,0,0,
     'N','N','N','N',
@@ -793,7 +800,7 @@ BEGIN
     l_tare_refno,1,'P','L','ABcC',
     '1','PROPERTYTYPE','SYS',1, -- Residential
     'CONVEY','RETURN TYPE','LBTT',1,
-    '01-JUL-2019','01-JUL-2019','01-JUL-2019','01-JUL-2019',
+    AMENDABLE_DATE,AMENDABLE_DATE,AMENDABLE_DATE,AMENDABLE_DATE,
     'N','N','N','N','N',
     0,0,0,
     'N','N','N','N',
@@ -1206,7 +1213,7 @@ BEGIN
     l_tare_refno,1,'P','L','ABcC',
     '1','PROPERTYTYPE','SYS',1, -- Residential
     'CONVEY','RETURN TYPE','LBTT',1,
-    '01-JUL-2019','01-JUL-2019','01-JUL-2019','01-JUL-2019',
+    AMENDABLE_DATE,AMENDABLE_DATE,AMENDABLE_DATE,AMENDABLE_DATE,
     'N','N','N','N','N',
     0,0,0,
     'N','N','N','N',
@@ -1341,7 +1348,7 @@ BEGIN
     l_tare_refno,1,'P','L','YY/XXXXX02-99',
     '3','PROPERTYTYPE','SYS',1, -- Non Residential
     'LEASERET','RETURN TYPE','LBTT',1,
-    '01-JUN-2017','01-JUN-2017','01-JUN-2017','01-JUN-2017',
+    NON_AMENDABLE_DATE,NON_AMENDABLE_DATE,NON_AMENDABLE_DATE,NON_AMENDABLE_DATE,
     'N','N','N','N','N',
     0,0,0,
     'N','N','N','N',
@@ -1952,10 +1959,10 @@ BEGIN
      slft_non_disposal_add_ind, slft_non_disposal_add_text,  slft_non_disposal_delete_ind, slft_non_disposal_delete_text, 
      slft_tax_payable, slft_fpay_method,slft_fpay_frd_domain,slft_fpay_srv_code,slft_fpay_wrk_refno,slft_source, slft_submitted_date)
   VALUES
-    (l_tare_refno,1,l_par_refno,l_h_version,'',2019,'Q1','PERIOD','SYS',1,
+    (l_tare_refno,1,l_par_refno,l_h_version,'',2018,'Q1','PERIOD','SYS',1,
      10000,8000, 234000, 20, 50, 8070,
      'N', '',  'N','', 
-     225840, 'BACS','PAYMENT TYPE','SLFT',1,'P', '01-JUL-2019');
+     225840, 'BACS','PAYMENT TYPE','SLFT',1,'P', SLFT_SUBMITTED_DATE);
 
   INSERT INTO slft_returns
     (slft_tare_refno,slft_version,slft_par_refno,slft_parh_version,slft_latest_draft_ind,slft_year,slft_fape_period,slft_fape_frd_domain,slft_fape_srv_code,slft_fape_wrk_refno,
@@ -1963,10 +1970,10 @@ BEGIN
      slft_non_disposal_add_ind, slft_non_disposal_add_text,  slft_non_disposal_delete_ind, slft_non_disposal_delete_text, 
      slft_tax_payable, slft_fpay_method,slft_fpay_frd_domain,slft_fpay_srv_code,slft_fpay_wrk_refno,slft_source, slft_submitted_date)
   VALUES
-    (l_tare_refno,2,l_par_refno,l_h_version,'L',2019,'Q1','PERIOD','SYS',1,
+    (l_tare_refno,2,l_par_refno,l_h_version,'L',2020,'Q1','PERIOD','SYS',1,
      10000,8000, 234000, 200, 500, 8700,
      'N', '',  'N','', 
-     225300, 'BACS','PAYMENT TYPE','SLFT',1,'P', '03-JUL-2019');
+     225300, 'BACS','PAYMENT TYPE','SLFT',1,'P', AMENDABLE_DATE);
 
 -- Single add     
   INSERT INTO tax_returns
@@ -1981,7 +1988,7 @@ BEGIN
      slft_non_disposal_add_ind, slft_non_disposal_add_text,  slft_non_disposal_delete_ind, slft_non_disposal_delete_text, 
      slft_tax_payable, slft_fpay_method,slft_fpay_frd_domain,slft_fpay_srv_code,slft_fpay_wrk_refno,slft_source, slft_submitted_date)
   VALUES
-    (l_tare_refno,1,l_par_refno,l_h_version,'D',2019,'Q2','PERIOD','SYS',1,
+    (l_tare_refno,1,l_par_refno,l_h_version,'D',2020,'Q2','PERIOD','SYS',1,
      0,0, 255000, 0, 0, 0,
      'N', '',  'N','', 
      255000,'BACS','PAYMENT TYPE','SLFT',1,'P', NULL);
@@ -1999,10 +2006,10 @@ BEGIN
      slft_non_disposal_add_ind, slft_non_disposal_add_text,  slft_non_disposal_delete_ind, slft_non_disposal_delete_text, 
      slft_tax_payable, slft_fpay_method,slft_fpay_frd_domain,slft_fpay_srv_code,slft_fpay_wrk_refno,slft_source, slft_submitted_date)
   VALUES
-    (l_tare_refno,1,l_par_refno,l_h_version,'',2016,'Q1','PERIOD','SYS',1,
+    (l_tare_refno,1,l_par_refno,l_h_version,'',2017,'Q1','PERIOD','SYS',1,
      11520,4580, 762000, 1350, 1420, 9000,
      'N', '',  'N','', 
-     255000,'BACS','PAYMENT TYPE','SLFT',1,'P', '01-JUL-2019');
+     255000,'BACS','PAYMENT TYPE','SLFT',1,'P', SLFT_SUBMITTED_DATE);
 	 
   INSERT INTO slft_returns
     (slft_tare_refno,slft_version,slft_par_refno,slft_parh_version,slft_latest_draft_ind,slft_year,slft_fape_period,slft_fape_frd_domain,slft_fape_srv_code,slft_fape_wrk_refno,
@@ -2013,7 +2020,7 @@ BEGIN
     (l_tare_refno,2,l_par_refno,l_h_version,'L',2016,'Q1','PERIOD','SYS',1,
      11520,4580, 762000, 1900, 1440, 9000,
      'N', '',  'N','', 
-     255000,'BACS','PAYMENT TYPE','SLFT',1,'P', '03-JUL-2019');
+     255000,'BACS','PAYMENT TYPE','SLFT',1,'P', AMENDABLE_DATE);
 	 
   INSERT INTO tax_returns
    (tare_refno, tare_reference, tare_srv_code)
@@ -2044,10 +2051,10 @@ BEGIN
      slft_non_disposal_add_ind, slft_non_disposal_add_text,  slft_non_disposal_delete_ind, slft_non_disposal_delete_text, 
      slft_tax_payable, slft_fpay_method,slft_fpay_frd_domain,slft_fpay_srv_code,slft_fpay_wrk_refno,slft_source, slft_submitted_date)
   VALUES
-    (l_tare_refno,1,l_par_refno,l_h_version,'',2018,'Q3','PERIOD','SYS',1,
+    (l_tare_refno,1,l_par_refno,l_h_version,'',2019,'Q3','PERIOD','SYS',1,
      4500,3220, 55000, 30, 20, 1650,
      'N', '',  'N','', 
-     255000,'BACS','PAYMENT TYPE','SLFT',1,'P', '01-JUL-2019');
+     255000,'BACS','PAYMENT TYPE','SLFT',1,'P', SLFT_SUBMITTED_DATE);
 	 
   INSERT INTO slft_returns
     (slft_tare_refno,slft_version,slft_par_refno,slft_parh_version,slft_latest_draft_ind,slft_year,slft_fape_period,slft_fape_frd_domain,slft_fape_srv_code,slft_fape_wrk_refno,
@@ -2055,10 +2062,10 @@ BEGIN
      slft_non_disposal_add_ind, slft_non_disposal_add_text,  slft_non_disposal_delete_ind, slft_non_disposal_delete_text, 
      slft_tax_payable, slft_fpay_method,slft_fpay_frd_domain,slft_fpay_srv_code,slft_fpay_wrk_refno,slft_source, slft_submitted_date)
   VALUES
-    (l_tare_refno,2,l_par_refno,l_h_version,'L',2018,'Q3','PERIOD','SYS',1,
+    (l_tare_refno,2,l_par_refno,l_h_version,'L',2019,'Q3','PERIOD','SYS',1,
      4500,3220, 55000, 120, 130, 1650,
      'N', '',  'N','', 
-     255000,'BACS','PAYMENT TYPE','SLFT',1,'P', '03-JUL-2019');
+     255000,'BACS','PAYMENT TYPE','SLFT',1,'P', AMENDABLE_DATE);
 	 
   INSERT INTO slft_returns
     (slft_tare_refno,slft_version,slft_par_refno,slft_parh_version,slft_latest_draft_ind,slft_year,slft_fape_period,slft_fape_frd_domain,slft_fape_srv_code,slft_fape_wrk_refno,
@@ -2066,7 +2073,7 @@ BEGIN
      slft_non_disposal_add_ind, slft_non_disposal_add_text,  slft_non_disposal_delete_ind, slft_non_disposal_delete_text, 
      slft_tax_payable, slft_fpay_method,slft_fpay_frd_domain,slft_fpay_srv_code,slft_fpay_wrk_refno,slft_source, slft_submitted_date)
   VALUES
-    (l_tare_refno,3,l_par_refno,l_h_version,'D',2018,'Q3','PERIOD','SYS',1,
+    (l_tare_refno,3,l_par_refno,l_h_version,'D',2019,'Q3','PERIOD','SYS',1,
      4500,3220, 55000, 340, 440, 1650,
      'N', '',  'N','', 
      255000,'BACS','PAYMENT TYPE','SLFT',1,'P', NULL);
@@ -2106,7 +2113,7 @@ BEGIN
     (l_tare_refno,1,l_par_refno,l_h_version,'L',2019,'Q2','PERIOD','SYS',1,
      0,0, 445000, 0, 0, 0,
      'N', '',  'N','', 
-     255000,'BACS','PAYMENT TYPE','SLFT',1,'P', '03-JUL-2019');
+     255000,'BACS','PAYMENT TYPE','SLFT',1,'P', SLFT_SUBMITTED_DATE);
      
     --*********************************
     -- Create the Financial accounts for the PORTAL.WASTE account

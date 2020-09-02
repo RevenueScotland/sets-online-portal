@@ -34,9 +34,9 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   validates :nino, presence: true, nino: true, on: %i[nino update_basic],
                    unless: proc { |p| AccountType.registered_organisation?(p.account_type) }
   validates :contact_number, presence: true, phone_number: true, on: %i[contact_number update_basic]
-  validates :terms_and_conditions, presence: true, on: %i[create terms_and_conditions]
+  validates :terms_and_conditions, acceptance: { accept: 'Y' }, on: %i[create terms_and_conditions]
   # Custom validation context for activating account
-  validates :registration_token, presence: true, on: :process_activate_account
+  validates :registration_token, length: { maximum: 100 }, presence: true, on: :process_activate_account
 
   # Define the ref data codes associated with the attributes to be cached in this model
   # @return [Hash] <attribute> => <ref data composite key>
@@ -47,17 +47,9 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   # Define the ref data codes associated with the attributes not to be cached in this model
   # @return [Hash] <attribute> => <ref data composite key>
   def uncached_ref_data_codes
-    { terms_and_conditions: comp_key('YESNO', 'SYS', 'RSTU'),
-      reg_company_contact_address_yes_no: comp_key('YESNO', 'SYS', 'RSTU'),
-      email_data_ind: comp_key('YESNO', 'SYS', 'RSTU') }
-  end
-
-  # override getter for terms and conditions to ensure it returns a boolean type
-  # @return [Boolean] terms_and_conditions value
-  def terms_and_conditions
-    return false if @terms_and_conditions.to_s.empty?
-
-    ActiveModel::Type::Boolean.new.cast(@terms_and_conditions)
+    { terms_and_conditions: YESNO_COMP_KEY,
+      reg_company_contact_address_yes_no: YESNO_COMP_KEY,
+      email_data_ind: YESNO_COMP_KEY }
   end
 
   # initialises a new instance with the hash passed, uses Active model to do this

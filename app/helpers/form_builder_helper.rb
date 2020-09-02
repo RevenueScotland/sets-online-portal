@@ -185,14 +185,14 @@ module FormBuilderHelper
       @template.content_tag(:div, submit + span, class: 'scot-rev-submit')
     end
 
-    # Create a checkbox field with the correct class
+    # Create a check box field with the correct class
     # @param attribute [Object] used as the label and passed as value of the check_box
     # @param options [Hash] a hash of options used to further modify the check box field
     # @return [HTML block element] the standard checkbox field with the correct classes and label
     def check_box_field(attribute, options = {}, html_options = {})
       check_box_html_options = { class: 'govuk-checkboxes__input' }
       error = error_text(attribute, options, check_box_html_options)
-      check_box_field = check_box(attribute, check_box_html_options, true, false)
+      check_box_field = check_box(attribute, check_box_html_options, 'Y', 'N')
       html_options[:class] = 'govuk-checkboxes__label'
       label_field = field_label_wrapper(attribute, options, html_options)
       check_box_item = @template.content_tag(:div, check_box_field + label_field, class: 'govuk-checkboxes__item')

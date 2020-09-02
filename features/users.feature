@@ -138,7 +138,7 @@ Feature: User Maintenance
         And I filter on "Portal User1 Change Details1"
         Then the table of data is displayed
             | Username              | Current | Name                         | Email address           | Phone number |
-            | PORTAL.CHANGE.DETAILS | N       | Portal User1 Change Details1 | noreply@northgateps.com |              |
+            | PORTAL.CHANGE@DETAILS | N       | Portal User1 Change Details1 | noreply@northgateps.com |              |
 
         #update details back to orginal
         And I filter on "Portal User1 Change Details1"
@@ -169,7 +169,7 @@ Feature: User Maintenance
         And I filter on "Portal User1 Change Details1"
         Then the table of data is displayed
             | Username              | Current | Name                         | Email address           | Phone number |
-            | PORTAL.CHANGE.DETAILS | N       | Portal User1 Change Details1 | noreply@northgateps.com |              |
+            | PORTAL.CHANGE@DETAILS | N       | Portal User1 Change Details1 | noreply@northgateps.com |              |
 
         #update details back to orginal
         And I filter on "Portal User1 Change Details1"

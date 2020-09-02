@@ -113,8 +113,8 @@
         }
     ],
     "non_ads_reliefclaim_option_ind": "Y",
-    "declaration": "true",
-    "lease_declaration": "true",
+    "declaration": "Y",
+    "lease_declaration": "Y",
     "fpay_method": "DDEBIT",
     "authority_ind": "Y",
     "form_type": "L",

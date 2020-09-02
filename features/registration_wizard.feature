@@ -108,6 +108,8 @@ Feature: Registration Wizard
     Then I should see the sub-title "Your individual account details"
     And I should receive the message "Username is too short (minimum is 5 characters)"
     And I should receive the message "Password can't be blank"
+    And I should receive the message "The terms and conditions must be accepted"
+    And I should receive the message "The email communication policy agreement can't be blank"
     When I enter "SM" in the "Username" field
     And I check the "I confirm that I have read and understood the terms & conditions" checkbox
     And I check the "Yes" radio button

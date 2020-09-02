@@ -54,6 +54,16 @@ class ApplicationController < ActionController::Base
     false
   end
 
+  # The public transactions cannot be accessed if the user is logged in
+  # Set this as a before action in the specific controller on the initial
+  # public pages to redirect to the dashboard
+  def enforce_public
+    return unless current_user
+
+    Rails.logger.info('Authenticated user accessing public page - redirecting to dashboard')
+    redirect_to dashboard_url
+  end
+
   # before action that calls manage_session_expiry to check if session has run out of time.
   def check_session_expiry
     manage_session_expiry(ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU', true))

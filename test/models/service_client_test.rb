@@ -36,7 +36,7 @@ class ServiceClientTest < ActiveSupport::TestCase
   # Dummy test class to test ServiceClient as part of FLApplicationRecord
   class DummyTest < FLApplicationRecord
     # make extract errors public so it can be tested
-    public :extract_errors # rubocop:disable Style/AccessModifierDeclarations
+    public :extract_errors
 
     # need to touch errors for it to exist
     def initialize

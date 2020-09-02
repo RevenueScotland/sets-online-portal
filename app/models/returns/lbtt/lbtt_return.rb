@@ -119,15 +119,15 @@ module Returns
                                  numericality: { only_integer: true, allow_blank: true }, length: { is: 8 },
                                  on: :account_holder_name
       validates :branch_code, presence: true, bank_sort_code: true, on: :account_holder_name
-      validates :repayment_declaration, acceptance: { accept: ['true'] }, on: :repayment_declaration
-      validates :repayment_agent_declaration, acceptance: { accept: ['true'] }, on: :repayment_declaration,
+      validates :repayment_declaration, acceptance: { accept: ['Y'] }, on: :repayment_declaration
+      validates :repayment_agent_declaration, acceptance: { accept: ['Y'] }, on: :repayment_declaration,
                                               if: proc { |s| s.account_type == 'AGENT' }
 
       # declaration validation
       validates :fpay_method, presence: true, on: :fpay_method
       validates :authority_ind, presence: true, on: :authority_ind
-      validates :declaration, acceptance: { accept: ['true'] }, on: :fpay_method
-      validates :lease_declaration, acceptance: { accept: ['true'] }, on: :fpay_method,
+      validates :declaration, acceptance: { accept: ['Y'] }, on: :fpay_method
+      validates :lease_declaration, acceptance: { accept: ['Y'] }, on: :fpay_method,
                                     if: :lease?
 
       # Return the property type attribute, but if this is one of the lease reviews set to non residential
@@ -235,14 +235,14 @@ module Returns
       # Define the ref data codes associated with the attributes but which won't be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
       def uncached_ref_data_codes
-        { authority_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          non_ads_reliefclaim_option_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          previous_option_ind: comp_key('YESNO', 'SYS', 'RSTU'), repayment_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          exchange_ind: comp_key('YESNO', 'SYS', 'RSTU'), uk_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          linked_ind: comp_key('YESNO', 'SYS', 'RSTU'), business_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          contingents_event_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          deferral_agreed_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          rent_for_all_years: comp_key('YESNO', 'SYS', 'RSTU'), premium_paid: comp_key('YESNO', 'SYS', 'RSTU') }
+        { authority_ind: YESNO_COMP_KEY, non_ads_reliefclaim_option_ind: YESNO_COMP_KEY,
+          previous_option_ind: YESNO_COMP_KEY, repayment_ind: YESNO_COMP_KEY,
+          exchange_ind: YESNO_COMP_KEY, uk_ind: YESNO_COMP_KEY,
+          linked_ind: YESNO_COMP_KEY, business_ind: YESNO_COMP_KEY,
+          contingents_event_ind: YESNO_COMP_KEY, deferral_agreed_ind: YESNO_COMP_KEY,
+          rent_for_all_years: YESNO_COMP_KEY, premium_paid: YESNO_COMP_KEY,
+          declaration: YESNO_COMP_KEY, lease_declaration: YESNO_COMP_KEY,
+          repayment_declaration: YESNO_COMP_KEY, repayment_agent_declaration: YESNO_COMP_KEY }
       end
 
       # Layout to print the data in this model
@@ -401,9 +401,9 @@ module Returns
                           { code: :account_number, when: :repayment_ind, is: ['Y'] },
                           { code: :branch_code, when: :repayment_ind, is: ['Y'] },
                           { code: :bank_name, when: :repayment_ind, is: ['Y'] },
-                          { code: :repayment_declaration, boolean_lookup: true, translation_extra: :account_type,
+                          { code: :repayment_declaration, lookup: true, translation_extra: :account_type,
                             when: :repayment_ind, is: ['Y'] },
-                          { code: :repayment_agent_declaration, boolean_lookup: true,
+                          { code: :repayment_agent_declaration, lookup: true,
                             when: :repayment_ind, is: ['Y'] }] }
          end,
          { code: :declaration, # section code
@@ -420,8 +420,8 @@ module Returns
            display_title: true, # Is the title to be displayed
            type: :list, # type list = the list of attributes to follow
            list_items: [{ code: :authority_ind, lookup: true, when: :account_type, is: ['AGENT'] },
-                        { code: :declaration, boolean_lookup: true, translation_extra: :account_type },
-                        { code: :lease_declaration, boolean_lookup: true, when: :lease?, is: [true],
+                        { code: :declaration, lookup: true, translation_extra: :account_type },
+                        { code: :lease_declaration, lookup: true, when: :lease?, is: [true],
                           translation_extra: :account_type }] }]
       end
 
@@ -566,11 +566,10 @@ module Returns
       # @param param_id [Hash] The reference number, tare_refno, srv_code and version of the LBTT return to get data.
       # @param requested_by [User] is usually the current_user, who is requesting the data and containing the account id
       def self.find(param_id, requested_by)
-        lbtt_return = Lbtt::LbttReturn.abstract_find(:lbtt_tax_return_details, param_id, requested_by,
-                                                     :lbtt_tax_return) do |data|
+        Lbtt::LbttReturn.abstract_find(:lbtt_tax_return_details, param_id, requested_by,
+                                       :lbtt_tax_return) do |data|
           Lbtt::LbttReturn.new_from_fl(data)
         end
-        lbtt_return
       end
 
       # Takes the hash from the back office response and transform to make it compatible with our models
@@ -921,7 +920,7 @@ module Returns
                         'ins1:RepayBankSortCode': @branch_code,
                         'ins1:RepaymentBankName': @bank_name,
                         'ins1:RepayAmountClaimed': @repayment_amount_claimed,
-                        'ins1:RepaymentAgentAuthInd': @repayment_declaration.blank? ? 'no' : 'yes')
+                        'ins1:RepaymentAgentAuthInd': @repayment_declaration == 'Y' ? 'yes' : 'no')
         # They haven't yet claimed a repayment but have said they sold the property
         elsif @repayment_ind.nil? && @ads.ads_sold_main_yes_no == 'Y'
           output.merge!('ins1:ClaimType': 'PRE12MONTH',

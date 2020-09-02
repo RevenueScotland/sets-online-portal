@@ -45,7 +45,7 @@
         "new_record": true
     },
     "new_record": true,
-    "declaration": "true",
+    "declaration": "Y",
     "fpay_method": "BACS",
     "payment_date": "13/05/2016"
 }

@@ -6,7 +6,7 @@ module UserValidation
   extend ActiveSupport::Concern
 
   included do
-    validates :username, presence: true, on: %i[update update_password login two_factor]
+    validates :username, length: { maximum: 30 }, presence: true, on: %i[update update_password login two_factor]
     validates :new_username, length: { minimum: 5, maximum: 30 }, on: %i[save new_username]
 
     validates :password, presence: true, length: { maximum: 200 }, on: :login
@@ -14,7 +14,7 @@ module UserValidation
     validates :new_password, presence: true, length: { maximum: 200 }, on: %i[save update_password new_password]
     validates :new_password, confirmation: true
 
-    validates :token, presence: true, length: { maximum: 200 }, on: :two_factor
+    validates :token, presence: true, length: { maximum: 100 }, on: :two_factor
 
     validates :email_address, presence: true, email_address: true, on: %i[save update email_check]
     validates :email_address, confirmation: true, on: %i[save update email_check]
@@ -25,7 +25,7 @@ module UserValidation
     validates :user_is_current, presence: true, on: %i[save update]
     validates_format_of :user_is_current, with: /\A(Y|N)\z/i, on: %i[save update]
 
-    validates :user_is_signed_ta_cs, presence: true, on: :confirm_tcs
+    validates :user_is_signed_ta_cs, acceptance: { accept: ['Y'] }, on: :confirm_tcs
   end
 
   # Check password is expired or not
@@ -41,7 +41,7 @@ module UserValidation
 
   # Check if the user needs to read the terms and conditions again
   def check_tcs_required?
-    !user_is_signed_ta_cs && !user_is_signed_ta_cs.nil?
+    user_is_signed_ta_cs != 'Y'
   end
 
   # Return number of days remaining for password to expire

@@ -46,7 +46,9 @@ class WizardTest < ActionController::TestCase
   # Another controller that includes Wizard.
   class AnotherWizardController
     include Wizard
+
     attr_accessor :session
+
     # Override method to not be private so can be called for test
     def wizard_cache_key(cache_index = self.class.name)
       super

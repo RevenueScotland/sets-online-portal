@@ -34,8 +34,8 @@ module Returns
       end
 
       validates :lau_code, presence: true, on: :lau_code
-      validates :title_number, length: { maximum: 37 }, on: :lau_code
-      validates :parent_title_number, length: { maximum: 37 }, on: :lau_code
+      validates :title_number, length: { maximum: 40 }, on: :lau_code
+      validates :parent_title_number, length: { maximum: 40 }, on: :lau_code
 
       validates :ads_due_ind, presence: true, on: :ads_due_ind, if: proc { |s| s.flbt_type == 'CONVEY' }
 
@@ -49,7 +49,7 @@ module Returns
       # Define the ref data codes associated with the attributes not cached in this model
       # long lists or special yes no case
       def uncached_ref_data_codes
-        { ads_due_ind: comp_key('YESNO', 'SYS', 'RSTU') }
+        { ads_due_ind: YESNO_COMP_KEY }
       end
 
       # @return the title code + the title number

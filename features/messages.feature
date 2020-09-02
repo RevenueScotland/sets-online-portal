@@ -66,7 +66,9 @@ Feature: Secure Communication
         And I click on the "Upload document" button
         Then I should see the text "testdoc.doc"
         And I should see the text "This is a doc file"
+        # we need to wait for the remove file to process there is no +ve check to use
         When I click on the "Remove file" button
+        And I wait for 1 seconds
         Then I should not see the text "testdoc.doc"
         And I should not see the text "This is a doc file"
 
@@ -298,6 +300,11 @@ Feature: Secure Communication
 
         When I open the "Show more filter options" summary item
         And I enter "RS2000001AAAA" in the "Reference" field
+        And I enter "RANDOM_text,256" in the "Sent by" field
+        And I click on the "Find" button
+        Then I should receive the message "Sent by is too long (maximum is 255 characters)"
+
+        When I open the "Show more filter options" summary item
         And I enter "USER ONE" in the "Sent by" field
         And I click on the "Find" button
         Then the table of data is displayed

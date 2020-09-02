@@ -23,7 +23,7 @@ module Claim
     attribute_list.each { |attr| attr_accessor attr }
 
     validates :reason, presence: true, on: :reason
-    validates :claim_desc, presence: true, on: :claim_desc, if: :claim_desc_required?
+    validates :claim_desc, presence: true, length: { maximum: 255 }, on: :claim_desc, if: :claim_desc_required?
     validates :date_of_sale, presence: true, custom_date: true, on: :date_of_sale
     validates :full_repayment_of_ads, presence: true, on: :full_repayment_of_ads
     validates :claiming_amount, numericality: { greater_than: 0, less_than: 1_000_000_000_000_000_000,
@@ -34,7 +34,7 @@ module Claim
                                length: { is: 8 }, on: :account_holder_name
     validates :branch_code, presence: true, bank_sort_code: true, on: :account_holder_name
     # Note validation context @see ClaimPaymentsController#authenticated_declaration_2
-    validates :authenticated_declaration_1, :authenticated_declaration_2, acceptance: { accept: ['true'] },
+    validates :authenticated_declaration_1, :authenticated_declaration_2, acceptance: { accept: ['Y'] },
                                                                           on: :declaration, unless: :claim_public?
     validates :tare_reference, presence: true, reference_number: true, on: :return_reference
 
@@ -69,7 +69,9 @@ module Claim
     # Define the ref data codes associated with the attributes not to be cached in this model
     # @return [Hash] <attribute> => <ref data composite key>
     def uncached_ref_data_codes
-      { full_repayment_of_ads: comp_key('YESNO', 'SYS', 'RSTU') }
+      { full_repayment_of_ads: YESNO_COMP_KEY,
+        authenticated_declaration_1: YESNO_COMP_KEY,
+        authenticated_declaration_2: YESNO_COMP_KEY }
     end
 
     # Returns the array of reasons valid for this claim
@@ -89,7 +91,9 @@ module Claim
 
     # Validates that the reason chosen is valid
     def validate_unauthenticated_declaration
-      errors.add(:unauthenticated_declarations, :accepted) unless unauthenticated_declarations.all?(&:checked)
+      return if  unauthenticated_declarations.all? { |o| o.checked == 'Y' }
+
+      errors.add(:unauthenticated_declarations, :accepted)
     end
 
     # Validates that the evidence files are attached for ADS claim
@@ -131,15 +135,22 @@ module Claim
       @unauthenticated_declarations = []
       taxpayers.each_with_index do |t, i|
         value = I18n.t('.claim.claim_payments.final_declaration.UNAUTHENTICATED_claim_declaration', name: t.full_name)
-        @unauthenticated_declarations << AdsDeclaration.new(index: i, text: value, checked: false)
+        @unauthenticated_declarations << AdsDeclaration.new(index: i, text: value, checked: 'N')
       end
       @unauthenticated_declarations
+    end
+
+    # This returns the ids of the declarations that have been set, used when setting
+    # the collection on the page
+    # @return [Array] The ids of the set declarations
+    def unauthenticated_declarations_ids
+      unauthenticated_declarations.each_index.select { |i| @unauthenticated_declarations[i].checked == 'Y' }
     end
 
     # Sets the declarations that have been checked
     # The value passed from the page is the actual indexes that have been set
     # @param value [Array] The indexes of the set declarations
-    def unauthenticated_declarations=(value)
+    def unauthenticated_declarations_ids=(value)
       # Make sure we have unauthenticated_declarations set up as
       # the initial set up is not necessarily saved in the cache
       unauthenticated_declarations
@@ -147,7 +158,7 @@ module Claim
       return if value.nil?
 
       value.each do |d|
-        @unauthenticated_declarations[d.to_i].checked = true unless d.blank?
+        @unauthenticated_declarations[d.to_i].checked = 'Y' unless d.blank?
       end
     end
 
@@ -280,8 +291,7 @@ module Claim
     # @param doc_refno [String] additional document reference number to be delete from back-office
     # @return [Boolean] true if additional document delete successfully from back-office else false
     def delete_additional_document(doc_refno)
-      success = call_ok?(:delete_document, request_delete_additional_document_elements(doc_refno))
-      success
+      call_ok?(:delete_document, request_delete_additional_document_elements(doc_refno))
     end
 
     # @return a hash suitable for use in a delete additional document to the back office
@@ -299,14 +309,13 @@ module Claim
     # Do the save processing for claim payment
     # calls wsdl to send data given by client to back-office
     def save_claim(current_user)
-      success = call_ok?(:claim_repayment_details, request_elements(current_user)) do |body|
+      call_ok?(:claim_repayment_details, request_elements(current_user)) do |body|
         @case_reference = body[:claim_repayment][:case_reference]
         @repayment_ref_no = body[:claim_repayment][:repayment_ref_no]
         # This submitted_date is used only for display purpose of confirmation page
         # and is not being submitted to the back office
         @submitted_date = Date.today
       end
-      success
     end
 
     # Do the save processing for claim payment
@@ -359,11 +368,10 @@ module Claim
 
     # @return [Hash] elements used to specify what data we want to send to the back office
     def request_save_bank_details
-      output = { RepayAccountHolder: @account_holder_name,
-                 RepayBankAccountNo: @account_number,
-                 RepayBankSortCode: @branch_code,
-                 RepayBankName: @bank_name }
-      output
+      { RepayAccountHolder: @account_holder_name,
+        RepayBankAccountNo: @account_number,
+        RepayBankSortCode: @branch_code,
+        RepayBankName: @bank_name }
     end
 
     # @return [Hash] elements used to specify what data we want to send to the back office
@@ -395,25 +403,20 @@ module Claim
     # @return [Hash] elements used to specify what data we want to send to the back office
     def additional_taxpayers_elements
       additional_taxpayer_arr = taxpayers.drop(1)
-      output = { AdditionalTaxPayers: { 'ins1:AdditionalTaxPayer':
+      { AdditionalTaxPayers: { 'ins1:AdditionalTaxPayer':
         additional_taxpayer_arr.map { |taxpayer| taxpayer_details(taxpayer) } } }
-
-      output
     end
 
     # @return [Hash] elements used to specify what data we want to send to the back office
     def save_ads_elements
-      output = { ADSSoldAddress: @address.format_to_back_office_address,
-                 ADSSoldDate: DateFormatting.to_xml_date_format(@date_of_sale) }
-
-      output
+      { ADSSoldAddress: @address.format_to_back_office_address,
+        ADSSoldDate: DateFormatting.to_xml_date_format(@date_of_sale) }
     end
 
     # @return [Hash] elements used to specify what data we want to send to the back office
     def save_evidence_files_elements
-      output = { Documents: { 'ins1:Document':
+      { Documents: { 'ins1:Document':
           evidence_files.map { |evidence_file| request_document_create(evidence_file) } } }
-      output
     end
 
     # @return [hash] of additional tax payer address details
@@ -586,8 +589,8 @@ module Claim
         divider: true, # should we have a section divider
         display_title: true, # Is the title to be displayed
         type: :list, # type list = the list of attributes to follow
-        list_items: [{ code: :authenticated_declaration_1, boolean_lookup: true, translation_extra: :account_type },
-                     { code: :authenticated_declaration_2, boolean_lookup: true, translation_extra: :account_type }] }
+        list_items: [{ code: :authenticated_declaration_1, lookup: true, translation_extra: :account_type },
+                     { code: :authenticated_declaration_2, lookup: true, translation_extra: :account_type }] }
     end
 
     # layout for the unauthenticated (ads) declarations

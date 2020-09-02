@@ -12,7 +12,7 @@ gem 'puma', '~> 4.0'
 # Use SASSC rails for stylesheets, sass-rails points to this gem now https://github.com/rails/sass-rails/pull/424
 gem 'sassc-rails'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
-gem 'webpacker', '~> 4.2'
+gem 'webpacker', '~> 5.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 gem 'duktape'
 # Use CoffeeScript for .coffee assets and views
@@ -65,10 +65,11 @@ end
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 # Read more: https://rubygems.org/gems/ruby-prof/versions/1.0.0
-# ruby-prof at 1.3.0 causes a load issue so lock to 1.2.0
-# will need checking at next upgrade
-# may be related to this issue https://github.com/rubygems/bundler/issues/7553
-gem 'ruby-prof', '~> 1.0', '<=1.2.0'
+# See https://github.com/ruby-prof/ruby-prof/issues/269
+# You may need to install this separately to use the non windows version
+# gem install ruby-prof --platform RUBY
+# bundle update --local
+gem 'ruby-prof', '~> 1.0'
 
 # Ruby ZIP utils
 gem 'rubyzip', '~> 2.0'

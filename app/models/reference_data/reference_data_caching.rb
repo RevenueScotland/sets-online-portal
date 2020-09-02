@@ -202,11 +202,10 @@ module ReferenceData
     # @param _existing_values[Hash] the existing values in case we need to reference them
     # @return [Hash] a hash of objects needed for the application
     def self.application_values(_existing_values)
-      output = {}
+      {}
       # example code :
       # app_codes = { 'Y' => SystemParameter.new(code: 'Y') }
       # output[composite_key('domain', 'service', 'workplace')] = app_codes
-      output
     end
   end
 end

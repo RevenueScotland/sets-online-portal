@@ -23,6 +23,9 @@ module Claim
     # to require authentication so we don't mix the two up
     skip_before_action :require_user, only: PUBLIC_PAGES
 
+    # enforce the user isn't logged in on the public pages
+    before_action :enforce_public, only: %w[public_claim_landing eligibility before_you_start]
+
     # List of steps for a claim. For public claim the entry point will be return_reference number
     # for authenticated claim it is claim reason. The following steps are skipped as you step through
     # ADS steps unless the reason is ADS
@@ -131,8 +134,7 @@ module Claim
     # Ensures the correct validation context is checked on clicking Next (ie so won't submit until declaration ticked).
     def final_declaration
       wizard_step(NEW_STEPS) do
-        { cache_index: true, setup_step: :taxpayer_declaration_setup_step,
-          validates: :declaration, after_merge: :save_data_in_back_office }
+        { cache_index: true, validates: :declaration, after_merge: :save_data_in_back_office }
       end
     end
 
@@ -141,14 +143,15 @@ module Claim
     # to its details.
     def view_claim_pdf
       @claim_payment ||= wizard_load
-      success, evidence_file = @claim_payment.view_claim_pdf
+      success, claim_pdf = @claim_payment.view_claim_pdf
       return unless success
 
       # Download the file
-      send_file_data(evidence_file[:document_claim])
+      send_file_from_attachment(claim_pdf[:document_claim])
     rescue StandardError => e
-      Rails.logger.error(e)
-      redirect_to controller: '/home', action: 'file_download_error'
+      error_ref = Error::ErrorHandler.log_exception(e)
+
+      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     private
@@ -197,15 +200,6 @@ module Claim
       return @claim_payment.tare_reference if current_user.blank?
 
       current_user.username
-    end
-
-    # Sends file to browser for download, which automatically downloads the file.
-    def send_file_data(evidence_file)
-      send_data Base64.decode64(evidence_file[:binary_data]),
-                type: evidence_file[:file_type], filename: evidence_file[:file_name],
-                # This means to download the file, if we want to just view the file
-                # this would have to be disposition: 'inline'
-                disposition: 'evidence_file'
     end
 
     # Calculates which wizard steps to be followed if return is conveyance with ADS
@@ -286,19 +280,6 @@ module Claim
       raise Error::AppError.new('Claim Payments', 'Missing parameters detected')
     end
 
-    # Custom setup step to clear the declaration fields forcing them to tick it each time.
-    # @return [ClaimPayment] result from load_step
-    def taxpayer_declaration_setup_step
-      model = load_step(:taxpayers)
-      @claim_payment.authenticated_declaration_1 = false
-      @claim_payment.authenticated_declaration_2 = false
-      @claim_payment.unauthenticated_declarations = nil
-
-      # here it is returning array of two object one is claim_payments model and
-      # other is sub object we need just main model
-      model[0]
-    end
-
     # Return the parameter list filtered for the attributes of the ClaimPayment model
     def filter_params(sub_object_attribute = nil)
       required, attributes = if sub_object_attribute == :taxpayers
@@ -306,7 +287,7 @@ module Claim
                              else
                                [:claim_claim_payment, Claim::ClaimPayment.attribute_list]
                              end
-      params.require(required).permit(attributes, unauthenticated_declarations: [], eligibility_checkers: []) if
+      params.require(required).permit(attributes, unauthenticated_declarations_ids: [], eligibility_checkers: []) if
                                                                                                 params[required]
     end
 

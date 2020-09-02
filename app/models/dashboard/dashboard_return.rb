@@ -146,8 +146,7 @@ module Dashboard
     #   with '-'s.
     # @return [Boolean] true if document delete successfully from back office else false
     def self.delete_return(requested_by, id)
-      success = call_ok?(:delete_draft_tax_return, request_delete_return(requested_by, id))
-      success
+      call_ok?(:delete_draft_tax_return, request_delete_return(requested_by, id))
     end
 
     # @return a hash suitable for use in a delete drafted return to the back office
@@ -298,14 +297,15 @@ module Dashboard
 
     # The request element list to retrieve the all return data.
     #
-    # The boolean_to_yesno is being used to convert each of the 3 filter attributes
-    # from it's boolean value to 'yes'/'no'
+    # We need to downcase the filters from Yes/No as that is what the back office expects
+    # Note that we send nil if they are not set which is technically not correct but the back office is ok with this
     # @return [Hash] elements used to specify what data we want to get from the back office
     private_class_method def self.request_elements(requested_by, filter, pagination)
       { SRVCode: nil, ParRefno: requested_by.party_refno, Username: requested_by.username,
-        OutstandingBalance: boolean_to_yesno(filter.outstanding_balance),
-        AllVersions: boolean_to_yesno(filter.all_versions),
-        DraftOnly: boolean_to_yesno(filter.draft_only) }.merge(request_optional_elements(filter, pagination))
+        OutstandingBalance: filter.lookup_ref_data_value(:outstanding_balance)&.downcase,
+        AllVersions: filter.lookup_ref_data_value(:all_versions)&.downcase,
+        DraftOnly: filter.lookup_ref_data_value(:draft_only)&.downcase }
+        .merge(request_optional_elements(filter, pagination))
     end
 
     # The optional request element list to retrieve more specific data.

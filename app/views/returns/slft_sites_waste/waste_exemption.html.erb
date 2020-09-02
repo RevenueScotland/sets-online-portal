@@ -4,15 +4,15 @@
 <%= form_for @waste, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @waste %>
   <%= f.collection_radio_buttons_fields(:nda_ex_yes_no, @waste.list_ref_data(:nda_ex_yes_no)) %>
-  <div id='hide_nda'>
+  <div id='hide_nda' class='govuk-radios__conditional'>
     <%= f.text_field :nda_ex_tonnage %>
   </div>
   <%= f.collection_radio_buttons_fields(:restoration_ex_yes_no,  @waste.list_ref_data(:restoration_ex_yes_no)) %>
-  <div id='hide_restoration'>
+  <div id='hide_restoration' class='govuk-radios__conditional'>
     <%= f.text_field :restoration_ex_tonnage %>
   </div>
   <%= f.collection_radio_buttons_fields(:other_ex_yes_no, @waste.list_ref_data(:other_ex_yes_no)) %>
-  <div id='hide_other'>
+  <div id='hide_other' class='govuk-radios__conditional'>
     <%= f.text_field :other_ex_tonnage %>
     <%= f.text_field :other_ex_description %>
   </div>

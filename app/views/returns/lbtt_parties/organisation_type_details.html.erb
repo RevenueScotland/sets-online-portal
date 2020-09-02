@@ -4,7 +4,7 @@
   <%= form_errors_for @party %>
   <%# Remove registered company code from organisation type list received from back-office, no need to display on this page %>
   <%= f.collection_radio_buttons_fields(:org_type, @party.list_ref_data(:org_type).delete_if { |r| r.code == 'REG_COM' }, { alignment: 'vertical' }) %>
-  <div id='hideable'width="100%">
+  <div id='hideable' class= 'govuk-radios__conditional' width="100%">
     <%= f.text_area_field :other_type_description %>
   </div>
   <%= f.button %>

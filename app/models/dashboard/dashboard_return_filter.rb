@@ -20,6 +20,14 @@ module Dashboard
     validates :from_return_date, :to_return_date, custom_date: true
     validates :from_return_date, compare_date: { end_date_attr: :to_return_date }
 
+    # Define the ref data codes associated with the attributes not to be cached in this model
+    # @return [Hash] <attribute> => <ref data composite key>
+    def uncached_ref_data_codes
+      { all_versions: YESNO_COMP_KEY,
+        outstanding_balance: YESNO_COMP_KEY,
+        draft_only: YESNO_COMP_KEY }
+    end
+
     # custom setter to trim spaces from reference
     def tare_reference=(value)
       @tare_reference = value.strip
@@ -35,11 +43,6 @@ module Dashboard
       params.permit(dashboard_dashboard_return_filter:
         %i[tare_reference agent_reference return_status all_versions
            description from_return_date to_return_date])[:dashboard_dashboard_return_filter]
-    end
-
-    # Sets the value of all_versions to a boolean value.
-    def all_versions
-      ['true', true].include?(@all_versions)
     end
   end
 end
