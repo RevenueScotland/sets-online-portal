@@ -30,22 +30,36 @@ module Returns
       validates :type, presence: true, on: :type
       validates :surname, presence: true, length: { maximum: 100 }, on: :surname, if: :individual?
       validates :firstname, presence: true, length: { maximum: 50 }, on: :firstname, if: :individual?
-      validates :agent_dx_number, length: { maximum: 200 }, on: %i[title]
+      validates :agent_dx_number, length: { maximum: 100 }, on: %i[title]
       validates :agent_reference, length: { maximum: 30 }, on: %i[title]
-      validates :email_address, presence: true, email_address: true, on: %i[title],
+
+      # Normally we have a title on an lbtt party and the email_address and telephone are required to be
+      # present on a normal lbtt party's specific condition.
+      validates :email_address, presence: true, on: %i[title], if: :individual_but_not_seller_landlord?
+      validates :telephone, presence: true, on: %i[title], if: :individual_but_not_seller_landlord?
+      # Then as for the claim party (taxpayer/agent) email_address and telephone, they're optional.
+      validates :email_address, email_address: true, on: :email_address,
                                 if: :individual_but_not_seller_landlord?
-      validates :telephone, presence: true, phone_number: true, on: %i[title],
-                            if: :individual_but_not_seller_landlord?
+      validates :telephone, phone_number: true, on: :telephone, if: :individual_but_not_seller_landlord?
+
       validates :buyer_seller_linked_ind, presence: true, on: :buyer_seller_linked_ind,
                                           if: proc { |p| !%w[SELLER LANDLORD].include?(p.party_type) }
       validates :is_contact_address_different, presence: true, on: :is_contact_address_different,
                                                if: :individual_but_not_seller_landlord?
       validates :org_type, presence: true, on: :org_type, if: proc { |p| p.type == 'OTHERORG' }
-      validates :other_type_description, presence: true, on: :org_type, if: proc { |w| w.org_type == 'OTHER' }
-      validates :com_jurisdiction, :org_name, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
-      validates :charity_number, presence: true, on: :org_name, if: proc { |w| w.org_type == 'CHARITY' }
+      validates :other_type_description, presence: true, length: { maximum: 255 },
+                                         on: :org_type, if: proc { |w| w.org_type == 'OTHER' }
+      validates :com_jurisdiction, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
+      # The party is used in both lbtt party and also in claim. The org_name is required in lbtt party but it is
+      # optional in the claim flow. So this should only trigger for the lbtt party flow.
+      validates :org_name, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
+      # This is the common validation for botht he lbtt and claim flow.
+      validates :org_name, length: { maximum: 200 }, on: :org_name, if: proc { |p| p.type == 'OTHERORG' || p.claim? }
+      validates :charity_number, presence: true, length: { maximum: 100 },
+                                 on: :org_name, if: proc { |w| w.org_type == 'CHARITY' }
 
-      validates :job_title, presence: true, on: :contact_firstname, if: :not_private_and_not_seller_landlord?
+      validates :job_title, presence: true, length: { maximum: 255 },
+                            on: :contact_firstname, if: :not_private_and_not_seller_landlord?
       validates :contact_firstname, presence: true, length: { maximum: 50 },
                                     on: :contact_firstname,
                                     if: :not_private_and_not_seller_landlord?
@@ -64,8 +78,8 @@ module Returns
       # National insurance number and alternate related validation
       validate :no_nino_or_alternate?, on: :nino, if: :individual_but_not_seller_landlord?
       validates :nino, nino: true, on: :nino, if: :individual_but_not_seller_landlord?
-      validates :alrt_type, :ref_country, :alrt_reference,
-                presence: true, on: :alrt_type, if: :incomplete_alternate?
+      validates :alrt_type, :ref_country, presence: true, on: :alrt_type, if: :incomplete_alternate?
+      validates :alrt_reference, presence: true, length: { maximum: 30 }, on: :alrt_type, if: :incomplete_alternate?
 
       # HACK: The conditions here are copying the #request_save method - they should use the same methods
       validates :contact_address, presence: true, on: :contact_address,
@@ -85,15 +99,16 @@ module Returns
         { alrt_type: comp_key('PARALTREFTYPES', 'LBTT', 'RSTU'), ref_country: comp_key('COUNTRIES', 'SYS', 'RSTU'),
           title: comp_key('TITLES', 'SYS', 'RSTU'), type: comp_key('BUYER TYPES', 'SYS', 'RSTU'),
           org_type: comp_key('ORGANISATION TYPE', 'SYS', 'RSTU'),
-          com_jurisdiction: comp_key('COUNTRIES', 'SYS', 'RSTU'), same_address: comp_key('YESNO', 'SYS', 'RSTU') }
+          com_jurisdiction: comp_key('COUNTRIES', 'SYS', 'RSTU') }
       end
 
       # Define the ref data codes associated with the attributes not cached in this model
       # long lists or special yes no case
       def uncached_ref_data_codes
-        { is_contact_address_different: comp_key('YESNO', 'SYS', 'RSTU'),
-          buyer_seller_linked_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          is_acting_as_trustee: comp_key('YESNO', 'SYS', 'RSTU') }
+        { is_contact_address_different: YESNO_COMP_KEY,
+          buyer_seller_linked_ind: YESNO_COMP_KEY,
+          is_acting_as_trustee: YESNO_COMP_KEY,
+          same_address: YESNO_COMP_KEY }
       end
 
       # Layout to print the data in this model

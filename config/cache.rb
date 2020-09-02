@@ -4,6 +4,7 @@
 def cache_connection
   {
     url: ENV['REDIS_CACHE_URL'],
+    db: 0,
     error_handler: lambda { |method:, returning:, exception:| # rubocop:disable Lint/UnusedBlockArgument
       Rails.logger.error("Cache store exception : #{exception}")
     }

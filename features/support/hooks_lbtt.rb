@@ -16,7 +16,9 @@ Before('@mock_update_lbtt_details') do
   mock_valid_signin
   load_lbtt_convey
 
+  # We have two calcs one for the effective date and one for the conveyance values
   calc_fixture = File.read(FIXTURES_MOCK_ROOT + 'lbtt/lbtt_tax_calc.xml')
+  @savon.expects(:get_lbtt_calc_wsdl).with(message: {}).returns(calc_fixture)
   @savon.expects(:get_lbtt_calc_wsdl).with(message: {}).returns(calc_fixture)
 
   lbtt_update_fixture = File.read(FIXTURES_MOCK_ROOT + 'lbtt/lbtt_update.xml')

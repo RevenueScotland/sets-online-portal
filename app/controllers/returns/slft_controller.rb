@@ -103,8 +103,9 @@ module Returns
       # Download the file
       send_file_from_attachment(attachment[:document_return])
     rescue StandardError => e
-      Rails.logger.error(e)
-      redirect_to controller: '/home', action: 'file_download_error'
+      error_ref = Error::ErrorHandler.log_exception(e)
+
+      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     # Cleans and saves the return by sending to the back office.
@@ -160,10 +161,6 @@ module Returns
     def load_step(_sub_object_attribute = nil)
       @slft_return = wizard_load_or_redirect(returns_slft_summary_url)
 
-      # clear the declaration fields forcing them to tick it each time (and also make the 'accept' validation work)
-      @slft_return.declaration = false if action_name == 'declaration'
-      @slft_return.rrep_bank_auth_ind = false if action_name == 'repayment_declaration'
-
       @post_path = wizard_post_path
       @slft_return
     end
@@ -175,10 +172,6 @@ module Returns
       required = :returns_slft_slft_return
       output = {}
       output = params.require(required).permit(Slft::SlftReturn.attribute_list) if params[required]
-
-      return output unless action_name == 'repayment_declaration'
-
-      output[:rrep_bank_auth_ind] = false if output[:rrep_bank_auth_ind].blank?
 
       output
     end

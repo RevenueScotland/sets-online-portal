@@ -6,7 +6,7 @@
   <%= form_errors_for [@party, @address_summary, @address_detail, @claim_payment] %>
   <% if count > 1 %>
     <%= f.collection_radio_buttons_fields(:same_address, @party.list_ref_data(:same_address), translation_options: @claim_payment.translation_prefix, alignment: 'vertical') %>
-    <div id= "hideable">
+    <div id= "hideable" class='govuk-radios__conditional'>
       <%= render "/layouts/address" %>
     </div>
   <% else %>

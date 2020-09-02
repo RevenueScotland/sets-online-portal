@@ -20,7 +20,7 @@ module Returns
       process_tax_calculation(:npv)
     end
 
-    # Call the back office to update the calculations based on the relief_type changeds
+    # Call the back office to update the calculations based on the relief_type changes
     # Requires @lbtt_return be set up (which it usually is).
     # @return [Boolean] true if this was successful
     def update_relief_type_calculation

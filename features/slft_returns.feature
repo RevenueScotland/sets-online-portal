@@ -217,11 +217,15 @@ Feature: SLfT Returns
         Then I should see the text "Is it pre-treated can't be blank"
 
         When I enter "05 01 02 Desalter sludges" in the "EWC code" select or text field
-        And I enter "icky goo" in the "Description of waste" field
+        And I enter "RANDOM_text,256" in the "Description of waste" field
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
         And I check the "returns_slft_waste_pre_treated_ind_y" radio button
+        And I click on the "Continue" button
+
+        Then I should receive the message "Description of waste is too long (maximum is 255 characters)"
+        And I enter "icky goo" in the "Description of waste" field
         And I click on the "Continue" button
 
         Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
@@ -793,7 +797,7 @@ Feature: SLfT Returns
         # Repayment declaration
         When I click on the "Continue" button
         Then I should see the "Declaration" page
-        And I should see the text "am eligible for the refund claimed must be accepted"
+        And I should receive the message "I am eligible for the refund claimed must be accepted"
 
         When I check the "returns_slft_slft_return_rrep_bank_auth_ind" checkbox
         And I click on the "Continue" button
@@ -802,8 +806,8 @@ Feature: SLfT Returns
 
         # Actual declaration page
         When I click on the "Submit return" button
-        Then I should see the text "How are you paying can't be blank"
-        And I should see the text "The declaration must be accepted"
+        Then I should receive the message "How are you paying can't be blank"
+        And I should receive the message "The declaration must be accepted"
 
         # go back and check we can choose to not do a repayment and instead go straight to the normal payment/submit page
         When I click on the "Back" link

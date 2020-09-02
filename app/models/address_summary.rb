@@ -37,8 +37,7 @@ class AddressSummary
   # @param attributes [Hash] a hash of objects used for the new instance of class
   # @return [Object] a new instance of the class with the hash of objects passed as param values
   def self.new_from_search(attributes = {})
-    object = new(attributes)
-    object
+    new(attributes)
   end
 
   private

@@ -32,6 +32,14 @@ en:
         new_password: "This must be a minimum of 9 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character, like, +, $, !"
         company_name: "If you enter a company name we will register the account for the company"
         country: "Start typing your country name and a list of matches will appear"
+    errors:
+      models:
+        account:
+          attributes:
+            terms_and_conditions:
+              accepted: "The terms and conditions must be accepted"
+            email_data_ind:
+              blank: "The email communication policy agreement can't be blank"
   accounts:
     show:
       title: "Sign up details"

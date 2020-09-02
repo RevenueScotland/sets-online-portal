@@ -183,11 +183,23 @@
 					<xsd:complexContent>
 						<xsd:extension base="core:StandardRequestStructure">
 							<xsd:sequence>
+								<xsd:annotation>
+									<xsd:documentation>Depending on the action only certain fields are needed.
+							Change Password needs username, old password and new password
+							ForgottenPassword needs username and new password and if the FORGOT_PW_EMAIL parameter is Y on the system the e-mail address as well
+							Forgotten username needs the email address
+							Memorable details needs the meorable question and answer
+							
+							</xsd:documentation>
+								</xsd:annotation>
 								<xsd:element name="Action">
 									<xsd:simpleType>
 										<xsd:restriction base="xsd:string">
 											<xsd:enumeration value="ChangePassword"/>
 											<xsd:enumeration value="ResetPassword"/>
+											<xsd:enumeration value="ForgottenPassword"/>
+											<xsd:enumeration value="ForgottenUsername"/>
+											<xsd:enumeration value="MemorableDetails"/>
 											<xsd:enumeration value="ListUsers"/>
 											<xsd:enumeration value="TaCsSignUp"/>
 											<!--added to sign user up to T&Cs-->
@@ -196,9 +208,16 @@
 								</xsd:element>
 								<xsd:element name="Requestor" type="xsd:string"/>
 								<xsd:element name="Username" type="xsd:string" minOccurs="0"/>
-								<xsd:element name="EmailAddress" type="xsd:string" minOccurs="0"/>
 								<xsd:element name="OldPassword" type="xsd:string" minOccurs="0"/>
 								<xsd:element name="NewPassword" type="xsd:string" minOccurs="0"/>
+								<xsd:element name="EmailAddress" type="xsd:string" minOccurs="0"/>
+								<xsd:element name="Password" type="xsd:string" minOccurs="0">
+									<xsd:annotation>
+										<xsd:documentation>This field needs to be encrypted</xsd:documentation>
+									</xsd:annotation>
+								</xsd:element>
+								<xsd:element name="MemorableQuestion" type="xsd:string" minOccurs="0"/>
+								<xsd:element name="MemorableAnswer" type="xsd:string" minOccurs="0"/>
 							</xsd:sequence>
 						</xsd:extension>
 					</xsd:complexContent>

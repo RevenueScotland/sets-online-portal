@@ -5,12 +5,13 @@ module Dashboard
   class MessageFilter < BaseFilter
     include AllMessageSubject
 
+    # see AllMessageSubject for accessors for subject_code
     attr_accessor :direction_code, :from_datetime, :to_datetime, :reference, :sent_by,
                   :subject_domain, :wrk_refno, :srv_code,
                   :unread_only, :selected_message_smsg_refno, :smsg_original_refno
-    # see AllMessageSubject for accessors for subject_code
 
     validates :reference, length: { maximum: 30 }
+    validates :sent_by, length: { maximum: 255 }
     validates :from_datetime, :to_datetime, custom_date: true
     validates :from_datetime, compare_date: { end_date_attr: :to_datetime }
 

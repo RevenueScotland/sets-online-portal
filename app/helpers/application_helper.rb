@@ -101,7 +101,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     body = contents[:body].html_safe
     # Only add a <p> tag if the contents of the :body does not have <p> or paragraph tag with attributes,
     # like <p class='hello'>
-    body = content_tag(:p, body) unless body.include?('<p>') || !(body =~ /\<p[\"\=\w\s\'\d]*\>/).nil?
+    body = content_tag(:p, body) unless body.include?('<p>') || !(body =~ /<p["=\w\s'\d]*>/).nil?
     UtilityHelper.standardize_elements(title + body).html_safe
   end
 
@@ -505,8 +505,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # Strips the non html options out, used as part of the creation of an anchor tag.
   # Strips the requires_action options.
   def strip_non_html_options(html_options)
-    html_options = html_options.reject { |option| option == :requires_action } || {}
-    html_options
+    html_options.reject { |option| option == :requires_action } || {}
   end
 
   # Create a select field without attribute with the correct class;

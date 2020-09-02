@@ -5,7 +5,7 @@
   <%= form_errors_for @lbtt_return %>
   <%= f.collection_radio_buttons_fields(:non_ads_reliefclaim_option_ind, @lbtt_return.list_ref_data(:non_ads_reliefclaim_option_ind), text_link: { t('.non_ads_reliefclaim_option_ind') =>
                                                     link_to(t('.non_ads_reliefclaim_option_ind'), "#{Rails.configuration.x.external_links.lbtt3010_reliefs}", target: '_blank')}) %>
-  <div class='govuk-radios__conditional--hidden' id='hideable'>
+  <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden'>
     <%= f.table_fields(@lbtt_return.non_ads_relief_claims, :non_ads_relief_claims) do |table_form | %>
       <% table_form.select(:relief_type_auto, @relief_types, { :code => :code_auto, :value => :description, include_blank: true }, 
                 {class: 'relief_claim', data: { calculated_text: Returns::Lbtt::ReliefClaim.calculated_text } }) + %>

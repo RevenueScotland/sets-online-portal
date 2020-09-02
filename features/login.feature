@@ -96,7 +96,7 @@ Feature: Login and authentication
         And I click on the "Confirm" button
 
         Then I should see the "Terms and Conditions" page
-        And I should receive the message "I confirm that I have read and understood the terms & conditions (opens in a new window) can't be blank"
+        And I should receive the message "The terms and conditions must be accepted"
         And I check the "I confirm that I have read and understood the terms & conditions" checkbox
         And I click on the "Confirm" button
 
@@ -244,6 +244,6 @@ Feature: Login and authentication
         And I click on the "Confirm" button
 
         Then I should see the "Terms and Conditions" page
-        And I should receive the message "I confirm that I have read and understood the terms & conditions (opens in a new window) can't be blank"
+        And I should receive the message "The terms and conditions must be accepted"
         And I check the "I confirm that I have read and understood the terms & conditions" checkbox
         And I click on the "Confirm" button

@@ -3,7 +3,7 @@
 <%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
   <%= f.collection_radio_buttons_fields(:rent_for_all_years, @lbtt_return.list_ref_data(:rent_for_all_years)) %>
-  <div class='govuk-radios__conditional--hidden' id='hideable'>
+  <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden' >
     <%= f.table_fields(@lbtt_return.yearly_rents, :yearly_rents, exclude_add_button: true, exclude_delete_button: true) do |table_form| %>
       <% table_form.hidden_field(:year, display_attribute: :display_year) + %>
       <% table_form.currency_field(:rent) %>

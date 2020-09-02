@@ -6,15 +6,16 @@ module Dashboard
   class FinancialTransaction < FLApplicationRecord
     include NumberFormatting
     include Pagination
+
+    # The below attributes are in the response from the back office but we don't use them
+    # :reason, :type, :start, :end,
+    # :reference_number, :process_id, :bacs_process,
     attr_accessor :transaction_reference, :customer_reference,
                   :related_reference, :related_sub_reference, :related_reference_type,
                   :transfer_indicator, :hold_indicator, :paid_by_dd,
                   :effective_date, :actual_date, :amount, :outstanding_balance,
                   :description, :transaction_type_code, :transaction_type_group,
                   :related_transactions
-    # The below attributes are in the response from the back office but we don't use them
-    # :reason, :type, :start, :end,
-    # :reference_number, :process_id, :bacs_process,
 
     # Looks for a specific financial transaction by its transaction reference.
     # @param requested_by [Object] is the user who is currently logged in and is requesting for the data.

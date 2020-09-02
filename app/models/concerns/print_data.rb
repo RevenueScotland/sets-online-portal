@@ -199,7 +199,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
                                        extra_data)
       end
 
-      @itemdata = object.this_value(item_options[:code], item_options[:lookup], item_options[:boolean_lookup],
+      @itemdata = object.this_value(item_options[:code], item_options[:lookup],
                                     item_options[:format], item_options[:placeholder])
     end
   end
@@ -249,7 +249,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
     # @return [String] the formatted string for this item
     def rowcell_value(object, item, item_count, extra_data)
-      this_value = object.this_value(item[:code], item[:lookup], item[:boolean_lookup], item[:format],
+      this_value = object.this_value(item[:code], item[:lookup], item[:format],
                                      item[:placeholder])
       if item_count == 1 || item[:nolabel]
         this_value
@@ -374,11 +374,10 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # iterates to turn this into a comma separated list
   # @param code [string] The name of the attribute
   # @param lookup [boolean] if a lookup value should be used
-  # @param boolean_lookup [boolean] if a boolean lookup value should be used true = 'Yes'
   # @param format [Symbol] The format of the value drives any formatting, this is normally passed to the template
   # @param placeholder [String] placeholder string, if present then this is returned and is replaced at the back office
   # @return [string] the value for this item
-  def this_value(code, lookup, boolean_lookup, format, placeholder)
+  def this_value(code, lookup, format, placeholder)
     return placeholder unless placeholder.nil?
 
     values = send(code)
@@ -386,7 +385,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     return_values = []
 
     values.each do |v|
-      expand_value = expand_value(code, v, lookup, boolean_lookup, format)
+      expand_value = expand_value(code, v, lookup, format)
       return_values << expand_value unless expand_value.nil?
     end
     return_values.join(', ')
@@ -447,8 +446,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param key_scope [Array] The key scope passed in from the config
   # @return [string] the key scope that will be used
   def i18n_item_scope(key_scope)
-    key_scopes = key_scope || [i18n_scope, :attributes, model_name.i18n_key]
-    key_scopes
+    key_scope || [i18n_scope, :attributes, model_name.i18n_key]
   end
 
   # Processes an individual section based on the options passed in
@@ -509,29 +507,15 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     section_list
   end
 
-  # Retrieves and returns this item if it is a boolean (normally declarations).
-  #
-  # @param code [string] The name of the attribute
-  # @param value [string] The value of the attribute, used instead of send if present
-  # @return [string] Yes or nil
-  def boolean_lookup(code, value = nil)
-    return ReferenceDataLookup.lookup_yesno_value('Y') unless value.nil? || !value
-    return ReferenceDataLookup.lookup_yesno_value('Y') if respond_to?(code) && send(code)
-
-    nil
-  end
-
   # Derives the value for this item either the value or the lookup value where there is a linked code value.
   # @param code [string] The name of the attribute, needed for lookups
   # @param value [String] the value of the attribute
   # @param lookup [boolean] if a lookup value should be used
-  # @param boolean_lookup [boolean] if a boolean lookup value should be used true = 'Yes'
   # @param format [Symbol] The format of the value drives any formatting, this is normally passed to the template
   # @return [string] the expanded value for this item
-  def expand_value(code, value, lookup, boolean_lookup, format)
+  def expand_value(code, value, lookup, format)
     return nil if value.blank?
     return lookup_ref_data_value(code, value) if lookup
-    return boolean_lookup(code, value) if boolean_lookup
     return value.to_date.strftime('%d %B %Y') if format == :date
 
     value
@@ -627,7 +611,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     unless section_options[:name].nil?
       name_options = section_options[:name]
       unless name_options.is_a? String
-        section_options[:name] = this_value(name_options[:code], name_options[:lookup], name_options[:boolean_lookup],
+        section_options[:name] = this_value(name_options[:code], name_options[:lookup],
                                             name_options[:format], name_options[:placeholder])
       end
     end

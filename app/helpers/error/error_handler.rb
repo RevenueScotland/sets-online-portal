@@ -13,15 +13,15 @@ module Error
 
       clazz.class_eval do
         rescue_from StandardError do |exception|
-          timestamp_ref = ErrorHandler.log_exception(exception)
+          error_ref = ErrorHandler.log_exception(exception)
           # redirect to appropriate error page
-          redirect_with_error(timestamp_ref)
+          redirect_to_error_page(error_ref)
         end
       end
     end
 
     # Method to log exceptions in a standard way (includes a backtrace)
-    # @return [String] the timestamp reference used
+    # @return [String] the error reference used
     def self.log_exception(exception)
       message = if exception.respond_to?(:code)
                   "#{exception.class}: #{exception&.code} #{exception&.message}"
@@ -29,35 +29,36 @@ module Error
                   "#{exception.class}: #{exception&.message}"
                 end
 
-      timestamp_ref = log_message(message)
+      error_ref = log_message(message)
       Rails.logger.error("BACKTRACE: \n  #{exception.backtrace[0..17].join("\n  ")}")
 
-      timestamp_ref
+      error_ref
     end
 
-    # Uses Time to get the current time now, which is used for timing the {.log_exception caught exceptions}
-    # @return [String] last 5 digits of the current timestamp
-    def self.error_timestamp_reference
-      Time.now.to_i.to_s[5, 10]
-    end
-
-    # Logs the timestamp, message and a stacktrace
-    # @return [String] the timestamp used
+    # Logs the error reference, message and a stacktrace
+    # @return [String] the error reference used
     def self.log_message(message)
-      timestamp_ref = error_timestamp_reference
-      Rails.logger.error("\nERROR: #{timestamp_ref}\n  #{message}")
-      timestamp_ref
+      error_ref = error_reference
+      Rails.logger.error("\nERROR: #{error_ref}\n  #{message}")
+      error_ref
     end
-
-    private
 
     # Redirect to the generic error page with details of the error in the flash hash.
-    def redirect_with_error(timestamp_ref)
+    # @param [String] error_ref The reference for the error
+    # @param [String] url The url to redirect to (using the helper)
+    def redirect_to_error_page(error_ref, url = home_error_url)
       # Prepare error details for display on screen to the user (so beware leaking information).
-      # Currently only displaying the timestamp ref so the user has a number to report that we can also find in logs.
-      flash[:fatal_error] = timestamp_ref
-      Rails.logger.debug('  Redirecting to default error page')
-      redirect_to(home_error_url)
+      # Currently only displaying the error ref so the user has a number to report that we can also find in logs.
+      flash[:fatal_error] = error_ref
+      Rails.logger.debug("  Redirecting to error page #{url}")
+      redirect_to(url)
+    end
+
+    # Generated an error reference
+    # Uses Time to get the current time now, which is used for timing the {.log_exception caught exceptions}
+    # @return [String] Error reference
+    private_class_method def self.error_reference
+      Time.now.to_i.to_s[5, 10]
     end
   end
 end

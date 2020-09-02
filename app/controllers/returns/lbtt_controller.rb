@@ -25,6 +25,9 @@ module Returns
     # to require authentication so we don't mix the two up
     skip_before_action :require_user, only: PUBLIC_PAGES
 
+    # enforce the user isn't logged in on the public pages
+    before_action :enforce_public, only: %w[public_landing public_return_type]
+
     # navigation steps in the lbtt conveyance and lease return wizard
     CONVEY_LEASERET_STEPS = %w[return_type summary].freeze
 
@@ -115,7 +118,7 @@ module Returns
     # Ensures the correct validation context is checked on clicking Next (ie so won't submit until declaration ticked).
     def declaration
       wizard_step(DECLARATION_STEPS) do
-        { setup_step: :declaration_setup_step, after_merge: :submit_return, validates: :declaration }
+        { after_merge: :submit_return, validates: :declaration }
       end
     end
 
@@ -135,8 +138,9 @@ module Returns
       # Download the file
       send_file_from_attachment(attachment[:document_return])
     rescue StandardError => e
-      Rails.logger.error(e)
-      redirect_to controller: '/home', action: 'file_download_error'
+      error_ref = Error::ErrorHandler.log_exception(e)
+
+      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     # Cleans and saves the return by sending to the back office.
@@ -291,16 +295,6 @@ module Returns
       @post_path = wizard_post_path
       # redirects to the dashboard or public landing as needed
       @lbtt_return = wizard_load_or_redirect(current_user.nil? ? returns_lbtt_public_landing_url : dashboard_url)
-    end
-
-    # Custom setup step to clear the declaration fields forcing them to tick it each time.
-    # @return [LbttReturn] result from load_step
-    def declaration_setup_step
-      model = load_step
-      @lbtt_return.declaration = false
-      @lbtt_return.lease_declaration = false
-
-      model
     end
 
     # Used in wizard_list_step as part of the merging of data.

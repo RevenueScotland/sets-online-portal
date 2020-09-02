@@ -9,7 +9,7 @@ class UserFilter < BaseFilter
   # Define the ref data codes associated with the attributes but which won't becached in this model
   # @return [Hash] <attribute> => <ref data composite key>
   def uncached_ref_data_codes
-    { user_is_current: comp_key('YESNO', 'SYS', 'RSTU') }
+    { user_is_current: YESNO_COMP_KEY }
   end
 
   # This is used for finding which of the object includes a piece of data that matches from

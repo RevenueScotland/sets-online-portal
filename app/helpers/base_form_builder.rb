@@ -305,10 +305,9 @@ class BaseFormBuilder < ActionView::Helpers::FormBuilder # rubocop:disable Metri
     legend = UtilityHelper.label_text(@object, attribute, options)
     legend += visually_hidden_label(attribute, options, {}) || ''
     h1_tag = @template.content_tag(:h1, legend.html_safe, class: 'govuk-fieldset__heading')
-    legend_tag = @template.content_tag(:legend, h1_tag,
-                                       class: 'govuk-fieldset__legend govuk-fieldset__legend',
-                                       id: generate_id(attribute))
-    legend_tag
+    @template.content_tag(:legend, h1_tag,
+                          class: 'govuk-fieldset__legend govuk-fieldset__legend',
+                          id: generate_id(attribute))
   end
 
   # Routine to wraps Action view tags to generate a new id
@@ -387,8 +386,7 @@ class BaseFormBuilder < ActionView::Helpers::FormBuilder # rubocop:disable Metri
   # See https://api.rubyonrails.org/classes/ActionView/Helpers/FormOptionsHelper.html
   def select_options(options)
     default_option = options[:include_blank] ? :include_blank : :prompt
-    options = form_options(:options, options).merge(default_option => @template.t('select_prompt'))
-    options
+    form_options(:options, options).merge(default_option => @template.t('select_prompt'))
   end
 
   # Creates the html options of select.

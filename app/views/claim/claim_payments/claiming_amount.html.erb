@@ -3,9 +3,13 @@
 <% content_for :page_title, t(amount_page_title) %>
 <%= form_for @claim_payment, url: @post_path, local: true do |f| %>
   <%= form_errors_for @claim_payment %>
-  <%= f.collection_radio_buttons_fields(:full_repayment_of_ads, @claim_payment.list_ref_data(:full_repayment_of_ads), alignment: 'vertical') unless @claim_payment.reason != 'ADS' %>
-  <div id='hideable'>
+  <% if @claim_payment.reason == 'ADS'%>
+    <%= f.collection_radio_buttons_fields(:full_repayment_of_ads, @claim_payment.list_ref_data(:full_repayment_of_ads), alignment: 'vertical') %>
+    <div id='hideable' class= 'govuk-radios__conditional'>
+      <%= f.currency_field :claiming_amount %>
+    </div>
+  <% else %>
     <%= f.currency_field :claiming_amount %>
-  </div>
+  <% end %>
   <%= f.button %>
 <% end %>

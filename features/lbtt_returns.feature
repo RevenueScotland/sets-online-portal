@@ -47,6 +47,19 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should receive the message "Organisation description can't be blank"
 
+        When I enter "RANDOM_text,256" in the "Organisation description" field
+        And I click on the "Continue" button
+        Then I should receive the message "Organisation description is too long (maximum is 255 characters)"
+
+        When I enter "RANDOM_text,255" in the "Organisation description" field
+        And I click on the "Continue" button
+        Then I should see the "Organisation details" page
+        And I should not see the text "Type of organisation"
+
+        When I click on the "Back" link
+        Then I should see the "Organisation details" page
+        And I should see the text "Type of organisation"
+
         When I check the "Charity" radio button
         And I click on the "Continue" button
 
@@ -60,7 +73,7 @@ Feature: LBTT Returns
 
         When I enter "Marks & Spencer Fund" in the "Name" field
         And I enter "ALBANIA" in the "What country's law is the organisation governed by" select or text field
-        And I enter "123456" in the "Charity number" field
+        And I enter "RANDOM_text,101" in the "Charity number" field
 
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find Address" button
@@ -72,6 +85,10 @@ Feature: LBTT Returns
         And I should see the text "LUTON" in field "address_town"
         And I should see "ENGLAND" in the "address_country" select or text field
         And I should see the text "LU1 1AA" in field "address_postcode"
+        And I click on the "Continue" button
+
+        Then I should receive the message "Charity number is too long (maximum is 100 characters)"
+        When I enter "123456" in the "Charity number" field
         And I click on the "Continue" button
 
         Then I should see the "Contact details" page
@@ -86,9 +103,11 @@ Feature: LBTT Returns
         #invalid name, contact email and phone number
         When I enter "RANDOM_text,51" in the "First name" field
         And I enter "RANDOM_text,101" in the "Last name" field
+        And I enter "RANDOM_text,256" in the "Job title or position" field
         And I enter "012" in the "Contact phone number" field
         And I enter "noreplynorthgateps.com" in the "Email" field
         And I click on the "Continue" button
+        And I should receive the message "Job title or position is too long (maximum is 255 characters)"
         Then I should receive the message "First name is too long (maximum is 50 characters)"
         And I should receive the message "Last name is too long (maximum is 100 characters)"
         And I should receive the message "Contact phone number is invalid"
@@ -188,8 +207,12 @@ Feature: LBTT Returns
         Then I enter "EH1 1BE" in the "address_postcode" field
         When I click on the "Continue" button
         Then I should see the sub-title "Provide property details"
+        And I enter "12345678901234567890123456789012345678901" in the "returns_lbtt_property_title_number" field
+        And I enter "12345678901234567890123456789012345678901" in the "returns_lbtt_property_parent_title_number" field
         And I click on the "Continue" button
         Then I should receive the message "Local authority can't be blank"
+        And I should receive the message "Title number is too long (maximum is 40 characters)"
+        And I should receive the message "Parent title number is too long (maximum is 40 characters)"
         When I select "Aberdeen City" from the "Local authority"
         And I select "ABN" from the "returns_lbtt_property_title_code"
         And I enter "1234" in the "returns_lbtt_property_title_number" field
@@ -367,8 +390,8 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter "02-08-2019" in the "Effective date of transaction" date field
-        And I enter "03-08-2019" in the "Relevant date" date field
+        When I enter "02-08-2020" in the "Effective date of transaction" date field
+        And I enter "03-08-2020" in the "Relevant date" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
@@ -818,7 +841,7 @@ Feature: LBTT Returns
             | Property address           | Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE |
             | Buyer                      | Marks & Spencer Fund                                               |
             | Description of transaction | Conveyance or transfer                                             |
-            | Effective date             | 02/08/2019                                                         |
+            | Effective date             | 02/08/2020                                                         |
 
     Scenario: Make a Conveyance return without ADS for an Agent
         Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
@@ -1097,13 +1120,11 @@ Feature: LBTT Returns
 
         # Check non ADS reliefs functionality
         When I check the "Yes" radio button
-
-        When I check the "Yes" radio button
-        # NOT FULL or MAX amount relief
         Then "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_type_auto" should contain the option "Multiple dwellings relief"
-        And I select "Multiple dwellings relief" from the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_type_auto"
-        And I click on the "Add row" button
 
+        # NOT FULL or MAX amount relief
+        When I select "Multiple dwellings relief" from the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_type_auto"
+        And I click on the "Add row" button
         Then I should receive the message "Amount of tax saved by relief can't be blank"
 
         When I enter "Calculated" in the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount" field
@@ -1118,16 +1139,25 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should receive the message "Amount of tax saved by relief must be less than 1000000000000000000"
 
-        And I enter "2087" in the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount" field
+        When I enter "2087" in the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount" field
         And I click on the "Add row" button
         # MAX amount relief
         And I select "First-Time Buyer Relief" from the "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_type_auto"
         And I click on the "Add row" button
         Then I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount"
         And field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount" should be readonly
-        When I click on the 3 rd "Delete row" button
-        And I click on the "Continue" button
 
+        # Add a third relief that is full that will take the full amounts
+        # Note we delete as the above add row created a new row so still want to test delete
+        # but also need to use add row to trigger the calculated again
+        When I click on the 3 rd "Delete row" button
+        And I click on the "Add row" button
+        And I select "Public bodies relief" from the "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_type_auto"
+        And I click on the "Add row" button
+        Then I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount"
+
+        When I click on the 4 th "Delete row" button
+        And I click on the "Continue" button
         Then I should see the "About future events" page
 
         When I check the "returns_lbtt_lbtt_return_contingents_event_ind_n" radio button
@@ -1177,18 +1207,20 @@ Feature: LBTT Returns
         And the table of data is displayed
             | About the reliefs         | Edit reliefs                  |
             | Type of relief            | Amount of tax saved by relief |
-            | Multiple dwellings relief | £2087.00                      |
-            | First-Time Buyer Relief   | £600.00                       |
+            | Multiple dwellings relief | £0.00                         |
+            | First-Time Buyer Relief   | £0.00                         |
+            | Public bodies relief      | £106519.00                    |
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
             | LBTT calculated            | £106519.00       |
-            | Total LBTT reliefs claimed | £2687.00         |
-            | Total tax payable          | £103832.00       |
+            | Total LBTT reliefs claimed | £106519.00       |
+            | Total tax payable          | £0.00            |
         When I click on the "Edit reliefs" link
         Then I should see the "Reliefs on this transactions" page
-        And I should see the text "2087" in field "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount"
-        And I should see the text "600" in field "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount"
+        And I should see the text "0" in field "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount"
+        And I should see the text "0" in field "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount"
+        And I should see the text "106519" in field "returns_lbtt_lbtt_return_relief_claims_2_relief_override_amount"
 
 
         #Validation on relief amounts
@@ -1207,6 +1239,7 @@ Feature: LBTT Returns
         #Validation on Max Amount reliefs
         When I enter "106498" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
         And I enter "600" in the "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount" field
+        And I enter "0" in the "returns_lbtt_lbtt_return_relief_claims_2_relief_override_amount" field
 
         And I click on the "Continue" button
         Then I should receive the message "The amount you are claiming for reliefs cannot be more than the tax liability of £106519"
@@ -1217,27 +1250,32 @@ Feature: LBTT Returns
         And the table of data is displayed
             | About the reliefs         | Edit reliefs                  |
             | Type of relief            | Amount of tax saved by relief |
-            | Multiple dwellings relief | £2087.00                      |
-            | First-Time Buyer Relief   | £600.00                       |
+            | Multiple dwellings relief | £0.00                         |
+            | First-Time Buyer Relief   | £0.00                         |
+            | Public bodies relief      | £106519.00                    |
 
         When I click on the "Edit reliefs" link
         Then I should see the "Reliefs on this transactions" page
 
         #Recalculate Return calculation after About Reliefs
         When I enter "50228" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
+        And I enter "600" in the "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount" field
+        And I enter "0" in the "returns_lbtt_lbtt_return_relief_claims_2_relief_override_amount" field
         And I click on the "Continue" button
         And the table of data is displayed
             | About the reliefs         | Edit reliefs                  |
             | Type of relief            | Amount of tax saved by relief |
             | Multiple dwellings relief | £50228.00                     |
             | First-Time Buyer Relief   | £600.00                       |
+            | Public bodies relief      | £0.00                         |
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
             | LBTT calculated            | £106519.00       |
             | Total LBTT reliefs claimed | £50828.00        |
             | Total tax payable          | £55691.00        |
-        # Check the overridden transaction value isn't changed just by going through the wizard
+        # Check the overridden linked transaction value is not changed by going through the wizard
+        # The relief values are changed
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
@@ -1250,9 +1288,11 @@ Feature: LBTT Returns
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
-        And I should see the text "2087" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount"
+        And I should see the text "0" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount"
         And I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount"
         And field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount" should be readonly
+        And I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount"
+        And field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount" should be readonly
         When I click on the "Continue" button
         Then I should see the "About future events" page
         When I click on the "Continue" button
@@ -1263,20 +1303,84 @@ Feature: LBTT Returns
         And I should see the text "1234560" in field "Total consideration remaining"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
-        # reset the claim amount
         And the table of data is displayed
             | About the reliefs         | Edit reliefs                  |
             | Type of relief            | Amount of tax saved by relief |
-            | Multiple dwellings relief | £2087.00                      |
+            | Multiple dwellings relief | £0.00                         |
+            | First-Time Buyer Relief   | £0.00                         |
+            | Public bodies relief      | £106519.00                    |
+
+        And the table of data is displayed
+            | About the calculation      | Edit calculation |
+            | LBTT calculated            | £106519.00       |
+            | Total LBTT reliefs claimed | £106519.00       |
+            | Total tax payable          | £0.00            |
+
+        # Check the calculation of the first time buyer relief before and after the 15th July 2020
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+        And I should see the text "0" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount"
+        And I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount"
+        And field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount" should be readonly
+        And I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount"
+        And field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount" should be readonly
+        When I click on the 3 rd "Delete row" button
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+        And I should see the text "1234560" in field "Total consideration"
+        And I should see the text "1100" in field "Linked transaction consideration"
+        And I should see the text "125" in field "Non-chargeable consideration"
+        And I should see the text "1234560" in field "Total consideration remaining"
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And the table of data is displayed
+            | About the reliefs         | Edit reliefs                  |
+            | Type of relief            | Amount of tax saved by relief |
+            | Multiple dwellings relief | £0.00                         |
             | First-Time Buyer Relief   | £600.00                       |
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
             | LBTT calculated            | £106519.00       |
-            | Total LBTT reliefs claimed | £2687.00         |
-            | Total tax payable          | £103832.00       |
+            | Total LBTT reliefs claimed | £600.00          |
+            | Total tax payable          | £105919.00       |
+        # check changing the date forces recalculation
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+        When I enter "15-07-2020" in the "Effective date of transaction" date field
+        And I enter "14-07-2020" in the "Relevant date" date field
+        When I click on the "Continue" button
+        And I click on the "Back" link
+        And I click on the "Back" link
+        And I click on the "Back" link
+        Then I should see the "Return Summary" page
+        And the table of data is displayed
+            | About the reliefs         | Edit reliefs                  |
+            | Type of relief            | Amount of tax saved by relief |
+            | Multiple dwellings relief | £0.00                         |
+            | First-Time Buyer Relief   | £0.00                         |
 
-        # Check the overridden transaction value is changed by changing the linked value
+        And the table of data is displayed
+            | About the calculation      | Edit calculation |
+            | LBTT calculated            | £106519.00       |
+            | Total LBTT reliefs claimed | £0.00            |
+            | Total tax payable          | £106519.00       |
+
+        # Check the overridden linked transaction value is changed by changing the linked value
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
@@ -1323,7 +1427,7 @@ Feature: LBTT Returns
             | Property address           | Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE |
             | Buyer                      | Partnership name                                                   |
             | Description of transaction | Conveyance or transfer                                             |
-            | Effective date             | 02/08/2019                                                         |
+            | Effective date             | 15/07/2020                                                         |
         # Check you can't submit again
         When I go to the "returns/lbtt/declaration" page
         Then I should see the "Payment and submission" page
@@ -2169,11 +2273,11 @@ Feature: LBTT Returns
         # Transaction
         When I click on the "Add transaction details" link
         Then I should see the "About the dates" page
-        When I enter "02-08-2019" in the "Effective date of transaction" date field
-        And I enter "03-08-2019" in the "Relevant date" date field
-        And I enter "03-08-2019" in the "Date of contract or conclusion of missives" date field
-        And I enter "10-10-2019" in the "Lease start date" date field
-        And I enter "08-10-2023" in the "Lease end date" date field
+        When I enter "02-08-2020" in the "Effective date of transaction" date field
+        And I enter "03-08-2020" in the "Relevant date" date field
+        And I enter "03-08-2020" in the "Date of contract or conclusion of missives" date field
+        And I enter "10-10-2020" in the "Lease start date" date field
+        And I enter "08-10-2024" in the "Lease end date" date field
         And I click on the "Continue" button
 
         Then I should see the "Linked Transactions" page
@@ -2215,10 +2319,10 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the transaction                                  | Edit            |
-            | Effective date of transaction                          | 02 August 2019  |
-            | Relevant date                                          | 03 August 2019  |
-            | Lease start date                                       | 10 October 2019 |
-            | Lease end date                                         | 08 October 2023 |
+            | Effective date of transaction                          | 02 August 2020  |
+            | Relevant date                                          | 03 August 2020  |
+            | Lease start date                                       | 10 October 2020 |
+            | Lease end date                                         | 08 October 2024 |
             | Are there any linked transactions?                     | No              |
             | Premium amount (inc VAT)                               | £352000.00      |
             | What is the relevant rent amount for this transaction? | £351000.00      |
@@ -2316,10 +2420,21 @@ Feature: LBTT Returns
             | Property address             | Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE |
             | Tenant                       | Mr TenantFirstname TenantSurname                                   |
             | Description of transaction   | Assignation                                                        |
-            | Effective date               | 02/08/2019                                                         |
+            | Effective date               | 02/08/2020                                                         |
             | Your reference (if provided) | my agent ref                                                       |
 
     Scenario: Make a lease review return return for a public user
+        # Check signed in user does not have access
+        Given I have signed in
+        When I go to the "returns/lbtt/public_landing" page
+        Then I should see the "Dashboard" page
+        When I go to the "returns/lbtt/public_return_type" page
+        Then I should see the "Dashboard" page
+        When I go to the "returns/lbtt/return_reference_number" page
+        Then I should see the "Dashboard" page
+
+        # Now test with public user
+        Given I have signed out
         When I go to the "returns/lbtt/public_landing" page
         Then I should see the "To complete this return, you will need the following information" page
 

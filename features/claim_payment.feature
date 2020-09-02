@@ -3,7 +3,19 @@ Feature: Claim payment
     I want to be able to claim or request a repayment
     So that I can claim a refund for a LBTT return or SLFT return
     Scenario: Public user ADS claim repayment less than 12 months with no agent and two taxpayers
+        # Check signed in user does not have access
+        Given I have signed in
+        When I go to the "claim/claim_payments/public_claim_landing" page
+        Then I should see the "Dashboard" page
+        When I go to the "claim/claim_payments/eligibility?new=true" page
+        Then I should see the "Dashboard" page
+        When I go to the "claim/claim_payments/before_you_start" page
+        Then I should see the "Dashboard" page
+        When I go to the "claim/claim_payments/return_reference_number" page
+        Then I should see the "Dashboard" page
 
+        # Now test with public user
+        Given I have signed out
         When I go to the "claim/claim_payments/public_claim_landing" page
         Then I should see the "Claim a repayment of Additional Dwelling Supplement" page
 
@@ -204,14 +216,21 @@ Feature: Claim payment
         Then I should see the "Declarations" page
         When I click on the "Continue" button
         Then I should receive the message "The declaration must be accepted"
-        And I check the "I, First name Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
+        When I check the "I, First name Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
         And I check the "I, Buyer 2 First name Buyer 2 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
-        And I check the "I, Buyer 3 First name Buyer 3 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
+        And I click on the "Continue" button
+        Then I should receive the message "The declaration must be accepted"
+
+        When I check the "I, Buyer 3 First name Buyer 3 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
         And I check the "I, Buyer 4 First name Buyer 4 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
         And I check the "I, Additional Buyer First name Additional Buyer Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
-
-        When I click on the "Continue" button
+        And I click on the "Continue" button
         Then I should see the "Your request has been sent to Revenue Scotland" page
+
+        # test case to download Receipt on last return submit return
+        When I click on the "Download a copy of your claim" link to download a file
+        Then I should see the downloaded "CLAIM" content of "LBTT"
+
     Scenario: Checking Claim repayment wizard functionality for LBTT ADS returns with one tax payer
         Given I have signed in 'PORTAL.ONE' and password 'Password1!'
         # A draft return
@@ -316,7 +335,21 @@ Feature: Claim payment
         And I click on the "Claim" link
         Then I should see the "Claim repayment" page
 
-        And I check the "Impact of legislation change" radio button
+        And I check the "Other" radio button
+        And I click on the "Continue" button
+
+        Then I should receive the message "Claim description can't be blank"
+        When I enter "RANDOM_text,256" in the "Claim description" field
+        And I click on the "Continue" button
+        Then I should receive the message "Claim description is too long (maximum is 255 characters)"
+
+        When I enter "RANDOM_text,255" in the "Claim description" field
+        And I click on the "Continue" button
+        Then I should see the "Evidence to support the claim" page
+        When I click on the "Back" link
+        Then I should see the "Claim repayment" page
+
+        When I check the "Impact of legislation change" radio button
         And I click on the "Continue" button
 
         Then I should see the "Evidence to support the claim" page
@@ -426,7 +459,9 @@ Feature: Claim payment
         When I upload "testdoc.doc" to "resource_item_default_file_data"
         And I click on the "Upload document" button
         Then I should see the text "testdoc.doc"
+        # we need to wait for the remove file to process there is no +ve check to use
         When I click on the "Remove file" button
+        And I wait for 1 seconds
         Then I should not see the text "testdoc.doc"
 
         # Upload multiple file types

@@ -201,7 +201,7 @@
     },
     "non_disposal_add_text": "Hello",
     "non_disposal_delete_text": "Ahoy",
-    "declaration": "true",
+    "declaration": "Y",
     "fpay_method": "BACS",
     "payment_date": "12/05/2017",
     "repayment_yes_no": "Y",
@@ -210,5 +210,5 @@
     "bank_account_no": "79854684",
     "bank_sort_code": "58-81-88",
     "bank_name": "Logitech Banking",
-    "rrep_bank_auth_ind": "true"
+    "rrep_bank_auth_ind": "Y"
 }

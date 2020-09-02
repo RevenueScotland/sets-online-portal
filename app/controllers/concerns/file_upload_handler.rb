@@ -28,6 +28,8 @@
 # for other validation configurations refer to the ResourceItem class.
 #
 # 3. On on successful validation it stores the file in a temporary folder for each login user based on their username.
+#    If the session is unauthenticated then the calling controller should override the sub_directory function to specify
+#    an alternative. The sub_directory function is held in the download_helper concern as it is shared with this concern
 # 4. The file is renamed with a UUID before saving so that filename is unique inside the folder.
 # 5. File upload path can be configured using "config.x.temp_folder" key.
 #    E.g. :
@@ -202,16 +204,14 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   def initialise_resource_items_hash(overrides, check_resource_items = false)
     old_resource_items_hash = @resource_items_hash || {}
     @resource_items_hash = {}
-    types = expected_file_types(overrides)
 
-    types.each do |type|
+    expected_file_types(overrides).each do |type|
       # Copy the resource item if it has just been created
       # Note this is cleared in the validation processing if it validates
-      type = type.to_sym
-
-      @resource_items_hash[type] = old_resource_items_hash[type] unless old_resource_items_hash[type].nil?
-      next unless old_resource_items_hash[type].nil?
-
+      unless old_resource_items_hash[type].nil?
+        @resource_items_hash[type] = old_resource_items_hash[type]
+        next
+      end
       # if we are in validation processing this type exists in the main list skip
       next if check_resource_items && @resource_items.any? { |r| r.type == type }
 
@@ -256,12 +256,6 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
     # (and is in the resource items list)
     initialise_resource_items_hash(overrides, true)
     @resource_items_hash.values
-  end
-
-  # returns the username if current user is authorized
-  # for unauthorized user this method will be overridden in the claim_payment_controller
-  def sub_directory
-    current_user.username || 'unauthenticated'
   end
 
   # Remove files for server and list.
@@ -339,6 +333,8 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # @param overrides [Hash] check handle_file_upload
   # @return [Array] the array of file types
   def expected_file_types(overrides)
-    overrides[:types] || [:default]
+    file_types = overrides[:types] || [:default]
+    # make sure we return a symbol
+    file_types.map!(&:to_sym)
   end
 end

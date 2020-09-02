@@ -26,11 +26,12 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   include AccountBasedCaching
 
   # Attributes for this class, in list so can re-use as permitted params list in the controller
+  # note memorable answer and memorable question and are shown as memorable word and hint on the page
   def self.attribute_list
     %i[party_refno user_roles work_place_refno forename surname email_address phone_number preferred_language
        email_address_confirmation old_password new_password new_password_confirmation password password_change_required
        password_expiry_date user_is_authenticated user_is_registered user_locked user_is_current username new_username
-       token user_is2_fa token_valid2_fa user_is_signed_ta_cs]
+       token user_is2_fa token_valid2_fa user_is_signed_ta_cs memorable_question memorable_answer]
   end
 
   # Fields that can be set on a user
@@ -40,6 +41,12 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   # @return [Hash] <attribute> => <ref data composite key>
   def cached_ref_data_codes
     { user_roles: comp_key('PORTALROLES', 'SYS', 'RSTU'), user_is_current: comp_key('CURRENT_INACTIVE', 'SYS', 'RSTU') }
+  end
+
+  # Define the ref data codes associated with the attributes not to be cached in this model
+  # @return [Hash] <attribute> => <ref data composite key>
+  def uncached_ref_data_codes
+    { user_is_signed_ta_cs: YESNO_COMP_KEY }
   end
 
   # Custom override getter for user_is_current to return default of 'Y' if not set (important for validation of new
@@ -85,13 +92,8 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   # the id function needs to return the primary key and is used to build the links
-  # @return [String] the escaped URL-encoded username
+  # @return [String] the username
   def to_param
-    CGI.escape(username)
-  end
-
-  # @return username to describe this user logging etc
-  def to_s
     username
   end
 
@@ -228,6 +230,8 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   private_class_method def self.convert_back_office_data(user)
     # Fiddle as FL gives yes and no but expect Y and N to be passed back so make the change on load
     yes_nos_to_yns(user, %i[user_is_current])
+    # We don't use title so remove it
+    user.delete(:title)
 
     # Set the confirm e-mail to be the same as the original e-mail
     user[:email_address_confirmation] = user[:email_address]

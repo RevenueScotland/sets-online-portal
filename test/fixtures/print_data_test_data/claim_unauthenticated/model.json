@@ -113,42 +113,42 @@
   "account_number": "12345678",
   "branch_code": "10-11-12",
   "bank_name": "Natwest",
-  "authenticated_declaration_1": false,
-  "authenticated_declaration_2": false,
+  "authenticated_declaration_1": "N",
+  "authenticated_declaration_2": "N",
   "unauthenticated_declarations": [
     {
       "json_class": "Claim::AdsDeclaration",
       "index": 0,
       "text": "I, First name Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed",
-      "checked": true,
+      "checked": "Y",
       "new_record": true
     },
     {
       "json_class": "Claim::AdsDeclaration",
       "index": 1,
       "text": "I, Buyer 2 First name Buyer 2 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed",
-      "checked": true,
+      "checked": "Y",
       "new_record": true
     },
     {
       "json_class": "Claim::AdsDeclaration",
       "index": 2,
       "text": "I, Buyer 3 First name Buyer 3 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed",
-      "checked": true,
+      "checked": "Y",
       "new_record": true
     },
     {
       "json_class": "Claim::AdsDeclaration",
       "index": 3,
       "text": "I, Buyer 4 First name Buyer 4 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed",
-      "checked": true,
+      "checked": "Y",
       "new_record": true
     },
     {
       "json_class": "Claim::AdsDeclaration",
       "index": 4,
       "text": "I, Additional Buyer First name Additional Buyer Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed",
-      "checked": true,
+      "checked": "Y",
       "new_record": true
     }
   ]

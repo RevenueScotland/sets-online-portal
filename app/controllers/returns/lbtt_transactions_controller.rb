@@ -32,7 +32,7 @@ module Returns
     def transaction_dates
       wizard_step(nil) do
         { setup_step: :setup_transaction_dates_step, next_step: :calculate_next_step,
-          cache_index: LbttController, after_merge: :update_yearly_rents }
+          cache_index: LbttController, after_merge: :update_yearly_rents_and_calculate }
       end
     end
 
@@ -197,26 +197,28 @@ module Returns
     end
 
     # Updates the yearly rents array as per the initial values of (or changes to) the lease start and end date.
-    # so example if the user has select least start date 1-4-2019 and end date 1-4-2020
+    # so example if the user has select lease start date 1-4-2019 and end date 1-4-2020
     # it will create two rows array of yearly rent object and assign it to yearly_rents
     # field of @lbtt_return object
     # This method checks if the user has already visited the conveyance dates page or not
     # based on that method will add or delete rows of an existing array with retaining the current value
+    # This routine also triggers a new calculation in case the dates have changed so the latest details are reflected
     # @return [Boolean] true if successful
-    def update_yearly_rents
-      return true if @lbtt_return.flbt_type == 'CONVEY' || @lbtt_return.lease_start_date.nil? ||
-                     @lbtt_return.lease_end_date.nil?
+    def update_yearly_rents_and_calculate
+      unless @lbtt_return.flbt_type == 'CONVEY'
+        # if the lease dates are nil then we don't need to calculate either
+        return true if @lbtt_return.lease_start_date.nil? || @lbtt_return.lease_end_date.nil?
 
-      # Stores the previous calculated years, which is the number of rows of the rental years if it's found,
-      # otherwise it'll default to 0.
-      # Normally, when the user has already entered the lease dates and then came back to change it, the old array
-      # where the yearly_rents are stored will still be the same until when it gets changed later in this method.
-      # So that's where the 'previous' comes from.
-      previous = @lbtt_return.yearly_rents.nil? ? 0 : @lbtt_return.yearly_rents.length
+        # Stores the previous calculated years, which is the number of rows of the rental years if it's found,
+        # otherwise it'll default to 0.
+        # Normally, when the user has already entered the lease dates and then came back to change it, the old array
+        # where the yearly_rents are stored will still be the same until when it gets changed later in this method.
+        # So that's where the 'previous' comes from.
+        previous = @lbtt_return.yearly_rents.nil? ? 0 : @lbtt_return.yearly_rents.length
 
-      update_yearly_rents_array(previous)
-      wizard_save(@lbtt_return, Returns::LbttController)
-      true
+        update_yearly_rents_array(previous)
+      end
+      update_tax_calculations
     end
 
     # Either creates a new array, deletes items or adds new instances of YearlyRents object to (/from) the yearly_rents

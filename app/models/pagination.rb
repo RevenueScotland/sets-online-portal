@@ -6,6 +6,7 @@ module Pagination
   # Class to hold pagination collections value
   class PaginationCollection
     attr_reader :start_row, :num_rows, :sort_option, :total_rows, :more_rows_exists, :current_page
+
     def initialize(start_row, num_rows, total_rows, more_rows_exists, current_page)
       @start_row = start_row
       @num_rows = num_rows
@@ -81,8 +82,7 @@ module Pagination
       # displayed
       total_rows = collections.count
     end
-    pagination_collection = PaginationCollection.new(start_row, num_rows, total_rows, more_rows_exists, page)
-    pagination_collection
+    PaginationCollection.new(start_row, num_rows, total_rows, more_rows_exists, page)
   end
 
   # Method is used to define start row of page as per pages in pagination
@@ -90,11 +90,10 @@ module Pagination
   # @note param page [Integer] is the current page
   # @return [Integer] the start row
   private_class_method def self.get_pagination_start_row_parameter(num_rows, page)
-    start_row = if page > 1
-                  (num_rows * (page - 1)) + 1
-                else
-                  1
-                end
-    start_row
+    if page > 1
+      (num_rows * (page - 1)) + 1
+    else
+      1
+    end
   end
 end

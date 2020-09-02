@@ -10,8 +10,7 @@ module UserLogin
     # Note: the back office is case sensitive but this is from the model which is already upcase
     call_ok?(:log_off_user, Username: username)
   rescue StandardError => e
-    Rails.logger.error("\nERROR: #{e&.message}")
-    Rails.logger.error("BACKTRACE: \n  #{e.backtrace[0..5].join("\n  ")}")
+    Error::ErrorHandler.log_exception(e)
   end
 
   # @return true if the token is invalid, otherwise false
@@ -87,6 +86,10 @@ module UserLogin
     # @param username [String] the username of the user to create
     # @return [User] the user from the back office result, with the password and token cleared
     def from_backoffice(body, username)
+      # Convert the true and false from the back office to a Y/N
+      # The TaCs is held as a Y/N to display the check box on the page
+      # Note that we must get the false back otherwise we assume they are signed up
+      body[:user_is_signed_ta_cs] = (body[:user_is_signed_ta_cs] == false ? 'N' : 'Y')
       user = User.new(body)
       user.username = username # Back office doesn't pass the username back so need to add
       user.token = user.password = nil # clear any tokens or passwords

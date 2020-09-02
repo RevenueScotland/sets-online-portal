@@ -60,8 +60,9 @@ module Dashboard
                           filename: "#{tare_reference}-#{version}#{File.extname(zip_file)}",
                           disposition: 'attachment'
     rescue StandardError => e
-      Rails.logger.error(e)
-      redirect_to controller: '/home', action: 'file_download_error'
+      error_ref = Error::ErrorHandler.log_exception(e)
+
+      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     # Delete the return specified by params[:id]
@@ -90,8 +91,9 @@ module Dashboard
       # Download the file
       send_file_from_attachment(attachment[:document_return])
     rescue StandardError => e
-      Rails.logger.error(e)
-      redirect_to controller: '/home', action: 'file_download_error'
+      error_ref = Error::ErrorHandler.log_exception(e)
+
+      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     # Gets the contents of the params[:id] and splits it up to convert the string into a hash

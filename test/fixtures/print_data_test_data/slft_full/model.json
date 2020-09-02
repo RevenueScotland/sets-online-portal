@@ -159,7 +159,7 @@
     "new_record": true,
     "non_disposal_add_text": "Hello",
     "non_disposal_delete_text": "Ahoy",
-    "declaration": "true",
+    "declaration": "Y",
     "fpay_method": "BACS",
     "payment_date": "19/11/2019"
 }

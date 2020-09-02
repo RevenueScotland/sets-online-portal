@@ -3,7 +3,7 @@
 <%= form_for @slft_return, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @slft_return %>
   <%= f.collection_radio_buttons_fields(:non_disposal_add_ind, @slft_return.list_ref_data(:non_disposal_add_ind)) %>
-  <div id='hideable' >
+  <div id='hideable' class= 'govuk-radios__conditional' >
     <%= f.text_area_field :non_disposal_add_text %>
   </div>
   <%= f.button %>

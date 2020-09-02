@@ -42,10 +42,11 @@ module Returns
       # Define the ref data codes associated with the attributes but which won't be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
       def uncached_ref_data_codes
-        { non_disposal_add_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          non_disposal_delete_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          slcf_yes_no: comp_key('YESNO', 'SYS', 'RSTU'), bad_debt_yes_no: comp_key('YESNO', 'SYS', 'RSTU'),
-          removal_credit_yes_no: comp_key('YESNO', 'SYS', 'RSTU'), repayment_yes_no: comp_key('YESNO', 'SYS', 'RSTU') }
+        { non_disposal_add_ind: YESNO_COMP_KEY,
+          non_disposal_delete_ind: YESNO_COMP_KEY,
+          slcf_yes_no: YESNO_COMP_KEY, bad_debt_yes_no: YESNO_COMP_KEY,
+          removal_credit_yes_no: YESNO_COMP_KEY, repayment_yes_no: YESNO_COMP_KEY,
+          declaration: YESNO_COMP_KEY, rrep_bank_auth_ind: YESNO_COMP_KEY }
       end
 
       # Attribute list for return period wizard
@@ -97,11 +98,11 @@ module Returns
       validates :bank_sort_code, presence: true, bank_sort_code: true, on: :account_holder
 
       # repayment declaration
-      validates :rrep_bank_auth_ind, acceptance: { accept: ['true'] }, on: :rrep_bank_auth_ind
+      validates :rrep_bank_auth_ind, acceptance: { accept: ['Y'] }, on: :rrep_bank_auth_ind
 
       # declaration validation
       validates :fpay_method, presence: true, on: :fpay_method
-      validates :declaration, acceptance: { accept: ['true'] }, on: :fpay_method
+      validates :declaration, acceptance: { accept: ['Y'] }, on: :fpay_method
 
       # save draft and calculate (submit) buttons validation
 
@@ -126,11 +127,10 @@ module Returns
       # @param param_id [Hash] The reference number, tare_refno, srv_code and version of the SLFT return to get data.
       # @param requested_by [User] is usually the current_user, who is requesting the data and containing the account id
       def self.find(param_id, requested_by)
-        slft_return = Slft::SlftReturn.abstract_find(:slft_tax_return_details, param_id, requested_by,
-                                                     :slft_tax_return) do |data|
+        Slft::SlftReturn.abstract_find(:slft_tax_return_details, param_id, requested_by,
+                                       :slft_tax_return) do |data|
           Slft::SlftReturn.new_from_fl(data.merge!(current_user: requested_by))
         end
-        slft_return
       end
 
       # The credit limit percentage values that are found from the back office's system parameter, we get them from
@@ -609,7 +609,7 @@ module Returns
           { code: :bank_sort_code, when: :repayment_details_needed?, is: [true] },
           { code: :bank_account_no, when: :repayment_details_needed?, is: [true] },
           { code: :bank_name, when: :repayment_details_needed?, is: [true] },
-          { code: :rrep_bank_auth_ind, boolean_lookup: true, when: :repayment_details_needed?, is: [true] }
+          { code: :rrep_bank_auth_ind, lookup: true, when: :repayment_details_needed?, is: [true] }
         ]
       end
 
@@ -618,7 +618,7 @@ module Returns
         { code: :declaration, key: :title, key_scope: %i[returns slft declaration],
           divider: false, display_title: true, type: :list,
           list_items: [{ code: :fpay_method, lookup: true },
-                       { code: :declaration, boolean_lookup: true }] }
+                       { code: :declaration, lookup: true }] }
       end
     end
   end

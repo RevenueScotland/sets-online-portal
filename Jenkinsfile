@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="2.6.5"
+def RUBY_VERSION="2.6.6"
 
 /*
 	* Back office names
@@ -15,8 +15,8 @@ def RUBY_VERSION="2.6.5"
 	* Notes: No def or final here otherwise the constants get bound to just the main part of the program
 	* 	and aren't available to the functions
 	*/
-MAN_BACKOFFICE = "RSTSTST3"
-REL_BACKOFFICE = "RSTSSCRM"
+MAN_BACKOFFICE = "RSTSTST1"
+REL_BACKOFFICE = "RSTSTST2"
 BOT_BACKOFFICE = "RSTSSMOK"
 
 properties ([
@@ -253,6 +253,7 @@ def prepareBuildEnvironment() {
 	stage ('Prepare Build Environment') {
 		sh 'gem install bundler rake yard rubocop brakeman bundle-audit gemsurance licensed' 
 		sh 'bundle install'
+        sh 'yarn install --frozen-lockfile'
 		milestone(1)
 	}
 }
@@ -314,22 +315,28 @@ def lintCode() {
 }
 
 /*
- * Check any included GEMs for being out of date, and for any CVEs
+ * Check any included GEMs and Yarn for being out of date, and for any CVEs
  *
  */
 
 def checkCVEs() {
-	stage ('Gem CVE Check') {
+	stage ('Gem/Yarn CVE Check') {
 		try {
-            // ignore errors from gemsurance - but catch those from bundle-audit, so that we can stash the
+            // ignore errors from gemsurance - but catch those from bundle-audit and yarn -audit, so that we can stash the
             // results from gemsurance, and put the html page up on the documentation server later
 			sh 'set +e ; gemsurance --output tmp/gemsurance_report.html ; echo'
             stash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-report", includes: 'tmp/gemsurance_report.html'
-            sh 'bundle-audit update && bundle-audit check > tmp/bunde-audit.txt'
+            sh '''
+               set +e
+               touch tmp/yarn-audit.txt tmp/bunde-audit.txt
+               bundle-audit update && bundle-audit check > tmp/bunde-audit.txt && bundle_failed=$?
+               yarn audit --no-progress --level info > tmp/yarn-audit.txt && yarn_failed=$?
+               exit $((yarn_failed+bundle_failed))
+               '''
 		} catch (err) {
-			emailext attachmentsPattern: "tmp/bunde-audit.txt", 
-				subject: "Gem CVE check in ${this.getAppName()}", 
-				body: "Some GEMs have CVEs in ${this.getAppName()}. Please see attached for more information.", 
+			emailext attachmentsPattern: "tmp/*-audit.txt", 
+				subject: "Gem/Yarn CVE check in ${this.getAppName()}", 
+				body: "Some GEMs and/or Yarn packages have CVEs in ${this.getAppName()}. Please see attached for more information.", 
 				to: "${REVSCOT_DEVELOPERS}"
 /* Don't fail the build for now
 			currentBuild.result = "FAILURE"
@@ -626,6 +633,9 @@ def runAutotest(String host, String port, String seleniumPort, String environmen
 				sh '''
 					#!/bin/bash
 					export DOCKER_HOST=tcp://$(hostname -f):2376
+                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk add --no-cache --virtual .bundle-deps build-base gmp-dev
+                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle install --deployment --with="development test"
+                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk del .bundle-deps
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} mkdir -p /var/tmp/share/upload /var/tmp/share/download
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} chmod 777 -R /var/tmp/share/
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
@@ -946,39 +956,45 @@ def waitForDeployment(String environment, String environmentLabel) {
  * imagesUsed	space separated list of images to analyse
  */
 def analyseApplicationImages(String imagesUsed) {
-	withEnv(["IMAGE_LIST=${imagesUsed}"]) {
-		sh '''
-			rm -f report-*.html
-			for repo_image in ${IMAGE_LIST//\\"/}; do
-				echo Analysing ${repo_image}
-				repo=${repo_image%%/*}
-				image=${repo_image##*/}	   
-				reportName=analysis-${repo}-${image//:/-}
-				ssh ${CLAIR_SERVER} "/opt/clair/analyse-image.sh ${repo}/${image} jenkins password"
-				scp "${CLAIR_SERVER}:/opt/clair/reports/${reportName}.html" report-${image//:/-}.html
-				ssh ${CLAIR_SERVER} "rm -rf /opt/clair/reports/${reportName}.html"
-			done
-			if test -n "$(find . -maxdepth 1 -name '*.html' -print -quit)" ; then
-				echo Summary of Results > summary.txt
-				remove_junk='-e s~strong~~g -e s~div~~g -e s~/~~g -e s~[<>]~~g '
-				for report in *.html ; do
-					grep -o "Image: [^<]*" ${report} >> summary.txt
-					echo "	" $(grep -o "Total : [[:digit:]]* vulnerabilities" ${report}) >> summary.txt
-					echo "	" $(grep -o "Critical : .*" ${report} | sed ${remove_junk}) >> summary.txt
-					echo "	" $(grep -o "High : .*" ${report} | sed ${remove_junk}) >> summary.txt
-					echo "	" $(grep -o "Medium : .*" ${report} | sed ${remove_junk}) >> summary.txt
-					echo >> summary.txt
-				done
-			else
-				echo No Report files found > summary.txt
-			fi
-		'''
-		emailext attachLog: false, 
-			body: 'Find attached Clair reports for all images\nSummary of results are:\n\n\${FILE,path="summary.txt"}\n', 
-			subject: "Analysis of ${this.getAppName()} manual test images", 
-			to: "${REVSCOT_DEVOPS}", 
-			attachmentsPattern: 'report-*.html'
-	}
+    try {
+        withEnv(["IMAGE_LIST=${imagesUsed}"]) {
+            sh '''
+                rm -f report-*.html
+                for repo_image in ${IMAGE_LIST//\\"/}; do
+                    echo Analysing ${repo_image}
+                    repo=${repo_image%%/*}
+                    image=${repo_image##*/}	   
+                    reportName=analysis-${repo}-${image//:/-}
+                    ssh ${CLAIR_SERVER} "/opt/clair/analyse-image.sh ${repo}/${image} jenkins password"
+                    scp "${CLAIR_SERVER}:/opt/clair/reports/${reportName}.html" report-${image//:/-}.html
+                    ssh ${CLAIR_SERVER} "rm -rf /opt/clair/reports/${reportName}.html"
+                done
+                if test -n "$(find . -maxdepth 1 -name '*.html' -print -quit)" ; then
+                    echo Summary of Results > summary.txt
+                    remove_junk='-e s~strong~~g -e s~div~~g -e s~/~~g -e s~[<>]~~g '
+                    for report in *.html ; do
+                        grep -o "Image: [^<]*" ${report} >> summary.txt
+                        echo "	" $(grep -o "Total : [[:digit:]]* vulnerabilities" ${report}) >> summary.txt
+                        echo "	" $(grep -o "Critical : .*" ${report} | sed ${remove_junk}) >> summary.txt
+                        echo "	" $(grep -o "High : .*" ${report} | sed ${remove_junk}) >> summary.txt
+                        echo "	" $(grep -o "Medium : .*" ${report} | sed ${remove_junk}) >> summary.txt
+                        echo >> summary.txt
+                    done
+                else
+                    echo No Report files found > summary.txt
+                fi
+            '''
+            emailext attachLog: false, 
+                body: 'Find attached Clair reports for all images\nSummary of results are:\n\n\${FILE,path="summary.txt"}\n', 
+                subject: "Analysis of ${this.getAppName()} manual test images", 
+                to: "${REVSCOT_DEVOPS}", 
+                attachmentsPattern: 'report-*.html'
+        }
+    } catch (err) {
+        emailext subject: "Build failed to check docker images in ${this.getAppName()}",
+            body: "Using Clair to check for CVEs in docker images failed with errors. Check the Jenkins log for more details, which can be found here: ${env.BUILD_URL}consoleFull",
+            to: "${REVSCOT_DEVOPS}"
+    }
 }
 
 /*
