@@ -9,25 +9,25 @@ Feature: Registration Wizard
     And I click on the "Register if you don't have an account" link
 
     Then I should see the text "Who are you signing up on behalf of?"
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the text "Who are you signing up on behalf of?"
     And I should receive the message "Who are you signing up on behalf of can't be blank"
     When I check the "Individual/Sole trader" radio button
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the text "Sign up to file tax returns"
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the text "Sign up to file tax returns"
     And I should receive the message "Which type of tax return do you want to be able to file must have one option ticked"
     And I should receive the message "Who is the account for can't be blank"
     And I check the "Land and Building Transaction Tax" checkbox
     And I check the "A taxpayer" radio button
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I should receive the message "Email address can't be blank"
@@ -37,13 +37,13 @@ Feature: Registration Wizard
     When I enter "noreply@northgateps@com" in the "Email address" field
     And I enter "noreply@northgateps@com" in the "Confirm email address" field
     And I enter "AB123456E" in the "National insurance number (NINO)" field
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I should receive the message "Email address is invalid"
     And I should receive the message "National insurance number (NINO) is invalid"
     When I enter "noreply@northgateps.com" in the "Email address" field
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I should receive the message "Email address does not match"
@@ -53,7 +53,7 @@ Feature: Registration Wizard
     And I enter "noreply@northgateps.com" in the "Confirm email address" field
     And I enter "07700 900123" in the "Contact phone number" field
     And I enter "AB123456D" in the "National insurance number (NINO)" field
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your contact address"
     When I clear the "address_summary_postcode" field
@@ -76,7 +76,7 @@ Feature: Registration Wizard
     And I click on the "Find Address" button
     Then I should receive the message "The postcode doesn't return any addresses"
     And I clear the "address_summary_postcode" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Your contact address"
     And I should receive the message "Use the postcode search or enter the address manually"
@@ -88,7 +88,7 @@ Feature: Registration Wizard
     And I clear the "address_address_line1" field
     And I clear the "address_town" field
     And I clear the "address_postcode" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Your contact address"
     And I should receive the message "Building and street can't be blank"
@@ -101,13 +101,15 @@ Feature: Registration Wizard
     And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
     And if available, click the "Select" button
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the sub-title "Your individual account details"
 
     When I click on the "Confirm" button
     Then I should see the sub-title "Your individual account details"
     And I should receive the message "Username is too short (minimum is 5 characters)"
     And I should receive the message "Password can't be blank"
+    And I should receive the message "The terms and conditions must be accepted"
+    And I should receive the message "The email communication policy agreement can't be blank"
     When I enter "SM" in the "Username" field
     And I check the "I confirm that I have read and understood the terms & conditions" checkbox
     And I check the "Yes" radio button
@@ -131,20 +133,20 @@ Feature: Registration Wizard
     And I click on the "Register if you don't have an account" link
 
     Then I should see the text "Who are you signing up on behalf of?"
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the text "Who are you signing up on behalf of?"
     And I should receive the message "Who are you signing up on behalf of can't be blank"
     When I check the "Non registered body" radio button
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Organisation"
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Organisation"
     And I should receive the message "Name can't be blank"
     And I enter "Other Company" in the "account_company_company_name" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Organisation address"
     When I clear the "address_summary_postcode" field
@@ -167,7 +169,7 @@ Feature: Registration Wizard
     And I click on the "Find Address" button
     Then I should receive the message "The postcode doesn't return any addresses"
     And I clear the "address_summary_postcode" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Organisation address"
     And I should receive the message "Use the postcode search or enter the address manually"
@@ -179,7 +181,7 @@ Feature: Registration Wizard
     And I clear the "address_address_line1" field
     And I clear the "address_town" field
     And I clear the "address_postcode" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Organisation address"
     And I should receive the message "Building and street can't be blank"
@@ -191,10 +193,10 @@ Feature: Registration Wizard
     And I click on the "Find Address" button
     And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
     And if available, click the "Select" button
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Organisation contact details"
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Organisation contact details"
     And I should receive the message "Organisation phone number can't be blank"
@@ -205,7 +207,7 @@ Feature: Registration Wizard
     And I enter "noreply@northgateps@com" in the "Organisation email address" field
     And I enter "1234" in the "Organisation phone number" field
     And I enter "1234" in the "account_nino" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Organisation contact details"
     And I should receive the message "Organisation phone number is invalid"
@@ -214,7 +216,7 @@ Feature: Registration Wizard
     And I enter "noreply@northgateps.com" in the "Organisation email address" field
     And I enter "01234567891" in the "Organisation phone number" field
     And I enter "AB123456D" in the "account_nino" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Representatives address"
     When I clear the "address_summary_postcode" field
@@ -237,7 +239,7 @@ Feature: Registration Wizard
     And I click on the "Find Address" button
     Then I should receive the message "The postcode doesn't return any addresses"
     And I clear the "address_summary_postcode" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Representatives address"
     And I should receive the message "Use the postcode search or enter the address manually"
@@ -249,7 +251,7 @@ Feature: Registration Wizard
     And I clear the "address_address_line1" field
     And I clear the "address_town" field
     And I clear the "address_postcode" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Representatives address"
     And I should receive the message "Building and street can't be blank"
@@ -262,7 +264,7 @@ Feature: Registration Wizard
     And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
     And if available, click the "Select" button
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the text "Sign up to file tax returns"
 
   # this only tests the specific bits for registered company, assuming the rest has been tested by
@@ -272,12 +274,12 @@ Feature: Registration Wizard
     And I click on the "Register if you don't have an account" link
     Then I should see the text "Who are you signing up on behalf of?"
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the text "Who are you signing up on behalf of?"
     And I should receive the message "Who are you signing up on behalf of can't be blank"
 
     When I check the "Companies House registered body" radio button
-    And I click on the "Next" button
+    And I click on the "Continue" button
     Then I should see the sub-title "Company"
 
     When I click on the "Find Company" button
@@ -301,7 +303,7 @@ Feature: Registration Wizard
     And I click on the "Find Company" button
     Then I should receive the message "The company number doesn't return a company"
     And I clear the "Company number" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Company"
     And I should receive the message "Company number can't be blank"
@@ -314,19 +316,25 @@ Feature: Registration Wizard
     Then I should see the text "BOOTS UK LIMITED" in field "Address"
     And I should see the text "Nottingham" in field "Town"
     And I should see the text "NG2 3AA" in field "Postcode"
+    And field "Company name" should be readonly
+    And field "Address" should be readonly
+    And field "Address line2" should be readonly
+    And field "Town" should be readonly
+    And field "County" should be readonly
+    And field "Postcode" should be readonly
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the sub-title "Contact address"
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the sub-title "Contact address"
     And I should receive the message "Is your registered address also your contact address can't be blank"
 
     When I check the "Yes" radio button
-    And I click on the "Next" button
+    And I click on the "Continue" button
     Then I should see the sub-title "Organisation contact details"
 
-    When I click on the "Next" button
+    When I click on the "Continue" button
     Then I should see the sub-title "Organisation contact details"
     And I should receive the message "Organisation phone number can't be blank"
     And I should receive the message "Organisation email address can't be blank"
@@ -335,14 +343,14 @@ Feature: Registration Wizard
     When I enter "Mr Wobble" in the "Organisation main representative name" field
     And I enter "noreply@northgateps@com" in the "Organisation email address" field
     And I enter "1234" in the "Organisation phone number" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
     Then I should see the sub-title "Organisation contact details"
     And I should receive the message "Organisation phone number is invalid"
     And I should receive the message "Organisation email address is invalid"
 
     When I enter "noreply@northgateps.com" in the "Organisation email address" field
     And I enter "01234567891" in the "Organisation phone number" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
     Then I should see the text "Sign up to file tax returns"
 
   @mock_new_user_registration
@@ -352,12 +360,12 @@ Feature: Registration Wizard
 
     Then I should see the text "Who are you signing up on behalf of?"
     When I check the "Individual/Sole trader" radio button
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the text "Sign up to file tax returns"
     And I check the "Land and Building Transaction Tax" checkbox
     And I check the "A taxpayer" radio button
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I enter "forename" in the "First name" field
@@ -366,7 +374,7 @@ Feature: Registration Wizard
     And I enter "test@example.com" in the "Confirm email address" field
     And I enter "07700 900123" in the "Contact phone number" field
     And I enter "AB123456D" in the "National insurance number (NINO)" field
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your contact address"
     And I enter "LU1 1AA" in the "address_summary_postcode" field
@@ -378,7 +386,7 @@ Feature: Registration Wizard
     And I should see the text "Dunstable Road" in field "address_address_line3"
     And I should see the text "LUTON" in field "address_town"
     And I should see the text "LU1 1AA" in field "address_postcode"
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I enter "NEW.USER.REGISTRATION" in the "Username" field
@@ -397,11 +405,11 @@ Feature: Registration Wizard
 
     Then I should see the text "Who are you signing up on behalf of?"
     When I check the "Non registered body" radio button
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Organisation"
     And I enter "Other Company" in the "account_company_company_name" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Organisation address"
     And I enter "LU1 1AA" in the "address_summary_postcode" field
@@ -413,14 +421,14 @@ Feature: Registration Wizard
     And I should see the text "Dunstable Road" in field "address_address_line3"
     And I should see the text "LUTON" in field "address_town"
     And I should see the text "LU1 1AA" in field "address_postcode"
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Organisation contact details"
     When I enter "Mr Wobble" in the "Organisation main representative name" field
     And I enter "noreply@northgateps.com" in the "Organisation email address" field
     And I enter "01234567891" in the "Organisation phone number" field
     And I enter "AB123456D" in the "account_nino" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Representatives address"
     And I enter "RG30 6XT" in the "address_summary_postcode" field
@@ -431,13 +439,13 @@ Feature: Registration Wizard
     And I should see the text "Tilehurst" in field "address_address_line2"
     And I should see the text "READING" in field "address_town"
     And I should see the text "RG30 6XT" in field "address_postcode"
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
 
     Then I should see the text "Sign up to file tax returns"
     And I check the "Land and Building Transaction Tax" checkbox
     And I check the "A taxpayer" radio button
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I enter "forename" in the "First name" field
@@ -445,7 +453,7 @@ Feature: Registration Wizard
     And I enter "test@example.com" in the "Email address" field
     And I enter "test@example.com" in the "Confirm email address" field
     And I enter "01234567890" in the "Contact phone number" field
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I enter "NEW.USER.REGISTRATION" in the "Username" field
@@ -464,7 +472,7 @@ Feature: Registration Wizard
 
     Then I should see the text "Who are you signing up on behalf of?"
     When I check the "Companies House registered body" radio button
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Company"
     When I enter "09338960" in the "Company number" field
@@ -475,7 +483,7 @@ Feature: Registration Wizard
     And I should see the text "Hemel Hempstead" in field "company_locality"
     And I should see the text "Hertfordshire" in field "company_county"
     And I should see the text "HP2 4NW" in field "company_postcode"
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Contact address"
     And I check the "No" radio button
@@ -488,18 +496,18 @@ Feature: Registration Wizard
     And I should see the text "Dunstable Road" in field "address_address_line3"
     And I should see the text "LUTON" in field "address_town"
     And I should see the text "LU1 1AA" in field "address_postcode"
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Organisation contact details"
     When I enter "Mr Wobble" in the "Organisation main representative name" field
     And I enter "noreply@northgateps.com" in the "Organisation email address" field
     And I enter "01234567891" in the "Organisation phone number" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the text "Sign up to file tax returns"
     And I check the "Land and Building Transaction Tax" checkbox
     And I check the "A taxpayer" radio button
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I enter "forename" in the "First name" field
@@ -507,7 +515,7 @@ Feature: Registration Wizard
     And I enter "test@example.com" in the "Email address" field
     And I enter "test@example.com" in the "Confirm email address" field
     And I enter "01234567890" in the "Contact phone number" field
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I enter "NEW.USER.REGISTRATION" in the "Username" field
@@ -526,7 +534,7 @@ Feature: Registration Wizard
 
     Then I should see the text "Who are you signing up on behalf of?"
     When I check the "Companies House registered body" radio button
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Company"
     When I enter "09338960" in the "Company number" field
@@ -537,22 +545,22 @@ Feature: Registration Wizard
     And I should see the text "Hemel Hempstead" in field "company_locality"
     And I should see the text "Hertfordshire" in field "company_county"
     And I should see the text "HP2 4NW" in field "company_postcode"
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the sub-title "Contact address"
     And I check the "Yes" radio button
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Organisation contact details"
     When I enter "Mr Wobble" in the "Organisation main representative name" field
     And I enter "noreply@northgateps.com" in the "Organisation email address" field
     And I enter "01234567891" in the "Organisation phone number" field
-    And I click on the "Next" button
+    And I click on the "Continue" button
 
     Then I should see the text "Sign up to file tax returns"
     And I check the "Land and Building Transaction Tax" checkbox
     And I check the "A taxpayer" radio button
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I enter "forename" in the "First name" field
@@ -560,7 +568,7 @@ Feature: Registration Wizard
     And I enter "test@example.com" in the "Email address" field
     And I enter "test@example.com" in the "Confirm email address" field
     And I enter "01234567890" in the "Contact phone number" field
-    When I click on the "Next" button
+    When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I enter "NEW.USER.REGISTRATION" in the "Username" field

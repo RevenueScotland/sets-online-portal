@@ -47,7 +47,7 @@ class TableHelperTest < ActionView::TestCase
 
   # return expected output for test with action
   def expected_output_with_action
-    output = '<table class="govuk-table"><thead class="govuk-table__head"><tr class="govuk-table__row">' \
+    '<table class="govuk-table"><thead class="govuk-table__head"><tr class="govuk-table__row">' \
              '<th class="govuk-table__header">Username</th><th class="govuk-table__header">Name</th>' \
              '</tr></thead><tbody class="govuk-table__body"><tr class="govuk-table__row">' \
              '<td class="govuk-table__cell remove_border_bottom_line">one</td>' \
@@ -56,19 +56,17 @@ class TableHelperTest < ActionView::TestCase
              '<a class="table_action_item govuk-link" aria-label="show for one" href="/dashboard/messages">show</a>' \
              '<a class="table_action_item govuk-link" aria-label="edit for one" href="/dashboard/messages/new">edit' \
              '</a></td></tr></tbody></table>'
-    output
   end
 
   # return expected output for test with out action
   def expected_output_without_action
-    output = '<table class="govuk-table">' \
+    '<table class="govuk-table">' \
              '<thead class="govuk-table__head"><tr class="govuk-table__row">' \
              '<th class="govuk-table__header">Username</th></tr></thead>' \
              '<tbody class="govuk-table__body">' \
              '<tr class="govuk-table__row"><td class="govuk-table__cell remove_border_bottom_line">one</td></tr>' \
              '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="1"></td></tr>' \
              '</tbody></table>'
-    output
   end
 
   # Dummy test user class

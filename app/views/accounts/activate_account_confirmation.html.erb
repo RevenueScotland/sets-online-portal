@@ -2,6 +2,6 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_description, t('.description') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @account, url: login_path, method: :get, local: true do |f| %>  
-    <%= f.button 'continue' %>
+<%= form_for @account, url: login_path, method: :get, local: true do |f| %>
+  <%= f.button 'continue' %>
 <% end %>

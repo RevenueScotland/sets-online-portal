@@ -1,12 +1,11 @@
 <% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, t('.subtitle') %>
+<% content_for :page_description, t('.' + @claim_payment.translation_prefix + '_description') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @claim_payment, url: @post_path, method: :post,  local: true do |f| %>
   <%= form_errors_for @claim_payment %>
   <%= f.text_field :account_holder_name %>
-  <%= f.text_field :account_number %>     
-  <%= f.text_field :branch_code %>  
-  <%= f.text_field :bank_name %>  
-  <%= f.button 'next', { :name => 'submitted' }  %>
+  <%= f.text_field :account_number %>
+  <%= f.text_field :branch_code %>
+  <%= f.text_field :bank_name %>
+  <%= f.button %>
 <% end %>

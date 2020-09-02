@@ -59,11 +59,12 @@ Warden::Strategies.add(:fl_users_strategy) do
 
   # handle the un-authentication case when logging in.
   def handle_unauthenticated(user)
+    return :login_invalid if user.nil?
     # check for the account being locked first, as both locked as 2FA are set to TRUE if 2FA is enabled
-    return :login_locked if user&.user_locked
-    return :invalid_token if user&.token_invalid?
-    return :token_expired if user&.token_expired?
-    return :token_required if user&.user_is2_fa
+    return :login_locked if user.user_locked
+    return :invalid_token if user.token_invalid?
+    return :token_expired if user.token_expired?
+    return :token_required if user.user_is2_fa
 
     # if all else fails, just return this
     :login_invalid

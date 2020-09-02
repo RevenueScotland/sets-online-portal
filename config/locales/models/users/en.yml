@@ -78,6 +78,9 @@ en:
           login_not_activated: "Activate your account using the token you were sent"
           invalid_token: "Enter the correct username and token"
           token_expired: "Your token has expired. Please sign in again to generate a new one"
+          attributes:
+            user_is_signed_ta_cs:
+              accepted: "The terms and conditions must be accepted"
   users:
     index:
       title: "Account users"
@@ -92,17 +95,16 @@ en:
       contact_details: "Contact details"
     edit:
       title: "Update User"
-      
     show:
       title: "User"
     change_password:
       title: "Change Password"
       change_password: "Change Password"
       title_expired_password: "Password Expired"
-      description: "Your password has expired and must be changed to a new value. Once completed you will then need to login using your new password in order to access the system."    
+      description: "Your password has expired and must be changed to a new value. Once completed you will then need to login using your new password in order to access the system"    
     change_password_confirmation:
       title: "Change password confirmation"
-      description: "Your Password has been successfully changed."
+      description: "Your Password has been successfully changed"
     update_tcs:
       title: "Terms and Conditions"
-      description: "In order to proceed you must read and accept the terms and conditions."
+      description: "In order to proceed you must read and accept the terms and conditions"

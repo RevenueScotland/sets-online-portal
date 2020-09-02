@@ -16,6 +16,9 @@ module Returns
         ]
       end
 
+      # unique reference from the back office this is simply round tripped but is not accessible externally
+      attr_accessor :pro_refno
+
       attribute_list.each { |attr| attr_accessor attr }
 
       # Overrides the param value passed into the id of the path when the instance of the object is used
@@ -31,8 +34,8 @@ module Returns
       end
 
       validates :lau_code, presence: true, on: :lau_code
-      validates :title_number, length: { maximum: 37 }, on: :lau_code
-      validates :parent_title_number, length: { maximum: 37 }, on: :lau_code
+      validates :title_number, length: { maximum: 40 }, on: :lau_code
+      validates :parent_title_number, length: { maximum: 40 }, on: :lau_code
 
       validates :ads_due_ind, presence: true, on: :ads_due_ind, if: proc { |s| s.flbt_type == 'CONVEY' }
 
@@ -46,7 +49,7 @@ module Returns
       # Define the ref data codes associated with the attributes not cached in this model
       # long lists or special yes no case
       def uncached_ref_data_codes
-        { ads_due_ind: comp_key('YESNO', 'SYS', 'RSTU') }
+        { ads_due_ind: YESNO_COMP_KEY }
       end
 
       # @return the title code + the title number
@@ -100,7 +103,7 @@ module Returns
 
       # @return a hash suitable for use in a save request to the back office
       def request_save
-        {
+        (@pro_refno.blank? ? {} : { 'ins1:ProRefno': @pro_refno }).merge(
           'ins1:LauCode': @lau_code,
           'ins1:Address': @address.format_to_back_office_address,
           'ins1:FtpfCode': @title_code, # title_prefix
@@ -108,7 +111,7 @@ module Returns
           'ins1:ParentFtpfCode': @parent_title_code, # parent_title_prefix
           'ins1:ParentTitleNumber': @parent_title_number,
           'ins1:AdsDueInd': convert_to_backoffice_yes_no_value(@ads_due_ind)
-        }
+        )
       end
 
       # Create a new instance based on a back office style hash (@see LbttReturn.convert_back_office_hash).

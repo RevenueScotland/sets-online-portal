@@ -63,7 +63,7 @@ module Returns
     # repayment.
     def declaration_calculation
       # do the submitted part first to get it out of the way
-      if params[:submitted]
+      if params[:continue]
         wizard_step_submitted(nil, next_step: :declaration_calculation_next_step)
         return # can't use && guard clause as wizard_step_submitted returns nil
       end
@@ -103,8 +103,9 @@ module Returns
       # Download the file
       send_file_from_attachment(attachment[:document_return])
     rescue StandardError => e
-      Rails.logger.error(e)
-      redirect_to controller: '/home', action: 'file_download_error'
+      error_ref = Error::ErrorHandler.log_exception(e)
+
+      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     # Cleans and saves the return by sending to the back office.
@@ -123,8 +124,13 @@ module Returns
     # Send the return to the back office (and wizard_save unless there were errors returned.)
     # @return [Boolean] true if successful
     def submit_return
+      return false unless @slft_return.prepare_to_save_latest
+
+      # Save the prepared return in the cache in case the user navigates back and re-tries
+      wizard_save(@slft_return)
       success = @slft_return.save_latest(current_user)
-      wizard_save(@slft_return) unless @slft_return.errors.any? || !success
+      # need to save even if not successful so the saved flag is cleared
+      wizard_save(@slft_return)
       success
     end
 
@@ -152,12 +158,8 @@ module Returns
 
     # Loads existing wizard models from the wizard cache or redirects to the summary page
     # @return [SlftReturn] the model for wizard saving
-    def load_step
+    def load_step(_sub_object_attribute = nil)
       @slft_return = wizard_load_or_redirect(returns_slft_summary_url)
-
-      # clear the declaration fields forcing them to tick it each time (and also make the 'accept' validation work)
-      @slft_return.declaration = false if action_name == 'declaration'
-      @slft_return.rrep_bank_auth_ind = false if action_name == 'repayment_declaration'
 
       @post_path = wizard_post_path
       @slft_return
@@ -166,14 +168,10 @@ module Returns
     # Return the parameter list filtered for the attributes of the SlftReturn model.
     # Special case for the repayment declaration, since it's the only thing on the page we need to treat
     # its absence as a value of false.
-    def filter_params
+    def filter_params(_sub_object_attribute = nil)
       required = :returns_slft_slft_return
       output = {}
       output = params.require(required).permit(Slft::SlftReturn.attribute_list) if params[required]
-
-      return output unless action_name == 'repayment_declaration'
-
-      output[:rrep_bank_auth_ind] = false if output[:rrep_bank_auth_ind].blank?
 
       output
     end

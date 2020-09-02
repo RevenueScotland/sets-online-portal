@@ -1,7 +1,6 @@
 <%= content_for :hide_back_link, true %>
 <% content_for :page_title,  t('signin') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @user, url: login_path, html:{autocomplete: "on"} ,local: true do |f| %>
   <%= form_errors_for @user %>
   <%= f.text_field  :username %>
@@ -10,10 +9,9 @@
   </p>
   <%= f.password_field :password %>
   <p>
-    <%= navigational_links [{link: :forgotten_your_password, path: forgotten_password_path}] %> 
+    <%= navigational_links [{link: :forgotten_your_password, path: forgotten_password_path}] %>
   </p>
-
-  <%= f.button 'signin'%> 
+  <%= f.button 'signin'%>
   <p>
     <%= navigational_links [{link: :register_if_dont_have_account, path: accounts_registration_account_for_path}] %>
   </p>
@@ -21,4 +19,3 @@
     <%= navigational_links [{ link: :activate_account_link, path: activate_account_account_path, link_options: { sentence_for_swap_text: t('.activate_account_sentence') } }] %>
   </p>
 <% end %>
-

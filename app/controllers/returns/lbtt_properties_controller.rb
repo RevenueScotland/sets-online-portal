@@ -138,14 +138,14 @@ module Returns
 
     # Loads existing wizard models from the wizard cache or redirects to the summary page
     # @return [Property] the model for wizard saving
-    def load_step
+    def load_step(_sub_object_attribute = nil)
       @post_path = wizard_post_path(LbttController.name)
       @property = wizard_load_or_redirect(returns_lbtt_summary_url)
       @property
     end
 
     # Return the parameter list filtered for the attributes of the LbttReturn model.
-    def filter_params
+    def filter_params(_sub_object_attribute = nil)
       required = :returns_lbtt_property
       attribute_list = Lbtt::Property.attribute_list
       params.require(required).permit(attribute_list) if params[required]

@@ -26,6 +26,15 @@ Given('I have signed in') do
   sign_in('portal.one', 'Password1!')
 end
 
+Given('I have signed out') do
+  return unless page.has_link?('Sign out')
+
+  log('Signing Out')
+  click_link('Sign out')
+  # Check we are on the login page
+  find('h1:first-of-type', text: 'Sign in')
+end
+
 Given('I have signed in {string} and password {string}') do |username, password|
   sign_in(username, password)
 end
@@ -229,7 +238,7 @@ end
 When('I flip {string} field between {string} and {string} using marker {string}') do |field_id, val1, val2, marker|
   field_value = find_field(field_id).value
   new_value = val1 == field_value ? val2 : val1
-  puts "...field value was #{field_value} so new value is #{new_value}"
+  log("...field value was #{field_value} so new value is #{new_value}")
   fill_in(field_id, with: new_value)
   store_result(marker, new_value)
 end
@@ -271,14 +280,14 @@ Then('I should see the downloaded {string} content of {string} by looking up {st
   filename = type.upcase # This is the return type, it should either be SLFT or LBTT
   filename += "_Return#{return_reference}_v[0-9]+_#{Date.today.strftime('%Y%m%d')}[0-9]{6}.pdf" if detail == 'PDF'
   filename = "#{return_reference}-[0-9]+.zip" if detail == 'WASTE'
-  puts "...filename to look for should match #{filename.inspect}"
+  log("...filename to look for should match #{filename.inspect}")
   step "I should see the downloaded content '#{filename}'"
 end
 
 Then('I should see the downloaded {string} content of {string}') do |detail, type|
   filename = type.upcase # This is the return type, it should either be SLFT or LBTT
   filename += "_Claim[0-9]+_#{Date.today.strftime('%Y%m%d')}[0-9]{6}.pdf" if detail == 'CLAIM'
-  puts "...filename to look for should match #{filename.inspect}"
+  log("...filename to look for should match #{filename.inspect}")
   step "I should see the downloaded content '#{filename}'"
 end
 
@@ -533,6 +542,6 @@ end
 # Retrieve a result from a Stored/Flipped value @see #store_result
 # @param marker [String] the key used to store/lookup the value
 def lookup_result(marker)
-  puts "...Flip flop/lookup result for #{marker} is #{@flip_flop_results[ENV['APPLICATION_VERSION']][marker]}"
+  log("...Flip flop/lookup result for #{marker} is #{@flip_flop_results[ENV['APPLICATION_VERSION']][marker]}")
   @flip_flop_results[ENV['APPLICATION_VERSION']][marker]
 end

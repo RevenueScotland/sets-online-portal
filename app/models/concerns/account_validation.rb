@@ -33,8 +33,7 @@ module AccountValidation
     filtered_context = filter_attributes(context, model.send(:attribute_list))
     return true if send(attribute).nil? || filtered_context.nil? || filtered_context.empty?
 
-    valid = send(attribute).valid?(filtered_context)
-    valid
+    send(attribute).valid?(filtered_context)
   end
 
   # Removes duplicate errors from any model errors. This can occur as account and user
@@ -89,6 +88,14 @@ module AccountValidation
 
     errors.add(:forename, :cant_be_blank) if forename.to_s.empty?
     errors.add(:surname, :cant_be_blank) if surname.to_s.empty?
+
+    names_length_valid?
+  end
+
+  # Extra validation for names that checks for the length
+  def names_length_valid?
+    errors.add(:forename, :too_long, count: 50) if forename.length > 50
+    errors.add(:surname, :too_long, count: 100) if surname.length > 100
   end
 
   # Checks if the address is valid. For registered companies without a separate contract address

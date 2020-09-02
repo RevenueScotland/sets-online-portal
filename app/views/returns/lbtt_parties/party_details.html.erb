@@ -1,19 +1,19 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @party, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @party %>  
-  <% content_for :page_title, t('.'+@party.party_type+ '_title') %>  
-  <%= f.select :title, @party.list_ref_data(:title), { optional:true }, {} %>  
-  <%= f.text_field :firstname %> 
+  <%= form_errors_for @party %>
+  <% content_for :page_title, t('.'+@party.party_type+ '_title') %>
+  <%= f.select :title, @party.list_ref_data(:title), { optional:true }, {} %>
+  <%= f.text_field :firstname %>
   <%= f.text_field :surname %>
   <% if !%w[SELLER LANDLORD].include?(@party.party_type) %>
     <%= f.text_field :telephone %>
     <%= f.text_field :email_address %>
-    <%= f.text_field :nino %> 
+    <%= f.text_field :nino %>
     <%= render '/layouts/hideable_details/', { clickable_text: t('.'+@party.party_type+'_show_hide') } do %>
       <%= f.select :alrt_type, @party.list_ref_data(:alrt_type), { include_blank: true }, {} %>
       <%= f.select :ref_country, @party.list_ref_data(:ref_country), { text_auto_complete: true }, {} %>
-      <%= f.text_field :alrt_reference %> 
+      <%= f.text_field :alrt_reference %>
     <% end %>
   <% end %>
-  <%= f.button 'next', { :name => 'submitted' }  %>
+  <%= f.button %>
 <% end %>

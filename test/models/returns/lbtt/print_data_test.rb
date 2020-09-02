@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'json'
 require 'print_data_test_helper'
+require 'savon/mock/spec_helper'
+require 'models/reference_data/memory_cache_helper'
 
 # Run tests that are included only in this file by:
 #   $ ruby -I test test/models/returns/lbtt/print_data_test.rb
@@ -11,7 +12,30 @@ module Returns
   module Lbtt
     # Tests PrintData data
     class PrintDataTest < ActiveSupport::TestCase
+      include ReferenceData::MemoryCacheHelper
       include PrintDataTestHelper
+
+      # This test relies on the cache so clear the cache first
+      # and mock the calls to the back office to populate
+      setup do
+        set_memory_cache
+
+        @savon ||= Savon::SpecHelper::Interface.new
+        @savon.mock!
+        fixture = File.read('test/fixtures/mocks/reference_data/reference_values_response.xml')
+        @savon.expects(:get_reference_values_wsdl).returns(fixture)
+        fixture = File.read('test/fixtures/mocks/reference_data/tax_relief_types_response.xml')
+        @savon.expects(:get_tax_relief_types_wsdl).returns(fixture)
+        Rails.logger.debug { 'Mocking started' }
+      end
+
+      # Stop the mocking and reset the cache
+      teardown do
+        @savon&.unmock!
+        Rails.logger.debug { 'Mocking ended' }
+        restore_original_cache
+      end
+
       # Tests the Conveyance return with the following data:
       # - New Conveyance
       # - Buyer is an Other organisation: Trust
@@ -116,39 +140,8 @@ module Returns
         assert_equal(actual, expected, 'LBTT json strings do not match')
       end
 
-      # Overriding the insert_values method of the print_data_test_helper
-      def insert_values(object)
-        insert_cached_ref_data(object)
-      end
-
-      # Inserts the cached_ref_data to the parties, properties and the lbtt_return object itself.
-      def insert_cached_ref_data(object)
-        cache_json = File.read(print_test_path + '/cached_ref_data.json')
-        cache_hash = Serializer.from_json_to_object(cache_json)
-        object.cached_ref_data = cache_hash['cached_ref_data']
-        object = insert_parties_cached_ref_data(object, cache_hash)
-        unless object.properties.blank?
-          object.properties.each do |_, property|
-            property.cached_ref_data = cache_hash['properties']['cached_ref_data']
-          end
-        end
-        object
-      end
-
-      # Inserts the cached_ref_data to all the party types if they exist.
-      def insert_parties_cached_ref_data(object, cache_hash)
-        parties = %w[buyers sellers tenants new_tenants landlords]
-        parties.each do |party_string|
-          party_hash = object.send(party_string)
-          next if party_hash.blank?
-
-          party_hash.each { |_, party| party.cached_ref_data ||= cache_hash['parties']['cached_ref_data'] }
-          object.send("#{party_string}=", party_hash)
-        end
-        object
-      end
-
       # Print data options specific to lbtt
+      # These are the items that are normally provided when called in the model
       def print_data_options(object, layout)
         { print_layout: { account_type: object.account_type, flbt_type: object.flbt_type },
           print_layout_receipt: { receipt: :receipt } }[layout]

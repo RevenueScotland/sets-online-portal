@@ -23,15 +23,18 @@ class Company # rubocop:disable Metrics/ClassLength
   validates :company_number, presence: true, length: { minimum: 8, maximum: 8 },
                              on: %i[search registered_organisation company_number]
   validate  :company_number_valid?, on: %i[search registered_organisation company_number]
-  validates :company_name, presence: true, on: %i[registered_organisation other_organisation company_name]
+  validates :company_name, presence: true, length: { maximum: 200 },
+                           on: %i[registered_organisation other_organisation company_name]
   validates :org_telephone, presence: true, phone_number: true,
                             on: %i[create update org_telephone update_basic]
   validates :org_email_address, presence: true, email_address: true,
                                 on: %i[create update org_email_address update_basic]
-  validates :address_line1, presence: true, on: %i[registered_organisation address_line1]
-  validates :locality, presence: true, on: %i[registered_organisation locality]
-  validates :postcode, presence: true, on: %i[registered_organisation postcode]
-  validates :main_rep_name, presence: true, on: %i[main_rep_name]
+  validates :address_line1, presence: true, length: { maximum: 400 }, on: %i[registered_organisation address_line1]
+  validates :address_line2, length: { maximum: 255 }, on: %i[registered_organisation address_line2]
+  validates :locality, length: { maximum: 100 }, presence: true, on: %i[registered_organisation locality]
+  validates :county, length: { maximum: 50 }, presence: true, on: %i[registered_organisation county]
+  validates :postcode, length: { minimum: 6, maximum: 8 }, presence: true, on: %i[registered_organisation postcode]
+  validates :main_rep_name, presence: true, length: { maximum: 100 }, on: %i[main_rep_name]
   validate  :company_selected?, on: :company_selected
 
   # Layout to print the data in this model
@@ -172,7 +175,9 @@ class Company # rubocop:disable Metrics/ClassLength
   # if the company is not found, the flag will be true, but the company summary will be nil
   # in all other cases, the flag will be false.
   def parse_response(response)
-    return [false, nil] if response.nil? || response.parsed_response.nil? || response.response.nil?
+    if response.body.nil? || response.body.empty? || response.parsed_response.nil? || response.response.nil?
+      return [false, nil]
+    end
     return [true, nil] if response.response.is_a?(Net::HTTPNotFound)
 
     Rails.logger.debug { "Companies house response #{response}" }

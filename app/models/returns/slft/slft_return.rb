@@ -42,10 +42,11 @@ module Returns
       # Define the ref data codes associated with the attributes but which won't be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
       def uncached_ref_data_codes
-        { non_disposal_add_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          non_disposal_delete_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          slcf_yes_no: comp_key('YESNO', 'SYS', 'RSTU'), bad_debt_yes_no: comp_key('YESNO', 'SYS', 'RSTU'),
-          removal_credit_yes_no: comp_key('YESNO', 'SYS', 'RSTU'), repayment_yes_no: comp_key('YESNO', 'SYS', 'RSTU') }
+        { non_disposal_add_ind: YESNO_COMP_KEY,
+          non_disposal_delete_ind: YESNO_COMP_KEY,
+          slcf_yes_no: YESNO_COMP_KEY, bad_debt_yes_no: YESNO_COMP_KEY,
+          removal_credit_yes_no: YESNO_COMP_KEY, repayment_yes_no: YESNO_COMP_KEY,
+          declaration: YESNO_COMP_KEY, rrep_bank_auth_ind: YESNO_COMP_KEY }
       end
 
       # Attribute list for return period wizard
@@ -97,11 +98,11 @@ module Returns
       validates :bank_sort_code, presence: true, bank_sort_code: true, on: :account_holder
 
       # repayment declaration
-      validates :rrep_bank_auth_ind, acceptance: { accept: ['true'] }, on: :rrep_bank_auth_ind
+      validates :rrep_bank_auth_ind, acceptance: { accept: ['Y'] }, on: :rrep_bank_auth_ind
 
       # declaration validation
       validates :fpay_method, presence: true, on: :fpay_method
-      validates :declaration, acceptance: { accept: ['true'] }, on: :fpay_method
+      validates :declaration, acceptance: { accept: ['Y'] }, on: :fpay_method
 
       # save draft and calculate (submit) buttons validation
 
@@ -126,11 +127,32 @@ module Returns
       # @param param_id [Hash] The reference number, tare_refno, srv_code and version of the SLFT return to get data.
       # @param requested_by [User] is usually the current_user, who is requesting the data and containing the account id
       def self.find(param_id, requested_by)
-        slft_return = Slft::SlftReturn.abstract_find(:slft_tax_return_details, param_id, requested_by,
-                                                     :slft_tax_return) do |data|
+        Slft::SlftReturn.abstract_find(:slft_tax_return_details, param_id, requested_by,
+                                       :slft_tax_return) do |data|
           Slft::SlftReturn.new_from_fl(data.merge!(current_user: requested_by))
         end
-        slft_return
+      end
+
+      # The credit limit percentage values that are found from the back office's system parameter, we get them from
+      # the back office so that if they have changed their values then we will still be in sync.
+      # To prevent it from doing the lookup all the time, we will be setting the global variable to
+      # the value of the lookup.
+      # @return [Hash] contains the two percentage limit values (in string) for both the env_contrib_cut_off
+      #   and liability_cut_off. These percentage limit values are used with the :slcf_credit_claimed attribute.
+      def self.slcf_credit_claimed_limits
+        if @slcf_credit_claimed_limits.nil?
+          reference_hash = ReferenceData::SystemParameter.lookup('COMMON', 'SLFT', 'RSTU', true)
+
+          # If the reference_hash with the key 'ENV_CONTRIB_CUT_OFF' is nil then we'll use the default value that we
+          # know, which is the value 90.
+          env_contrib_cut_off = reference_hash['ENV_CONTRIB_CUT_OFF']&.value || '90'
+          # Similarly with the key 'LIABILITY_CUT_OFF' of reference_hash, the value we know here is 5.6 so that will
+          # be the default if we don't find anything from the reference_hash.
+          liability_cut_off = reference_hash['LIABILITY_CUT_OFF']&.value || '5.6'
+          @slcf_credit_claimed_limits =
+            { env_contrib_cut_off: env_contrib_cut_off, liability_cut_off: liability_cut_off }
+        end
+        @slcf_credit_claimed_limits
       end
 
       # Layout to print the data in this model
@@ -209,7 +231,9 @@ module Returns
       # Calculates the limit to the credit claimed based on the contribution
       def credit_claimed_limit
         # Need to convert back to a float for comparison in validation
-        from_pence((to_pence(slcf_contribution) * 0.90)).to_f
+        percentage = SlftReturn.slcf_credit_claimed_limits[:env_contrib_cut_off].to_f / 100.0
+
+        from_pence((to_pence(slcf_contribution) * percentage)).to_f
       end
 
       # performs the validation when the user presses save draft
@@ -283,6 +307,20 @@ module Returns
         return attribute unless %i[declaration].include?(attribute)
 
         :SLFT_declaration
+      end
+
+      # Returns the extra options to be passed into when doing the translating, so that the values can be passed on
+      # to the hint or label.
+      # see https://guides.rubyonrails.org/i18n.html#passing-variables-to-translations
+      # @return [Hash] the extra options for the translation.
+      def translation_variables(attribute, _translation_options = nil)
+        if attribute == :slcf_credit_claimed
+          percentage_hash = SlftReturn.slcf_credit_claimed_limits
+          return { env_contrib_cut_off: percentage_hash[:env_contrib_cut_off],
+                   liability_cut_off: percentage_hash[:liability_cut_off] }
+        end
+
+        {}
       end
 
       # Note: As used in print data these need to be public
@@ -571,7 +609,7 @@ module Returns
           { code: :bank_sort_code, when: :repayment_details_needed?, is: [true] },
           { code: :bank_account_no, when: :repayment_details_needed?, is: [true] },
           { code: :bank_name, when: :repayment_details_needed?, is: [true] },
-          { code: :rrep_bank_auth_ind, boolean_lookup: true, when: :repayment_details_needed?, is: [true] }
+          { code: :rrep_bank_auth_ind, lookup: true, when: :repayment_details_needed?, is: [true] }
         ]
       end
 
@@ -580,7 +618,7 @@ module Returns
         { code: :declaration, key: :title, key_scope: %i[returns slft declaration],
           divider: false, display_title: true, type: :list,
           list_items: [{ code: :fpay_method, lookup: true },
-                       { code: :declaration, boolean_lookup: true }] }
+                       { code: :declaration, lookup: true }] }
       end
     end
   end

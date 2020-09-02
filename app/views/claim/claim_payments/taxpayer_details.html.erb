@@ -1,15 +1,14 @@
-
 <% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, t('.subtitle') %>
-
-<%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
-<%= form_errors_for @claim_payment %>
-  <%= f.text_field :org_name, optional: true if @claim_payment.reason != 'ADS'%> 
-  <%= f.text_field :firstname %> 
-  <%= f.text_field :surname %>  
-  <%= f.text_field :telephone %>
-  <%= f.text_field :email_address %>
-  <%= f.text_field :nino, { optional:true } %> 
-  <%= f.button 'next', { :name => 'submitted' }  %>
+<% count = params[:sub_object_index].to_i %>
+<% content_for :page_title, t('.' + @claim_payment.translation_prefix(:party_title) + '_title', count: count, total: @claim_payment.number_of_buyers) %>
+<% content_for :page_description, t(translation_for_index('.' + @claim_payment.translation_prefix + '_description', count)) %>
+<%= form_for @party, url: @post_path, method: :post, local: true do |f| %>
+  <%= form_errors_for @party %>
+  <% account_type = User.account_type(current_user) %>
+  <%= f.text_field :org_name, {optional: true} if @claim_payment.reason != 'ADS'%>
+  <%= f.text_field :firstname %>
+  <%= f.text_field :surname %>
+  <%= f.text_field :telephone, { translation_options: @claim_payment.translation_prefix, optional: true } %>
+  <%= f.text_field :email_address, { translation_options: @claim_payment.translation_prefix,  optional: true } %>
+  <%= f.button %>
 <% end %>

@@ -1,14 +1,12 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%# Declared global variable %>
 <% $convey_type = 'CONVEY'%>
 <%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
   <%= f.collection_radio_buttons_fields(:linked_ind, @lbtt_return.list_ref_data(:linked_ind), text_link: { t('.linked_ind') =>
-                                                    link_to(t('.linked_ind'), "#{Rails.configuration.x.external_links.lbtt2008_linked_transactions}", target: '_blank')}) %> 
-
-  <div class='govuk-radios__conditional--hidden' id='hideable'>
+                                                    link_to(t('.linked_ind'), "#{Rails.configuration.x.external_links.lbtt2008_linked_transactions}", target: '_blank')}) %>
+  <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden' >
     <%= f.table_fields(@lbtt_return.link_transactions, :link_transactions) do |table_form| %>
       <% table_form.text_field(:return_reference) + %>
       <% if @lbtt_return.flbt_type == "#{$convey_type}" %>
@@ -19,8 +17,7 @@
       <% end %>
     <% end %>
   </div>
-  
   <div class="govuk-form-group">
-    <%= f.button 'next', { :name => 'submitted' }  %>
+    <%= f.button %>
   </div>
 <% end %>

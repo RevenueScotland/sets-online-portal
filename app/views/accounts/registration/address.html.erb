@@ -1,5 +1,4 @@
 <% content_for :page_title, t('.title') %>
-
 <% if AccountType.registered_organisation?(@account.account_type) %>
   <% content_for :page_subtitle, t('.subtitle_reg') %>
 <% elsif AccountType.other_organisation?(@account.account_type) %>
@@ -7,17 +6,16 @@
 <% else %>
   <% content_for :page_subtitle, t('.subtitle_ind') %>
 <% end %>
-
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @account, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for [@account, @address_summary, @address_detail] %>
-
   <% if AccountType.registered_organisation?(@account.account_type) %>
     <%= f.collection_radio_buttons_fields(:reg_company_contact_address_yes_no, ReferenceData::ReferenceValue.list('YESNO', 'SYS', 'RSTU')) %>
-  <% end %>
-  <div id='hideable' >
+    <div id='hideable' class='govuk-radios__conditional'>
+      <%= render "/layouts/address" %>
+    </div>
+  <%else%>
     <%= render "/layouts/address" %>
-  </div>
-  <%= f.button 'next', { :name => 'submitted' }  %>
+  <% end %>
+  <%= f.button %>
 <% end %>

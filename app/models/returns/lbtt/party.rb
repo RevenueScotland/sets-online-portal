@@ -20,7 +20,7 @@ module Returns
           company_number country_registered_company_outside_uk address_outside_uk contact_par_ref_no
           org_name job_title company org_type other_type_description
           contact_surname contact_firstname org_contact_address is_acting_as_trustee agent_dx_number
-          contact_email contact_tel_no com_jurisdiction agent_reference
+          contact_email contact_tel_no com_jurisdiction agent_reference same_address
           party_refno authority_date hash_for_nino
         ]
       end
@@ -28,24 +28,38 @@ module Returns
       attribute_list.each { |attr| attr_accessor attr }
 
       validates :type, presence: true, on: :type
-      validates :surname, presence: true, length: { maximum: 100 }, on: %i[title], if: :individual?
-      validates :firstname, presence: true, length: { maximum: 50 }, on: %i[title], if: :individual?
-      validates :agent_dx_number, length: { maximum: 200 }, on: %i[title]
+      validates :surname, presence: true, length: { maximum: 100 }, on: :surname, if: :individual?
+      validates :firstname, presence: true, length: { maximum: 50 }, on: :firstname, if: :individual?
+      validates :agent_dx_number, length: { maximum: 100 }, on: %i[title]
       validates :agent_reference, length: { maximum: 30 }, on: %i[title]
-      validates :email_address, presence: true, email_address: true, on: %i[title],
+
+      # Normally we have a title on an lbtt party and the email_address and telephone are required to be
+      # present on a normal lbtt party's specific condition.
+      validates :email_address, presence: true, on: %i[title], if: :individual_but_not_seller_landlord?
+      validates :telephone, presence: true, on: %i[title], if: :individual_but_not_seller_landlord?
+      # Then as for the claim party (taxpayer/agent) email_address and telephone, they're optional.
+      validates :email_address, email_address: true, on: :email_address,
                                 if: :individual_but_not_seller_landlord?
-      validates :telephone, presence: true, phone_number: true, on: %i[title],
-                            if: :individual_but_not_seller_landlord?
+      validates :telephone, phone_number: true, on: :telephone, if: :individual_but_not_seller_landlord?
+
       validates :buyer_seller_linked_ind, presence: true, on: :buyer_seller_linked_ind,
                                           if: proc { |p| !%w[SELLER LANDLORD].include?(p.party_type) }
       validates :is_contact_address_different, presence: true, on: :is_contact_address_different,
                                                if: :individual_but_not_seller_landlord?
       validates :org_type, presence: true, on: :org_type, if: proc { |p| p.type == 'OTHERORG' }
-      validates :other_type_description, presence: true, on: :org_type, if: proc { |w| w.org_type == 'OTHER' }
-      validates :com_jurisdiction, :org_name, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
-      validates :charity_number, presence: true, on: :org_name, if: proc { |w| w.org_type == 'CHARITY' }
+      validates :other_type_description, presence: true, length: { maximum: 255 },
+                                         on: :org_type, if: proc { |w| w.org_type == 'OTHER' }
+      validates :com_jurisdiction, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
+      # The party is used in both lbtt party and also in claim. The org_name is required in lbtt party but it is
+      # optional in the claim flow. So this should only trigger for the lbtt party flow.
+      validates :org_name, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
+      # This is the common validation for botht he lbtt and claim flow.
+      validates :org_name, length: { maximum: 200 }, on: :org_name, if: proc { |p| p.type == 'OTHERORG' || p.claim? }
+      validates :charity_number, presence: true, length: { maximum: 100 },
+                                 on: :org_name, if: proc { |w| w.org_type == 'CHARITY' }
 
-      validates :job_title, presence: true, on: :contact_firstname, if: :not_private_and_not_seller_landlord?
+      validates :job_title, presence: true, length: { maximum: 255 },
+                            on: :contact_firstname, if: :not_private_and_not_seller_landlord?
       validates :contact_firstname, presence: true, length: { maximum: 50 },
                                     on: :contact_firstname,
                                     if: :not_private_and_not_seller_landlord?
@@ -64,8 +78,8 @@ module Returns
       # National insurance number and alternate related validation
       validate :no_nino_or_alternate?, on: :nino, if: :individual_but_not_seller_landlord?
       validates :nino, nino: true, on: :nino, if: :individual_but_not_seller_landlord?
-      validates :alrt_type, :ref_country, :alrt_reference,
-                presence: true, on: :alrt_type, if: :incomplete_alternate?
+      validates :alrt_type, :ref_country, presence: true, on: :alrt_type, if: :incomplete_alternate?
+      validates :alrt_reference, presence: true, length: { maximum: 30 }, on: :alrt_type, if: :incomplete_alternate?
 
       # HACK: The conditions here are copying the #request_save method - they should use the same methods
       validates :contact_address, presence: true, on: :contact_address,
@@ -77,6 +91,7 @@ module Returns
                                         p.lplt_type != 'PRIVATE' && !%w[LANDLORD SELLER].include?(p.party_type)
                                       }
       validate :validation_for_duplicate_nino?, on: :nino, if: :individual_but_not_seller_landlord?
+      validates :same_address, presence: true, on: :same_address, if: :claim?
 
       # Define the ref data codes associated with the attributes to be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
@@ -90,14 +105,15 @@ module Returns
       # Define the ref data codes associated with the attributes not cached in this model
       # long lists or special yes no case
       def uncached_ref_data_codes
-        { is_contact_address_different: comp_key('YESNO', 'SYS', 'RSTU'),
-          buyer_seller_linked_ind: comp_key('YESNO', 'SYS', 'RSTU'),
-          is_acting_as_trustee: comp_key('YESNO', 'SYS', 'RSTU') }
+        { is_contact_address_different: YESNO_COMP_KEY,
+          buyer_seller_linked_ind: YESNO_COMP_KEY,
+          is_acting_as_trustee: YESNO_COMP_KEY,
+          same_address: YESNO_COMP_KEY }
       end
 
       # Layout to print the data in this model
       # This defines the sections that are to be printed and the content and layout of those sections
-      def print_layout # rubocop:disable Metrics/MethodLength
+      def print_layout # rubocop:disable  Metrics/MethodLength
         [{ code: :agent_details, # section code
            parent_codes: [:agent],
            divider: true, # should we have a section divider
@@ -178,8 +194,11 @@ module Returns
            when: :type,
            is: %w[OTHERORG REG_COM],
            type: :object },
+         print_layout_taxpayer_details,
+         print_layout_taxpayer_alternate_address,
+         print_layout_taxpayer_address,
          { code: :buyer_details,
-           parent_codes: %i[buyers sellers tenants landlords new_tenants],
+           parent_codes: %i[buyers sellers tenants landlords new_tenants taxpayers],
            when: :type,
            is: ['PRIVATE'],
            key_value: :party_type,
@@ -231,6 +250,49 @@ module Returns
                         { code: :is_acting_as_trustee, lookup: true }] }]
       end
 
+      # layout for the taxpayer details of the print data of claim
+      def print_layout_taxpayer_details
+        { code: :taxpayer_details,
+          parent_codes: %i[taxpayers],
+          key_value: :translation_pdf_prefix,
+          key: '#key_value#_title',
+          key_scope: %i[claim claim_payments taxpayer_details],
+          divider: true, # should we have a section divider
+          display_title: true, # Is the title to be displayed
+          type: :list,
+          list_items: print_layout_taxpayer_details_list_item }
+      end
+
+      # fields for the taxpayer details
+      def print_layout_taxpayer_details_list_item
+        [{ code: :firstname },
+         { code: :surname },
+         { code: :telephone },
+         { code: :email_address }]
+      end
+
+      # layout for the taxpayer alternate address of the print data of claim
+      def print_layout_taxpayer_alternate_address
+        { code: :taxpayer_alternate_address,
+          parent_codes: %i[taxpayers],
+          key_value: :translation_pdf_prefix,
+          key: '#key_value#_title',
+          key_scope: %i[claim claim_payments taxpayer_address], # scope for the title translation
+          type: :list,
+          list_items: [{ code: :same_address, lookup: true, when: :object_index, is_not: [0],
+                         translation_extra: :account_type }] }
+      end
+
+      # layout for the taxpayer address of the print data of claim
+      def print_layout_taxpayer_address
+        { code: :address,
+          parent_codes: %i[taxpayers],
+          key_value: :translation_pdf_prefix,
+          key: '#key_value#_title',
+          key_scope: %i[claim claim_payments taxpayer_address], # scope for the title translation
+          type: :object }
+      end
+
       # Layout to print the receipt data in this model
       def print_layout_receipt
         [{ code: :party_details,
@@ -279,9 +341,14 @@ module Returns
         type != 'PRIVATE' && !%w[SELLER LANDLORD].include?(party_type)
       end
 
-      # return true if party is private individual or agent
+      # return true if party is private individual or agent or party added while filling Claim
       def individual?
-        type == 'PRIVATE' || party_type == 'AGENT'
+        type == 'PRIVATE' || party_type == 'AGENT' || claim?
+      end
+
+      # return true if party added while filling Claim
+      def claim?
+        party_type == 'CLAIMANT'
       end
 
       # Retrieve agent details from account to prepoulate on summary page
@@ -308,7 +375,8 @@ module Returns
 
       # @return [String] the formatted name of the party.
       def full_name
-        return [lookup_ref_data_value(:title), firstname, surname].join(' ') if individual?
+        # @note the .strip method removes all leading and trailing whitespaces
+        return [lookup_ref_data_value(:title), firstname, surname].join(' ').strip if individual?
         return company.company_name if type == 'REG_COM'
 
         org_name
@@ -357,15 +425,20 @@ module Returns
 
         return translation_attribute_full_name(attribute, translation_options) if attribute == :full_name
 
-        if %i[is_acting_as_trustee type buyer_seller_linked_ind].include?(attribute) && !party_type.nil?
-          return translation_attribute_for_party_type(attribute)
-        end
+        return translation_for_claim(attribute, translation_options) if claim?
+
+        return translation_attribute_for_party_type(attribute) if translate_party_type?(attribute)
 
         attribute
       end
 
+      # @return [Boolean] to decide whether to invoke translation_attribute_for_party_type method or not
+      def translate_party_type?(attribute)
+        %i[is_acting_as_trustee type buyer_seller_linked_ind].include?(attribute) && !party_type.nil?
+      end
+
       # @return a hash suitable for use in a save request to the back office
-      def request_save(authority_ind) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/LineLength
+      def request_save(authority_ind) # rubocop:disable  Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         output = { 'ins1:PartyType': lplt_type == 'PRIVATE' ? 'PER' : 'ORG' }
         output['ins1:LpltType'] = lplt_type # Buyer Type
         output['ins1:OtherTypeDescription'] = other_type_description unless other_type_description.blank?
@@ -453,7 +526,7 @@ module Returns
 
       # Create a new instance based on a back office style hash (@see LbttReturn.convert_back_office_hash).
       # Sort of like the opposite of @see #request_save
-      def self.convert_back_office_hash(raw_hash, lbtt_return_type, agent_ref) # rubocop:disable Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/LineLength
+      def self.convert_back_office_hash(raw_hash, lbtt_return_type, agent_ref) # rubocop:disable  Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         convert_lplt_type(raw_hash)
         raw_hash.delete(:party_type)
 
@@ -568,6 +641,18 @@ module Returns
         return ('type_' + party_type).to_sym if attribute == :type
         return ('is_acting_as_trustee_' + party_type).to_sym if attribute == :is_acting_as_trustee
         return (party_type + '_buyer_seller_linked_ind').to_sym if attribute == :buyer_seller_linked_ind
+
+        attribute
+      end
+
+      # Dynamically returns the translation key based on the translation_options provided by the page if it exists
+      # @param attribute [Symbol] the name of the attribute to translate
+      # @param translation_options [Object] in this case the party type being processed passed from the page
+      def translation_for_claim(attribute, translation_options)
+        return "#{translation_options}_#{attribute}".to_sym if %i[telephone email_address same_address]
+                                                               .include?(attribute)
+
+        return :claim_org_name if attribute == :org_name
 
         attribute
       end

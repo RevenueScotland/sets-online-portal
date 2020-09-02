@@ -92,11 +92,11 @@ Feature: Login and authentication
         And I click on the "Sign in" button
 
         Then I should see the "Terms and Conditions" page
-        And I should see the text "In order to proceed you must read and accept the terms and conditions."
+        And I should see the text "In order to proceed you must read and accept the terms and conditions"
         And I click on the "Confirm" button
 
         Then I should see the "Terms and Conditions" page
-        And I should receive the message "I confirm that I have read and understood the terms & conditions (opens in a new window) can't be blank"
+        And I should receive the message "The terms and conditions must be accepted"
         And I check the "I confirm that I have read and understood the terms & conditions" checkbox
         And I click on the "Confirm" button
 
@@ -240,10 +240,10 @@ Feature: Login and authentication
         And I click on the "Sign in" button
 
         Then I should see the "Terms and Conditions" page
-        And I should see the text "In order to proceed you must read and accept the terms and conditions."
+        And I should see the text "In order to proceed you must read and accept the terms and conditions"
         And I click on the "Confirm" button
 
         Then I should see the "Terms and Conditions" page
-        And I should receive the message "I confirm that I have read and understood the terms & conditions (opens in a new window) can't be blank"
+        And I should receive the message "The terms and conditions must be accepted"
         And I check the "I confirm that I have read and understood the terms & conditions" checkbox
         And I click on the "Confirm" button

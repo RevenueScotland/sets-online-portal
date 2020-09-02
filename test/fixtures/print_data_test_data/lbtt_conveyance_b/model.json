@@ -297,8 +297,8 @@
     "non_chargeable": "6670",
     "remaining_chargeable": "30",
     "contingents_event_ind": "Y",
-    "declaration": "true",
-    "lease_declaration": false,
+    "declaration": "Y",
+    "lease_declaration": "N",
     "authority_ind": "Y",
     "payment_date": "14/11/2019",
     "account_type": "AGENT",
@@ -332,6 +332,6 @@
     "account_number": "80706050",
     "branch_code": "10-20-30",
     "account_holder_name": "MR MICHAEL SCOTT",
-    "repayment_declaration": "true",
-    "repayment_agent_declaration": "true"
+    "repayment_declaration": "Y",
+    "repayment_agent_declaration": "Y"
 }

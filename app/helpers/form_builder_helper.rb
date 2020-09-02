@@ -153,10 +153,11 @@ module FormBuilderHelper
     # @param id [Object] id of button, and used to get the value from the translations
     # @param html_options [Hash] options (element attributes/properties) to be passed into the creation of the element.
     # @return [HTML block element] the standard button field with the correct class
-    def button(id, html_options = {})
-      button_class = html_options[:class].nil? ? 'scot-rev-button' : ''
-      options = UtilityHelper.submit_options
-      html_options = UtilityHelper.field_html_options(options, html_options, button_class)
+    def button(id = 'continue', html_options = {})
+      html_options[:class] ||= 'scot-rev-button'
+      # if not id provided assume this is a continue button and set if and name accordingly
+      id ||= 'continue'
+      html_options[:name] ||= 'continue' if id == 'continue'
       html_options = UtilityHelper.submit_html_options(id, options, html_options)
       if !id.nil?
         super @template.t(id, html_options), html_options
@@ -166,7 +167,7 @@ module FormBuilderHelper
     end
 
     # Create a submit field with the correct class
-    # Default button will be disabled when the form is submitted. It can be override with
+    # Default button will be disabled when the form is submitted. It can be overridden with
     # 'not_disable' option
     # Example to override this:
     # <%= f.submit 'submit', {not_disable:''}%>
@@ -175,8 +176,6 @@ module FormBuilderHelper
     # @return [HTML block element] the standard submit field with the correct class
     def submit(id = nil, html_options = {})
       span = @template.content_tag(:span, '', class: 'scot-rev-submit-image')
-      options = UtilityHelper.submit_options
-      html_options = UtilityHelper.field_html_options(options, html_options, '')
       html_options = UtilityHelper.submit_html_options(id, options, html_options)
       submit = if !id.nil?
                  super @template.translate(id, html_options), html_options
@@ -186,14 +185,14 @@ module FormBuilderHelper
       @template.content_tag(:div, submit + span, class: 'scot-rev-submit')
     end
 
-    # Create a checkbox field with the correct class
+    # Create a check box field with the correct class
     # @param attribute [Object] used as the label and passed as value of the check_box
     # @param options [Hash] a hash of options used to further modify the check box field
     # @return [HTML block element] the standard checkbox field with the correct classes and label
     def check_box_field(attribute, options = {}, html_options = {})
       check_box_html_options = { class: 'govuk-checkboxes__input' }
       error = error_text(attribute, options, check_box_html_options)
-      check_box_field = check_box(attribute, check_box_html_options, true, false)
+      check_box_field = check_box(attribute, check_box_html_options, 'Y', 'N')
       html_options[:class] = 'govuk-checkboxes__label'
       label_field = field_label_wrapper(attribute, options, html_options)
       check_box_item = @template.content_tag(:div, check_box_field + label_field, class: 'govuk-checkboxes__item')

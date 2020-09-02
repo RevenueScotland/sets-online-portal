@@ -8,18 +8,20 @@ require_relative 'cache.rb'
 # the maximum value specified for Puma. Default is set to 5 threads for minimum
 # and maximum; this matches the default thread size of Active Record.
 #
-threads_count = ENV.fetch('RAILS_MAX_THREADS') { 5 }
+threads_count = ENV.fetch('RAILS_MAX_THREADS', 5)
 threads threads_count, threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 #
-port ENV.fetch('PORT') { 3000 }
+port ENV.fetch('PORT', 3000)
 
 # Specifies the `environment` that Puma will run in.
 #
-environment ENV.fetch('RAILS_ENV') { 'development' }
+environment ENV.fetch('RAILS_ENV', 'development')
+# Specifies the `pidfile` that Puma will use.
+pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
 
-web_concurrency = ENV.fetch('WEB_CONCURRENCY') { 1 }.to_i
+web_concurrency = ENV.fetch('WEB_CONCURRENCY', 1).to_i
 
 unless Gem.win_platform? || web_concurrency <= 1
   # Specifies the number of `workers` to boot in clustered mode.

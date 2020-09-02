@@ -1,0 +1,74 @@
+{
+  "json_class": "Claim::ClaimPayment",
+  "srv_code": "LBTT",
+  "tare_reference": "RS2000002AAAA",
+  "flbt_type": "CONVEY",
+  "version": "1",
+  "number_of_buyers": 1,
+  "ads_included": true,
+  "ads_amount": "100",
+  "full_repayment_of_ads": "Y",
+  "taxpayers": [
+    {
+      "json_class": "Returns::Lbtt::Party",
+      "party_type": "CLAIMANT",
+      "new_record": true,
+      "surname": "Last tname",
+      "firstname": "First name",
+      "telephone": "0111456789",
+      "email_address": "noreply5@northgateps.com",
+      "address": {
+        "json_class": "Address",
+        "address_line1": "Royal Mail",
+        "address_line2": "Luton Delivery Office 9-11",
+        "address_line3": "Dunstable Road",
+        "town": "LUTON",
+        "postcode": "LU1 1AA",
+        "country": "EN",
+        "new_record": true,
+        "address_identifier": "14174279"
+      }
+    }
+  ],
+  "current_user": {
+    "json_class": "User",
+    "new_record": true,
+    "username": "PORTAL.ONE",
+    "password_change_required": false,
+    "password_expiry_date": "2020-05-31",
+    "work_place_refno": "3",
+    "party_refno": "350",
+    "user_roles": {
+      "user_role": [
+        "ACCADMN",
+        "ACCSECADMN",
+        "PWSAMEND",
+        "PWSCLAIM",
+        "PWSDASH",
+        "PWSDRNEW",
+        "PWSDRSUB",
+        "PWSDRUPD",
+        "PWSMESSAGE"
+      ]
+    }
+  },
+  "reason": "ADS",
+  "new_record": true,
+  "address": {
+    "json_class": "Address",
+    "address_line1": "Grosmont Wood Farm",
+    "address_line2": "Grosmont",
+    "town": "ABERGAVENNY",
+    "postcode": "NP7 8LB",
+    "country": "WA",
+    "new_record": true,
+    "address_identifier": "17112585"
+  },
+  "date_of_sale": "08-08-2020",
+  "account_holder_name": "Fred Flintstone",
+  "account_number": "12345678",
+  "branch_code": "10-11-12",
+  "bank_name": "Natwest",
+  "authenticated_declaration_1": "Y",
+  "authenticated_declaration_2": "Y"
+}

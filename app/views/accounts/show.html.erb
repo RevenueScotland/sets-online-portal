@@ -2,7 +2,6 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_description, t('.description') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= display_region( { 
   header: { model: @account, attribute: :account_name, link: :update, path: edit_basic_account_path, link_options: { requires_action: AuthorisationHelper::UPDATE_PARTY } },
   data: [ { model: @account,
@@ -18,22 +17,18 @@
         ]
                         } )
 %>
-
 <% if registered_organisation? %>
   <p><%= t('.change_company_registered_address') %></p>
 <% end %>
-
 <h2><%= t('.your_user_details') %></h2>
-
 <%= display_region( {
   header: { model: @account.current_user, attribute: :full_name },
   data: [ { model: @account.current_user, attributes: [:email_address, :phone_number, :username] }
         ]
   } )
 %>
-
 <%# Passing code as 'REGTSANDCS' to display text related to registration on show page %>
 <%# It will form url like 'http://localhost:3000/en/website_texts/REGTSANDCS' %>
 <%= navigational_links( [ { link: :change_password, path: user_change_password_path }, 
                           { link: :create_update_users, path: users_path, link_html_options: { requires_action: AuthorisationHelper::CREATE_USERS } }, 
-													{ link: :about_registration, path: website_text_path("REGTSANDCS"), link_html_options: { target: '_blank' } } ] )%><br/>
+													{ link: :about_registration, path: website_text_path("REGTSANDCS"), link_html_options: { target: '_blank' } } ] )%><br>

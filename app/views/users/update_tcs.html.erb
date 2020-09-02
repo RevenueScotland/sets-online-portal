@@ -3,12 +3,12 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_description, t('.description') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-
 <%= form_for @user, url: user_confirm_update_tcs_path, local: true do |f| %>
-    <%= form_errors_for @user %>
-    <%= f.hidden_field :username %>
-    <%= f.check_box_field :user_is_signed_ta_cs,
+  <%= form_errors_for @user %>
+  <%= f.hidden_field :username %>
+  <%= f.check_box_field :user_is_signed_ta_cs,
                           text_link: { t('term_and_cons') => link_to(t('term_and_cons'), website_text_path('REGTSANDCS'), target: '_blank') } %>
-    <br/><br/>
-    <%= f.button '.confirm', {:name => 'submitted'}  %>
+  <br>
+  <br>
+  <%= f.button 'confirm', {:name => 'continue'}  %>
 <% end %>
