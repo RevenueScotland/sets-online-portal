@@ -2,7 +2,7 @@
   <div class="govuk-header__container">
     <div class="govuk-width-container">
       <div class="govuk-header__logo">
-        <a href="<%=Rails.configuration.x.external_links.external_home%>" class="govuk-header__link govuk-header__link--homepage">
+        <a href="<%= external_link_url('HOME') %>" class="govuk-header__link govuk-header__link--homepage">
           <span class="govuk-header__logotype">
             <%=image_tag("https://www.revenue.scot/sites/all/themes/rs_201407/logo.png", alt:"The Scottish Government") %>
           </span>
@@ -10,7 +10,7 @@
       </div>
       <div class="govuk-header__content">
         <% unless yield(:hide_menu_link) == 'true' %>
-          <% unless current_page?(controller: '/login', action: 'new')   %>
+          <% unless current_page?({controller: '/login', action: 'new'})   %>
             <button role="button" class="govuk-header__menu-button js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation" id="menu" >Menu</button>
             <nav>
               <ul id="navigation" class="govuk-header__navigation " aria-label="Top Level Navigation">

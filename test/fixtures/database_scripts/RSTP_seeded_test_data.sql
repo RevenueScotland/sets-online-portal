@@ -233,6 +233,7 @@ BEGIN
   DELETE FROM contact_details WHERE cde_object_reference IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM case_links WHERE cali_case_refno IN (SELECT case_refno FROM cases WHERE case_reference LIKE 'PORTAL.%');
   DELETE FROM cases WHERE case_reference LIKE 'PORTAL.%';
+  DELETE FROM alternate_references WHERE alre_alrt_object_type = 'PAR' AND alre_object_reference in (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM parties WHERE par_com_company_name like 'Test Portal Company%';
 
   DELETE FROM document_notes WHERE dno_created_by IN (SELECT usr_refno from users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE UPPER(par_com_company_name) like 'NORTHGATE PUBLIC SERVICES LIMITED%'));
@@ -245,6 +246,7 @@ BEGIN
   DELETE FROM contact_details WHERE cde_object_reference IN (SELECT par_refno FROM parties WHERE UPPER(par_com_company_name) like 'NORTHGATE PUBLIC SERVICES LIMITED%%');
   DELETE FROM case_party_links WHERE cpli_par_refno IN (SELECT par_refno FROM parties WHERE UPPER(par_com_company_name) like 'NORTHGATE PUBLIC SERVICES LIMITED%%');
   DELETE FROM lbtt_return_party_links WHERE lpli_par_refno IN (SELECT par_refno FROM parties WHERE UPPER(par_com_company_name) like 'NORTHGATE PUBLIC SERVICES LIMITED%%');
+  DELETE FROM alternate_references WHERE alre_alrt_object_type = 'PAR' AND alre_object_reference in (SELECT par_refno FROM parties WHERE UPPER(par_com_company_name) like 'NORTHGATE PUBLIC SERVICES LIMITED%');
   DELETE FROM parties WHERE UPPER(par_com_company_name) like 'NORTHGATE PUBLIC SERVICES LIMITED%';
   
   DELETE FROM document_notes WHERE dno_created_by IN (SELECT usr_refno from users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%'));
@@ -265,6 +267,7 @@ BEGIN
                         UNION ALL SELECT tra_fiac_refno FROM transactions
                         UNION ALL SELECT tare_fiac_refno FROM tax_returns);
   DELETE FROM contact_details WHERE cde_object_reference IN (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%');
+  DELETE FROM alternate_references WHERE alre_alrt_object_type = 'PAR' AND alre_object_reference in (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%');
   DELETE FROM parties WHERE par_per_surname like 'Port%-Test%';
  
  
@@ -1889,6 +1892,11 @@ BEGIN
   VALUES
     (par_refno_seq.nextval,'ORG','Test Portal Company Waste','Test Portal Company Waste',NULL,'N','TAXPAYER','PARTY_ACT_TYPES','SYS',1)
   RETURNING par_refno INTO l_par_refno;
+
+  INSERT INTO alternate_references
+    (alre_object_reference,alre_alrt_object_type,alre_alrt_type,alre_alrt_srv_code,alre_reference)
+  VALUES
+    (l_par_refno,'PAR','REGISTRATION_REFERENCE','SYS','SLFT-LO-00001');
   
   create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'The landfill site',p_adr_address_line_2=>'Some Village',p_adr_town=>'Some Town',p_adr_county=>'Northshire',p_adr_postcode=>'NP7 8LB');
 
@@ -1930,7 +1938,7 @@ BEGIN
     (lasi_refno, lasi_version, lasi_par_refno, lasi_start_date, lasi_sepa_licence_number,lasi_site_name,lasi_lower_expected_tonnage,lasi_standard_expected_tonnage,lasi_exempt_expected_tonnage,
      lasi_weighbridge_ind,lasi_non_disposal_ind,lasi_controller_par_refno, lasi_adr_refno)
    VALUES
-    (99, 1, l_par_refno, '01-APR-2015', '12345','Waste Site 1',10000,20000,100,
+    (99, 1, l_par_refno, '01-APR-2015', 'SLFT-SITE-00001','Waste Site 1',10000,20000,100,
      'Y','N',l_par_refno, l_adr_refno);
      
   --- Insert the site address
@@ -1944,7 +1952,7 @@ BEGIN
     (lasi_refno, lasi_version, lasi_par_refno, lasi_start_date, lasi_sepa_licence_number,lasi_site_name,lasi_lower_expected_tonnage,lasi_standard_expected_tonnage,lasi_exempt_expected_tonnage,
      lasi_weighbridge_ind,lasi_non_disposal_ind,lasi_controller_par_refno, lasi_adr_refno)
    VALUES
-    (100, 1, l_par_refno, '01-APR-2015', '12345','Waste Site 2',15000,25000,150,
+    (100, 1, l_par_refno, '01-APR-2015', 'SLFT-SITE-00002','Waste Site 2',15000,25000,150,
      'Y','N',l_par_refno, l_adr_refno);
     
   INSERT INTO tax_returns
@@ -2152,7 +2160,12 @@ BEGIN
   VALUES
     (par_refno_seq.nextval,'ORG','Test Portal Company Waste New Returns','Test Portal Company Waste New Returns',NULL,'N','TAXPAYER','PARTY_ACT_TYPES','SYS',1)
   RETURNING par_refno INTO l_par_refno;
-  
+
+  INSERT INTO alternate_references
+    (alre_object_reference,alre_alrt_object_type,alre_alrt_type,alre_alrt_srv_code,alre_reference)
+  VALUES
+    (l_par_refno,'PAR','REGISTRATION_REFERENCE','SYS','SLFT-LO-00002');
+    
   create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'The landfill site',p_adr_address_line_2=>'Some Village',p_adr_town=>'Some Town',p_adr_county=>'Northshire',p_adr_postcode=>'NP7 8LB');
 
   -- Needed for FOPS will not be needed for revs scot
@@ -2191,7 +2204,7 @@ BEGIN
     (lasi_refno, lasi_version, lasi_par_refno, lasi_start_date, lasi_sepa_licence_number,lasi_site_name,lasi_lower_expected_tonnage,lasi_standard_expected_tonnage,lasi_exempt_expected_tonnage,
      lasi_weighbridge_ind,lasi_non_disposal_ind,lasi_controller_par_refno, lasi_adr_refno)
    VALUES
-    (97, 1, l_par_refno, '01-APR-2015', '12345','Waste Site 1',10000,20000,100,
+    (97, 1, l_par_refno, '01-APR-2015', 'SLFT-SITE-00003','Waste Site 1',10000,20000,100,
      'Y','N',l_par_refno, l_adr_refno);
      
   --- Insert the site address
@@ -2205,7 +2218,7 @@ BEGIN
     (lasi_refno, lasi_version, lasi_par_refno, lasi_start_date, lasi_sepa_licence_number,lasi_site_name,lasi_lower_expected_tonnage,lasi_standard_expected_tonnage,lasi_exempt_expected_tonnage,
      lasi_weighbridge_ind,lasi_non_disposal_ind,lasi_controller_par_refno, lasi_adr_refno)
    VALUES
-    (98, 1, l_par_refno, '01-APR-2018', '12345','Waste Site 2',15000,25000,150,
+    (98, 1, l_par_refno, '01-APR-2018','SLFT-SITE-00004','Waste Site 2',15000,25000,150,
      'Y','N',l_par_refno, l_adr_refno);
     
   COMMIT;

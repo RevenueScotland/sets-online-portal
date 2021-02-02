@@ -1,0 +1,8 @@
+<%= content_for :hide_back_link, true %>
+<%= content_for :nav_bar_options, { hide_nav_elements: %i[dashboard account_details] } %>
+<% content_for :page_title, t('.title') %>
+<% content_for :page_description, t('.description') %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<%= form_for @user, url: account_path, method: :get, local: true do |f| %>
+  <%= f.button 'continue' %>
+<% end %>

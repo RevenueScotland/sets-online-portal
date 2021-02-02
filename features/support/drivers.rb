@@ -89,6 +89,12 @@ def customized_firefox_profile
   #
   # The download directory destination
   profile['browser.download.dir'] = ENV['TEST_FILE_DOWNLOAD_PATH']
+  customized_firefox_profile_standard_options(profile)
+end
+
+# Sets up the profile for a selenium_firefox driver.
+# Currently used to set up the downloading parts of the firefox.
+def customized_firefox_profile_standard_options(profile)
   # folderList set to 2 means to use the custom download directory
   profile['browser.download.folderList'] = 2
   profile['browser.helperApps.alwaysAsk.force'] = profile['browser.download.manager.showWhenStarting'] = false
@@ -96,7 +102,7 @@ def customized_firefox_profile
   # the type of data/file.
   profile['browser.helperApps.neverAsk.saveToDisk'] =
     ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip',
-     'application/pdf', 'application/octet-stream', 'application/msword'].join(',')
+     'application/pdf', 'application/octet-stream', 'application/msword', 'image/png'].join(',')
   profile['pdfjs.disabled'] = profile.native_events = profile['browser.download.useDownloadDir'] = true
   profile
 end

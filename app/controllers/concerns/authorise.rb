@@ -121,7 +121,7 @@ module Authorise
   #   authorise
   # Once an authorise method is found, it's result is returned.
   # @return [Boolean] return true if the call is authorised, otherwise false
-  def action_authorised? # rubocop:disable Metrics/AbcSize
+  def action_authorised?
     authorised = authorise_action_for?("authorise_#{action_name}_#{request.method_symbol}")
     return authorised unless authorised.nil?
 

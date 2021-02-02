@@ -15,13 +15,15 @@ module Returns
       end
       attribute_list.each { |attr| attr_accessor attr }
 
+      attr_accessor :convey
+
       # amount validations
       validates :consideration_amount, numericality: {
         greater_than_or_equal_to_zero: 0, less_than: 1_000_000_000_000_000_000, allow_blank: true
-      }, presence: true, two_dp_pattern: true, on: %w[CONVEY]
+      }, presence: true, two_dp_pattern: true, if: :convey
       validates :npv_inc, :premium_inc, numericality: {
         greater_than_or_equal_to_zero: 0, less_than: 1_000_000_000_000_000_000, allow_blank: true
-      }, presence: true, two_dp_pattern: true, on: %w[LEASERET LEASEREV ASSIGN TERMINATE]
+      }, presence: true, two_dp_pattern: true, unless: :convey
       validates :return_reference, reference_number: true
 
       # Layout to print the data in this model
@@ -33,11 +35,11 @@ module Returns
            type: :list, # type list = the list of attributes to follow
            list_items: [{ code: :return_reference,
                           key_scope: %i[returns lbtt_transactions linked_transactions] },
-                        { code: :consideration_amount, format: :money, when: :flbt_type, is: ['CONVEY'],
+                        { code: :consideration_amount, format: :money, when: :convey, is: [true],
                           key_scope: %i[returns lbtt_transactions linked_transactions] },
-                        { code: :npv_inc, format: :money, when: :flbt_type, is_not: ['CONVEY'],
+                        { code: :npv_inc, format: :money, when: :convey, is: [false],
                           key_scope: %i[returns lbtt_transactions linked_transactions] },
-                        { code: :premium_inc, format: :money, when: :flbt_type, is_not: ['CONVEY'],
+                        { code: :premium_inc, format: :money, when: :convey, is: [false],
                           key_scope: %i[returns lbtt_transactions linked_transactions] }] }]
       end
 
@@ -54,14 +56,12 @@ module Returns
 
       # Create a new instance based on a back office style hash (@see LbttReturn.convert_back_office_hash).
       # Sort of like the opposite of @see #request_save
-      def self.convert_back_office_hash(output)
-        output[:return_reference] = output[:reference] unless output[:reference].blank?
-        output[:npv_inc] = output[:net_present_value] unless output[:net_present_value].blank?
-        output[:premium_inc] = output[:lease_premium] unless output[:lease_premium].blank?
-
-        # strip out attributes we don't want yet
-        delete = %i[reference net_present_value lease_premium]
-        delete.each { |key| output.delete(key) }
+      def self.convert_back_office_hash(output, lbtt_return_type)
+        output[:convey] = (lbtt_return_type == 'CONVEY')
+        # rename some of the keys
+        output[:return_reference] = output.delete(:reference)
+        output[:npv_inc] = output.delete(:net_present_value)
+        output[:premium_inc] = output.delete(:lease_premium)
 
         # Create new instance
         LinkTransactions.new_from_fl(output)

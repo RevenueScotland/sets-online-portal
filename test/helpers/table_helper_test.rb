@@ -22,14 +22,14 @@ class TableHelperTest < ActionView::TestCase
                             { label: t('show'), path: :dashboard_messages_path },
                             { label: t('edit'), path: :new_dashboard_message_path }
                           ])
-    assert input == expected_output_with_action, 'Result was: ' + input
+    assert input == expected_output_with_action, "Result was: #{input}"
   end
 
   test 'table without action' do
     user_test_data = [TestUser.new(username: 'one')]
     input = display_table(user_test_data,
                           [:username])
-    assert input == expected_output_without_action, 'Result was: ' + input
+    assert input == expected_output_without_action, "Result was: #{input}"
   end
 
   test 'table with nil object' do

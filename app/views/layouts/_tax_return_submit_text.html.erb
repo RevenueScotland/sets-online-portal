@@ -20,7 +20,7 @@
     <p class="govuk-body"><%= t('return.submit.slft.payment_due_text') %></p>
     <p class="govuk-body"><%= UtilityHelper.swap_texts(t('return.submit.slft.payment_method_text', payment_method: payment_method),
                                                          text_link: { t('return.submit.slft.payment_method_link_text') => 
-                                                                        link_to(t('return.submit.slft.payment_method_link_text'), 'https://www.revenue.scot/') }) %> </p>
+                                                                        link_to(t('return.submit.slft.payment_method_link_text'), external_link_url('SLFT_PAYMENT')) }) %> </p>
     <p class="govuk-body"><%= t('return.submit.slft.submit_text').html_safe %> </p>
   <% end %>
   <% if %w[LBTT_CONVEYANCE LBTT_LEASE LBTT AMEND_LBTT].include?(return_type) %>
@@ -43,23 +43,23 @@
     <p class="govuk-body">
       <%= UtilityHelper.swap_texts(t('return.submit.lbtt.payment_method_text', payment_method: payment_method),
                                      text_link: { t('return.submit.lbtt.payment_method_link_text') =>
-                                                    link_to(t('return.submit.lbtt.payment_method_link_text'), 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/how-to/pay-lbtt') }) %>
+                                                    link_to(t('return.submit.lbtt.payment_method_link_text'), external_link_url('LBTT_PAYMENT')) }) %>
     </p>
   <% end %>
   <% if return_type == 'AMEND_LBTT' %>
     <p class="govuk-body">
       <%= UtilityHelper.swap_texts(t('return.submit.lbtt.amend_payment_method_text', payment_method: payment_method),
                                      text_link: { t('return.submit.lbtt.payment_method_link_text') =>
-                                                    link_to(t('return.submit.lbtt.payment_method_link_text'), 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/how-to/pay-lbtt') }) %>
+                                                    link_to(t('return.submit.lbtt.payment_method_link_text'), external_link_url('LBTT_PAYMENT')) }) %>
     </p>
   <% end %>
   <% if return_type == 'LBTT_CONVEYANCE' || return_type == 'LBTT_LEASE' || return_type == 'LBTT' || return_type == 'AMEND_LBTT' %>
     <p class="govuk-body">
       <%= UtilityHelper.swap_texts(t('return.submit.lbtt.penalties_text'),
                                      text_link: { t('return.submit.lbtt.liable_to_penalties_link_text') =>
-                                                    link_to(t('return.submit.lbtt.liable_to_penalties_link_text'), 'http://www.revenue.scot/penalties'),
+                                                    link_to(t('return.submit.lbtt.liable_to_penalties_link_text'), external_link_url('PENALTY')),
                                                   t('return.submit.lbtt.liable_to_interest_link_text') => 
-                                                    link_to(t('return.submit.lbtt.liable_to_interest_link_text'), 'http://www.revenue.scot/interest') }) %>
+                                                    link_to(t('return.submit.lbtt.liable_to_interest_link_text'), external_link_url('INTEREST')) }) %>
     </p>
   <% end %>
   <% if %w[LBTT_LEASE LBTT].include?(return_type) %>
@@ -67,7 +67,7 @@
     <p class="govuk-body">
       <%= UtilityHelper.swap_texts(t('return.submit.lbtt.lease_further_information_text'), 
                                      text_link: { t('return.submit.lbtt.lease_further_information_link_text') =>
-                                                    link_to(t('return.submit.lbtt.lease_further_information_link_text'), 'http://www.revenue.scot/leases') }) %>
+                                                    link_to(t('return.submit.lbtt.lease_further_information_link_text'), external_link_url('LEASE')) }) %>
     </p>
   <% end %>
   <% if return_type == 'AMEND_LBTT' %>

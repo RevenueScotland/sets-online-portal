@@ -82,4 +82,6 @@ en:
         no_data_found: "There are no returns to be shown..."
         enquiry_open: "Ongoing Enquiry"
         draft_present: "Draft Present"
+        not_amendable: "This return is no longer amendable, use the claim option"
+        amendable_period: "You have until %{value} to complete this draft"
         receipt: "Receipt"

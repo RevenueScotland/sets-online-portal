@@ -1,3 +1,5 @@
+// This file contains JS that applies to the select field of the address search,
+// it customises the keyboard or mouse-click on the select field of the address search found in an address partial page.
 $(function () {
     var is_value_select_using_keypress = false;
     $('#search_results').on('blur', function () {

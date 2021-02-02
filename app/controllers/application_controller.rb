@@ -46,7 +46,7 @@ class ApplicationController < ActionController::Base
 
   # set as a before_action to make sure the user is logged in when required
   def require_user
-    manage_session_expiry(ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU', true))
+    manage_session_expiry(ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU', safe_lookup: true))
     return if current_user
 
     Rails.logger.debug('User needs to be logged in')
@@ -66,7 +66,7 @@ class ApplicationController < ActionController::Base
 
   # before action that calls manage_session_expiry to check if session has run out of time.
   def check_session_expiry
-    manage_session_expiry(ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU', true))
+    manage_session_expiry(ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU', safe_lookup: true))
   end
 
   # Enforce session time to live (ie max time between activity) and maximum over-all session length.
@@ -85,7 +85,7 @@ class ApplicationController < ActionController::Base
     # check if it's expired and show session ended page
     redirect_to logout_session_expired_path if session_has_expired
 
-    update_ttl_warning(max_idle_mins, sys_params['IDLE_WARN_MINS'])
+    session_ttl_warning(max_idle_mins, sys_params['IDLE_WARN_MINS'])
 
     # user has done something so update session TTL
     update_ttl(:SESSION_TTL_INDEX, max_idle_mins, true)
@@ -109,7 +109,7 @@ class ApplicationController < ActionController::Base
   # If it's not valid, sets it to null default.
   # @param max_idle_mins [time] - the max idle period
   # @param sys_param [SystemParameter] - the system parameters that has the value to use
-  def update_ttl_warning(max_idle_mins, sys_param)
+  def session_ttl_warning(max_idle_mins, sys_param)
     if sys_param&.value.nil?
       Rails.logger.debug('Idle time system parameter is missing')
       @session_ttl_warning = nil

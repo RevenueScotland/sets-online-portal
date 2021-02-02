@@ -9,7 +9,7 @@ module FileStorageHelper
   def self.delete_stored_files(period)
     dir_name = Rails.configuration.x.temp_folder
     Rails.logger.debug("Path of files #{dir_name}")
-    delete_files_in_directory(dir_name, period, false)
+    delete_files_in_directory(dir_name, period, delete_directory: false)
   end
 
   # Generates a temporary directory for storing a file, if necessary the directory is created
@@ -33,7 +33,7 @@ module FileStorageHelper
   # @param period [Integer]  The seconds old the file needs to be
   # @param delete_directory [Boolean]  delete the directory if it is now empty
   # @return nil
-  def self.delete_files_in_directory(dir_name, period, delete_directory = false)
+  def self.delete_files_in_directory(dir_name, period, delete_directory: false)
     Rails.logger.info("Deleting files from directory #{dir_name} older than #{period} seconds")
     Dir.glob(File.join(dir_name, '*')).each do |file_name|
       delete_file_in_directory(file_name, period)
@@ -49,7 +49,7 @@ module FileStorageHelper
   # @return nil
   def self.delete_file_in_directory(file_name, period)
     if File.directory?(file_name)
-      delete_files_in_directory(file_name, period, true)
+      delete_files_in_directory(file_name, period, delete_directory: true)
     else
       return unless File.mtime(file_name) < Time.new - period
 

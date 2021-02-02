@@ -186,13 +186,13 @@
       "sectiontitle": "Declarations",
       "listitem": [
         {
-          "itemcode": "authenticated_declaration_1",
+          "itemcode": "authenticated_declaration1",
           "itemformat": null,
           "itemlabel": "I (we), the tax payer(s) declare that this repayment or claim request is, to the best of my (our) knowledge, correct and complete and confirm that I (we) am (are) eligible for the refund claimed",
           "itemdata": "Yes"
         },
         {
-          "itemcode": "authenticated_declaration_2",
+          "itemcode": "authenticated_declaration2",
           "itemformat": null,
           "itemlabel": "I (we), the tax payer(s) declare that Revenue Scotland can contact me (us) regarding this repayment or claim request",
           "itemdata": "Yes"

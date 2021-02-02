@@ -113,8 +113,8 @@
   "account_number": "12345678",
   "branch_code": "10-11-12",
   "bank_name": "Natwest",
-  "authenticated_declaration_1": "N",
-  "authenticated_declaration_2": "N",
+  "authenticated_declaration1": "N",
+  "authenticated_declaration2": "N",
   "unauthenticated_declarations": [
     {
       "json_class": "Claim::AdsDeclaration",

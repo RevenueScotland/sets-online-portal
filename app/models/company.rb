@@ -14,13 +14,13 @@ class Company # rubocop:disable Metrics/ClassLength
   # names need to be unique between company and account, as that the "magic" account does on delegating validation
   # and assign_attributes works.
   def self.attribute_list
-    %i[company_number company_name address_line1 address_line2 county country locality postcode org_email_address
+    %i[company_number company_name address_line1 address_line2 locality county country postcode org_email_address
        org_telephone main_rep_name]
   end
 
   attribute_list.each { |attr| attr_accessor attr }
 
-  validates :company_number, presence: true, length: { minimum: 8, maximum: 8 },
+  validates :company_number, presence: true, length: { minimum: 8, maximum: 8, allow_blank: true },
                              on: %i[search registered_organisation company_number]
   validate  :company_number_valid?, on: %i[search registered_organisation company_number]
   validates :company_name, presence: true, length: { maximum: 200 },
@@ -75,7 +75,7 @@ class Company # rubocop:disable Metrics/ClassLength
 
   # @return [String] line 1, county and postcode only
   def short_address
-    [address_line1, county, postcode].reject(&:blank?).join(', ')
+    [address_line1, locality, postcode].reject(&:blank?).join(', ')
   end
 
   # @return [Boolean] if company_number and company_name are both empty or nil
@@ -230,7 +230,7 @@ class Company # rubocop:disable Metrics/ClassLength
 
   # Check if company number is valid based on @see COMPANY_NUMBER_REGEX.
   def company_number_valid?
-    return if company_number&.match?(COMPANY_NUMBER_REGEX)
+    return if company_number.blank? || company_number.length != 8 || company_number&.match?(COMPANY_NUMBER_REGEX)
 
     errors.add(:company_number, :is_invalid)
   end

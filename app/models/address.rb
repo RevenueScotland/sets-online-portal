@@ -99,9 +99,9 @@ class Address < FLApplicationRecord
   # for sending to the back office
   def format_to_back_office_address
     output = { 'ins0:AddressLine1': address_line1 }
-    output['ins0:AddressLine2'] = address_line2 if address_line2.present?
-    output['ins0:AddressLine3'] = address_line3 if address_line3.present?
-    output['ins0:AddressLine4'] = address_line4 if address_line4.present?
+    xml_element_if_present(output, 'ins0:AddressLine2', address_line2)
+    xml_element_if_present(output, 'ins0:AddressLine3', address_line3)
+    xml_element_if_present(output, 'ins0:AddressLine4', address_line4)
     format_town_county_postcode(output)
     output
   end
@@ -109,10 +109,10 @@ class Address < FLApplicationRecord
   # Convert address fields town, county and postcode in back-office format
   def format_town_county_postcode(output)
     output['ins0:AddressTownOrCity'] = town
-    output['ins0:AddressCountyOrRegion'] = county if county.present?
-    output['ins0:AddressPostcodeOrZip'] = postcode if postcode.present?
-    output['ins0:AddressCountryCode'] = country if country.present?
-    output['ins0:QASMoniker'] = address_identifier if address_identifier.present?
+    xml_element_if_present(output, 'ins0:AddressCountyOrRegion', county)
+    xml_element_if_present(output, 'ins0:AddressPostcodeOrZip', postcode)
+    xml_element_if_present(output, 'ins0:AddressCountryCode', country)
+    xml_element_if_present(output, 'ins0:QASMoniker', address_identifier)
   end
 
   # converts back-office address hash into address object

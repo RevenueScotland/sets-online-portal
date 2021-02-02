@@ -4,27 +4,27 @@
 <%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
   <%= f.currency_field :total_consideration, text_link: { t('.total_consideration') =>
-                                                    link_to(t('.total_consideration'), "#{Rails.configuration.x.external_links.lbtt2001_determining_chargeable}", target: '_blank')} %>
+                                                    link_to(t('.total_consideration'), external_link_url('DET_CHARGE_CONS'), target: '_blank')} %>
   <%# Total VAT field is shown only if property type is selected as Non-Resedential %>
   <% if @lbtt_return.property_type == '3' %>
     <%= f.currency_field :total_vat, text_link: { t('.total_vat') =>
-                                                    link_to(t('.total_vat'), "#{Rails.configuration.x.external_links.lbtt2002_what_chargeable}", target: '_blank')} %>
+                                                    link_to(t('.total_vat'), external_link_url('CHARGE_CONS'), target: '_blank')} %>
   <% end %>
   <% if @lbtt_return.linked_ind == 'Y' %>
     <%= f.currency_field :linked_consideration, text_link: { t('.linked_consideration') =>
-                                                    link_to(t('.linked_consideration'), "#{Rails.configuration.x.external_links.lbtt2008_linked_transactions}", target: '_blank')} %>
+                                                    link_to(t('.linked_consideration'), external_link_url('LINKED_TRANS'), target: '_blank')} %>
   <% end %>
   <%# Non Chargeable field is shown only if "Is the transaction part of the sale of a business?"
        is selected as Yes %>
   <% if @lbtt_return.business_ind == 'Y' %>
     <%= f.currency_field :non_chargeable, text_link: { t('.non_chargeable') =>
-                                                    link_to(t('.non_chargeable'), "#{Rails.configuration.x.external_links.lbtt2009_not_chargeable}", target: '_blank')} %>
+                                                    link_to(t('.non_chargeable'), external_link_url('NON_CHARGE_CONS'), target: '_blank')} %>
   <% end %>
   <%# Remaining Chargeable field is shown only if atleast one of the three 
        fields(:total_vat, :linked_consideration, :non_chargeable) are present on the page %>
   <% if @lbtt_return.property_type == '3' || @lbtt_return.business_ind == 'Y' || @lbtt_return.linked_ind == 'Y' %>
     <%= f.currency_field :remaining_chargeable, text_link: { t('.remaining_chargeable') =>
-                                                    link_to(t('.remaining_chargeable'), "#{Rails.configuration.x.external_links.lbtt2001_determining_chargeable}", target: '_blank')} %>
+                                                    link_to(t('.remaining_chargeable'), external_link_url('DET_CHARGE_CONS'), target: '_blank')} %>
   <% end %>
   <%= f.button %>
 <% end %>

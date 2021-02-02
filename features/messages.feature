@@ -16,7 +16,7 @@ Feature: Secure Communication
         When I upload "testdocx.docx" to "resource_item_default_file_data"
         And I enter "This is a docx file" in the "Description of the uploaded file (optional)" field
         And I click on the "Upload document" button
-        Then I should see a link with text "testdocx.docx"
+        Then I should see a link to the file "testdocx.docx"
         And I should see the text "This is a docx file"
 
         # Filling up the rest of the required fields
@@ -32,14 +32,14 @@ Feature: Secure Communication
         # Uploading a valid jpg attachment
         When I upload "testjpg.jpg" to "resource_item_default_file_data"
         And I click on the "Upload document" button
-        Then I should see a link with text "testjpg.jpg"
+        Then I should see a link to the file "testjpg.jpg"
         When I click on the "Remove file" button
         Then I should not see a link with text "testjpg.jpg"
 
         # Uploading a valid jpeg attachment
         When I upload "testjpeg.jpeg" to "resource_item_default_file_data"
         And I click on the "Upload document" button
-        Then I should see a link with text "testjpeg.jpeg"
+        Then I should see a link to the file "testjpeg.jpeg"
         When I click on the "Remove file" button
         Then I should not see a link with text "testjpeg.jpeg"
 
@@ -82,15 +82,15 @@ Feature: Secure Communication
         Then I should receive the message "Invalid file type"
 
         # Upload valid file types
-        When I upload "testpng.png" to "resource_item_default_file_data"
+        When I upload "testpng with space.png" to "resource_item_default_file_data"
         And I enter "Test png image file" in the "Description of the uploaded file (optional)" field
         And I click on the "Upload document" button
-        Then I should see a link with text "testpng.png"
+        Then I should see a link to the file "testpng with space.png"
         And I should see the text "Test png image file"
 
         And the table of data is displayed
-            | File uploaded | Description         |             |
-            | testpng.png   | Test png image file | Remove file |
+            | File uploaded                    | Description         |             |
+            | %r{testpng[+ ]with[+ ]space.png} | Test png image file | Remove file |
 
         And I click on the "Finish" button
 
@@ -98,15 +98,15 @@ Feature: Secure Communication
         And I click on the 1 st "view" link
         Then I should see the text "File uploaded"
         And I should see the text "Application for bad debt relief"
-        And I should see a link with text "testdocx.docx"
+        And I should see a link to the file "testdocx.docx"
         Then the table of data is displayed
-            | File uploaded | Description         |
-            | testdocx.docx | This is a docx file |
-            | testpng.png   | Test png image file |
+            | File uploaded                    | Description         |
+            | testdocx.docx                    | This is a docx file |
+            | %r{testpng[+ ]with[+ ]space.png} | Test png image file |
 
         # Downloading the file
-        When I click on the 1 st "testdocx.docx" link to download a file
-        Then I should see the downloaded content "testdocx.docx"
+        When I click on the 1 st "testpng with space.png" link to download a file
+        Then I should see the downloaded content "testpng with space.png"
         And I should see the "Message full details" page
 
     # Index page tests

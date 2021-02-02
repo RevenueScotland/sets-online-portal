@@ -17,7 +17,7 @@ module Claim
          reason claim_desc address date_of_sale
          evidence_files full_repayment_of_ads claiming_amount taxpayers
          account_holder_name account_number branch_code bank_name
-         authenticated_declaration_1 authenticated_declaration_2 unauthenticated_declarations]
+         authenticated_declaration1 authenticated_declaration2 unauthenticated_declarations]
     end
 
     attribute_list.each { |attr| attr_accessor attr }
@@ -33,9 +33,9 @@ module Claim
     validates :account_number, numericality: { only_integer: true, allow_blank: true }, presence: true,
                                length: { is: 8 }, on: :account_holder_name
     validates :branch_code, presence: true, bank_sort_code: true, on: :account_holder_name
-    # Note validation context @see ClaimPaymentsController#authenticated_declaration_2
-    validates :authenticated_declaration_1, :authenticated_declaration_2, acceptance: { accept: ['Y'] },
-                                                                          on: :declaration, unless: :claim_public?
+    # Note validation context @see ClaimPaymentsController#authenticated_declaration2
+    validates :authenticated_declaration1, :authenticated_declaration2, acceptance: { accept: ['Y'] },
+                                                                        on: :declaration, unless: :claim_public?
     validates :tare_reference, presence: true, reference_number: true, on: :return_reference
 
     validate :validate_return_reference, on: :tare_reference
@@ -70,8 +70,8 @@ module Claim
     # @return [Hash] <attribute> => <ref data composite key>
     def uncached_ref_data_codes
       { full_repayment_of_ads: YESNO_COMP_KEY,
-        authenticated_declaration_1: YESNO_COMP_KEY,
-        authenticated_declaration_2: YESNO_COMP_KEY }
+        authenticated_declaration1: YESNO_COMP_KEY,
+        authenticated_declaration2: YESNO_COMP_KEY }
     end
 
     # Returns the array of reasons valid for this claim
@@ -178,12 +178,10 @@ module Claim
     def tare_reference=(value)
       @tare_reference = value
       # We only call validate reference for LBTT or if we don't have a service set from the dashboard page
-      if @srv_code.nil? || @srv_code == 'LBTT'
+      if (@srv_code.nil? || @srv_code == 'LBTT') && valid?(:return_reference)
         # Get the other info from the back office for LBTT
-        if valid?(:return_reference)
-          call_ok?(:validate_return_reference, request_validate_element(@current_user)) do |response|
-            response.blank? ? clear_back_office_data : assign_back_office_data(response)
-          end
+        call_ok?(:validate_return_reference, request_validate_element(@current_user)) do |response|
+          response.blank? ? clear_back_office_data : assign_back_office_data(response)
         end
       end
       @number_of_buyers = 1 if @number_of_buyers.nil?
@@ -451,7 +449,7 @@ module Claim
 
     # taxpayer details if organization party
     def taxpayer_org_details(taxpayer)
-      { 'ins1:CompanyName': taxpayer.org_name, 'ins1:ContactName': taxpayer.firstname + ' ' + taxpayer.surname }
+      { 'ins1:CompanyName': taxpayer.org_name, 'ins1:ContactName': "#{taxpayer.firstname} #{taxpayer.surname}" }
     end
 
     # The prefix used as part of the translation key.
@@ -463,8 +461,8 @@ module Claim
       prefix = claim_public? ? 'UNAUTHENTICATED' : 'AUTHENTICATED'
 
       # If we only have 1 buyer, then the key used should be for a single buyer only.
-      return prefix + '_SINGLE' if @number_of_buyers == 1 && context == :party_title
-      return prefix + '_PDF' if context == :pdf_party_title
+      return "#{prefix}_SINGLE" if @number_of_buyers == 1 && context == :party_title
+      return "#{prefix}_PDF" if context == :pdf_party_title
 
       prefix
     end
@@ -478,8 +476,8 @@ module Claim
       return amount_date_translation_attribute(attribute) if %i[claiming_amount date_of_sale
                                                                 full_repayment_of_ads].include?(attribute)
 
-      return "#{attribute}_#{translation_options}".to_sym if %i[authenticated_declaration_1
-                                                                authenticated_declaration_2].include?(attribute)
+      return "#{attribute}_#{translation_options}".to_sym if %i[authenticated_declaration1
+                                                                authenticated_declaration2].include?(attribute)
 
       attribute
     end
@@ -589,8 +587,8 @@ module Claim
         divider: true, # should we have a section divider
         display_title: true, # Is the title to be displayed
         type: :list, # type list = the list of attributes to follow
-        list_items: [{ code: :authenticated_declaration_1, lookup: true, translation_extra: :account_type },
-                     { code: :authenticated_declaration_2, lookup: true, translation_extra: :account_type }] }
+        list_items: [{ code: :authenticated_declaration1, lookup: true, translation_extra: :account_type },
+                     { code: :authenticated_declaration2, lookup: true, translation_extra: :account_type }] }
     end
 
     # layout for the unauthenticated (ads) declarations

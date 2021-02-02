@@ -54,6 +54,8 @@ en:
         receipt: "Receipt"
         enquiry_open: "Ongoing Enquiry"
         draft_present: "Draft Present"
+        not_amendable: "This return is no longer amendable, use the claim option"
+        amendable_period: "You have until %{value} to complete this draft"
         link:
           messages: "All messages"
           dashboard_returns: "All returns"

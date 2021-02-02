@@ -12,6 +12,7 @@
  *= require 'jquery-ui'
  *= require 'govuk-frontend-3.0.0.min'  
  *= require 'spin'  
+ *= require 'cookies'
  *= require_tree .
  *= require_self
  */
@@ -114,6 +115,10 @@
     min-height: 150px;
 }
 
+.table_field_textarea {
+  min-height: 50px;
+}
+
 .govuk-label,
 .govuk-fieldset__heading {
     font-weight: 600;
@@ -201,6 +206,11 @@ html body {
 
 .currency{
   padding-right: 5px;
+  display: inline;
+}
+
+.percentage{
+  padding-left: 5px;
   display: inline;
 }
 

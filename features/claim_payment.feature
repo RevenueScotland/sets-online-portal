@@ -90,17 +90,17 @@ Feature: Claim payment
 
         When I upload "testjpg.jpg" to "resource_item_occupancy_file_data"
         And I click on the "Upload document" button
-        Then I should see a link with text "testjpg.jpg"
+        Then I should see a link to the file "testjpg.jpg"
         And I should receive the message "File can't be blank"
         # Check we don't lose the file
         When I click on the "Upload document" button
-        Then I should see a link with text "testjpg.jpg"
+        Then I should see a link to the file "testjpg.jpg"
         And I should receive the message "File can't be blank"
         # Upload the other file
         When I upload "testdoc.doc" to "resource_item_sale_file_data"
         And I click on the "Upload document" button
-        Then I should see a link with text "testjpg.jpg"
-        And I should see a link with text "testdoc.doc"
+        Then I should see a link to the file "testjpg.jpg"
+        And I should see a link to the file "testdoc.doc"
         And I should not receive the message "File can't be blank"
         # Clear the files and check that they are gone
         When I click on the 1 st "Remove file" button
@@ -111,8 +111,8 @@ Feature: Claim payment
         When I upload "testjpg.jpg" to "resource_item_occupancy_file_data"
         When I upload "testdoc.doc" to "resource_item_sale_file_data"
         And I click on the "Upload document" button
-        Then I should see a link with text "testjpg.jpg"
-        And I should see a link with text "testdoc.doc"
+        Then I should see a link to the file "testjpg.jpg"
+        And I should see a link to the file "testdoc.doc"
 
         When I click on the "Continue" button
         Then I should see the "Claim amount" page
@@ -280,7 +280,7 @@ Feature: Claim payment
         When I upload "testjpg.jpg" to "resource_item_portal_sale_file_data"
         When I upload "testjpg.jpg" to "resource_item_occupancy_file_data"
         And I click on the "Upload document" button
-        Then I should see a link with text "testjpg.jpg"
+        Then I should see a link to the file "testjpg.jpg"
         And I click on the "Continue" button
 
         Then I should see the "Claim amount" page
@@ -315,8 +315,8 @@ Feature: Claim payment
         Then I should see the "Declarations" page
         When I click on the "Continue" button
         Then I should receive the message "The declaration must be accepted"
-        And I check the "claim_claim_payment_authenticated_declaration_1" checkbox
-        And I check the "claim_claim_payment_authenticated_declaration_2" checkbox
+        And I check the "claim_claim_payment_authenticated_declaration1" checkbox
+        And I check the "claim_claim_payment_authenticated_declaration2" checkbox
 
         When I click on the "Continue" button
         Then I should see the "Your request has been sent to Revenue Scotland" page
@@ -388,8 +388,8 @@ Feature: Claim payment
         Then I should see the "Declarations" page
         When I click on the "Continue" button
         Then I should receive the message "The declaration must be accepted"
-        And I check the "claim_claim_payment_authenticated_declaration_1" checkbox
-        And I check the "claim_claim_payment_authenticated_declaration_2" checkbox
+        And I check the "claim_claim_payment_authenticated_declaration1" checkbox
+        And I check the "claim_claim_payment_authenticated_declaration2" checkbox
 
         When I click on the "Continue" button
         Then I should see the "Your request has been sent to Revenue Scotland" page
@@ -413,7 +413,7 @@ Feature: Claim payment
         Then I should see the "Evidence to support the claim" page
         When I upload "testjpg.jpg" to "resource_item_default_file_data"
         And I click on the "Upload document" button
-        Then I should see a link with text "testjpg.jpg"
+        Then I should see a link to the file "testjpg.jpg"
         And I click on the "Continue" button
 
         Then I should see the "Details about your request for repayment" page
@@ -448,12 +448,15 @@ Feature: Claim payment
         Then I should see the "Declarations" page
         When I click on the "Continue" button
         Then I should receive the message "The declaration must be accepted"
-        And I check the "claim_claim_payment_authenticated_declaration_1" checkbox
-        And I check the "claim_claim_payment_authenticated_declaration_2" checkbox
+        And I check the "claim_claim_payment_authenticated_declaration1" checkbox
+        And I check the "claim_claim_payment_authenticated_declaration2" checkbox
 
         When I click on the "Continue" button
         Then I should see the "Your request has been sent to Revenue Scotland" page
         Then I should not see a link with text "testjpg.jpg"
+
+        When I click on the "Upload document" button
+        Then I should receive the message "File can't be blank"
 
         # Check the file uploads on the final page
         When I upload "testdoc.doc" to "resource_item_default_file_data"
@@ -467,15 +470,15 @@ Feature: Claim payment
         # Upload multiple file types
         When I upload "testdoc.doc" to "resource_item_default_file_data"
         And I click on the "Upload document" button
-        And I upload "testpng.png" to "resource_item_default_file_data"
+        And I upload "testpng with space.png" to "resource_item_default_file_data"
         And I click on the "Upload document" button
         Then the table of data is displayed
-            | File uploaded |             |
-            | testdoc.doc   | Remove file |
-            | testpng.png   | Remove file |
+            | File uploaded                    |             |
+            | testdoc.doc                      | Remove file |
+            | %r{testpng[+ ]with[+ ]space.png} | Remove file |
 
         When I click on the 1 st "Remove file" button
         Then the table of data is displayed
-            | File uploaded |             |
-            | testpng.png   | Remove file |
+            | File uploaded                    |             |
+            | %r{testpng[+ ]with[+ ]space.png} | Remove file |
         And I should not see the text "testdoc.doc"

@@ -1,5 +1,6 @@
-// This is mainly used for displaying a combobox text field with autocomplete functionality and a button to
-// show all in a drop - down format.
+// This file contains JS that applies to the select field,
+// it adds a custom jquery-ui combobox for the autocomplete feature to the select field, this includes 
+// adding a button to handle the display all
 //
 // Used example in url https://jqueryui.com/autocomplete/#combobox to develop this.
 // CSS used for it is in /vendor/assets/stylesheets/jquery-ui.min.css which is applied to application.scss

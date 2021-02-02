@@ -279,7 +279,7 @@ module Returns
         Waste.new_from_fl(raw_hash)
       end
 
-      # Note: As used in print data these need to be public
+      # NOTE: As used in print data these need to be public
       # Do we need to enter the nda tonnage
       def nda_ex_details_needed?
         @nda_ex_yes_no == 'Y' && exempt_breakdown_needed?
@@ -386,7 +386,7 @@ module Returns
         end
 
         # If the sum is not equal set the message on the first set value
-        return if sum_exemptions.to_f == @exempt_tonnage.to_f
+        return if (sum_exemptions.to_f - @exempt_tonnage.to_f).abs < Float::EPSILON
 
         errors.add(:base, :exemption_tonnage_isnt_equal, link_id: 'new_returns_slft_waste')
       end

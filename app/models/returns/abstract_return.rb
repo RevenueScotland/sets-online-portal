@@ -104,7 +104,7 @@ module Returns
     # a valid dd instruction
     # @param account_has_dd_instruction [Boolean] does the account have a dd instruction
     # @return [Array] the array of valid payment types
-    def list_payment_types(account_has_dd_instruction = false)
+    def list_payment_types(account_has_dd_instruction: false)
       if account_has_dd_instruction
         lookup_ref_data(:fpay_method).values.sort_by(&:sort_key)
       else

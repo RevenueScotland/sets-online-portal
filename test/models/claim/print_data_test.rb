@@ -101,7 +101,7 @@ module Claim
     # Sets up the savon expectations for setting up the return reference on lbtt claim
     def savon_expectations_reference_setup(validate_return_reference_file_name = nil)
       unless validate_return_reference_file_name.nil?
-        fixture = File.read('test/fixtures/mocks/claim/' + validate_return_reference_file_name + '.xml')
+        fixture = File.read("test/fixtures/mocks/claim/#{validate_return_reference_file_name}.xml")
         @savon.expects(:validate_return_reference_wsdl).with(message: :any).returns(fixture)
       end
 
@@ -113,13 +113,13 @@ module Claim
       # As our account_type is 'PUBLIC' we won't have to hit the backoffice calls, so we can escape from here.
       return if current_user.nil?
 
-      path_and_prefix = 'test/fixtures/mocks/claim/' + srv_code
+      path_and_prefix = "test/fixtures/mocks/claim/#{srv_code}"
 
-      fixture = File.read(path_and_prefix + '_account_details_response.xml')
+      fixture = File.read("#{path_and_prefix}_account_details_response.xml")
       message = { PartyRef: current_user.party_refno, 'ins1:Requestor': current_user.username }
       @savon.expects(:get_party_details_wsdl).with(message: message).returns(fixture)
 
-      fixture = File.read(path_and_prefix + '_list_all_users_response.xml')
+      fixture = File.read("#{path_and_prefix}_list_all_users_response.xml")
       @savon.expects(:maintain_user_wsdl).with(message: :any).returns(fixture)
     end
 

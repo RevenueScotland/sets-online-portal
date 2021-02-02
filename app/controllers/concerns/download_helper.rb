@@ -24,7 +24,7 @@ module DownloadHelper
   # @param path [String] path to the source file
   # @param options [Hash] same options supported as send_file @see ActionController::Streaming.send_file
   def send_file_from_path(path, options = {})
-    check_for_virus(path) unless Rails.configuration.x.no_download_file_virus_scanning
+    check_for_virus(path, options[:filename]) unless Rails.configuration.x.no_download_file_virus_scanning
 
     send_file path, options
   end
@@ -35,9 +35,9 @@ module DownloadHelper
   def check_for_virus_in_attachment(attachment)
     return unless attachment.key?(:binary_data) && attachment.key?(:file_name)
 
-    tmp_filename = FileStorageHelper.file_temp_storage_path(:scanning, sub_directory, attachment[:file_name])
+    tmp_filename = FileStorageHelper.file_temp_storage_path(:scanning, sub_directory, SecureRandom.uuid)
     File.open(tmp_filename, 'wb') { |file| file.write(Base64.decode64(attachment[:binary_data])) }
-    check_for_virus tmp_filename
+    check_for_virus tmp_filename, attachment[:file_name]
     File.delete tmp_filename
   end
 
@@ -50,11 +50,12 @@ module DownloadHelper
   # Checks if the file on the file system contains a virus, if it does the file is removed, and error is logged
   # into the log files and an exception is thrown.
   # @param path [String] path to the source file
-  def check_for_virus(path)
+  # @param real_file_name [String] the real filename as path is obscured
+  def check_for_virus(path, real_file_name)
     return if Clamby.safe?(path)
 
-    Rails.logger.error("Found virus in file #{path}")
+    Rails.logger.error("Found virus in file #{path} [#{real_file_name}]")
     File.delete path
-    raise Clamby::VirusDetected.new(message: "VIRUS DETECTED on #{Time.now}: #{path}")
+    raise Clamby::VirusDetected.new(message: "VIRUS DETECTED on #{Time.now}: #{path} [#{real_file_name}]")
   end
 end

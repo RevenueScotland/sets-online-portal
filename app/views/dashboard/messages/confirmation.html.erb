@@ -9,7 +9,7 @@
       <p class="govuk-body">
         <%= UtilityHelper.swap_texts(t('.paragraph2').html_safe,
                                      text_link: { t('.paragraph2_link_text') =>
-                                                    link_to(t('.paragraph2_link_text'), 'http://www.revenue.scot/', target: '_blank') }) %>
+                                                    link_to(t('.paragraph2_link_text'), external_link_url('HOME'), target: '_blank') }) %>
       </p>
       <% if can? AuthorisationHelper::CREATE_ATTACHMENT %>
         <%= f.collection_radio_buttons_fields(:additional_file, ReferenceData::ReferenceValue.list('YESNO', 'SYS', 'RSTU')) %>

@@ -1,0 +1,10 @@
+<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for :page_title, t('.title') %>
+<%= form_for @site, url: @post_path, local: true do |f| %>
+  <%= form_errors_for [@site, @address_summary, @address_detail] %>
+  <%= f.collection_radio_buttons_fields(:operator_separate_mailing_address, @site.list_ref_data(:operator_separate_mailing_address)) %>
+    <div id= "hideable">
+      <%= render "/layouts/address" %>
+    </div>
+  <%= f.button %>
+<% end %>

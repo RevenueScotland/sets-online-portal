@@ -39,7 +39,7 @@ module ReferenceData
     # CV lists which we need for the application but which don't exist in the back office.
     # @param existing_values [Hash] the existing values in case we need to reference them
     # @return [Hash] a hash of objects needed for the application
-    private_class_method def self.application_values(existing_values) # rubocop:disable Metrics/AbcSize
+    private_class_method def self.application_values(existing_values) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       output = {}
       # example code :
       # output[composite_key] = { 'code' => System_Parameter.new(code: 'code', value: 'value') }
@@ -53,6 +53,10 @@ module ReferenceData
       output[format_composite_key('RETURN_STATUS', 'SYS', 'RSTU')] = return_status
       output[format_composite_key('BUYER TYPES', 'SYS', 'RSTU')] = buyer_types
       output[format_composite_key('ELIGIBILITY_LIST', 'SYS', 'RSTU')] = eligibility_checkers
+
+      output[format_composite_key('RENEWALORREVIEW', 'SYS', 'RSTU')] = renewal_or_review
+      output[format_composite_key('RESTORATION-TYPE', 'SLFT', 'RSTU')] = restoration_type
+
       # merge the two EWC hashes into one
       output[format_composite_key('EWC_LIST', 'SLFT', 'RSTU')] = merge_ewc_codes(existing_values)
       # merge the three message subject lists into one
@@ -74,6 +78,22 @@ module ReferenceData
       {
         'O' => ReferenceValue.new(code: 'O', value: 'Received'),
         'I' => ReferenceValue.new(code: 'I', value: 'Sent')
+      }
+    end
+
+    # @return [hash] The slft application type list
+    private_class_method def self.restoration_type
+      {
+        'PART' => ReferenceValue.new(code: 'PART', value: 'Part', sequence: '10'),
+        'FULL' => ReferenceValue.new(code: 'FULL', value: 'Full', sequence: '20')
+      }
+    end
+
+    # @return [hash] The slft application type list
+    private_class_method def self.renewal_or_review
+      {
+        'RENEWAL' => ReferenceValue.new(code: 'RENEWAL', value: 'Renewal', sequence: '10'),
+        'REVIEW' => ReferenceValue.new(code: 'REVIEW', value: 'Review', sequence: '20')
       }
     end
 

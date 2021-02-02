@@ -17,6 +17,9 @@ Feature: Dashboard All Returns
         And the table of data is displayed
             | Return reference | Submitted date | Description | Version | Balance  | Status        | Action_1     | Action_2     | Action_3               | Action_4 | Action_5 |
             | RS100001AAAAA    | 01/07/2020     | Q1 2020     | 2       | £1000.00 | Filed (Debit) | Transactions | Download PDF | Download waste details | Amend    | Message  |
+        # Check old version of the return is not shown
+        And I should not see the text "Q1 2018"
+        And I should not see the text "19/06/2020"
 
         When I click on the "All returns" link
         Then I should see the "All returns" page
@@ -29,6 +32,7 @@ Feature: Dashboard All Returns
             | RS1008001HALO    | 01/07/2020     | Q1 2016     | 2       | £0.00    | Filed (Paid)  | Download PDF | Download waste details | Transactions | Claim           | Message         |
             | RS100001AAAAA    | 01/07/2020     | Q1 2020     | 2       | £1000.00 | Filed (Debit) | Download PDF | Download waste details | Transactions | Amend           | Message         |
             | RS1008004HMMM    | 19/06/2020     | Q2 2019     | 1       | £0.00    | Filed (Paid)  | Download PDF | Download waste details | Transactions | Amend           | Message         |
+        And I should not see the text "Q1 2018"
 
     # Index page tests
     Scenario: Check draft stops amend link being shown

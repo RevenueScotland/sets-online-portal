@@ -37,7 +37,7 @@ class ResourceItem
     resource_item.upload_datetime = DateTime.current
     resource_item.description = description
     resource_item.type = type
-    Rails.logger.debug("Creating Resource Item #{type} for file #{file_data.original_filename}")
+    Rails.logger.debug("Creating Resource Item #{type} for file #{file_data&.original_filename}")
     resource_item
   end
 

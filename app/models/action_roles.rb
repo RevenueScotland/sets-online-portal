@@ -15,7 +15,7 @@ class ActionRoles < FLApplicationRecord
     raise Error::AppError.new('NONE', 'user_roles must be supplied to this method') if user_roles.to_s.empty?
     raise Error::AppError.new('NONE', 'role_action must be supplied to this method') if role_action.to_s.empty?
 
-    user_roles = [user_roles] unless user_roles.is_a?(Array)
+    user_roles = Array(user_roles)
     # The & causes any roles in both arrays to be returned
     !(find_for(role_action) & user_roles).empty?
   end

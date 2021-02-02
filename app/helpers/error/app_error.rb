@@ -8,6 +8,7 @@ module Error
     def initialize(code = nil, message = nil)
       @code = code || 500
       @message = message || 'Error'
+      super(@message)
     end
 
     # Return the error message (may be printed on screen)

@@ -7,10 +7,10 @@ require 'savon/mock/spec_helper'
 
 def mock_two_factor_signin(token_value, two_factor_response)
   message = { Username: 'VALID.USER', Password: 'valid.password' }
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'two_factor/valid_signin_2factor.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}two_factor/valid_signin_2factor.xml")
   @savon.expects(:authenticate_user_wsdl).with(message: message).returns(fixture)
   message = { Username: 'VALID.USER', Token: token_value }
-  fixture = File.read(File.join(FIXTURES_MOCK_ROOT + 'two_factor', two_factor_response))
+  fixture = File.read(File.join("#{FIXTURES_MOCK_ROOT}two_factor", two_factor_response))
   @savon.expects(:authenticate_user_wsdl).with(message: message).returns(fixture)
 
   mock_dashboard_calls('117', 'VALID.USER', 'get_account_details')
@@ -62,7 +62,7 @@ end
 Before('@mock_two_factor_login_user_locked') do
   start_mock
   message = { Username: 'LOCKED.USER', Password: 'valid.password' }
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'two_factor/locked_user_signin.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}two_factor/locked_user_signin.xml")
   @savon.expects(:authenticate_user_wsdl).with(message: message).returns(fixture)
 end
 

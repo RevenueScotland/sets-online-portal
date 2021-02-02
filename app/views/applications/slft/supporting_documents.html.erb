@@ -1,0 +1,13 @@
+<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for :page_title, t('.title') %>
+<% content_for :page_description, t('.description') %>
+<%= form_for @slft_application, url: @post_path, local: true do |f| %>
+  <%= form_errors_for @slft_application %>
+  <%= f.collection_check_boxes_fields(:supporting_document_list, @slft_application.list_ref_data(:supporting_document_list), label: '') %>
+  <% if @slft_application.application_type != 'LO-RA' %>
+    <div id='hideable'>
+      <%= f.text_field :supporting_document_other_description, { width: 'one-half', label: '' } %>
+    </div>
+  <% end %>
+  <%= f.button %>
+<% end %>

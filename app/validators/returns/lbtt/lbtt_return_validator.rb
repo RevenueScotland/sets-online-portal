@@ -92,7 +92,7 @@ module Returns
           next if object.valid? validation_context
 
           # Concatenate key information about attribute eg Contact details for agent
-          error_attr = field_to_blame + ' ' + (index + 1).to_s + ' ' + object.key_info
+          error_attr = "#{field_to_blame} #{index + 1} #{object.key_info}"
 
           # add error if child is not valid
           add_error(errors, error_attr, object)

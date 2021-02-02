@@ -1,0 +1,358 @@
+{
+    "section": [
+        {
+            "sectioncode": "application_type",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Application",
+            "listitem": [
+                {
+                    "itemcode": "case_reference",
+                    "itemformat": null,
+                    "itemlabel": "Case reference",
+                    "itemdata": "\u003c%CASE_REFERENCE%\u003e"
+                },
+                {
+                    "itemcode": "applicant_type",
+                    "itemformat": null,
+                    "itemlabel": "Select the relevant option that describes your role",
+                    "itemdata": "Landfill operator"
+                },
+                {
+                    "itemcode": "application_type",
+                    "itemformat": null,
+                    "itemlabel": "What application are you completing?",
+                    "itemdata": "Application for a non-disposal area"
+                },
+                {
+                    "itemcode": "existing_agreement",
+                    "itemformat": null,
+                    "itemlabel": "Is this application a review of an existing agreement?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "previous_case_reference",
+                    "itemformat": null,
+                    "itemlabel": "If yes, provide an existing agreement number if known?",
+                    "itemdata": "12345"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "applicant_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Landfill operator details",
+            "listitem": [
+                {
+                    "itemcode": "organisation_name",
+                    "itemformat": null,
+                    "itemlabel": "Organisation name",
+                    "itemdata": "Rave"
+                },
+                {
+                    "itemcode": "slft_registration_number",
+                    "itemformat": null,
+                    "itemlabel": "SLfT registration Number",
+                    "itemdata": "SLFT-LO-00001"
+                },
+                {
+                    "itemcode": "telephone_number",
+                    "itemformat": null,
+                    "itemlabel": "Telephone number",
+                    "itemdata": "0123456789"
+                },
+                {
+                    "itemcode": "email_address",
+                    "itemformat": null,
+                    "itemlabel": "Email address",
+                    "itemdata": "shrut@gmail.com"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Landfill operator address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "Grosmont Wood Farm"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Grosmont"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "ABERGAVENNY"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "NP7 8LB"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Landfill site details",
+            "listitem": [
+                {
+                    "itemcode": "site_name",
+                    "itemformat": null,
+                    "itemlabel": "Site name",
+                    "itemdata": "test 1"
+                },
+                {
+                    "itemcode": "sepa_license_number",
+                    "itemformat": null,
+                    "itemlabel": "SEPA license number",
+                    "itemdata": "1234"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Site address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "6 Lavender Lane"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "CIRENCESTER"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Gloucestershire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "GL7 1PP"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "non_disposal_details",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Non-disposal area site details",
+            "listitem": [
+                {
+                    "itemcode": "intended_use",
+                    "itemformat": null,
+                    "itemlabel": "Specify the intended use of the area(s) to which material will be temporarily deposited",
+                    "itemdata": "which material"
+                },
+                {
+                    "itemcode": "estimated_timescale",
+                    "itemformat": null,
+                    "itemlabel": "Provide the length of time the material will be temporarily stored",
+                    "itemdata": "material will "
+                },
+                {
+                    "itemcode": "type_of_waste_text",
+                    "itemformat": null,
+                    "itemlabel": "Provide the types of material to be temporarily stored (i.e. EWC and waste description)",
+                    "itemdata": "temporarily stored"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Landfill site details",
+            "listitem": [
+                {
+                    "itemcode": "site_name",
+                    "itemformat": null,
+                    "itemlabel": "Site name",
+                    "itemdata": "tes2"
+                },
+                {
+                    "itemcode": "sepa_license_number",
+                    "itemformat": null,
+                    "itemlabel": "SEPA license number",
+                    "itemdata": "12345"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Site address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "10 Lavender Lane"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "CIRENCESTER"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Gloucestershire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "GL7 1PP"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "non_disposal_details",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Non-disposal area site details",
+            "listitem": [
+                {
+                    "itemcode": "intended_use",
+                    "itemformat": null,
+                    "itemlabel": "Specify the intended use of the area(s) to which material will be temporarily deposited",
+                    "itemdata": "tended use"
+                },
+                {
+                    "itemcode": "estimated_timescale",
+                    "itemformat": null,
+                    "itemlabel": "Provide the length of time the material will be temporarily stored",
+                    "itemdata": "f time the ma"
+                },
+                {
+                    "itemcode": "type_of_waste_text",
+                    "itemformat": null,
+                    "itemlabel": "Provide the types of material to be temporarily stored (i.e. EWC and waste description)",
+                    "itemdata": "material to be temporarily"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "supporting_documents",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Supporting documentation",
+            "listitem": [
+                {
+                    "itemcode": "supporting_document_list",
+                    "itemformat": "list",
+                    "itemlabel": "Supporting document list",
+                    "itemdata": "Identify non-disposal area(s) on a scale plan of the landfill site : Yes\nPermit management plan : Yes\nEvidence that boundaries for the area(s) have been set : Yes\nOther : No"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "declaration",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Declarations",
+            "listitem": [
+                {
+                    "itemcode": "declaration",
+                    "itemformat": null,
+                    "itemlabel": "The information I have given in this application and in the supporting documents is complete, correct and accurate to the best of my knowledge",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "change_declaration",
+                    "itemformat": null,
+                    "itemlabel": "In the event of any of the information in this application ceasing to be correct or complete, I will notify Revenue Scotland immediately about all changes or alterations",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "declaration_name",
+                    "itemformat": null,
+                    "itemlabel": "Full name",
+                    "itemdata": "Shrutika patil SE"
+                },
+                {
+                    "itemcode": "declaration_position",
+                    "itemformat": null,
+                    "itemlabel": "Job title or position",
+                    "itemdata": "SE"
+                },
+                {
+                    "itemcode": "declaration_telephone_number",
+                    "itemformat": null,
+                    "itemlabel": "Telephone",
+                    "itemdata": "0123456789"
+                },
+                {
+                    "itemcode": "declaration_email_address",
+                    "itemformat": null,
+                    "itemlabel": "Email address",
+                    "itemdata": "shrut@gmail.com"
+                }
+            ],
+            "itemcount": 6
+        }
+    ]
+}

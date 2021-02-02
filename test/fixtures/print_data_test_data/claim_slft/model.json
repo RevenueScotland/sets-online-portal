@@ -55,6 +55,6 @@
   "account_number": "12345678",
   "branch_code": "10-11-12",
   "bank_name": "Natwest",
-  "authenticated_declaration_1": "Y",
-  "authenticated_declaration_2": "Y"
+  "authenticated_declaration1": "Y",
+  "authenticated_declaration2": "Y"
 }

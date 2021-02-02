@@ -67,10 +67,7 @@ module BackHelper
   def previous_page_link
     session[:link_visited] = Array(link_stack).unshift(current_page_path(yield))
 
-    # We want to clear the stack of the repeated link so that when the back link is clicked, it won't loop around.
-    remove_not_last_link(last_link_custom_path?)
-    remove_reloaded_page
-    remove_loop
+    remove_repeated_links
 
     # Refreshes the indicator to know if the last visited link was to be modified.
     last_link_custom_path?(yield)
@@ -121,7 +118,7 @@ module BackHelper
     # Looking at each of the link params - the params to be removed
     link_params.each do |link_param|
       # Remove from the link queries if it starts with the link param data
-      link_queries.delete_if { |link_query| link_query.start_with?(link_param + '=') }
+      link_queries.delete_if { |link_query| link_query.start_with?("#{link_param}=") }
     end
     change_all_params(link_path, link_queries)
   end
@@ -189,6 +186,35 @@ module BackHelper
     URI.parse(link_path).path.to_s
   end
 
+  # Removes any linked we don't want e.g. loops or reloaded pages
+  def remove_repeated_links
+    remove_not_last_link(last_link_custom_path?)
+    remove_reloaded_page
+    remove_loop
+  end
+
+  # This is used to catch when the user clicks buttons/links too fast to go to different
+  # pages with or without back link while the pages in between hasn't finished rendering.
+  def remove_not_last_link(custom_path_given)
+    browser_last_link = request.referer
+    # As the user manually reloads/refreshes the page, the request.referer becomes nil
+    #
+    # Also, on a normal situation where we modified the path of the last visited link, then we would want
+    # to escape this.
+    return if browser_last_link.nil? || custom_path_given
+
+    browser_last_link_path = uri_parse_path(browser_last_link)
+
+    # Update the stack's last visited link to the browser's last visited link when the browser's last visited link
+    # isn't found in the stack. This means that the user has clicked too fast to go from a page without-back-link to
+    # another page without-back-link to a page with-back-link.
+    # These two lines reset the stack to be the current page and the referrer if the referrer
+    # isn't already the previous page
+    link_stack[1] = browser_last_link_path unless link_stack[1].include?(browser_last_link_path)
+
+    link_stack.slice!(1) unless browser_last_link_path == uri_parse_path(link_stack[1])
+  end
+
   # Removes the reloaded page from the stack of links.
   def remove_reloaded_page
     link_stack.shift if uri_parse_path(link_stack[0]) == uri_parse_path(link_stack[1])
@@ -218,27 +244,5 @@ module BackHelper
     # (so for example if we have a stack of links [A, E, D, C, B, A, H] and the current page now is A,
     # this removes AEDCB and leaves us with [A, H]) if a duplicate exists.
     link_stack.shift(link_position) if link_match
-  end
-
-  # This is used to catch when the user clicks buttons/links too fast to go to different
-  # pages with or without back link while the pages in between hasn't finished rendering.
-  def remove_not_last_link(custom_path_given)
-    browser_last_link = request.referer
-    # As the user manually reloads/refreshes the page, the request.referer becomes nil
-    #
-    # Also, on a normal situation where we modified the path of the last visited link, then we would want
-    # to escape this.
-    return if browser_last_link.nil? || custom_path_given
-
-    browser_last_link_path = uri_parse_path(browser_last_link)
-
-    # Update the stack's last visited link to the browser's last visited link when the browser's last visited link
-    # isn't found in the stack. This means that the user has clicked too fast to go from a page without-back-link to
-    # another page without-back-link to a page with-back-link.
-    # These two lines reset the stack to be the current page and the referrer if the referrer
-    # isn't already the previous page
-    link_stack[1] = browser_last_link_path unless link_stack[1].include?(browser_last_link_path)
-
-    link_stack.slice!(1) unless browser_last_link_path == uri_parse_path(link_stack[1])
   end
 end

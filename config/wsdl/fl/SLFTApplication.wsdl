@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 17-Oct-2013   Version 1.0  -->
+<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/SLFTApplication" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.northgateps.com/RSTS/SLFTApplication.wsdl" targetNamespace="http://www.northgateps.com/RSTS/SLFTApplication.wsdl" name="SLFTApplication">
+	<wsdl:types>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference for the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Service" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example service is the name of the requesting system, e.g. RB or the database from which the request is coming from, e.g. RBDEV</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example requestor is the name of the Local Authority from which the request is being sent</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/SLFTApplication" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/SLFTApplication" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
+			<xs:element name="SLFTApplicationRequest">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Role" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Waste producer or landfill operator</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Form" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Form selected: WP Water Discount, LO Water Discount, Restoration, NonDispoalArea, AlternateWeighing</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Type" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>New/Review/Renewal</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="PreAgreementNumber" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Text string containing prev agreement number i.e. case ref no. Will not be applicable for where type=new</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="WPDetails" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Capture details about the waste producer</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="OrganisationName" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Waste producer's organsiation name</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="TelephoneNumber" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Waste producer's contact telephone number</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="EmailAddress" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>waste producer's contact email address</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="ContactAddress" type="core:AddressType" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>waste producer's contact address</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="Sites">
+							<xs:annotation>
+								<xs:documentation>Capture the details about all of the sites that are related to the application</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Site" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="SEPALicenseNumber" type="xs:string">
+													<xs:annotation>
+														<xs:documentation>SEPA license number for the site</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="SiteName" type="xs:string">
+													<xs:annotation>
+														<xs:documentation>Official name for the site</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="LandfillOpName" type="xs:string" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Name of landfill operator who owns the site</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="LandfillOpRegNumber" type="xs:string" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>The LO registration number</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="LandfillOpMailingAddress" type="core:AddressType" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>The LO contact address is different to the site address</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="SiteAddress" type="core:AddressType">
+													<xs:annotation>
+														<xs:documentation>The address of the site</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="LandfillOp">
+							<xs:annotation>
+								<xs:documentation>Details of the landfill operator</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="LandfillOpName" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Landfill Operator Organsiation name</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="LandfillOpRegNumber" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Landfill Operator SLFT tegistration number</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="LandfillOpAddress" type="core:AddressType">
+										<xs:annotation>
+											<xs:documentation>Landfill Operator address</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="LandfillOpPhoneNumber" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Landfill operator contact telphone number</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="LandfillOpEmail" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Landfill operator email address</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="Declaration">
+							<xs:annotation>
+								<xs:documentation>Group containing details of the application submitter</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Agreed" type="xs:boolean">
+										<xs:annotation>
+											<xs:documentation>Boolean to indicate user has confirmed the declaration. Will always be true</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Name" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Name of the submitter</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Position" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Job position of the submitter</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Telephone" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Contact telephone number of the submitter</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="EmailAddress" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Contact email address of the submitter</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="Application">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="PrintData" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>JSON string of the application </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="SLFTApplicationResponse">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="core:StandardResponseStructure">
+							<xs:sequence>
+								<xs:element name="ApplicationCases" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>List of cases created</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Case" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="CaseReference" type="xs:string"/>
+														<xs:element name="CaseRefno" type="xs:string"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="SLFTApplicationRequest">
+		<wsdl:part name="parameters" element="ns:SLFTApplicationRequest"/>
+	</wsdl:message>
+	<wsdl:message name="SLFTApplicationResponse">
+		<wsdl:part name="parameters" element="ns:SLFTApplicationResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="SLFTApplicationWSDLPort">
+		<wsdl:operation name="SLFTApplicationWSDL">
+			<wsdl:input message="tns:SLFTApplicationRequest"/>
+			<wsdl:output message="tns:SLFTApplicationResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="SLFTApplicationWSDLBinding" type="tns:SLFTApplicationWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="SLFTApplicationWSDL">
+			<soap:operation soapAction="http://www.northgateps.com/RSTS/SLFTApplication"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="SLFTApplicationWSDLService">
+		<documentation>northgateps.com View Returns Service</documentation>
+		<wsdl:port name="SLFTApplicationWSDLPort" binding="tns:SLFTApplicationWSDLBinding">
+			<soap:address location="https://[server]/[port]/communication/SLFTApplication"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

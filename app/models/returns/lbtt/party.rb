@@ -16,7 +16,7 @@ module Returns
         %i[
           party_id title surname firstname telephone email_address nino alrt_type ref_country return_reference
           charity_number party_type type address is_contact_address_different contact_address
-          org_name_outside_uk alrt_reference buyer_seller_linked_ind
+          alrt_reference buyer_seller_linked_ind
           company_number country_registered_company_outside_uk address_outside_uk contact_par_ref_no
           org_name job_title company org_type other_type_description
           contact_surname contact_firstname org_contact_address is_acting_as_trustee agent_dx_number
@@ -35,12 +35,12 @@ module Returns
 
       # Normally we have a title on an lbtt party and the email_address and telephone are required to be
       # present on a normal lbtt party's specific condition.
-      validates :email_address, presence: true, on: %i[title], if: :individual_but_not_seller_landlord?
-      validates :telephone, presence: true, on: %i[title], if: :individual_but_not_seller_landlord?
+      validates :email_address, presence: true, on: %i[title], if: :individual_but_not_seller_landlord_newtenant?
+      validates :telephone, presence: true, on: %i[title], if: :individual_but_not_seller_landlord_newtenant?
       # Then as for the claim party (taxpayer/agent) email_address and telephone, they're optional.
       validates :email_address, email_address: true, on: :email_address,
-                                if: :individual_but_not_seller_landlord?
-      validates :telephone, phone_number: true, on: :telephone, if: :individual_but_not_seller_landlord?
+                                if: :individual_but_not_seller_landlord_newtenant?
+      validates :telephone, phone_number: true, on: :telephone, if: :individual_but_not_seller_landlord_newtenant?
 
       validates :buyer_seller_linked_ind, presence: true, on: :buyer_seller_linked_ind,
                                           if: proc { |p| !%w[SELLER LANDLORD].include?(p.party_type) }
@@ -49,7 +49,8 @@ module Returns
       validates :org_type, presence: true, on: :org_type, if: proc { |p| p.type == 'OTHERORG' }
       validates :other_type_description, presence: true, length: { maximum: 255 },
                                          on: :org_type, if: proc { |w| w.org_type == 'OTHER' }
-      validates :com_jurisdiction, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
+      validates :com_jurisdiction, presence: true, length: { maximum: 255 }, on: :org_name,
+                                   if: proc { |p| p.type == 'OTHERORG' }
       # The party is used in both lbtt party and also in claim. The org_name is required in lbtt party but it is
       # optional in the claim flow. So this should only trigger for the lbtt party flow.
       validates :org_name, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
@@ -76,8 +77,8 @@ module Returns
       validates :is_acting_as_trustee, presence: true, on: :is_acting_as_trustee,
                                        if: proc { |p| !%w[SELLER LANDLORD].include?(p.party_type) }
       # National insurance number and alternate related validation
-      validate :no_nino_or_alternate?, on: :nino, if: :individual_but_not_seller_landlord?
-      validates :nino, nino: true, on: :nino, if: :individual_but_not_seller_landlord?
+      validate :no_nino_or_alternate?, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
+      validates :nino, nino: true, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
       validates :alrt_type, :ref_country, presence: true, on: :alrt_type, if: :incomplete_alternate?
       validates :alrt_reference, presence: true, length: { maximum: 30 }, on: :alrt_type, if: :incomplete_alternate?
 
@@ -90,7 +91,7 @@ module Returns
                                       if: proc { |p|
                                         p.lplt_type != 'PRIVATE' && !%w[LANDLORD SELLER].include?(p.party_type)
                                       }
-      validate :validation_for_duplicate_nino?, on: :nino, if: :individual_but_not_seller_landlord?
+      validate :validation_for_duplicate_nino?, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
       validates :same_address, presence: true, on: :same_address, if: :claim?
 
       # Define the ref data codes associated with the attributes to be cached in this model
@@ -336,6 +337,11 @@ module Returns
         individual? && !%w[SELLER LANDLORD].include?(party_type)
       end
 
+      # return true if party type is agent or type is private individual and not seller or landlord or NEWTENANT
+      def individual_but_not_seller_landlord_newtenant?
+        individual? && !%w[SELLER LANDLORD NEWTENANT].include?(party_type)
+      end
+
       # validation method
       def not_private_and_not_seller_landlord?
         type != 'PRIVATE' && !%w[SELLER LANDLORD].include?(party_type)
@@ -515,9 +521,10 @@ module Returns
 
       # In case of lease return back_office expecting flpt type as buyer and seller
       def flpt_type
-        if @party_type == 'TENANT'
+        case @party_type
+        when 'TENANT'
           'BUYER'
-        elsif @party_type == 'LANDLORD'
+        when 'LANDLORD'
           'SELLER'
         else
           @party_type
@@ -541,9 +548,7 @@ module Returns
             raw_hash[:contact_address] = Address.convert_hash_to_address(raw_hash[:contact_address])
           end
         end
-        if raw_hash[:party_type] == 'AGENT'
-          raw_hash[:agent_reference] = agent_ref unless agent_ref.blank?
-        end
+        raw_hash[:agent_reference] = agent_ref if raw_hash[:party_type] == 'AGENT' && agent_ref.present?
 
         raw_hash[:org_name] = raw_hash.delete(:com_company_name) if raw_hash.key?(:com_company_name)
 
@@ -631,16 +636,16 @@ module Returns
 
       # Convert the full name if this is being run for the receipt print layout
       def translation_attribute_full_name(attribute, translation_options)
-        return (party_type + '_full_name').to_sym if translation_options == :receipt
+        return "#{party_type}_full_name".to_sym if translation_options == :receipt
 
         attribute
       end
 
       # handle the translations based on party type which may be nil
       def translation_attribute_for_party_type(attribute)
-        return ('type_' + party_type).to_sym if attribute == :type
-        return ('is_acting_as_trustee_' + party_type).to_sym if attribute == :is_acting_as_trustee
-        return (party_type + '_buyer_seller_linked_ind').to_sym if attribute == :buyer_seller_linked_ind
+        return "type_#{party_type}".to_sym if attribute == :type
+        return "is_acting_as_trustee_#{party_type}".to_sym if attribute == :is_acting_as_trustee
+        return "#{party_type}_buyer_seller_linked_ind".to_sym if attribute == :buyer_seller_linked_ind
 
         attribute
       end

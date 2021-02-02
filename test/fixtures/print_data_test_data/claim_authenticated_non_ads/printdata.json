@@ -186,13 +186,13 @@
       "sectiontitle": "Declarations",
       "listitem": [
         {
-          "itemcode": "authenticated_declaration_1",
+          "itemcode": "authenticated_declaration1",
           "itemformat": null,
           "itemlabel": "I, the agent for the tax payer(s), confirm that the tax payer(s) have authorised repayment to be made to these bank details",
           "itemdata": "Yes"
         },
         {
-          "itemcode": "authenticated_declaration_2",
+          "itemcode": "authenticated_declaration2",
           "itemformat": null,
           "itemlabel": "I, the agent of the tax payer(s), having been authorised to complete this repayment or claim request on behalf of the tax payer(s), certify that the tax payer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tax payer(s) is/are eligible for the refund claimed",
           "itemdata": "Yes"

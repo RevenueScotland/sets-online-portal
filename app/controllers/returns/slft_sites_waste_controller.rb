@@ -169,7 +169,7 @@ module Returns
 
       wizard_save(@slft_return, Returns::SlftController)
       # specifically clear the resource items as we don't want them shown, force the clear
-      clear_resource_items(true)
+      clear_resource_items(force: true)
     end
 
     # Callback from the file upload component. Validates and imports the waste file. If the file isn't a well
@@ -241,18 +241,14 @@ module Returns
     # @return [Waste] the model for wizard saving
     def setup_step
       # these routes are all based on the SLfT main controller
-      @post_path = wizard_post_path(SlftController.name)
+      @post_path = wizard_post_path
 
       load_site
 
       # load existing or setup new Waste on first entering the step
-      unless params[:continue]
-
-        # load existing waste entry and save to the wizard cache for use
-        unless params[:waste].nil? || waste_new?
-          @waste = load_waste
-          return @waste
-        end
+      unless params[:continue] || params[:waste].nil? || waste_new?
+        @waste = load_waste
+        return @waste
       end
 
       # reload existing waste entry from the wizard or create a new one
@@ -283,7 +279,7 @@ module Returns
     # Loads existing wizard models from the wizard cache or redirects to the first step.
     # @return [Waste] the model for wizard saving
     def load_step(_sub_object_attribute = nil)
-      @post_path = wizard_post_path(SlftController.name)
+      @post_path = wizard_post_path
       @waste = wizard_load_or_redirect(returns_slft_summary_url)
     end
 

@@ -10,7 +10,7 @@
 require("@rails/ujs").start()
 require("turbolinks").start()
 
-// All vendor/assets/stylesheet javascript files
+// All vendor/assets/stylesheet/ javascript files
 import 'govuk-frontend-3.0.0.min.js';
 import 'spin.js';
 
@@ -20,21 +20,28 @@ import tooltip from 'jquery-ui/ui/widgets/tooltip';
 import button from 'jquery-ui/ui/widgets/button';
 import datepicker from 'jquery-ui/ui/widgets/datepicker';
 
-// All javascript/src javascript files
+// All javascript/src/ javascript files
 import 'application-ui';
-import 'address_search';
 import 'ga';
-import 'session_expiry';
-import 'file-upload-shared';
+import 'session-expiry';
+import 'accessibility';
+import 'toggle-hide-fields';
+import 'incomplete-form';
+import 'window';
+import 'address-search';
+import 'file-upload';
 import 'auto-complete';
 import 'date-picker';
+import 'manageCookies';
+// all imports below are dependent of toggle-hide-fields.js
 import 'details.polyfill';
-import 'relief-claim-amount-ui-handler';
 import 'views/claim';
-import 'views/confirmation';
-import 'views/lbtt';
+import 'views/lbtt-return-relief-amount';
+import 'views/lbtt-return';
+import 'views/message';
 import 'views/registration';
-import 'views/slft';
+import 'views/slft-application';
+import 'views/slft-return';
 
 // Uncomment to copy all static images under ../images to the output folder and reference
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
@@ -42,7 +49,3 @@ import 'views/slft';
 //
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
-
-$(function () {
-    document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
-})

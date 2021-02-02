@@ -56,7 +56,7 @@ module Returns
     # reliefs calculation
     def reliefs_calculation
       wizard_list_step(returns_lbtt_summary_url,
-                       merge_list: :merge_relief_list_data,
+                       list_validation_context: :relief_override_amount,
                        after_merge: :update_relief_type_calculation,
                        list_attribute: :relief_claims, new_list_item_instance: :new_list_item_relief_claims)
     end
@@ -274,7 +274,7 @@ module Returns
       @post_path = wizard_post_path
       @lbtt_return = wizard_load || Lbtt::LbttReturn.new(is_public: (current_user.nil? ? true : false))
 
-      setup_sub_models(false)
+      setup_sub_models(save_wizard: false)
 
       @lbtt_return
     end
@@ -282,7 +282,7 @@ module Returns
     # Make sure tax calculations object is defined and up to date and stored in the wizard cache
     # @param save_wizard [Boolean] to handle wizard save
     # @return [Boolean] true if successful
-    def setup_sub_models(save_wizard = true)
+    def setup_sub_models(save_wizard: true)
       Lbtt::Tax.setup_tax(@lbtt_return)
       Lbtt::Ads.setup_ads(@lbtt_return)
       wizard_save(@lbtt_return) if save_wizard
@@ -299,21 +299,8 @@ module Returns
 
     # Used in wizard_list_step as part of the merging of data.
     # @return [Object] new instance of ReliefClaim class that has attributes with value.
-    def new_list_item_relief_claims(hash_attributes = {})
-      Lbtt::ReliefClaim.new(hash_attributes)
-    end
-
-    # merge and validate relief claim amount
-    # @return [Boolean] true if the merge was successful and all the items were valid
-    def merge_relief_list_data
-      # The :relief_override_amount validation is only triggered on the edit page.
-      # So this will apply all the validation and the on: :relief_override_amount.
-      # @see merge_params_and_validate_with_list to learn more about how this is being used
-      @list_item_validation_key = :relief_override_amount
-
-      # Merges the params values with the wizard object's list attribute and validates each as they're merged
-      # @see merge_params_and_validate_with_list to know more
-      yield
+    def new_list_item_relief_claims
+      Lbtt::ReliefClaim.new
     end
 
     # Return the parameter list filtered for the attributes in list_attribute

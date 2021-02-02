@@ -63,7 +63,7 @@ module RequestSummaryLogging
       payload = event.payload
       param_method = payload[:params]['_method']
       {
-        method: format('%-6s', param_method ? param_method.upcase : payload[:method]), # rubocop:disable Style/FormatStringToken
+        method: format('%-6s', param_method ? param_method.upcase : payload[:method]),
         status: compute_status(payload),
         path: payload[:path].to_s.gsub(/\?.*/, ''),
         params: payload[:params].except(*INTERNAL_PARAMS),
@@ -74,7 +74,7 @@ module RequestSummaryLogging
     # Pull out the data from thread local storage
     def data_from_thread_local
       {
-        ip: format('%-15s', Thread.current[:logged_ip]), # rubocop:disable Style/FormatStringToken
+        ip: format('%-15s', Thread.current[:logged_ip]),
         location: Thread.current[:logged_location]
       }
     end

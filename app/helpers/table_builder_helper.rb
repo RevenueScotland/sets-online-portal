@@ -10,6 +10,14 @@ module TableBuilderHelper
     template.content_tag(:table, contents.html_safe, handle_html_options('govuk-table', html_options))
   end
 
+  # Creates the standard caption tag <caption> of the table.
+  def table_caption_tag(caption, html_options = {})
+    return '' if caption.blank?
+
+    template = @template || self
+    template.content_tag(:caption, caption.html_safe, handle_html_options('govuk-table__caption', html_options))
+  end
+
   # Creates the standard table head tag <thead>, should return an empty string if there's no head.
   def table_head_tag(head, html_options = {})
     return '' if head.blank?
@@ -69,9 +77,7 @@ module TableBuilderHelper
     @table_summary[attribute] << text unless @table_summary.nil? || !@table_summary.include?(attribute)
 
     text = CommonFormatting.format_text(text, options)
-    unless options.blank?
-      text = object.lookup_ref_data_value(attribute) if options[:format] == :lookup_ref
-    end
+    text = object.lookup_ref_data_value(attribute) if options && options[:format] == :lookup_ref
 
     text
   end

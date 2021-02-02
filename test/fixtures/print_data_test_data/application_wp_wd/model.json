@@ -1,0 +1,85 @@
+{
+    "json_class": "Applications::Slft::Applications",
+    "applicant_type": "WP",
+    "application_type": "WP-WD",
+    "new_record": true,
+    "existing_agreement": "Y",
+    "previous_case_reference": "1234",
+    "sites": [
+        {
+            "json_class": "Applications::Slft::Sites",
+            "application_type": "WP-WD",
+            "existing_agreement": "Y",
+            "new_record": true,
+            "sepa_license_number": "1234",
+            "site_name": "test 1",
+            "address": {
+                "json_class": "Address",
+                "new_record": true,
+                "address_identifier": "17112585",
+                "address_line1": "Grosmont Wood Farm",
+                "address_line2": "Grosmont",
+                "town": "ABERGAVENNY",
+                "postcode": "NP7 8LB",
+                "country": "WA"
+            },
+            "type_of_waste_text": "What type of ",
+            "landfill_operator": "operator",
+            "slft_registration_number": "SLFT-LO-00001",
+            "operator_separate_mailing_address": "Y",
+            "operator_mailing_address": {
+                "json_class": "Address",
+                "new_record": true,
+                "address_identifier": "9905677",
+                "address_line1": "8 Lavender Lane",
+                "town": "CIRENCESTER",
+                "county": "Gloucestershire",
+                "postcode": "GL7 1PP",
+                "country": "EN"
+            },
+            "estimated_tonnage": "21"
+        }
+    ],
+    "supporting_document_list": [
+        "",
+        "DOC1",
+        "DOC5"
+    ],
+    "declaration": "Y",
+    "change_declaration": "Y",
+    "declaration_name": "Shrutika patil SE",
+    "declaration_position": "SE",
+    "declaration_telephone_number": "0123456789",
+    "declaration_email_address": "shrut@gmail.com",
+    "waste_producer": {
+        "json_class": "Applications::Slft::Applicants",
+        "new_record": true,
+        "organisation_name": "Rave",
+        "telephone_number": "0123456789",
+        "email_address": "shrut@gmail.com",
+        "address": {
+            "json_class": "Address",
+            "new_record": true,
+            "address_identifier": "9905624",
+            "address_line1": "10 Lavender Lane",
+            "town": "CIRENCESTER",
+            "county": "Gloucestershire",
+            "postcode": "GL7 1PP",
+            "country": "EN"
+        }
+    },
+    "renewal_or_review": "REVIEW",
+    "why_water_present": "INDUST",
+    "added_for_transport": "Y",
+    "not_banned_waste": "Y",
+    "type_of_waste_text": "What type of ",
+    "how_produced": "How is the",
+    "how_added": "How is water",
+    "waste_percentage": "21",
+    "added_water_percentage": "12",
+    "naturally_occurring": "Y",
+    "naturally_occurring_percentage": "12",
+    "treatment": "yes",
+    "reason_for_no_treatment": "no",
+    "start_date": "2020-05-27"
+}

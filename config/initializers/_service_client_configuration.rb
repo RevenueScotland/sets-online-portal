@@ -32,6 +32,8 @@ module RevScot
     # :savon_log can be set to false so that both the SOAP request and response would not be logged for it.
     add_attachment = { service: fl_endpoint, wsdl: 'AddAttachment.wsdl', endpoint: '/addAttachment',
                        operation: :add_attachment_wsdl, response: :add_attachment_response }
+    add_document = { service: fl_endpoint, wsdl: 'AddDocument.wsdl', endpoint: '/AddDocument',
+                     operation: :add_document_wsdl, response: :add_document_response }
     address_detail = { service: nadr_endpoint, wsdl: 'NASAddressDetail.wsdl', endpoint: '/GetAddressDetail',
                        operation: :nas_address_detail_wsdl, response: :address_detail_response }
     address_search = { service: nadr_endpoint, wsdl: 'NASAddressSearch.wsdl', endpoint: '/AddressSearch',
@@ -43,6 +45,11 @@ module RevScot
                                 response: :claim_repayment_details_response }
     delete_attachment = { service: fl_endpoint, wsdl: 'DeleteAttachment.wsdl', endpoint: '/deleteAttachment',
                           operation: :delete_attachment_wsdl, response: :delete_attachment_response }
+    delete_document = { service: fl_endpoint, wsdl: 'DeleteDocument.wsdl', endpoint: '/DeleteDocument',
+                        operation: :delete_document_wsdl, response: :delete_document_response }
+    delete_draft_tax_return = { service: fl_endpoint, wsdl: 'DeleteDraftTaxReturn.wsdl',
+                                endpoint: '/deleteDraftTaxReturn',
+                                operation: :delete_draft_tax_return_wsdl, response: :delete_draft_tax_return_response }
     get_attachment = { service: fl_endpoint, wsdl: 'GetAttachment.wsdl', endpoint: '/getAttachment',
                        operation: :get_attachment_wsdl, response: :get_attachment_response }
     get_party_details = { service: fl_endpoint, wsdl: 'FLGetPartyDetails.wsdl',
@@ -64,6 +71,10 @@ module RevScot
     get_system_parameters = { service: fl_endpoint, wsdl: 'GetSystemParameters.wsdl', endpoint: '/getSystemParameters',
                               operation: :get_system_parameters_wsdl, response: :get_system_parameters_response,
                               savon_log: false }
+    get_tax_relief_types = { service: fl_endpoint, wsdl: 'GetTaxReliefTypes.wsdl',
+                             endpoint: '/GetTaxReliefTypes',
+                             operation: :get_tax_relief_types_wsdl, response: :get_tax_relief_types_response,
+                             savon_log: false }
     get_transactions = { service: fl_endpoint, wsdl: 'GetTransactions.wsdl', endpoint: '/getTransactions',
                          operation: :get_transactions_wsdl, response: :get_transactions_response }
     lbtt_calc = { service: fl_endpoint, wsdl: 'LBTTCalc.wsdl', endpoint: '/GetLBTTCalc',
@@ -91,6 +102,9 @@ module RevScot
     secure_message_create = { service: fl_endpoint, wsdl: 'SecureMessageCreate.wsdl',
                               endpoint: '/CreateSecureMessage', operation: :secure_message_create_wsdl,
                               response: :secure_message_create_response }
+    slft_application = { service: fl_endpoint, wsdl: 'SLFTApplication.wsdl',
+                         endpoint: '/SLFTApplication', operation: :slft_application_wsdl,
+                         response: :slft_application_response }
     slft_calc = { service: fl_endpoint, wsdl: 'SLFTCalc.wsdl', endpoint: '/getSlftCalculation',
                   operation: :slft_calc_wsdl, response: :slft_calc_response }
     slft_tax_return = { service: fl_endpoint, wsdl: 'SLFTTaxReturn.wsdl', endpoint: '/createSLFTReturn',
@@ -100,51 +114,45 @@ module RevScot
                                 response: :slft_tax_return_response }
     slft_update = { service: fl_endpoint, wsdl: 'SLFTTaxReturnUpdate.wsdl', endpoint: '/updateSLFTTaxReturn',
                     operation: :slft_tax_return_wsdl, response: :slft_tax_return_response }
-    view_all_returns = { service: fl_endpoint, wsdl: 'ViewAllReturns.wsdl',
-                         endpoint: '/ViewAllReturns', operation: :view_all_returns_wsdl,
-                         response: :view_returns_response }
-    view_return_pdf = { service: fl_endpoint, wsdl: 'ViewReturnPDF.wsdl', endpoint: '/getViewReturnPDF',
-                        operation: :view_return_pdf, response: :view_return_pdf_response }
-    delete_draft_tax_return = { service: fl_endpoint, wsdl: 'DeleteDraftTaxReturn.wsdl',
-                                endpoint: '/deleteDraftTaxReturn',
-                                operation: :delete_draft_tax_return_wsdl, response: :delete_draft_tax_return_response }
-    get_tax_relief_types = { service: fl_endpoint, wsdl: 'GetTaxReliefTypes.wsdl',
-                             endpoint: '/GetTaxReliefTypes',
-                             operation: :get_tax_relief_types_wsdl, response: :get_tax_relief_types_response,
-                             savon_log: false }
-    add_document = { service: fl_endpoint, wsdl: 'AddDocument.wsdl', endpoint: '/AddDocument',
-                     operation: :add_document_wsdl, response: :add_document_response }
-    delete_document = { service: fl_endpoint, wsdl: 'DeleteDocument.wsdl', endpoint: '/DeleteDocument',
-                        operation: :delete_document_wsdl, response: :delete_document_response }
     validate_return_reference = { service: fl_endpoint, wsdl: 'ValidateReturnReference.wsdl',
                                   endpoint: '/ValidateReturnReference',
                                   operation: :validate_return_reference_wsdl,
                                   response: :validate_return_reference_response }
+    view_all_returns = { service: fl_endpoint, wsdl: 'ViewAllReturns.wsdl',
+                         endpoint: '/ViewAllReturns', operation: :view_all_returns_wsdl,
+                         response: :view_returns_response }
+    view_case_pdf = { service: fl_endpoint, wsdl: 'ViewCasePDF.wsdl', endpoint: '/ViewCasePDF',
+                      operation: :view_case_pdfwsdl, response: :view_case_pdf_response }
     view_claim_pdf = { service: fl_endpoint, wsdl: 'ViewClaimPDF.wsdl', endpoint: '/ViewClaimPDF',
                        operation: :view_claim_pdfwsdl, response: :view_claim_pdf_response }
     view_document =  { service: fl_endpoint, wsdl: 'ViewDocument.wsdl', endpoint: '/ViewDocument',
                        operation: :view_document_wsdl, response: :view_document_response }
+    view_return_pdf = { service: fl_endpoint, wsdl: 'ViewReturnPDF.wsdl', endpoint: '/getViewReturnPDF',
+                        operation: :view_return_pdf, response: :view_return_pdf_response }
 
     # Finally, map of all services used by this application
-    @configuration = { add_attachment: add_attachment, address_detail: address_detail, address_search: address_search,
-                       authenticate_user: authenticate_user, claim_repayment_details: claim_repayment_details,
-                       delete_attachment: delete_attachment, get_attachment: get_attachment,
-                       get_party_details: get_party_details, get_pws_text: get_pws_text,
+    @configuration = { add_attachment: add_attachment, add_document: add_document, address_detail: address_detail,
+                       address_search: address_search, authenticate_user: authenticate_user,
+                       claim_repayment_details: claim_repayment_details,
+                       delete_attachment: delete_attachment, delete_document: delete_document,
+                       delete_draft_tax_return: delete_draft_tax_return,
+                       get_attachment: get_attachment, get_party_details: get_party_details, get_pws_text: get_pws_text,
                        get_reference_values: get_reference_values, get_role_actions: get_role_actions,
                        get_secure_message_details: get_secure_message_details, get_sites: get_sites,
-                       get_system_parameters: get_system_parameters, get_transactions: get_transactions,
+                       get_system_parameters: get_system_parameters, get_tax_relief_types: get_tax_relief_types,
+                       get_transactions: get_transactions,
                        lbtt_calc: lbtt_calc, lbtt_tax_return: lbtt_tax_return,
                        lbtt_tax_return_details: lbtt_tax_return_details, lbtt_update: lbtt_update,
                        list_secure_messages: list_secure_messages, log_off_user: log_off_user,
                        maintain_party_details: maintain_party_details, maintain_user: maintain_user,
                        maintain_user_registration: maintain_user_registration,
-                       secure_message_create: secure_message_create, slft_calc: slft_calc,
-                       slft_tax_return: slft_tax_return, slft_tax_return_details: slft_tax_return_details,
-                       slft_update: slft_update, view_all_returns: view_all_returns, view_return_pdf: view_return_pdf,
-                       delete_draft_tax_return: delete_draft_tax_return, get_tax_relief_types: get_tax_relief_types,
-                       add_document: add_document, delete_document: delete_document,
+                       secure_message_create: secure_message_create, slft_application: slft_application,
+                       slft_calc: slft_calc, slft_tax_return: slft_tax_return,
+                       slft_tax_return_details: slft_tax_return_details, slft_update: slft_update,
                        validate_return_reference: validate_return_reference,
-                       view_claim_pdf: view_claim_pdf, view_document: view_document }
+                       view_all_returns: view_all_returns, view_case_pdf: view_case_pdf,
+                       view_claim_pdf: view_claim_pdf, view_document: view_document,
+                       view_return_pdf: view_return_pdf }
 
     # Preload all the clients
     @configuration.reject { |_, v| v[:service][:root].nil? }

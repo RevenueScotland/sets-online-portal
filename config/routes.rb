@@ -15,13 +15,16 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :website_texts, param: :text_code, only: :show
 
     # use username as the key param and override constraint to allow non alpha characters.
-    resources :users, param: :username, except: %i[show destroy], constraints: { username: %r{[^/]+} }
+    resources :users, param: :username, except: %i[destroy], constraints: { username: %r{[^/]+} }
 
     get 'user/change-password', to: 'users#change_password'
     post 'user/update-password', to: 'users#update_password'
 
     get 'user/update-tcs', to: 'users#update_tcs'
     post 'user/confirm-update-tcs', to: 'users#confirm_update_tcs'
+
+    get 'user/memorable-word', to: 'users#memorable_word'
+    patch 'user/update-memorable-word', to: 'users#update_memorable_word'
 
     resource 'account', controller: :accounts, only: :show, as: :account do
       collection do
@@ -216,6 +219,95 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'claim_payments/taxpayer_address/(:sub_object_index)', to: 'claim_payments#taxpayer_address',
                                                                    as: 'claim_payments_taxpayer_address',
                                                                    via: %i[get post]
+    end
+
+    namespace :applications do # rubocop:disable Metrics/BlockLength
+      resource :slft, controller: :slft, except: %i[show destroy] do # rubocop:disable Metrics/BlockLength
+        member do # rubocop:disable Metrics/BlockLength
+          get 'public_landing'
+          post 'public_landing'
+
+          get 'applicant_type'
+          post 'applicant_type'
+
+          get 'application_type'
+          post 'application_type'
+
+          get 'existing_agreement'
+          post 'existing_agreement'
+
+          get 'applicant_details'
+          post 'applicant_details'
+
+          get 'applicant_address'
+          post 'applicant_address'
+
+          get 'supporting_documents'
+          post 'supporting_documents'
+
+          get 'waste_producer_details'
+          post 'waste_producer_details'
+
+          get 'waste_producer_address'
+          post 'waste_producer_address'
+
+          get 'about_waste_water'
+          post 'about_waste_water'
+
+          get 'banned_from_landfill'
+          post 'banned_from_landfill'
+
+          get 'about_the_waste'
+          post 'about_the_waste'
+
+          get 'about_water_content'
+          post 'about_water_content'
+
+          get 'water_treatment'
+          post 'water_treatment'
+
+          get 'start_date'
+          post 'start_date'
+
+          get 'declaration'
+          post 'declaration'
+
+          get 'confirmation_and_document_upload'
+          post 'confirmation_and_document_upload'
+
+          get 'download_pdf'
+
+          get 'download-file', to: 'download_file'
+        end
+        resource :sites, only: %i[new] do
+          member do
+            get 'summary'
+            post 'summary'
+          end
+        end
+
+        resources :sites, param: :sub_object_index, only: %i[destroy] do
+          member do
+            get 'details'
+            post 'details'
+
+            get 'address'
+            post 'address'
+
+            get 'non_disposal_details'
+            post 'non_disposal_details'
+
+            get 'wastes'
+            post 'wastes'
+
+            get 'separate_mailing_address'
+            post 'separate_mailing_address'
+
+            get 'type_of_waste'
+            post 'type_of_waste'
+          end
+        end
+      end
     end
   end
 end

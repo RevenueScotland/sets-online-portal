@@ -45,7 +45,7 @@ module Returns
       def relief_type_auto
         return if @relief_type.nil?
 
-        @relief_type + '>$<' + auto_calculated?.to_s
+        "#{@relief_type}>$<#{auto_calculated?}"
       end
 
       # Override setter so that relief amount to 0 for auto calculated relief claim amount

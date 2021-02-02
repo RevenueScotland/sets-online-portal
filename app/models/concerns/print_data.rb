@@ -24,7 +24,10 @@
 #
 # For a list type section then you provide an array of list_items, each item supports the following hash codes
 #   code: The code for the item, the attribute name, this method is called to get the value shown in the template
-#   format: Passed through to the docmosis template, currently only money supported
+#   format: passed through to the docmosis template, may also have an impact in the generated attribute value
+#           :money - Passed to docmosis to use a money format with a pound sign
+#           :date - The value is a date to be formatted as dd Month YYYY
+#           :list - When the value is an array, and there is a lookup list,  format as Yes/No against each lookup value
 #   key_scope: If passed overrides the standard scope for getting the item label, otherwise the standard
 #              object scope is used, note the translation obeys the translation attributes overrides
 #   placeholder: If passed overrides the standard value from the attribute. This is of the form <%STRING%>
@@ -137,7 +140,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     end
 
     # Override the section options
-    # This overrides previously set values based on those passed in if they are specifed
+    # This overrides previously set values based on those passed in if they are specified
     # @param section_options [Hash] the hash being used to render this section
     def override_section_options(section_options)
       # Note we can't use || as the values may be false
@@ -254,8 +257,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
       if item_count == 1 || item[:nolabel]
         this_value
       else
-        object.this_label(item[:code], item[:key_scope], item, extra_data) + ' : ' +
-          (this_value || '')
+        "#{object.this_label(item[:code], item[:key_scope], item, extra_data)} : #{this_value}"
       end
     end
   end
@@ -278,7 +280,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param parent_section [Hash] The options for the parent section used when processing objects
   # @param first_object [Boolean] Set if processing objects and this is the first object, used to control headings
   # @return [hash] the sections to be printed; may be merged into a parent object
-  def sections(layout, extra_data, parent_section = nil, first_object = false)
+  def sections(layout, extra_data, parent_section = nil, first_object: false)
     layout_print = send(layout)
 
     section_list = []
@@ -369,9 +371,9 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     sanitizer.sanitize(label)
   end
 
-  # Derives the value for this item either the value or the lookup value where there is a linked code value.
-  # if is possible that the value can be an array (where the user has checked multiple boxes) so the code
-  # iterates to turn this into a comma separated list
+  # Derives the value for this item either the value or the lookup value where lookup is specified.
+  # It is possible that the value can be an array (where the user has checked multiple boxes) if so then this is
+  # returned as a comma separated list (the default) or as a list of descriptions and yes or no (if the format is list)
   # @param code [string] The name of the attribute
   # @param lookup [boolean] if a lookup value should be used
   # @param format [Symbol] The format of the value drives any formatting, this is normally passed to the template
@@ -382,13 +384,12 @@ module PrintData # rubocop:disable Metrics/ModuleLength
 
     values = send(code)
     values = [values] unless values.respond_to? :each
-    return_values = []
 
-    values.each do |v|
-      expand_value = expand_value(code, v, lookup, format)
-      return_values << expand_value unless expand_value.nil?
+    if lookup && format == :list
+      this_value_list_format(code, values)
+    else
+      this_value_standard_format(code, values, lookup, format)
     end
-    return_values.join(', ')
   end
 
   # Derives if this item should be included some items are only included when a
@@ -410,6 +411,41 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   end
 
   private
+
+  # Derives the value for an item where the format is list
+  # This only applies where the values has an associated lookup list.
+  # For each item in the list it says if it was selected or not e.g.
+  #   Lookup description 1 : Yes
+  #   Lookup description 2 : No
+  # Used where the original field was a list of check boxes based on a list
+  # @param code [string] The name of the attribute
+  # @param values [Array] The list of values
+  # @return [string] The list of lookup values and if they were selected or not separated by a return
+  def this_value_list_format(code, values)
+    return_values = []
+    list_ref_data(code).each do |r|
+      flag = (values.include?(r.code) ? 'Yes' : 'No')
+      return_values << "#{r.value} : #{flag}"
+    end
+    return_values.join("\n")
+  end
+
+  # Derives the value for this item for a standard (non list) layout
+  # This is the value or the lookup value where there is a linked code value.
+  # If the value is an array (e.g. where the user has checked multiple boxes) this is returned as a comma separated list
+  # @param code [string] The name of the attribute
+  # @param values [Array] The list of values
+  # @param lookup [boolean] if a lookup value should be used
+  # @param format [Symbol] The format of the value drives any formatting, this is normally passed to the template
+  # @return [string] the value for this item
+  def this_value_standard_format(code, values, lookup, format)
+    return_values = []
+    values.each do |v|
+      expand_value = expand_value(code, v, lookup, format)
+      return_values << expand_value unless expand_value.nil?
+    end
+    return_values.join(', ')
+  end
 
   # Returns the array of values for a row for this object based on the items list passed in
   # The item can contain a visibility check @see include_item_or_section? but if not visible an empty string is returned
@@ -502,7 +538,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
       # We're passing in the index of the object so that we can use it with things like showing or hiding a row of data
       # depending on the index of the object.
       extra_data[:object_index] = i
-      section_list += object.sections(layout, extra_data, parent_section, (i.zero? ? true : false))
+      section_list += object.sections(layout, extra_data, parent_section, first_object: (i.zero? ? true : false))
     end
     section_list
   end
@@ -568,7 +604,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     name = section_options[:name]
     unless section_options[:key].nil?
       name = I18n.t(section_options[:key], scope: section_options[:key_scope]) +
-             (name.nil? ? '' : '(' + name + ')')
+             (name.nil? ? '' : "(#{name})")
     end
     name
   end

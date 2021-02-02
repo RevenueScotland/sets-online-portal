@@ -1,3 +1,4 @@
+// This file contains JS that applies to the google analytics feature
 // From https://gist.github.com/DimaSamodurov/127c39244d0b411bfb474a8102a83497
 window.dataLayer = window.dataLayer || [];
 function gtag() {
@@ -25,6 +26,10 @@ function addEventsToButtons(page_view_name, class_name) {
 }
 
 document.addEventListener('turbolinks:load', function (event) {
+    // Do not add the event if tracking id is not set
+    if ($("meta[name='analytic_tracking_id']").attr("content") == undefined)
+        return
+
     if (typeof gtag === 'function') {
         var page_view = document.getElementById("page_view");
         gtag('js', new Date());
@@ -36,5 +41,6 @@ document.addEventListener('turbolinks:load', function (event) {
     }
 });
 
-// Global site tag (gtag.js) - Google Analytics
-$.getScript("https://www.googletagmanager.com/gtag/js?id=" + $("meta[name='analytic_tracking_id']").attr("content"))
+// Global site tag (gtag.js) - Google Analytics if we have the tracking id
+if ($("meta[name='analytic_tracking_id']").attr("content") != undefined)
+    $.getScript("https://www.googletagmanager.com/gtag/js?id=" + $("meta[name='analytic_tracking_id']").attr("content"))

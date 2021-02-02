@@ -78,14 +78,16 @@
             "new_record": true,
             "return_reference": "RS10001001HALO",
             "npv_inc": "1500",
-            "premium_inc": "2450"
+            "premium_inc": "2450",
+            "convey": false
         },
         {
             "json_class": "Returns::Lbtt::LinkTransactions",
             "new_record": true,
             "return_reference": "RS10001002GATE",
             "npv_inc": "6800",
-            "premium_inc": "2850"
+            "premium_inc": "2850",
+            "convey": false
         }
     ],
     "linked_ind": "Y",

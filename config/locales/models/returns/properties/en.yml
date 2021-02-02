@@ -9,7 +9,7 @@ en:
         full_title_number: "Title number (if provided)"
     hints:
       returns/lbtt/property:
-        ads_due_ind: "See guidance LBTT10001 - LBTT Additional Dwelling Supplement (opens in a new window) for further details"
+        ads_due_ind: "See guidance on LBTT Additional Dwelling Supplement (opens in a new window) for further details"
   returns:
     lbtt_properties:
       about_the_property:
@@ -24,4 +24,4 @@ en:
         subtitle: "Provide property address"
       property_ads_applies:
         title: "About the property"
-        ads_due_ind_link: "LBTT10001 - LBTT Additional Dwelling Supplement (opens in a new window)"
+        ads_due_ind_link: "LBTT Additional Dwelling Supplement (opens in a new window)"

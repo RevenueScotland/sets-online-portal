@@ -220,19 +220,22 @@
             "json_class": "Returns::Lbtt::LinkTransactions",
             "new_record": true,
             "return_reference": "RS10001001HALO",
-            "consideration_amount": "750"
+            "consideration_amount": "750",
+            "convey": true
         },
         {
             "json_class": "Returns::Lbtt::LinkTransactions",
             "new_record": true,
             "return_reference": "RS10001002SEAT",
-            "consideration_amount": "280"
+            "consideration_amount": "280",
+            "convey": true
         },
         {
             "json_class": "Returns::Lbtt::LinkTransactions",
             "new_record": true,
             "return_reference": "RS10001003AHOY",
-            "consideration_amount": "340"
+            "consideration_amount": "340",
+            "convey": true
         }
     ],
     "sale_include_option": [

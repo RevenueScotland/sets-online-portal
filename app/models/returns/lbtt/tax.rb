@@ -175,7 +175,7 @@ module Returns
       # model.
       # @param lbtt_return [LbttReturn] the parent model in which to create/refresh the tax model
       # @param force_clear [Boolean] force creation of a new model
-      def self.setup_tax(lbtt_return, force_clear = false)
+      def self.setup_tax(lbtt_return, force_clear: false)
         lbtt_return.tax = Lbtt::Tax.new if force_clear
 
         # ensure the Tax model exists and the important values are updated from values

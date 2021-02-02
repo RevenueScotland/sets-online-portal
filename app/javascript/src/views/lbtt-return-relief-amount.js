@@ -1,3 +1,8 @@
+// This file contains JS that applies to the text field of the relief amount column on
+// relief pages of the lbtt return.
+//
+// This sets the value of those text-fields to 'calculated' and applies the readonly property
+// to the field when certain conditions are met.
 $(function () {
     var is_value_select_using_keypress = false;
     $('.relief_claim').on('blur', function () {

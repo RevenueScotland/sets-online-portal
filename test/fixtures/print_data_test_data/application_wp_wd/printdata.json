@@ -1,0 +1,478 @@
+{
+    "section": [
+        {
+            "sectioncode": "application_type",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Application",
+            "listitem": [
+                {
+                    "itemcode": "case_reference",
+                    "itemformat": null,
+                    "itemlabel": "Case reference",
+                    "itemdata": "\u003c%CASE_REFERENCE%\u003e"
+                },
+                {
+                    "itemcode": "applicant_type",
+                    "itemformat": null,
+                    "itemlabel": "Select the relevant option that describes your role",
+                    "itemdata": "Waste producer"
+                },
+                {
+                    "itemcode": "application_type",
+                    "itemformat": null,
+                    "itemlabel": "What application are you completing?",
+                    "itemdata": "Application to receive water discounted waste"
+                },
+                {
+                    "itemcode": "existing_agreement",
+                    "itemformat": null,
+                    "itemlabel": "Does this form relate to an existing water discount agreement?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "renewal_or_review",
+                    "itemformat": null,
+                    "itemlabel": "Is this a renewal or review of an existing water discount agreement?",
+                    "itemdata": "Review"
+                },
+                {
+                    "itemcode": "previous_case_reference",
+                    "itemformat": null,
+                    "itemlabel": "Provide previously approved water discount agreement number",
+                    "itemdata": "1234"
+                }
+            ],
+            "itemcount": 6
+        },
+        {
+            "sectioncode": "waste_producer_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Waste producer details",
+            "listitem": [
+                {
+                    "itemcode": "organisation_name",
+                    "itemformat": null,
+                    "itemlabel": "Organisation name",
+                    "itemdata": "Rave"
+                },
+                {
+                    "itemcode": "telephone_number",
+                    "itemformat": null,
+                    "itemlabel": "Telephone number",
+                    "itemdata": "0123456789"
+                },
+                {
+                    "itemcode": "email_address",
+                    "itemformat": null,
+                    "itemlabel": "Email address",
+                    "itemdata": "shrut@gmail.com"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Waste producer address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "10 Lavender Lane"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "CIRENCESTER"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Gloucestershire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "GL7 1PP"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "about_waste_water",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "About the waste water",
+            "listitem": [
+                {
+                    "itemcode": "why_water_present",
+                    "itemformat": null,
+                    "itemlabel": "Choose the relevant options below which describes how the water to be discounted relates to the waste",
+                    "itemdata": "The water in the waste is present because it has arisen or been added (or both) in course of an industrial process"
+                },
+                {
+                    "itemcode": "added_for_transport",
+                    "itemformat": null,
+                    "itemlabel": "The water has been added to the waste for transportation to disposal",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "banned_from_landfill",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Banned liquid waste",
+            "listitem": [
+                {
+                    "itemcode": "not_banned_waste",
+                    "itemformat": null,
+                    "itemlabel": "None of the waste material is a liquid waste and banned from landfill sites",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "about_the_waste",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Tell us about the waste",
+            "listitem": [
+                {
+                    "itemcode": "type_of_waste_text",
+                    "itemformat": null,
+                    "itemlabel": "What type of waste is produced?",
+                    "itemdata": "What type of "
+                },
+                {
+                    "itemcode": "how_produced",
+                    "itemformat": null,
+                    "itemlabel": "How is the waste produced?",
+                    "itemdata": "How is the"
+                },
+                {
+                    "itemcode": "how_added",
+                    "itemformat": null,
+                    "itemlabel": "How is water added?",
+                    "itemdata": "How is water"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "about_water_content",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Tell us about the water content",
+            "listitem": [
+                {
+                    "itemcode": "waste_percentage",
+                    "itemformat": null,
+                    "itemlabel": "What percentage of water content is waste?",
+                    "itemdata": "21"
+                },
+                {
+                    "itemcode": "added_water_percentage",
+                    "itemformat": null,
+                    "itemlabel": "What is the percentage of added water content?",
+                    "itemdata": "12"
+                },
+                {
+                    "itemcode": "naturally_occurring",
+                    "itemformat": null,
+                    "itemlabel": "Is there naturally occurring water?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "naturally_occurring_percentage",
+                    "itemformat": null,
+                    "itemlabel": "Provide what percentage is naturally occurring",
+                    "itemdata": "12"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "water_treatment",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Water treatment",
+            "listitem": [
+                {
+                    "itemcode": "treatment",
+                    "itemformat": null,
+                    "itemlabel": "If yes, what treatment have you undertaken?",
+                    "itemdata": "yes"
+                },
+                {
+                    "itemcode": "reason_for_no_treatment",
+                    "itemformat": null,
+                    "itemlabel": "If no, what reasons are there for treatment not to have been possible?",
+                    "itemdata": "no"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "start_date",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Start date",
+            "listitem": [
+                {
+                    "itemcode": "start_date",
+                    "itemformat": "date",
+                    "itemlabel": "Provide the date the agreement should start from",
+                    "itemdata": "27 May 2020"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Landfill site details",
+            "listitem": [
+                {
+                    "itemcode": "site_name",
+                    "itemformat": null,
+                    "itemlabel": "Site name",
+                    "itemdata": "test 1"
+                },
+                {
+                    "itemcode": "sepa_license_number",
+                    "itemformat": null,
+                    "itemlabel": "SEPA license number",
+                    "itemdata": "1234"
+                },
+                {
+                    "itemcode": "landfill_operator",
+                    "itemformat": null,
+                    "itemlabel": "Landfill operator",
+                    "itemdata": "operator"
+                },
+                {
+                    "itemcode": "slft_registration_number",
+                    "itemformat": null,
+                    "itemlabel": "Landfill operator SLfT registration number",
+                    "itemdata": "SLFT-LO-00001"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Site address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "Grosmont Wood Farm"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Grosmont"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "ABERGAVENNY"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "NP7 8LB"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "separate_mailing_address",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": null,
+            "sectiontitle": "Separate mailing address for landfill operator",
+            "listitem": [
+                {
+                    "itemcode": "operator_separate_mailing_address",
+                    "itemformat": null,
+                    "itemlabel": "Does the landfill site operator have a separate mailing address?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Separate mailing address for landfill operator",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "Grosmont Wood Farm"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Grosmont"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "ABERGAVENNY"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "NP7 8LB"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "type_of_waste",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Site waste details",
+            "listitem": [
+                {
+                    "itemcode": "type_of_waste_text",
+                    "itemformat": null,
+                    "itemlabel": "What type of waste will be sent to this site?",
+                    "itemdata": "What type of "
+                },
+                {
+                    "itemcode": "estimated_tonnage",
+                    "itemformat": null,
+                    "itemlabel": "Provide an estimate of the weight in tonnes which will be sent to this site annually",
+                    "itemdata": "21"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "supporting_documents",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Supporting documentation",
+            "listitem": [
+                {
+                    "itemcode": "supporting_document_list",
+                    "itemformat": "list",
+                    "itemlabel": "Supporting document list",
+                    "itemdata": "Evidence of the water content (naturally and added) of the waste (mandatory) : Yes\nDetails of how and why water is added to the waste : No\nDetails of water reduction or removal; or why this is not possible : No\nAnalysis of the waste : No\nResults of the quarterly analysis referred to in your approval letter (Review/Renew only) : Yes\nOther : No"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "declaration",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Declarations",
+            "listitem": [
+                {
+                    "itemcode": "declaration",
+                    "itemformat": null,
+                    "itemlabel": "The information I have given in this application and in the supporting documents is complete, correct and accurate to the best of my knowledge",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "change_declaration",
+                    "itemformat": null,
+                    "itemlabel": "In the event of any of the information in this application ceasing to be correct or complete, I will notify Revenue Scotland immediately about all changes or alterations",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "declaration_name",
+                    "itemformat": null,
+                    "itemlabel": "Full name",
+                    "itemdata": "Shrutika patil SE"
+                },
+                {
+                    "itemcode": "declaration_position",
+                    "itemformat": null,
+                    "itemlabel": "Job title or position",
+                    "itemdata": "SE"
+                },
+                {
+                    "itemcode": "declaration_telephone_number",
+                    "itemformat": null,
+                    "itemlabel": "Telephone",
+                    "itemdata": "0123456789"
+                },
+                {
+                    "itemcode": "declaration_email_address",
+                    "itemformat": null,
+                    "itemlabel": "Email address",
+                    "itemdata": "shrut@gmail.com"
+                }
+            ],
+            "itemcount": 6
+        }
+    ]
+}

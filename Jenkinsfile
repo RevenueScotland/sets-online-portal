@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="2.6.6"
+def RUBY_VERSION="2.7.2"
 
 /*
 	* Back office names
@@ -38,9 +38,9 @@ timestamps {
 					runUnitTests()
 					generateDocumentation()
 					lintCode()
-                    checkCVEs()
+                                        checkCVEs()
 					codeStaticAnalysis()
-                    checkGemLicenses()
+                                        checkGemLicenses()
 					precompileAssets()
 					stashDeployables()
 				}
@@ -387,7 +387,16 @@ def codeStaticAnalysis() {
  */
 def precompileAssets() {
 	stage ('Precompile Assets') {
-		sh 'RAILS_ENV=production NODE_ENV=production bundle exec rake assets:precompile'
+                def master_key = ""
+                dir ('..') {
+                        envGitCheckout()
+                        dir ('environment/NdsEnvironment/environment/apps/revscot/app-servers-config/ui') {
+                                sh 'echo MASTER_KEY=$(grep -oP "RAILS_MASTER_KEY=\\K[^\\\\\\]*" Dockerfile) > master_key.props'
+                                def props = readProperties file: "master_key.props"
+                                master_key=props['MASTER_KEY']
+                        }
+                }
+		sh "RAILS_MASTER_KEY=${master_key} RAILS_ENV=production NODE_ENV=production bundle exec rake assets:precompile"
 	}
 }
 
@@ -398,7 +407,7 @@ def precompileAssets() {
 def stashDeployables() {
 	stage ('Stash Deployables') {
 		stash name: "${this.getAppName()}-${this.getFullBuildVersion()}", 
-			excludes: "doc/**,tmp/**,.git/**,.vscode/**,.yardoc/**,.rubocop.yml,.gitattributes,.gitignore,Jenkinsfile,converage/**,tools/**"
+			excludes: "doc/**,tmp/**,.git/**,.vscode/**,.yardoc/**,.licensed/**,.rubocop.yml,.gitattributes,.gitignore,.licensed.yml,Jenkinsfile,converage/**,tools/**"
 	}
 }
 

@@ -28,14 +28,12 @@ module ServiceClient # rubocop:disable Metrics/ModuleLength
 
   # Allows you to iterate round an element returned from Savon which may be a hash or an array of hashes
   # depending on the data returned you may see hash_key=>[hash, hash] OR hash_key=>hash
-  def self.iterate_element(body)
+  def self.iterate_element(body, &block)
     return if body.nil?
 
     # this extracts the values for the hash, if these are an array then we have an array of an array so
     # so flatten removes one of the arrays
-    body.values.flatten.each do |hash|
-      yield(hash)
-    end
+    body.values.flatten.each(&block)
   end
 
   # class method to call the client returning the success flag
