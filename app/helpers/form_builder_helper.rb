@@ -26,9 +26,7 @@ module FormBuilderHelper
     # @return [HTML block element] the standard text field with hint and error texts.
     def text_field(attribute, options = {}, html_options = {})
       # @see base_form_builder's methods: form_options and append_table_fields_attribute
-      append_table_fields_attribute(attribute)
-      options = form_options(:options, options)
-      html_options = UtilityHelper.field_html_options(options, form_options(:html_options, html_options))
+      options, html_options = setup_standard_field_options(attribute, options, html_options)
       field_wrapper(attribute, options, html_options) do
         super(attribute, html_options)
       end
@@ -46,10 +44,8 @@ module FormBuilderHelper
       # Sets the value to it's current value, if it's not modified in the view level.
       # For some reason in the date_field it doesn't auto-populate it with the attribute's value so we need to do this.
       html_options[:value] = @object.send(attribute) if html_options[:value].blank?
-      append_table_fields_attribute(attribute)
-      options = form_options(:options, options)
-      html_options = UtilityHelper.field_html_options(options, form_options(:html_options, html_options))
 
+      options, html_options = setup_standard_field_options(attribute, options, html_options)
       # As the IE version of a date field is non-existent and Edge does something that we don't like, those two
       # browsers uses a text field instead, with the appropriates attributes so that it acts as a date field similar
       # to both Chrome and Firefox.
@@ -72,12 +68,10 @@ module FormBuilderHelper
     # @param html_options [Hash] options (element attributes/properties) to be passed into the creation of the element.
     # @return [HTML block element] a text area wrapped with the standard class
     def text_area_field(attribute, options = {}, html_options = {})
-      append_table_fields_attribute(attribute)
-      options = form_options(:options, options)
-      options[:width] = 'three-quarters' if options[:width].nil?
+      options[:width] = 'three-quarters' if options[:width].nil? && !using_table_fields?
+      html_options[:class] = 'table_field_textarea' if using_table_fields?
       input_class = 'govuk-textarea'
-      html_options =
-        UtilityHelper.field_html_options(options, form_options(:html_options, html_options), input_class)
+      options, html_options = setup_standard_field_options(attribute, options, html_options, input_class)
       field_wrapper(attribute, options, html_options, input_class) do
         text_area(attribute, html_options)
       end
@@ -107,7 +101,7 @@ module FormBuilderHelper
     # @param html_options [Hash] options (element attributes/properties) to be passed into the creation of the element.
     # @return [HTML block element] the standard hidden field (with a display if defined).
     def hidden_field(attribute, options = {}, html_options = {})
-      append_table_fields_attribute(attribute) if options.key?(:display_attribute)
+      move_field_options_to_table(attribute, options, html_options) if options.key?(:display_attribute)
       options = form_options(:options, options)
       html_options = form_options(:html_options, html_options)
       # If we want the hidden field to display a value while we're storing data into it, we can do so by
@@ -134,7 +128,7 @@ module FormBuilderHelper
     # @param html_options [Hash] options (element attributes/properties) to be passed into the creation of the element.
     # @return [HTML block element] the standard select field with the correct class
     def select(attribute, method, options = {}, html_options = {})
-      append_table_fields_attribute(attribute)
+      move_field_options_to_table(attribute, options, html_options) if using_table_fields?
       options = select_options(options)
       html_options = select_html_options(options, html_options)
 
@@ -159,10 +153,10 @@ module FormBuilderHelper
       id ||= 'continue'
       html_options[:name] ||= 'continue' if id == 'continue'
       html_options = UtilityHelper.submit_html_options(id, options, html_options)
-      if !id.nil?
-        super @template.t(id, html_options), html_options
-      else
+      if id.nil?
         super
+      else
+        super @template.t(id, **html_options), html_options
       end
     end
 
@@ -177,10 +171,10 @@ module FormBuilderHelper
     def submit(id = nil, html_options = {})
       span = @template.content_tag(:span, '', class: 'scot-rev-submit-image')
       html_options = UtilityHelper.submit_html_options(id, options, html_options)
-      submit = if !id.nil?
-                 super @template.translate(id, html_options), html_options
-               else
+      submit = if id.nil?
                  super
+               else
+                 super @template.translate(id, **html_options), html_options
                end
       @template.content_tag(:div, submit + span, class: 'scot-rev-submit')
     end
@@ -193,7 +187,7 @@ module FormBuilderHelper
       check_box_html_options = { class: 'govuk-checkboxes__input' }
       error = error_text(attribute, options, check_box_html_options)
       check_box_field = check_box(attribute, check_box_html_options, 'Y', 'N')
-      html_options[:class] = 'govuk-checkboxes__label'
+      options[:label_class] = 'govuk-checkboxes__label'
       label_field = field_label_wrapper(attribute, options, html_options)
       check_box_item = @template.content_tag(:div, check_box_field + label_field, class: 'govuk-checkboxes__item')
       @template.content_tag(:div,
@@ -261,6 +255,21 @@ module FormBuilderHelper
       text_field(attribute, options, html_options)
     end
 
+    # This creates a percentage field with % sign before text-box with
+    # the correct label hint and error structure
+    # to the attribute passed on to the parameter. Within this element block, the
+    # hint and error texts gets added.
+    # @param attribute [Object] the symbol to be translated to a string relating to the content
+    # @param options [Array] an array of options to be passed to the
+    #   {::UtilityHelper#field_html_options}
+    # @return [HTML block element] the standard password field with hint and error texts.
+    def percentage_field(attribute, options = {}, html_options = {})
+      options[:width] = 'width-3' if options[:width].nil?
+      # The type is being used as a functional option, not html option.
+      options = { type: 'PERCENTAGE' }.merge(options)
+      text_field(attribute, options, html_options)
+    end
+
     # Creates a standard file field with associated hint and error text fields.
     # Within this element block the hint and error texts gets added.
     # @param attribute [Object] the symbol to be translated to a string relating to the content
@@ -322,7 +331,7 @@ module FormBuilderHelper
     #
     # The field that can be used by this requires to do two steps (in the method where the field is being created):
     # 1. Append the attribute used into the @table_options[:attribute] by calling the method
-    #   append_table_fields_attribute(attribute)
+    #   move_field_options_to_table(attribute, options, html_options)
     #   before the creation of the field.
     # 2. The options and html_options needs to be merged with the @table_options options and html_options, this
     #   can be done by calling the method form_options like this:
@@ -342,37 +351,48 @@ module FormBuilderHelper
     #       <% table_form.currency_field(:premium_inc) %>
     #     <% end %>
     #   <% end %>
-    # @param objects [Array] containing objects used to show the table of fields
+    #
+    # To add a caption, you must ensure that in you en.yml you have defined the text according to the object
+    # and attribute that was passed in.
+    # By default this doesn't add any caption to the table unless you define it.
+    # @example We are using the object <Applications::Slft::Sites...> and attribute :waste
+    #   en:
+    #     activemodel:
+    #       captions:
+    #         applications/slft/sites:
+    #           wastes: 'Here is my caption text'
+    # @param object [Object] the main object which has the attribute that contains the sub-objects to show.
     # @param attribute [Symbol] the attribute to be used on the fields_for which will be a part of the created field's
     #   input element ('name' and 'id' attribute) and label element ('for' attribute).
     # @param options [Hash] options that can be passed to all the options and html_options of each fields created.
-    #   See table_fields_options_setup for more information about other options.
-    def table_fields(objects, attribute, options = {})
+    #   See add_options_to_table_fields for more information about other options.
+    def table_fields(object, attribute, options = {})
+      # objects contain the sub-objects used to show the table of fields
+      # attributes will be used to store a hash of attributes (with options) and will be used for creating
+      # the row of table headings.
+      objects, attributes, body = initial_table_fields_values(object, attribute)
       return if objects.blank? || !block_given?
 
-      # attributes will be used to store an array of attributes which is of type Symbol and will be used for creating
-      # the row of table headings.
-      attributes = body = ''
       # This creates the body part of the table and extracts the attributes used (to be used for creating the head part)
       # The temporary variable index will be used as part of the field's identity. So with the standard code, this will
       # affect the input element ('name' and 'id' attribute) and label element ('for' attribute) of the field.
-      objects.each_with_index do |object, index|
-        fields_for(attribute, object) do |form|
-          # Sets up the table options of the current object's form class
-          table_fields_options_setup(form, index, options)
+      objects.each_with_index do |sub_object, index|
+        fields_for(attribute, sub_object) do |form|
+          # Sets up the table options of the current object
+          add_options_to_table_fields(objects, form, index, options)
           # Wraps a <tr> around the <td>s of fields made from the yield data
           body += table_fields_row_wrapper(objects, yield(form), form, index, options)
 
           # form.table_options[:attributes] consists of a list of attributes that was yielded in.
           # We only need to get the first row of attributes as all the attributes per row should be the same throughout
           # the table.
-          attributes = form.table_options[:attributes] if index.zero?
+          attributes = extract_attributes_from_table_fields(form) if index.zero?
         end
       end
 
       # Creates the table element with the thead (containing a row of <th> which consists of translated attributes) and
       # tbody. Then depending on the options, it could add an add button for user to be able to add a new row of data.
-      table_fields_wrapper(attributes, body, options)
+      table_fields_wrapper(object, attribute, attributes, body, options)
     end
   end
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../cache.rb'
+require_relative '../cache'
 
 Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # Settings specified here will take precedence over those in config/application.rb.
@@ -15,6 +15,9 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
 
   # Show full error reports.
   config.consider_all_requests_local = true
+
+  # Use the relative URL root if one is defined
+  config.relative_url_root = "/#{ENV['APPLICATION_DOCROOT']}" if ENV['APPLICATION_DOCROOT'].present?
 
   # Enable/disable caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.

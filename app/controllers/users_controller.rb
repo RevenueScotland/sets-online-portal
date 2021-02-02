@@ -4,7 +4,12 @@
 # note that most actions should be done in the context of the
 # current user
 class UsersController < ApplicationController
-  authorise route: %i[new create index edit update], requires: AuthorisationHelper::CREATE_USERS
+  authorise route: %i[new create show index edit update], requires: AuthorisationHelper::CREATE_USERS
+
+  # Support a show route and redirect to users list to avoid no route issue when using refresh after update
+  def show
+    redirect_to users_path
+  end
 
   # Renders an empty user ready for entry
   def new
@@ -83,6 +88,22 @@ class UsersController < ApplicationController
     end
   end
 
+  # Set up Memorable word and hint related to it
+  def memorable_word
+    @user = find_user(current_user.username)
+  end
+
+  # Actually attempt to save or update memorable word and hint for current_user
+  def update_memorable_word
+    @user = find_user(current_user.username)
+    # update_memorable_word assigns params to user object
+    if @user.update_memorable_word(memorable_word_params, current_user)
+      render 'memorable_word_confirmation'
+    else
+      render 'memorable_word'
+    end
+  end
+
   private
 
   # Lookup a user in the account of the current_user.
@@ -110,6 +131,11 @@ class UsersController < ApplicationController
   # controls the permitted parameters to this controller for confirming tcs related operations
   def tcs_params
     params.require(:user).permit(:username, :user_is_signed_ta_cs)
+  end
+
+  # controls the permitted parameters to this controller for confirming tcs related operations
+  def memorable_word_params
+    params.require(:user).permit(:memorable_question, :memorable_answer, :password)
   end
 
   # Redirect to logout if a password change is required on the current user else show the change_password_confirmation.

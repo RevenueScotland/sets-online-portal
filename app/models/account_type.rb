@@ -25,7 +25,7 @@ class AccountType
     %i[registered_organisation other_organisation individual]
   end
 
-  # note: disabling Style/ClassVars as we *do* only want one copy of these
+  # NOTE: disabling Style/ClassVars as we *do* only want one copy of these
   @@registered_organisation = # rubocop:disable Style/ClassVars
     AccountType.new(registration_type: :registered_organisation)
   @@other_organisation = # rubocop:disable Style/ClassVars

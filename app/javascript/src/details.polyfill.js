@@ -1,4 +1,6 @@
-
+// This file contains JS that applies to the <detail> element which is used by
+// GOVUKFrontend to enable it's features on any browsers that don't support it.
+//
 // Copy the code from URL
 // https://github.com/alphagov/govuk_frontend_toolkit/blob/master/javascripts/govuk/details.polyfill.js
 // To fix summary details tag specifically for IE Browser.

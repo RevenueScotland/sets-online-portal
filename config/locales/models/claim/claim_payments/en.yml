@@ -26,13 +26,13 @@ en:
         bank_name: "Name of bank / building society"
         # declaration
         # these three are used for throwing an error message "The declaration must be accepted"
-        authenticated_declaration_1: "The declaration"
-        authenticated_declaration_2: "The declaration"
+        authenticated_declaration1: "The declaration"
+        authenticated_declaration2: "The declaration"
         unauthenticated_declarations: "The declaration"
-        authenticated_declaration_1_TAXPAYER: "I (we), the tax payer(s) declare that this repayment or claim request is, to the best of my (our) knowledge, correct and complete and confirm that I (we) am (are) eligible for the refund claimed"
-        authenticated_declaration_2_TAXPAYER: "I (we), the tax payer(s) declare that Revenue Scotland can contact me (us) regarding this repayment or claim request"
-        authenticated_declaration_1_AGENT: "I, the agent for the tax payer(s), confirm that the tax payer(s) have authorised repayment to be made to these bank details"
-        authenticated_declaration_2_AGENT: "I, the agent of the tax payer(s), having been authorised to complete this repayment or claim request on behalf of the tax payer(s), certify that the tax payer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tax payer(s) is/are eligible for the refund claimed"
+        authenticated_declaration1_TAXPAYER: "I (we), the tax payer(s) declare that this repayment or claim request is, to the best of my (our) knowledge, correct and complete and confirm that I (we) am (are) eligible for the refund claimed"
+        authenticated_declaration2_TAXPAYER: "I (we), the tax payer(s) declare that Revenue Scotland can contact me (us) regarding this repayment or claim request"
+        authenticated_declaration1_AGENT: "I, the agent for the tax payer(s), confirm that the tax payer(s) have authorised repayment to be made to these bank details"
+        authenticated_declaration2_AGENT: "I, the agent of the tax payer(s), having been authorised to complete this repayment or claim request on behalf of the tax payer(s), certify that the tax payer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tax payer(s) is/are eligible for the refund claimed"
         # reaturn reference number
         tare_reference: "What was the tax return reference of your new property purchase "
         case_reference: "Claim reference"
@@ -160,12 +160,10 @@ en:
         UNAUTHENTICATED_upload_note: "Please provide any further documents to support your claim if required"
         AUTHENTICATED_upload_note: "Please provide any further documents to support the claim if required"
         secure_message: Your repayment or claim request to your Land and Buildings Transaction Tax return %{return_reference} has now been submitted. A secure message confirming this claim submission has been sent to you.
-        public_secure_message: Your repayment or claim request to your Land and Buildings Transaction Tax return %{return_reference} has now been submitted. A confirmation email will be sent to the email addresses provided.
-        caution: If you have any queries about this repayment or claim request, you can contact Revenue Scotland by calling the support desk on 03000 200 310
-        paragraph2: We will aim to respond as quickly as possible. In the meantime, full information and guidance is available on the Revenue Scotland website (opens in a new window) We will contact you if we need further information.
-        paragraph2_link_text: Revenue Scotland website (opens in a new window)
-        print: "Print confirmation details"
-        download_claim_details: "Download a copy of your claim"
+        link:
+          print: "Print confirmation details"
+          download_claim_details: "Download a copy of your claim"
+
       before_you_start:
         title: "Before you start"
         info_needed_heading: "What you will need"

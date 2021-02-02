@@ -157,7 +157,9 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
 
     setup_table_summary(options)
 
-    rows = objects.collect do |object|
+    # @note This collects the rows that builds the table with indexing. See {#actions_cell} method to learn more
+    #   about what the index is used for.
+    rows = objects.collect.with_index do |object, index|
       # Collects each of the attributes from the object which is then placed in a table data.
       cols = display_table_body_row_cells(object, attributes, options)
 
@@ -165,7 +167,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
       # 1. first one is the row of the collected attributes data of the object,
       # 2. the second one is the row of actions related to that object of which it's attributes data are shown.
       table_row_tag(cols.join(''), table_row_highlight_class(object)) +
-        table_row_tag(actions_cell(object, attributes, actions, cols))
+        table_row_tag(actions_cell(object, attributes, actions, cols, index))
     end
 
     table_body_tag(rows.join(''))
@@ -220,9 +222,10 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   # @param actions [Array] an array of actions which may be related to the object, and may or may not be shown.
   # @param cols [Array] contains all the table data <td> elements of that row, which is
   #   only used to find out how big the size of it for the colspan of the row of actions.
+  # @param index [Integer] contains the index of the object from the list where it is stored.
   # @param object [Object] the object with attributes to which the action to be shown is connected to.
   # @return [HTML block element] a HTML table data <td> of the action anchor elements
-  def actions_cell(object, attributes, actions, cols)
+  def actions_cell(object, attributes, actions, cols, index)
     # creating column for actions
     action_cols = ''
     actions.nil? || actions.each do |action|
@@ -238,9 +241,12 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
       next unless include_action?(action, object)
 
       if action[:path] == :display
-        action_cols += action_display_tag(action)
+        action_cols += action_display_tag(action, object)
       elsif table_row_highlight_class(object).blank?
-        action_cols += action_tag(object, attributes, action)
+        # @note As the index is only used as part of one method in a lower level, this will be merged into the action
+        # hash so that we won't have to add an extra parameter for each of the methods it goes into as that will be
+        # wasting the parameter space, and it is quite irrelevant for that method too.
+        action_cols += action_tag(object, attributes, action.merge(object_index: index))
       end
     end
 
@@ -283,10 +289,17 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   end
 
   # Creates the action tag for text display only
-  def action_display_tag(action)
+  # This also supports embedding a value into the text if the :value_method hash is passed in
+  # The display text must then include a string replacement of key of value
+  def action_display_tag(action, object)
     options = action[:options] || {}
+    label = action[:label]
+    if action[:value_method]
+      value = object.send(action[:value_method])
+      label = format(label, value: value)
+    end
     options[:class] = action_class_option(options, :text)
-    content_tag(:span, action[:label], options)
+    content_tag(:span, label, options)
   end
 
   # Create action tag like edit, show more details available at url
@@ -317,6 +330,12 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   #       b. :filter_model [Symbol] the model of the filter, so that we can construct a query string in a specific
   #         way such as '?dashboard_message_filter[sent_by]=Me', without this then it should only create '?sent_by=Me'
   #     3. action[:options] contains a hash of options that will be directly passed into the link_to method.
+  #     4. action[:object_index_attribute] [Symbol] using the terms from the :query, this is the :label so what we put
+  #       here will be used to build the url. And it's :value will depend on the current index of the object it's from
+  #       which is taken from the action[:object_index]
+  #     5. action[:id_prefix] [String] contains the prefix of the id, which will be built up with the current index of
+  #       the object it's from, we get the index from the action[:object_index].
+  #       For example, { id_prefix: 'edit_message' } may build 'edit_message_1', 'edit_message_2', 'edit_message_3'
   #
   # @param action [Hash] is a hash containing the label to the action and the action itself
   # @param object [Object] is the object holding attributes that can be used for the specific action
@@ -352,6 +371,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
     # only one of the two is needed.
     param_or_query = action[:parameter].nil? ? object : object.send(action[:parameter]).to_s
     param_or_query = action[:query].nil? ? param_or_query : query_string_hash(action, object)
+    param_or_query = param_or_query_index(param_or_query, action)
 
     # @note send(<method>, <param>) is equals to <method>(<param>)
     # @example send(:action_display_tag, { action: :display, label: 'Hello'})
@@ -359,6 +379,18 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
     return send(path, param_or_query) if path
 
     action_link.html_safe
+  end
+
+  # Adds the index of the object to the param or query using the object_index_attribute.
+  # This should also work with the query hash.
+  # @example if our action consists of { object_index_attribute: :sub_object_index } then it will
+  #   build something like "/en/claim-payments/claimant-details?sub_object_index=1"
+  # @return [Hash] the param or query contents including the object-index
+  def param_or_query_index(param_or_query, action)
+    return param_or_query if action[:object_index_attribute].nil?
+
+    index_hash = { action[:object_index_attribute] => action[:object_index].to_i + 1 }
+    param_or_query.is_a?(Hash) ? index_hash.merge(param_or_query) : index_hash
   end
 
   # Creates the query string that will currently be in hash format, to be passed into the path.
@@ -392,6 +424,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   # @return [Hash] html options for each actions
   def action_options(object, attributes, action)
     options = action[:options] || {}
+    options[:id] = "#{action[:id_prefix]}_#{action[:object_index].to_i + 1}" if action[:id_prefix]
     options[:method] = 'delete' if action[:action] == :destroy
     options[:class] = action_class_option(options)
     set_action_aria_label_option(object, attributes, action, options)

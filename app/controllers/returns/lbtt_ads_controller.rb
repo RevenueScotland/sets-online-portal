@@ -62,7 +62,8 @@ module Returns
       wizard_list_step(returns_lbtt_summary_url, setup_step: :setup_ads_reliefs_step,
                                                  list_attribute: :ads_relief_claims,
                                                  new_list_item_instance: :new_list_item_ads_relief_claims,
-                                                 merge_list: :merge_list_data, after_merge: :update_tax_calculations)
+                                                 list_required: :ads_reliefclaim_option_ind,
+                                                 after_merge: :update_tax_calculations)
     end
 
     private
@@ -77,24 +78,8 @@ module Returns
 
     # Used in wizard_list_step as part of the merging of data.
     # @return [Object] new instance of ReliefClaim class that has attributes with value.
-    def new_list_item_ads_relief_claims(hash_attributes = {})
-      Lbtt::ReliefClaim.new(hash_attributes)
-    end
-
-    # Merge relief array hash data submitted in the params into the right ReliefClaim objects in the model
-    # @return [Boolean] if the merge was successful and the models are valid
-    def merge_list_data
-      return true unless @ads.ads_reliefclaim_option_ind == 'Y'
-
-      # Merges the params values with the wizard object's list attribute and validates each as they're merged
-      # @see merge_params_and_validate_with_list to know more
-      yield
-
-      # Special case we need to validated that we don't have duplicated now we can only do this once
-      # they are all loaded then trigger validation again on the model
-      @ads.valid?(:ads_reliefclaim_option_ind)
-      # Now we need to check if there are errors on the reliefs
-      @ads.ads_relief_claims.all? { |obj| obj.errors.none? }
+    def new_list_item_ads_relief_claims
+      Lbtt::ReliefClaim.new
     end
 
     # Overwrites the wizard_save method to save @lbtt_return instead of @tax (which is why we don't need cache_index
@@ -108,7 +93,7 @@ module Returns
     # Loads existing wizard models (@lbtt_return and @ads) from the wizard cache or redirects to the summary page
     # @return [Tax] the model for wizard saving
     def load_step(_sub_object_attribute = nil)
-      @post_path = wizard_post_path(LbttController.name)
+      @post_path = wizard_post_path
       @lbtt_return = wizard_load(Returns::LbttController)
       Lbtt::Ads.setup_ads(@lbtt_return)
       @ads = @lbtt_return.ads

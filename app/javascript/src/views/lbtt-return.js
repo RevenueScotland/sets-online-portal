@@ -1,4 +1,7 @@
-$(function() {
+// This file contains JS that applies to the radio buttons and hideable group of fields
+// of specific pages on the lbtt-return flow.
+// Using the values of the radio button it can show or hide the specified group of fields.
+$(function () {
   $.fn.hideRadioFields("returns_lbtt_ads[ads_sell_residence_ind]");
   $.fn.hideRadioFields("returns_lbtt_party[is_contact_address_different]");
   // about_the_calculation

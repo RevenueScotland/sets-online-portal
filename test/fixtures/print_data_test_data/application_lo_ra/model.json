@@ -1,0 +1,110 @@
+{
+    "json_class": "Applications::Slft::Applications",
+    "applicant_type": "LO",
+    "application_type": "LO-RA",
+    "new_record": true,
+    "landfill_operator": {
+        "json_class": "Applications::Slft::Applicants",
+        "new_record": true,
+        "organisation_name": "Rave",
+        "slft_registration_number": "SLFT-LO-00001",
+        "telephone_number": "0123456789",
+        "email_address": "shrut@gmail.com",
+        "address": {
+            "json_class": "Address",
+            "new_record": true,
+            "address_identifier": "17112585",
+            "address_line1": "Grosmont Wood Farm",
+            "address_line2": "Grosmont",
+            "town": "ABERGAVENNY",
+            "postcode": "NP7 8LB",
+            "country": "WA"
+        }
+    },
+    "existing_agreement": "N",
+    "sites": [
+        {
+            "json_class": "Applications::Slft::Sites",
+            "application_type": "LO-RA",
+            "existing_agreement": "N",
+            "new_record": true,
+            "sepa_license_number": "1234",
+            "site_name": "test 1",
+            "address": {
+                "json_class": "Address",
+                "new_record": true,
+                "address_identifier": "9905645",
+                "address_line1": "3 Lavender Lane",
+                "town": "CIRENCESTER",
+                "county": "Gloucestershire",
+                "postcode": "GL7 1PP",
+                "country": "EN"
+            },
+            "estimated_timescale": "12",
+            "wastes": [
+                {
+                    "json_class": "Applications::Slft::Wastes",
+                    "application_type": "LO-RA",
+                    "new_record": true,
+                    "type_of_waste": "Type of waste 1",
+                    "estimated_tonnage": "22"
+                },
+                {
+                    "json_class": "Applications::Slft::Wastes",
+                    "application_type": "LO-RA",
+                    "new_record": true,
+                    "type_of_waste": "Type of waste 2",
+                    "estimated_tonnage": "23"
+                }
+            ],
+            "full_or_part": "PART"
+        },
+        {
+            "json_class": "Applications::Slft::Sites",
+            "application_type": "LO-RA",
+            "existing_agreement": "N",
+            "new_record": true,
+            "sepa_license_number": "123456",
+            "site_name": "test 2",
+            "address": {
+                "json_class": "Address",
+                "new_record": true,
+                "address_identifier": "9905676",
+                "address_line1": "7 Lavender Lane",
+                "town": "CIRENCESTER",
+                "county": "Gloucestershire",
+                "postcode": "GL7 1PP",
+                "country": "EN"
+            },
+            "estimated_timescale": "23",
+            "wastes": [
+                {
+                    "json_class": "Applications::Slft::Wastes",
+                    "application_type": "LO-RA",
+                    "new_record": true,
+                    "type_of_waste": "Type of waste1",
+                    "estimated_tonnage": "22"
+                },
+                {
+                    "json_class": "Applications::Slft::Wastes",
+                    "application_type": "LO-RA",
+                    "new_record": true,
+                    "type_of_waste": "Type of waste 2",
+                    "estimated_tonnage": "45"
+                }
+            ],
+            "full_or_part": "FULL"
+        }
+    ],
+    "supporting_document_list": [
+        "",
+        "DOC1",
+        "DOC2"
+    ],
+    "declaration": "Y",
+    "change_declaration": "Y",
+    "declaration_name": "Shrutika patil SE",
+    "declaration_position": "SE",
+    "declaration_telephone_number": "0123456789",
+    "declaration_email_address": "shrut@gmail.com"
+}

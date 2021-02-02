@@ -1,4 +1,5 @@
-// The standard datepicker used for browsers that are without their native datepickers.
+// This file contains JS that applies to the datepicker feature of a date field, which are normally used on
+// browsers that do not have their native datepicker.
 //
 // This datepicker has the ability to select a date, go to next or previous month and select a year.
 //

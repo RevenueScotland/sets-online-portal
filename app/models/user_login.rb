@@ -7,7 +7,7 @@ module UserLogin
   # Called by @see LoginController#logout.  Call @see LoginController#logout to actually log out.
   # Logs and ignores any StandardError exceptions so we can still log out of the app later.
   def logout_back_office
-    # Note: the back office is case sensitive but this is from the model which is already upcase
+    # NOTE: the back office is case sensitive but this is from the model which is already upcase
     call_ok?(:log_off_user, Username: username)
   rescue StandardError => e
     Error::ErrorHandler.log_exception(e)
@@ -56,7 +56,7 @@ module UserLogin
     def username_password_authenticate(username, password)
       user = nil
 
-      # Note: We need to uppercase the username as back office is case sensitive
+      # NOTE: We need to uppercase the username as back office is case sensitive
       call_ok?(:authenticate_user, Username: username.upcase, Password: password) do |body|
         user = from_backoffice body, username
       end
@@ -71,7 +71,7 @@ module UserLogin
     def two_factor_authenticate(username, token)
       user = nil
 
-      # Note: We need to uppercase the username as back office is case sensitive and trim the token
+      # NOTE: We need to uppercase the username as back office is case sensitive and trim the token
       # to handle dodgy cut and paste
       call_ok?(:authenticate_user, Username: username.upcase, Token: token.strip) do |body|
         # Set up the Authenticate user details from response

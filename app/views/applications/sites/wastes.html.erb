@@ -1,0 +1,23 @@
+<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for :page_title, t('.title_' + @site.application_type) %>
+<%= form_for @site, url: @post_path, local: true do |f| %>
+  <%= form_errors_for @site %>
+  <%# On add or delete row, we will set the focus to the last object %>
+  <% options = (params[:add_row] || params[:delete_row]) ? { autofocus_record: :last } : {} %>
+  <% if @site.restoration_agreement? %>
+    <%= f.collection_radio_buttons_fields(:full_or_part, @site.list_ref_data(:full_or_part)) %>
+    <%= f.text_field :estimated_timescale %>
+    <%= f.table_fields(@site, :wastes, options) do |table_form| %>
+      <% table_form.text_field(:type_of_waste, { width: 'two-thirds' })  + %>
+      <% table_form.text_field(:estimated_tonnage, { width: 'one-quarter' }) %>
+    <% end %>
+  <% else %>
+    <%= f.table_fields(@site, :wastes, options) do |table_form| %>
+      <% table_form.text_area_field(:type_of_waste, { width: 'one-half' }) + %>
+      <% table_form.text_area_field(:final_destination) + %>
+      <% table_form.text_area_field(:use) %>
+    <% end %>
+    <%= f.text_area_field :further_treatment %>
+  <% end %>
+  <%= f.button %>
+<% end %>

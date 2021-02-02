@@ -135,7 +135,7 @@ module AuthorisationHelper
     return false if roles.empty?
     return true if action_codes.empty?
 
-    action_codes = [action_codes] unless action_codes.is_a? Array
+    action_codes = Array(action_codes)
     action_codes.each do |action|
       return false unless ActionRoles.role_has(roles, action)
     end
@@ -150,7 +150,7 @@ module AuthorisationHelper
     return false if roles.empty?
     return true if action_codes.empty?
 
-    action_codes = [action_codes] unless action_codes.is_a? Array
+    action_codes = Array(action_codes)
     action_codes.each do |action|
       return true if ActionRoles.role_has(roles, action)
     end

@@ -6,13 +6,13 @@ require 'savon/mock/spec_helper'
 # This file contains procedures to mock calls associated with registration and account activation
 
 def mock_address_details
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'registration/address_details.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/address_details.xml")
   message = { Address: { 'ins1:AddressIdentifier' => '14174279        ' } }
   @savon.expects(:nas_address_detail_wsdl).with(message: message).returns(fixture)
 end
 
 def mock_address_search
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'registration/address_search.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/address_search.xml")
   message = { RequestParameters: {},
               SearchParameters: { 'ins1:Postcode' => 'LU1 1AA' },
               SelectionOptions: { 'ins1:MaximumNumberOfRows' => 200,
@@ -24,13 +24,13 @@ def mock_address_search
 end
 
 def mock_alt_address_details
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'registration/address_alt_details.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/address_alt_details.xml")
   message = { Address: { 'ins1:AddressIdentifier' => '14174279        ' } }
   @savon.expects(:nas_address_detail_wsdl).with(message: message).returns(fixture)
 end
 
 def mock_alt_address_search
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'registration/address_alt_search.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/address_alt_search.xml")
   message = { RequestParameters: {},
               SearchParameters: { 'ins1:Postcode' => 'RG30 6XT' },
               SelectionOptions: { 'ins1:MaximumNumberOfRows' => 200,
@@ -45,7 +45,7 @@ end
 Before('@mock_activate_account') do
   start_mock
   message = { Action: 'CompleteRegistration', RegistrationToken: 'valid.registation.token' }
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'registration/activate_account.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/activate_account.xml")
   @savon.expects(:maintain_user_wsdl).with(message: message).returns(fixture)
   Rails.logger.debug { "Mocking configured :  #{@savon.inspect}" }
 end
@@ -56,7 +56,7 @@ Before('@mock_change_password') do
   mock_valid_signin
   message = { Username: 'VALID.USER', Requestor: 'VALID.USER', Action: 'ChangePassword',
               OldPassword: 'valid.password', NewPassword: 'New.password1', ServiceCode: 'SYS' }
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'registration/change_password.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/change_password.xml")
   @savon.expects(:maintain_user_wsdl).with(message: message).returns(fixture)
   Rails.logger.debug { "Mocking configured :  #{@savon.inspect}" }
 end
@@ -77,7 +77,7 @@ Before('@mock_new_user_registration') do
               AddressPostcodeOrZip: 'LU1 1AA', UserServices: { 'ins2:UserService' => ['LBTT'] },
               PartyEmailAddress: 'test@example.com', PartyPhoneNumber: '07700 900123' }
 
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'registration/register_user.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/register_user.xml")
 
   @savon.expects(:maintain_user_wsdl).with(message: message).returns(fixture)
   Rails.logger.debug { "Mocking configured :  #{@savon.inspect}" }
@@ -107,7 +107,7 @@ Before('@mock_new_other_company_registration') do
               PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@northgateps.com',
               PartyPhoneNumber: '01234567891' }
 
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'registration/register_user.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/register_user.xml")
 
   @savon.expects(:maintain_user_wsdl).with(message: message).returns(fixture)
   Rails.logger.debug { "Mocking configured :  #{@savon.inspect}" }
@@ -134,7 +134,7 @@ Before('@mock_new_company_no_address_registration') do
               PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@northgateps.com',
               PartyPhoneNumber: '01234567891' }
 
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'registration/register_user.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/register_user.xml")
 
   @savon.expects(:maintain_user_wsdl).with(message: message).returns(fixture)
   Rails.logger.debug { "Mocking configured :  #{@savon.inspect}" }
@@ -164,7 +164,7 @@ Before('@mock_new_company_registration') do
               PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@northgateps.com',
               PartyPhoneNumber: '01234567891' }
 
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'registration/register_user.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/register_user.xml")
 
   @savon.expects(:maintain_user_wsdl).with(message: message).returns(fixture)
   Rails.logger.debug { "Mocking configured :  #{@savon.inspect}" }

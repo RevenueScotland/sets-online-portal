@@ -8,25 +8,25 @@
               <div class="content clearfix">
                 <% links = [
 									{ link: :accessibility,
-									  path: Rails.configuration.x.external_links.accessibility,
+									  path: external_link_url('ACCESSIBILITY'),
 									  addional_text_options: {}, 
 									  list_html_options: { class: 'first leaf' },
 									  link_html_options: { class: 'govuk-footer__link scot-rev-footer__link', target:'_blank'} 
 									}, {
 										link: :legal_notices,
-										path: Rails.configuration.x.external_links.legal_notices,
+										path: external_link_url('LEGAL_NOTICES'),
 										addional_text_options: {},
 										list_html_options: { class: 'leaf' },
 										link_html_options: { class: 'govuk-footer__link scot-rev-footer__link', target:'_blank'}
 									}, {
 										link: :site_map,
-										path: Rails.configuration.x.external_links.site_map,
+										path: external_link_url('SITE_MAP'),
 										addional_text_options: {},
 										list_html_options: { class: 'leaf' },
 										link_html_options: { class: 'govuk-footer__link scot-rev-footer__link', target:'_blank'}
 									}, {
 										link: :foi,
-										path: Rails.configuration.x.external_links.foi,
+										path: external_link_url('FOI'),
 										addional_text_options: {},
 										list_html_options: { class:'leaf' },
 										link_html_options: { class: 'govuk-footer__link scot-rev-footer__link', target: '_blank' }

@@ -1,0 +1,8 @@
+en:
+  activemodel:
+    attributes:
+      applications/slft/applicants:
+        organisation_name: Organisation name
+        slft_registration_number: SLfT registration Number
+        telephone_number: Telephone number
+        email_address: Email address

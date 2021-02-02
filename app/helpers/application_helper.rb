@@ -26,9 +26,9 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   def page_title_text(title)
     # This is the default title of the page if there isn't any <h1> found
     page_title = t('default_title')
-    page_title = title + ' | ' + page_title unless title.nil?
+    page_title = "#{title} | #{page_title}" unless title.nil?
     # The title should now have the word 'Error:' when we find any errors in the form, see the {#form_errors_for}.
-    page_title = t('error') + ': ' + page_title if @form_error_found
+    page_title = "#{t('error')}: #{page_title}" if @form_error_found
 
     page_title.html_safe
   end
@@ -52,7 +52,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     return if options[:hide_all]
 
     if current_user.nil?
-      return if current_page?(controller: '/login', action: 'new')
+      return if current_page?({ controller: '/login', action: 'new' })
 
       account_list_item_tag(link_to(t('signin'), login_path, html_options))
     else
@@ -270,7 +270,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
       extract_object_errors(errs, this_obj, this_hash[:index], error_href_first_part(this_obj))
       next unless this_obj.respond_to?(:error_objects)
 
-      this_obj.error_objects(true)&.each do |eh|
+      this_obj.error_objects(check_errors: true)&.each do |eh|
         extract_object_errors(errs, eh[:object], eh[:index], error_href_first_part(this_obj, eh[:attribute]))
       end
     end
@@ -288,11 +288,12 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     # deal with the simple case that this isn't an array or a hash
     return [object_and_index_hash(obj)] unless obj.is_a?(Array) || obj.is_a?(Hash)
 
-    if obj.is_a?(Array)
+    case obj
+    when Array
       # make sure that if the object is an array all the same we push it down a level in the array
       object_class = obj[0].class
-      obj = [obj] if obj.all? { |o| o.class == object_class }
-    elsif obj.is_a?(Hash)
+      obj = [obj] if obj.all? { |o| o.instance_of?(object_class) }
+    when Hash
       # if object is a hash then make it an array so the iterate processes correctly
       obj = [obj]
     end
@@ -308,18 +309,27 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # @return [Array] an array of hashes @see object_and_index_hash
   def iterate_object(obj, error_array = [])
     obj.each do |this_object|
-      if this_object.is_a?(Array)
-        # Need to iterate around this object, we now assume this is an array of the same object type
-        this_object.each_with_index { |that_object, i| error_array << object_and_index_hash(that_object, i) }
-      elsif this_object.is_a?(Hash)
-        # If the object is a hash then use the hash key as the index
-        this_object.each { |i, that_object| error_array << object_and_index_hash(that_object, i) }
-      else
-        # handle a normal object
-        error_array << object_and_index_hash(this_object)
-      end
+      iterate_this_object(this_object, error_array)
     end
     error_array
+  end
+
+  # Iterates around the object to produce a hash of the objects and the index in the array if needed
+  # assumes the object has already been tidied up @see object_and_index_array
+  # @param this_object [Object] The object may be an individual or an array or hash
+  # @param error_array [Array] The array of error objects, this is added to
+  def iterate_this_object(this_object, error_array = [])
+    case this_object
+    when Array
+      # Need to iterate around this object, we now assume this is an array of the same object type
+      this_object.each_with_index { |that_object, i| error_array << object_and_index_hash(that_object, i) }
+    when Hash
+      # If the object is a hash then use the hash key as the index
+      this_object.each { |i, that_object| error_array << object_and_index_hash(that_object, i) }
+    else
+      # handle a normal object
+      error_array << object_and_index_hash(this_object)
+    end
   end
 
   # Returns the hash representing and error object and if needed its index
@@ -393,9 +403,9 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     return nil if attr == :base
 
     if ind.nil?
-      href_first_part + '_' + attr.to_s
+      "#{href_first_part}_#{attr}"
     else
-      href_first_part + '_' + ind.to_s + '_' + attr.to_s
+      "#{href_first_part}_#{ind}_#{attr}"
     end
   end
 
@@ -408,7 +418,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     if attribute_name.nil?
       model_name_from_record_or_class(obj).param_key
     else
-      model_name_from_record_or_class(obj).param_key + '_' + attribute_name.to_s.delete_prefix('@')
+      "#{model_name_from_record_or_class(obj).param_key}_#{attribute_name.to_s.delete_prefix('@')}"
     end
   end
 
@@ -482,10 +492,8 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # This method is being used by {#navigational_link}.
   # @return [HTML link element] standard navigational link to a field. Or nil, if there is no link or path.
   def navigational_link_output(link, path, html_options)
-    return if link.nil? || path.nil?
-
     # html_options[:class] = UtilityHelper.link_class(html_options) unless html_options[:class] == ''
-    link_to(t('.link.' + link.to_s).html_safe, path, html_options)
+    link_to(t(".link.#{link}").html_safe, path, html_options)
   end
 
   # Override of standard link_to method, to check for access to link.
@@ -532,5 +540,11 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     options[:html] = {} if options[:html].nil?
     options[:html][:autocomplete] = 'off' if options[:html][:autocomplete].nil?
     super
+  end
+
+  # @return [String] a link associated with particular link code
+  # @param link_code [String] is a PRM_CODE mapped to the link.
+  def external_link_url(link_code)
+    ReferenceData::SystemParameter.lookup('PWS_LINKS', 'SYS', 'RSTU')[link_code].value
   end
 end

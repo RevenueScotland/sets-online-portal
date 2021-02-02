@@ -284,8 +284,6 @@ Feature: Registration Wizard
 
     When I click on the "Find Company" button
     Then I should receive the message "Company number can't be blank"
-    And I should receive the message "Company number is too short (minimum is 8 characters)"
-    And I should receive the message "Company number is invalid"
 
     When I enter "0123" in the "Company number" field
     And I click on the "Find Company" button
@@ -307,8 +305,6 @@ Feature: Registration Wizard
 
     Then I should see the sub-title "Company"
     And I should receive the message "Company number can't be blank"
-    And I should receive the message "Company number is too short (minimum is 8 characters)"
-    And I should receive the message "Company number is invalid"
     And I should receive the message "A company must be chosen"
 
     When I enter "00928555" in the "Company number" field

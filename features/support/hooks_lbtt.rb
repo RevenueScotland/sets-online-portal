@@ -6,7 +6,7 @@ require 'savon/mock/spec_helper'
 # This file contains procedures to mock calls associated with the lbtt returns
 def load_lbtt_convey
   message = { "ins1:TareRefno": '251', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'lbtt/lbtt_load_convey.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}lbtt/lbtt_load_convey.xml")
   @savon.expects(:lbtt_tax_return_wsdl).with(message: message).returns(fixture)
 end
 
@@ -16,12 +16,11 @@ Before('@mock_update_lbtt_details') do
   mock_valid_signin
   load_lbtt_convey
 
-  # We have two calcs one for the effective date and one for the conveyance values
-  calc_fixture = File.read(FIXTURES_MOCK_ROOT + 'lbtt/lbtt_tax_calc.xml')
+  calc_fixture = File.read("#{FIXTURES_MOCK_ROOT}lbtt/lbtt_tax_calc.xml")
   @savon.expects(:get_lbtt_calc_wsdl).with(message: {}).returns(calc_fixture)
   @savon.expects(:get_lbtt_calc_wsdl).with(message: {}).returns(calc_fixture)
 
-  lbtt_update_fixture = File.read(FIXTURES_MOCK_ROOT + 'lbtt/lbtt_update.xml')
+  lbtt_update_fixture = File.read("#{FIXTURES_MOCK_ROOT}lbtt/lbtt_update.xml")
   @savon.expects(:lbtt_tax_return_wsdl).with(message: {}).returns(lbtt_update_fixture)
 
   Rails.logger.debug { "Mocking configured : #{@savon.inspect}" }
@@ -40,7 +39,7 @@ Before('@mock_address_identifier_details') do
            :"ins1:EffectiveDate" => nil, :"ins1:RelevantDate" => nil,
            :"ins1:ContractDate" => nil, :"ins1:PreviousOptionInd" => nil,
            :"ins1:ExchangeInd" => nil, :"ins1:UKInd" => nil,
-           'ins1:Parties' => { "ins1:Party": [mock_party_1, mock_party_2, mock_agent] },
+           'ins1:Parties' => { "ins1:Party": [mock_party1, mock_party2, mock_agent] },
            'ins1:LinkedConsideration' => 0, 'ins1:BusinessInd' => nil, 'ins1:TotalConsideration' => nil,
            'ins1:TotalVat' => nil, 'ins1:NonChargeable' => nil, 'ins1:RemainingChargeable' => nil,
            'ins1:Reliefs' => { "ins1:Relief": [] }, 'ins1:Calculated' => nil, 'ins1:AdsDue' => nil,
@@ -52,7 +51,7 @@ Before('@mock_address_identifier_details') do
 
   msg = { FormType: 'D', Version: '1', Username: 'VALID.USER', ParRefno: '117',
           "ins1:LBTTReturnDetails": lbtt }
-  lbtt_save_draft_fixture = File.read(FIXTURES_MOCK_ROOT + 'lbtt/lbtt_draft_saved.xml')
+  lbtt_save_draft_fixture = File.read("#{FIXTURES_MOCK_ROOT}lbtt/lbtt_draft_saved.xml")
   @savon.expects(:lbtt_tax_return_wsdl).with(message: msg).returns(lbtt_save_draft_fixture)
 
   Rails.logger.debug { "Mocking configured : #{@savon.inspect}" }
@@ -65,7 +64,7 @@ Before('@mock_lbtt_serious_back_office_error') do
   start_mock
   mock_valid_signin
   message = { "ins1:TareRefno": '251', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'lbtt/lbtt_load_success_false_no_messages.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}lbtt/lbtt_load_success_false_no_messages.xml")
   @savon.expects(:lbtt_tax_return_wsdl).with(message: message).returns(fixture)
 
   # back to the dashboard
@@ -76,7 +75,7 @@ Before('@mock_lbtt_serious_back_office_error') do
 end
 
 # party 1 for the mock_address_identifier_details
-def mock_party_1
+def mock_party1
   { :"ins1:PartyType" => 'PER', 'ins1:LpltType' => 'PRIVATE', 'ins1:FlptType' => 'BUYER',
     'ins1:PersonName' => { "ins1:Title": '', "ins1:Forename": 'Albert', "ins1:Surname": 'Buyer' },
     'ins1:Address' => { :"ins0:AddressLine1" => 'Royal Mail', 'ins0:AddressLine2' => 'Luton Delivery Office 9-11',
@@ -90,7 +89,7 @@ def mock_party_1
 end
 
 # party 1 for the mock_address_identifier_details
-def mock_party_2
+def mock_party2
   { :"ins1:PartyType" => 'PER', 'ins1:LpltType' => 'PRIVATE', 'ins1:FlptType' => 'BUYER',
     'ins1:PersonName' => { "ins1:Title": '', "ins1:Forename": 'Bert', "ins1:Surname": 'Buyer' },
     'ins1:Address' => { :"ins0:AddressLine1" => 'Royal Mail', 'ins0:AddressLine2' => 'Luton Delivery Office 9-11',

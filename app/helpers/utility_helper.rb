@@ -3,7 +3,7 @@
 # Utility helpers keep method used across application
 module UtilityHelper # rubocop:disable Metrics/ModuleLength
   # Regex that identifies if text is an english question
-  QUESTION_REGEX = /\A((ARE |DO |DOES |HAS |HAVE |HOW |IF |IS |SHOULD |WHAT |WHICH |WHO ))/i.freeze
+  QUESTION_REGEX = /\A((ARE |DO |DOES |HAS |HAVE |HOW |IF |IS |SHOULD |WHAT |WHICH |WHO |WILL ))/i.freeze
   # The html_options of most fields which includes the standard html options such as the class.
   # @param options [Hash] options containing information which is used to modify parts of the field's html options.
   # @param html_options [Hash] options (element attributes/properties) to be passed into the creation of the element.
@@ -20,11 +20,11 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
   # @return [String] standard gds class(es) for a field.
   def self.field_css_classes(options = {}, html_options = {}, field_class)
     # Determines whether the default standard width class is to be used or not.
-    width_class = gds_css_class_for_width(options[:width]) + ' '
+    width_class = "#{gds_css_class_for_width(options[:width])} "
     class_output = width_class + field_class
     # This will ensure that the class that we get from the html_options will always be '' instead of nil
     html_class = html_options[:class] || ''
-    html_class = ' ' + html_class unless class_output == '' || html_class.blank?
+    html_class = " #{html_class unless class_output == '' || html_class.blank?}"
     class_output + html_class
   end
 
@@ -37,10 +37,10 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
     css_class_name = 'govuk-!-width-one-third' # set default class
     unless width.nil?
       css_class_name = case width
-                       when 'full', 'three-quarters', 'two-thirds', 'one-half', 'one-quarter'
-                         'govuk-!-width-' + width
+                       when 'full', 'three-quarters', 'two-thirds', 'one-half', 'one-third', 'one-quarter'
+                         "govuk-!-width-#{width}"
                        when 'width-20', 'width-10', 'width-5', 'width-4', 'width-3', 'width-2'
-                         'govuk-input--' + width
+                         "govuk-input--#{width}"
                        end
     end
     css_class_name
@@ -83,27 +83,36 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
     UtilityHelper.swap_texts(append_optional_keyword(label, options), options)
   end
 
-  # Generates a hint text for an attribute of the object.
-  # It can optionally override the attribute name by calling the object's translation_attribute method, similarly to
-  # the label_text.
+  # Generate the standard text of an object's attribute
+  # This can optionally override the attribute name by calling the object's translation method.
   # It can optionally include value(s) from the object by calling the object's translation_variables method.
   # It supports the following hash keys:
-  #   :hint [String] to hard code the hint for that attribute
+  #   symbol that matches type_text parameter [String] to hard code the text for that attribute
   #   :translation_options [String|Symbol] to be used for doing the translation_variables and
   #   translation_attribute method.
+  # @example attribute_text(<object>, <attribute>, :hint)
+  #   this will look for the translation of the attribute in
+  #   en:
+  #   ..activemodel:
+  #   ....hints:
+  #   ......<object.class.name>:
+  #   ........<attribute>: "hint text for the attribute"
   # @param object [Object] the object being processed
   # @param attribute [Symbol] is the attribute of the object that's being processed.
-  # @param options [Hash] may contain a hash with instructions to further modify the hint text
-  # @return [String] the hint value of an attribute.
-  def self.hint_text(object, attribute, options = {})
+  # @param text_type [Symbol] this is the type of text this is referring to, this could be :hint, :caption or
+  #   any type of text to translate.
+  # @param options [Hash] may contain a hash with instructions to further modify the text to translate
+  # @return [String] the translated text value of the attribute according to the text type.
+  def self.attribute_text(object, attribute, text_type, options = {})
     options ||= {}
-    return options[:hint] unless options[:hint].nil?
+    return options[text_type] unless options[text_type].nil?
 
-    hint_translation_options = UtilityHelper.get_attribute_extra_translation_options(object, attribute, options)
-                                            .merge(default: '',
-                                                   scope: [object.i18n_scope, :hints, object.model_name.i18n_key])
-    hint = I18n.t(UtilityHelper.get_attribute_key(object, attribute, options), hint_translation_options)
-    UtilityHelper.swap_texts(hint, options)
+    text_type = text_type.to_s.pluralize.to_sym
+    text = I18n.t(UtilityHelper.get_attribute_key(object, attribute, options),
+                  **UtilityHelper.get_attribute_extra_translation_options(object, attribute, options)
+                               .merge(default: '', scope: get_translation_scope(object, text_type)))
+
+    UtilityHelper.swap_texts(text, options)
   end
 
   # By passing in a label and options with text_link populated by a hash, it should then iterate through that hash
@@ -141,7 +150,7 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
 
     # Create a regexp where the list of characters in the string is searched for
     text = ERB::Util.html_escape(text)
-    text.gsub(Regexp.new('(?<c>[' + Regexp.escape(characters) + '])'), '\k<c>&#8203;')&.html_safe
+    text.gsub(Regexp.new("(?<c>[#{Regexp.escape(characters)}])"), '\k<c>&#8203;')&.html_safe
   end
 
   # Get attribute key require to translate label,legend or hint text of a form control.
@@ -226,7 +235,7 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
   # @return [String] returns the label with the standard optional keyword if the content is an optional field
   private_class_method def self.append_optional_keyword(label, options = {})
     optional = options[:optional] unless options[:optional] == nil?
-    label = label + ' (' + I18n.t('optional') + ')' if optional == true
+    label = "#{label} (#{I18n.t('optional')})" if optional == true
     label
   end
 
@@ -237,10 +246,18 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
   # @return [String] the translated label
   private_class_method def self.get_translation(object, attribute, options = {})
     attribute_key = UtilityHelper.get_attribute_key(object, attribute, options)
-    key_scope = options[:key_scope] || [object.i18n_scope, :attributes, object.model_name.i18n_key]
+    key_scope = options[:key_scope] || get_translation_scope(object, :attributes)
     label_translation_options = UtilityHelper.get_attribute_extra_translation_options(object, attribute, options)
                                              .merge(default: attribute_key.to_s.humanize, scope: key_scope)
-    I18n.t(attribute_key, label_translation_options).html_safe
+    I18n.t(attribute_key, **label_translation_options).html_safe
+  end
+
+  # Gets the translation scope depending on the passed symbol
+  # @param object [Object] the object being processed
+  # @param symbol [Symbol] is the part of the key scope, which is either :attributes, :hints or :captions
+  # @return [Array] the scope to be used for the :scope of the translation options part of when translating texts.
+  private_class_method def self.get_translation_scope(object, symbol)
+    [object.i18n_scope, symbol, object.model_name.i18n_key]
   end
 
   # Adds a ? to the label string if needed by parsing the string to see if it looks like a question
@@ -260,6 +277,6 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
   # Effectively this returns the t(.<key>) Rails operation
   # @param key [String] the key to be used and @param index of buyer
   def translation_for_index(key, index)
-    key + '_' + (index.to_i > 4 ? 'other' : index.to_s)
+    "#{key}_#{index.to_i > 4 ? 'other' : index.to_s}"
   end
 end

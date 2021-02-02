@@ -52,12 +52,12 @@ class FLApplicationRecord
   # those that actually have errors
   # @param check_errors [Boolean] only include the object if errors are included
   # @return [Array] an array of hashes containing the object that respond to errors and an optional index
-  def error_objects(check_errors = true)
+  def error_objects(check_errors: true)
     errs = []
     instance_variables.each do |var|
       obj = instance_variable_get(var)
 
-      if obj.class == Array
+      if obj.instance_of?(Array)
         # check if the object in the array responds to error and if so add to the return hash
         obj.each_with_index { |this_obj, i| add_error_object(errs, var, this_obj, check_errors, i) }
       else
@@ -107,7 +107,7 @@ class FLApplicationRecord
   private_class_method def self.derive_yes_no_nil(value)
     return if value.nil?
 
-    (value.to_f != 0 ? 'Y' : 'N')
+    ((value.to_f - 0).abs < Float::EPSILON ? 'N' : 'Y')
   end
 
   # Used when converting back office data.  The hash we get is a representation of the XML the back office sends.
@@ -138,8 +138,8 @@ class FLApplicationRecord
   private_class_method def self.add_leading_zero(hash, keys)
     keys.each do |key|
       value = hash[key]
-      # note that nil is not the same as 0
-      value = '0' + value if !value.nil? && value.start_with?('.')
+      # NOTE: that nil is not the same as 0
+      value = "0#{value}" if !value.nil? && value.start_with?('.')
       hash[key] = value
     end
   end
@@ -149,7 +149,7 @@ class FLApplicationRecord
   # @param list [Object] list or hash containing the objects which need summing
   # @param method [Method] method to call on each of the list entry objects (ie the variable to sum)
   # @param integer [Boolean] return an integer value
-  def sum_from_values(list, method, integer = false)
+  def sum_from_values(list, method, integer: false)
     return 0 if list.blank?
 
     total = 0

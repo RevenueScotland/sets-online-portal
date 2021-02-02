@@ -141,7 +141,7 @@ module Returns
       #   and liability_cut_off. These percentage limit values are used with the :slcf_credit_claimed attribute.
       def self.slcf_credit_claimed_limits
         if @slcf_credit_claimed_limits.nil?
-          reference_hash = ReferenceData::SystemParameter.lookup('COMMON', 'SLFT', 'RSTU', true)
+          reference_hash = ReferenceData::SystemParameter.lookup('COMMON', 'SLFT', 'RSTU', safe_lookup: true)
 
           # If the reference_hash with the key 'ENV_CONTRIB_CUT_OFF' is nil then we'll use the default value that we
           # know, which is the value 90.
@@ -189,7 +189,7 @@ module Returns
       # return 0 if the related flag is set to 'N' as opposed to nil
       # @param return_zero [Boolean] return zero if the flag is 'N'
       # @return the value
-      def slcf_contribution(return_zero = false)
+      def slcf_contribution(return_zero: false)
         return 0 if return_zero && slcf_yes_no == 'N'
 
         @slcf_contribution if slcf_details_needed?
@@ -200,7 +200,7 @@ module Returns
       # return 0 if the related flag is set to 'N' as opposed to nil
       # @param return_zero [Boolean] return zero if the flag is 'N'
       # @return the value
-      def slcf_credit_claimed(return_zero = false)
+      def slcf_credit_claimed(return_zero: false)
         return 0 if return_zero && slcf_yes_no == 'N'
 
         @slcf_credit_claimed if slcf_details_needed?
@@ -211,7 +211,7 @@ module Returns
       # return 0 if the related flag is set to 'N' as opposed to nil
       # @param return_zero [Boolean] return zero if the flag is 'N'
       # @return the value
-      def bad_debt_credit(return_zero = false)
+      def bad_debt_credit(return_zero: false)
         return 0 if return_zero && bad_debt_yes_no == 'N'
 
         @bad_debt_credit if bad_debt_credit_details_needed?
@@ -222,7 +222,7 @@ module Returns
       # return 0 if the related flag is set to 'N' as opposed to nil
       # @param return_zero [Boolean] return zero if the flag is 'N'
       # @return the value
-      def removal_credit(return_zero = false)
+      def removal_credit(return_zero: false)
         return 0 if return_zero && removal_credit_yes_no == 'N'
 
         @removal_credit if removal_credit_details_needed?
@@ -323,7 +323,7 @@ module Returns
         {}
       end
 
-      # Note: As used in print data these need to be public
+      # NOTE: As used in print data these need to be public
       # Do we need the non disposal area added text
       def non_disposal_add_text_needed?
         @non_disposal_add_ind == 'Y'
@@ -519,12 +519,12 @@ module Returns
 
       # returns the credit claimed details required for a save draft or submit
       def save_credit_claimed_hash
-        { # note we specifically return 0 for an N so we can restore on load
+        { # NOTE: we specifically return 0 for an N so we can restore on load
           # know the difference between they weren't asked (nil) and they answered no (0)
-          'ins1:SLCFContribution': slcf_contribution(true),
-          'ins1:SLCFCreditClaimed': slcf_credit_claimed(true),
-          'ins1:BadDebtCredit': bad_debt_credit(true),
-          'ins1:RemovalCredit': removal_credit(true)
+          'ins1:SLCFContribution': slcf_contribution(return_zero: true),
+          'ins1:SLCFCreditClaimed': slcf_credit_claimed(return_zero: true),
+          'ins1:BadDebtCredit': bad_debt_credit(return_zero: true),
+          'ins1:RemovalCredit': removal_credit(return_zero: true)
         }
       end
 

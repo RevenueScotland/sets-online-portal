@@ -3,6 +3,7 @@
 <%= form_for @slft_return, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @slft_return %>
   <%= f.collection_radio_buttons_fields(:fpay_method, @slft_return.list_payment_types, alignment: 'vertical') %>
+  <%= govuk_warning( t('.SLFT_additional_Warning') ) %>
   <%= govuk_warning( t('.warning') ) %>
   <%= f.check_box_field(:declaration) %>
   <br>

@@ -50,6 +50,7 @@ en:
         change_password: "Change your password"
         about_registration: "Terms & Conditions"
         create_update_users: "Create or update users"
+        change_memorable_word: "Create or update memorable word"
         messages: "Send or view messages"
         update_account_details: "Update account details"
         update: "Update"

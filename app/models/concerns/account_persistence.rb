@@ -16,7 +16,7 @@ module AccountPersistence
   def save
     # populates account validation errors
     valid?(:create)
-    # note that we return false straight away if the current_user
+    # NOTE: that we return false straight away if the current_user
     # or address details validation fails, hence needing the line above
     # for account validation error messages
     return false unless validate_all

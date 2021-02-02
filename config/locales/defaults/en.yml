@@ -98,6 +98,7 @@ en:
   session_ttl_warning_message: "Your session is about to time out"
   save_draft: "Save draft"
   submit_return: "Submit return"
+  submit: "Submit"
   calculate_return: "Calculate"
   return_error: "Return not saved"
   term_and_cons: "terms & conditions (opens in a new window)"
@@ -140,6 +141,11 @@ en:
       select_blank: "Pick an address"
     company_search:
       search: "Find Company"
+    cookies:
+      header: "We use cookies on this site to enhance your user experience"
+      body_html: By clicking any link on this page you are giving your consent for us to set cookies. <a href="website_texts/COOKIES">more info</a>
+      ok_thanks: "OK, thanks"
+      no_thanks: "No, thanks"
   activemodel:
     attributes:
       address:
@@ -157,7 +163,7 @@ en:
         cant_be_blank: "%{attribute} can't be blank"
         company_not_chosen: "A company must be chosen"
         address_not_chosen: "Use the postcode search or enter the address manually"
-        section_not_complete: "%{attr} has errors that need to be corrected, please edit it"
+        section_not_complete: "%{attr} has errors that need to be corrected, edit it"
   errors:
     error_report: "Something unexpected happened, you can try again in a few minutes or to report this error quote : %{error_ref}"
     ##
@@ -198,3 +204,9 @@ en:
       other_than: "%{attribute} must be other than %{count}"
       odd: "%{attribute} must be odd"
       even: "%{attribute} must be even"
+  # Support for to_sentence in an array
+  support:
+    array:
+      words_connector: ", "
+      two_words_connector: " and "
+      last_word_connector: ", and "

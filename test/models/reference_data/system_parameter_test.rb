@@ -74,9 +74,7 @@ module ReferenceData
       end
 
       # Override private method to provide access
-      def self.make_object(data)
-        super
-      end
+      public_class_method :make_object
     end
 
     test 'cache code works' do

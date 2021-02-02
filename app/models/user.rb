@@ -85,6 +85,16 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     call_ok?(:maintain_user, confirm_tcs_request)
   end
 
+  # Update the user's memorable word
+  def update_memorable_word(word_params, requested_by)
+    assign_attributes(word_params)
+
+    return false unless valid?(:update_memorable_word)
+
+    success = call_ok?(:maintain_user, update_memorable_word_request)
+    User.refresh_cache!(requested_by) if success
+  end
+
   # Getting the formatted full name of the user.
   # @return [String] the formatted full name of the user.
   def full_name
@@ -163,15 +173,19 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   # Returns a alternative translation key where necessary.
+  # "MEMORABLE_password" translated key returned if is been called from Memorable word page
   # "new password" and "new password confirmation" fields are "password" and "password confirmation" for new user.
   # @param attribute [Symbol] the name of the attribute to translate
   # @param translation_options [Object] in this case the party type being processed passed from the page
   # @return [Symbol] the name of the translation attribute
   def translation_attribute(attribute, translation_options = nil)
-    return attribute unless %i[new_password new_password_confirmation].include?(attribute)
-    return ('CREATE_' + attribute.to_s).to_sym if translation_options == :new_user
+    return "MEMORABLE_#{attribute}".to_sym if attribute == :password && translation_options == :memorable_word
 
-    ('UPDATE_' + attribute.to_s).to_sym
+    return attribute unless %i[new_password new_password_confirmation].include?(attribute)
+
+    return "CREATE_#{attribute}".to_sym if translation_options == :new_user
+
+    "UPDATE_#{attribute}".to_sym
   end
 
   private
@@ -203,6 +217,12 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   def update_password_request
     { Username: username, Requestor: username, Action: 'ChangePassword',
       OldPassword: old_password, NewPassword: new_password, ServiceCode: 'SYS' }
+  end
+
+  # @return [Hash] request to update the memorable word and hint of this user using the authority of this user
+  def update_memorable_word_request
+    { Username: username, Requestor: username, Action: 'MemorableDetails', Password: password,
+      MemorableQuestion: memorable_question, MemorableAnswer: memorable_answer, ServiceCode: 'SYS' }
   end
 
   # @return [Hash] request to update the user that they've confirmed the terms and conditions

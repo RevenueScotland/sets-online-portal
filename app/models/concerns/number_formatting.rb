@@ -18,7 +18,7 @@ module NumberFormatting
     number ||= '0'
     truncated = number.to_d.truncate(2).to_s
     split_parts = truncated.split('.')
-    formatted_2dp = format('%#.02f', ".#{split_parts[1]}") # rubocop:disable Style/FormatStringToken
+    formatted_2dp = format('%#.02f', ".#{split_parts[1]}")
     just_dp = formatted_2dp.split('.')[1]
     "#{split_parts[0]}.#{just_dp}"
   end

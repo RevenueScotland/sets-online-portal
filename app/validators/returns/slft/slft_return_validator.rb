@@ -72,7 +72,7 @@ module Returns
         site.wastes.each_value do |waste|
           next if waste.valid? Waste.attribute_list
 
-          error_msg = waste.ewc_code.blank? ? 'Waste details for ' + site.site_name : error_msg_for_site(waste, site)
+          error_msg = waste.ewc_code.blank? ? "Waste details for #{site.site_name}" : error_msg_for_site(waste, site)
 
           # log error
           add_error(errors, error_msg, waste)
@@ -81,8 +81,8 @@ module Returns
 
       # Error message for waste site error if description is not blank
       def error_msg_for_site(waste, site)
-        ewc_code = waste.description.blank? ? waste.ewc_code : waste.ewc_code + '/' + waste.description
-        'Waste details with EWC code ' + ewc_code + ' for ' + site.site_name
+        code_text = waste.description.blank? ? waste.ewc_code : "#{waste.ewc_code}/#{waste.description}"
+        "Waste details with EWC code #{code_text} for #{site.site_name}"
       end
     end
   end

@@ -1,0 +1,68 @@
+en:
+  activemodel:
+    attributes:
+      applications/slft/sites:
+        site_name: Site name
+        landfill_operator: Landfill operator
+        slft_registration_number: Landfill operator SLfT registration number
+        add_site: Add site
+        sepa_license_number: SEPA license number
+        type_of_waste_text: Type of waste
+        # Non disposal area site details
+        intended_use: Specify the intended use of the area(s) to which material will be temporarily deposited
+        estimated_timescale_LO-ND: Provide the length of time the material will be temporarily stored
+        type_of_waste_text_LO-ND: Provide the types of material to be temporarily stored (i.e. EWC and waste description)
+        start_date: Confirm the start date for the non-disposal area(s)
+        # Restoration application
+        full_or_part: Is this a part or full site restoration
+        estimated_timescale_LO-RA: Provide an estimate of the timescale for the restoration exercise
+        # Water Discount
+        further_treatment: Will the waste undergo further treatment at the landfill site to reduce the water content
+        # Waste producer
+        operator_separate_mailing_address: Does the landfill site operator have a separate mailing address
+        type_of_waste_text_WP-WD: What type of waste will be sent to this site
+        estimated_tonnage: Provide an estimate of the weight in tonnes which will be sent to this site annually
+    captions:
+      applications/slft/sites:
+        wastes_LO-RA: Provide an estimate of the total tonnage and specific type of material required to restore the area(s) included in the agreement
+        wastes_LO-WD: Enter details of the types of waste that you will receive at the site and state whether they will contribute to leachate 
+
+    hidden_label:
+      applications/slft/sites:
+        type_of_waste: Type of waste
+        estimated_tonnage: Estimated tonnage
+        final_destination: Final destination
+        use: Use
+
+  applications:
+    sites:
+      summary:
+        title: Landfill sites
+        description: Add the details of the landfill site(s) that are applicable to this application
+        edit_row: Edit
+        delete_row: Remove
+        delete: Delete site
+        link:
+          add_site: Add site
+      details:
+        title: Landfill site details
+        description: Provide the details of the landfill site
+      address:
+        title: Site address
+        description: Provide the address of the landfill site
+      non_disposal_details:
+        title: Non-disposal area site details
+      wastes:
+        title_LO-RA: Site restoration details
+        title_LO-WD: Site waste details
+        type_of_waste: Type of waste
+        estimated_tonnage: Estimated tonnage
+        final_destination: Final destination
+        use: Use
+        RA_table_heading: Provide an estimate of the total tonnage and specific type of material required to restore the area(s) included in the agreement
+        LO-WD_table_heading: Provide details of the types of waste that you will receive at this site and the final destination and use of the waste in the landfill ? (i.e. will this contribute to leachate?)
+      separate_mailing_address: 
+        title: Separate mailing address for landfill operator
+      type_of_waste:
+        title: Site waste details
+        description: Provide the details of the waste for this site

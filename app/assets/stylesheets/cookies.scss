@@ -1,0 +1,93 @@
+// CSS for the cookie banner
+.revscot_cookies
+{
+  position: fixed;
+  width: 100%;
+  background-color: rgba(34,64,150,0.9);
+  padding-top: 30px;
+  padding-bottom: 30px;
+  bottom: 0;
+  z-index: 99999;
+  text-align: center;
+}
+
+.revscot_cookies-content
+{
+margin: 0 auto;
+max-width: 80%;
+display: inline-block;
+text-align: left;
+width: 100%;
+}
+
+.revscot_cookies-text
+{
+  float: left;
+  max-width: 60%;
+}
+
+.revscot_cookies-text h2
+{
+text-align: left;
+color: #fff;
+font-size: 22px;
+font-weight: 700;
+margin-bottom: 0;
+}
+.revscot_cookies-text p
+{
+color: #fff;
+font-size: 18px;
+display: inline;
+font-weight: 400;
+}
+.revscot_cookies-text p a
+{
+color: #fff;
+font-size: 18px;
+display: inline;
+font-weight: 400;
+}
+
+.revscot_cookies-buttons
+{
+    float: right;
+    max-width: 40%;
+}
+
+.revscot_cookies-ok
+{
+text-shadow: none;
+outline: none;
+cursor: pointer;
+margin: 0;
+border: 0;
+color: #fff;
+background: none;
+padding: 5px 23px;
+vertical-align: middle;
+border: 2px solid #fff;
+//float: right;
+float: none;
+border-radius: 0;
+font-size: 24px;
+font-weight: 400;
+}
+
+.revscot_cookies-no
+{
+text-shadow: none;
+outline: none;
+cursor: pointer;
+margin: 0;
+border: 0;
+color: #fff;
+background: none;
+padding: 5px 23px;
+vertical-align: middle;
+float: none;
+margin-top: 0;
+border-radius: 0;
+font-size: 24px;
+font-weight: 400;
+}

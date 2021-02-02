@@ -9,8 +9,8 @@
     <% if account_type == 'PUBLIC' %>
       <%= f.collection_check_boxes_fields(:unauthenticated_declarations_ids, @claim_payment.unauthenticated_declarations, value_method: :index, text_method: :text, label: '') %>
     <% else %>
-      <%= f.check_box_field(:authenticated_declaration_1, { translation_options: account_type } ) %>
-      <%= f.check_box_field(:authenticated_declaration_2, { translation_options: account_type } ) %>
+      <%= f.check_box_field(:authenticated_declaration1, { translation_options: account_type } ) %>
+      <%= f.check_box_field(:authenticated_declaration2, { translation_options: account_type } ) %>
     <% end %>
   </div>
   <%= f.button %>

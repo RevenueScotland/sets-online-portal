@@ -8,7 +8,7 @@ module LbttPartiesHelper
   # @param party_id [String] the party_id to look for
   # @param delete [Boolean] option to delete the party if found
   # @return [Party] found (or deleted)
-  def look_for_party(party_id, delete = false)
+  def look_for_party(party_id, delete: false)
     output = nil
     lbtt_return = wizard_load(Returns::LbttController)
 

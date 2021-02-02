@@ -124,6 +124,8 @@ module Claim
       wizard_step(NEW_STEPS)
 
       # Clear the cache to remove previously upload resource files
+      # This means if the user refreshes the page they lose the list of files uploaded
+      # but prevents files being shown incorrectly
       handle_file_upload('confirmation_of_payment',
                          before_add: :add_additional_document,
                          before_delete: :delete_additional_document,
@@ -228,7 +230,7 @@ module Claim
       if sub_object_attribute.nil?
         @claim_payment = wizard_load_or_redirect(redirect_url)
       elsif sub_object_attribute == :taxpayers
-        @claim_payment, @party = wizard_load_or_redirect(redirect_url, sub_object_attribute: sub_object_attribute)
+        @claim_payment, @party = wizard_load_or_redirect(redirect_url, sub_object_attribute)
       end
     end
 

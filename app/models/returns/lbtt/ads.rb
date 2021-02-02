@@ -127,7 +127,7 @@ module Returns
       # @see Tax which uses the same pattern
       # @param lbtt_return [LbttReturn] the parent model in which to create/refresh the model
       # @param force_clear [Boolean] force creation of a new model
-      def self.setup_ads(lbtt_return, force_clear = false)
+      def self.setup_ads(lbtt_return, force_clear: false)
         lbtt_return.ads = Lbtt::Ads.new if force_clear
 
         # ensure the Ads model exists and the important values are updated from values

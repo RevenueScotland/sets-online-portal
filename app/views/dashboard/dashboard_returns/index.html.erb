@@ -62,7 +62,8 @@
                                             options: {data: {confirm: 'Delete draft return?' }}},
                     { label: t('.enquiry_open'), path: :display, visible_for: :enquiry_indicator? },
                     { label: t('.draft_present'), path: :display, visible_for: :draft_present? },
-                       
+                    { label: t('.not_amendable'), path: :display, visible_for: :not_continuable_indicator? },
+                    { label: t('.amendable_period'), value_method: :amendable_cut_off_date, path: :display, visible_for: :not_continuable_warning? }
                   ],
                   { return_date: {format: :date},
                     agent_reference: {break_characters: '/', add: account_has_service?(:lbtt)},

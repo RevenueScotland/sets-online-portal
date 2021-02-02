@@ -66,9 +66,10 @@ module Serializer
   # @param remove_keys [Array] see from_object_to_json_hash method.
   # @return [Hash|Array] the converted collection to json format.
   def self.from_collection_to_json_hash(collection, remove_keys = [])
-    if collection.is_a?(Hash)
+    case collection
+    when Hash
       collection.each { |key, value| collection[key] = find_nested_value_from_collection(value, remove_keys) }
-    elsif collection.is_a?(Array)
+    when Array
       collection.collect { |value| find_nested_value_from_collection(value, remove_keys) }
     end
     collection
@@ -109,7 +110,7 @@ module Serializer
 
     return value.each { |key, item| value[key] = find_nested_value_from_object(item, remove_keys) } if value.is_a?(Hash)
     return value.collect { |item| find_nested_value_from_object(item, remove_keys) } if value.is_a?(Array)
-    # Note: if your model doesn't contain the inclusion of this Serializer, then that won't be converted to a
+    # NOTE: if your model doesn't contain the inclusion of this Serializer, then that won't be converted to a
     #       json format hash.
     # This is done so that any of the actual values (like String, Integer, Float, etc.) aren't modified and
     # returned as they are.

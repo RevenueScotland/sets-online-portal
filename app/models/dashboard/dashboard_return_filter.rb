@@ -20,6 +20,14 @@ module Dashboard
     validates :from_return_date, :to_return_date, custom_date: true
     validates :from_return_date, compare_date: { end_date_attr: :to_return_date }
 
+    # @param attributes [Hash] a hash of objects that uses Active model
+    def initialize(attributes = {})
+      super
+      # Default the all returns and draft only as the back office always expects these to be set
+      @all_versions ||= 'N'
+      @draft_only ||= 'N'
+    end
+
     # Define the ref data codes associated with the attributes not to be cached in this model
     # @return [Hash] <attribute> => <ref data composite key>
     def uncached_ref_data_codes

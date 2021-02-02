@@ -4,6 +4,6 @@
   <%= form_errors_for @party %>
   <%= f.collection_radio_buttons_fields(:buyer_seller_linked_ind, @party.list_ref_data(:buyer_seller_linked_ind),
                                          text_link: { t('.buyer_seller_linked_ind') =>
-                                                    link_to(t('.buyer_seller_linked_ind'), "#{Rails.configuration.x.external_links.tax_act_2010}", target: '_blank') }) %>
+                                                    link_to(t('.buyer_seller_linked_ind'), external_link_url('BUYER_SELLER'), target: '_blank') }) %>
   <%= f.button %>
 <% end %>

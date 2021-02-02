@@ -61,7 +61,7 @@ module PaginationHelper
   # @return [String] The page number with all the other params of the page
   def link_to_page(page, page_name)
     # parses a query of the page number, so that it can be merged with the url's queries.
-    response_query = Rack::Utils.parse_query(page_name.to_s + '=' + page.to_s)
+    response_query = Rack::Utils.parse_query("#{page_name}=#{page}")
     # parses a query of the current page's list of queries (params with values)
     request_query = Rack::Utils.parse_query(if request.nil?
                                               ''
@@ -69,7 +69,7 @@ module PaginationHelper
                                               request.env['QUERY_STRING']
                                             end)
     # merges all the parsed queries together
-    '?' + request_query.merge(response_query).to_query
+    "?#{request_query.merge(response_query).to_query}"
   end
 
   # Create Page tag contain start row number and last row in the current page
@@ -79,7 +79,7 @@ module PaginationHelper
   # @param last_row [Integer] the last row of the pagination
   # @return [HTML block element] the standard link to pages element with the appropriate classes
   def pages_tag(start_row, last_row)
-    link_content = link_to(start_row.to_s + '-' + last_row.to_s, '', class: 'active govuk-link')
+    link_content = link_to("#{start_row}-#{last_row}", '', class: 'active govuk-link')
     li_content = content_tag(:li, link_content)
     page_contents = content_tag(:ul, li_content.html_safe, class: 'list-inline')
     content_tag(:div, page_contents, class: 'pagination')

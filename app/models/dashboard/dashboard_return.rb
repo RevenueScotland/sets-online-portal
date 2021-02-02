@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'zip'
-require 'securerandom'
+# Need to manually require the zip gem as otherwise not loaded in production
+require_dependency 'zip'
 
 # Models an All return object
 module Dashboard
@@ -113,6 +113,8 @@ module Dashboard
     def return_is_continuable?
       return false if enquiry_open == true
 
+      return false if not_continuable_indicator?
+
       latest_draft_dis_ind == 'D'
     end
 
@@ -132,11 +134,33 @@ module Dashboard
 
       return false if draft_present == true
 
-      # Deducts today's date amendable_days with the filing date. Normally when a return has been filed, that shouldn't
-      # be in the future.
-      filing_days_old = (Date.today - filing_date).to_i.days
-      # If the filing date is 365 days old or younger then true (used for showing the amend)
-      (filing_days_old < Rails.configuration.x.returns.amendable_days)
+      remaining_amendable_period.positive?
+    end
+
+    # Return the remaining period during which the return is amendable
+    # If this is an initial draft version there is no filing date so the result is 'undefined'
+    # practically it return nil
+    # @return [Days] the number of days
+    def remaining_amendable_period
+      return if filing_date.blank?
+
+      # The below deals with various types. The parameter is a rails duration of .days if you take an integer from it
+      # it assumes the integer is seconds so turn the integer into a days duration
+      (Rails.configuration.x.returns.amendable_days - (Date.today - filing_date).to_i.days)
+    end
+
+    # Returns the cut off date for the amendable period
+    # @return [String] the date
+    def amendable_cut_off_date
+      DateFormatting.to_display_date_format(remaining_amendable_period.since.to_datetime)
+    end
+
+    # Used for determining whether to show warning message or not if less than 7 days remaining to
+    # submit a drafted return
+    # @return [Boolean] true if the return is in final days(last 7 days) of configurable period
+    def not_continuable_warning?
+      version.to_i > 1 && !remaining_amendable_period.negative? && indicator_is_draft &&
+        remaining_amendable_period <= Rails.configuration.x.returns.amendable_warning_days
     end
 
     # delete draft return from back office
@@ -298,13 +322,12 @@ module Dashboard
     # The request element list to retrieve the all return data.
     #
     # We need to downcase the filters from Yes/No as that is what the back office expects
-    # Note that we send nil if they are not set which is technically not correct but the back office is ok with this
     # @return [Hash] elements used to specify what data we want to get from the back office
     private_class_method def self.request_elements(requested_by, filter, pagination)
       { SRVCode: nil, ParRefno: requested_by.party_refno, Username: requested_by.username,
         OutstandingBalance: filter.lookup_ref_data_value(:outstanding_balance)&.downcase,
-        AllVersions: filter.lookup_ref_data_value(:all_versions)&.downcase,
-        DraftOnly: filter.lookup_ref_data_value(:draft_only)&.downcase }
+        AllVersions: filter.lookup_ref_data_value(:all_versions).downcase,
+        DraftOnly: filter.lookup_ref_data_value(:draft_only).downcase }
         .merge(request_optional_elements(filter, pagination))
     end
 
@@ -326,6 +349,13 @@ module Dashboard
       # using cached_ref_data_codes.
       object.return_status ||= object.lookup_ref_data_value(:latest_draft_dis_ind, 'L')
       object
+    end
+
+    private
+
+    # @return [Boolean] true if return is no longer continuable
+    def not_continuable_indicator?
+      version.to_i > 1 && indicator_is_draft && remaining_amendable_period.negative?
     end
   end
 end

@@ -48,27 +48,27 @@ module Returns
 
       # Work out the lower_tonnage based on the waste entries
       def net_lower_tonnage
-        sum_from_values(wastes, :net_lower_tonnage, true)
+        sum_from_values(wastes, :net_lower_tonnage, integer: true)
       end
 
       # Work out the standard_tonnage based on the waste entries
       def net_standard_tonnage
-        sum_from_values(wastes, :net_standard_tonnage, true)
+        sum_from_values(wastes, :net_standard_tonnage, integer: true)
       end
 
       # Work out the exempt_tonnage based on the waste entries
       def exempt_tonnage
-        sum_from_values(wastes, :exempt_tonnage, true)
+        sum_from_values(wastes, :exempt_tonnage, integer: true)
       end
 
       # Work out the water_tonnage based on the waste entries
       def water_tonnage
-        sum_from_values(wastes, :water_tonnage, true)
+        sum_from_values(wastes, :water_tonnage, integer: true)
       end
 
       # Work out the total_tonnage based on the waste entries
       def total_tonnage
-        sum_from_values(wastes, :total_tonnage, true)
+        sum_from_values(wastes, :total_tonnage, integer: true)
       end
 
       # Gets users sites data from the back office for the account of the given user

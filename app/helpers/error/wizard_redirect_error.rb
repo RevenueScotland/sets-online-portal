@@ -9,6 +9,7 @@ module Error
     attr_reader :url
 
     def initialize(url)
+      super()
       @url = url
     end
 

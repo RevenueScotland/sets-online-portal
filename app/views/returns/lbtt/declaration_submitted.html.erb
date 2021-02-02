@@ -29,7 +29,7 @@
         <p class="govuk-body">
           <%= link_to t('go_to_dashboard'), dashboard_path if current_user %> <br>
           <% link = [
-            { link: :public_landing_return_page, path: Rails.configuration.x.external_links.public_landing_return_page }
+            { link: :public_landing_return_page, path: external_link_url('CANCEL_HOME') }
             ] %>
           <%= navigational_links(link) unless current_user%>
         </p>

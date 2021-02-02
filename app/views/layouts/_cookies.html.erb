@@ -1,0 +1,14 @@
+<% if cookies && cookies['revscot_cookies'].nil? %>
+  <div class="revscot_cookies">
+    <div class="revscot_cookies-content">
+      <span class="revscot_cookies-text">
+        <h2><%= t('.header') %></h2>
+        <p><%= t('.body_html') %></p>
+      </span>
+      <span class="revscot_cookies-buttons">
+        <button class="revscot_cookies-ok"> <%= t('.ok_thanks') %> </button>
+        <button class="revscot_cookies-no"> <%= t('.no_thanks') %> </button>
+      </span>
+    </div>
+  </div>
+<% end %>

@@ -162,6 +162,7 @@ en:
         title: "Repayment details"
       declaration:
         title: "Payment and submission"
+        SLFT_additional_Warning: "Your credit claimed cannot be more than 90% of your qualifying contribution for the accounting period and must not exceed 5.6% of your SLFT liability in the contribution year"
         warning: "If you give false information, you may face penalties and/or prosecution"
       declaration_submitted:
         title: ""

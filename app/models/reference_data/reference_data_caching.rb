@@ -31,8 +31,8 @@ module ReferenceData
     # @param workplace_code [String] back office key
     # @param safe_lookup [Boolean] Default false if set to true don't raise and error if no data
     # @return a list for the given domain, service and workplace codes.
-    def self.list(domain_code, service_code, workplace_code, safe_lookup = false)
-      output = lookup(domain_code, service_code, workplace_code, safe_lookup)&.values&.sort_by(&:sort_key)
+    def self.list(domain_code, service_code, workplace_code, safe_lookup: false)
+      output = lookup(domain_code, service_code, workplace_code, safe_lookup: safe_lookup)&.values&.sort_by(&:sort_key)
       comp_key = format_composite_key(domain_code, service_code, workplace_code)
       log_or_raise_lookup_error(output, comp_key, safe_lookup, :list)
 
@@ -46,9 +46,9 @@ module ReferenceData
     # @param workplace_code [String] back office key
     # @raise [Error::AppError] if the data doesn't exist.
     # @return [Hash] the hash for the given domain, service and workplace codes.
-    def self.lookup(domain_code, service_code, workplace_code, safe_lookup = false)
+    def self.lookup(domain_code, service_code, workplace_code, safe_lookup: false)
       comp_key = format_composite_key(domain_code, service_code, workplace_code)
-      output = lookup_multiple([comp_key], true)[comp_key]
+      output = lookup_multiple([comp_key], safe_lookup: true)[comp_key]
       log_or_raise_lookup_error(output, comp_key, safe_lookup)
 
       output || {}
@@ -57,7 +57,7 @@ module ReferenceData
     # Helper method to get the cached data for multiple keys at once (ie only 1 call to the cache).
     # @param [Array] composite_keys - list of composite keys made from calling @see composite_key.
     # @return [Hash] output[composite_key] = <result>
-    def self.lookup_multiple(composite_keys, safe_lookup = false)
+    def self.lookup_multiple(composite_keys, safe_lookup: false)
       Rails.logger.debug("Looking up multiple keys #{composite_keys}")
       output = cached_values.slice(*composite_keys)
       log_or_raise_lookup_error(output, composite_keys, safe_lookup, :multiple)

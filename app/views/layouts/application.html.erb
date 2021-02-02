@@ -7,7 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" >
     <meta name="session_ttl_warning" content="<%= @session_ttl_warning %>">
     <meta name="session_ttl_warning_message" content="<%= t('session_ttl_warning_message') %>">
-    <meta name="analytic_tracking_id" content="<%= ENV['ANALYTIC_TRACKING_ID'] %>">
+    <% unless cookies && cookies['revscot_cookies'] == 'no' %>
+      <% # Don't set the tracking id of the user has not consented to cookies, this will prevent the GA scripts being run %>
+      <meta name="analytic_tracking_id" content="<%= ENV['ANALYTIC_TRACKING_ID'] %>">
+    <% end %>
     <% unless content_for(:turbolinks_cache_control).nil? %>
       <meta name="turbolinks-cache-control" content="<%= yield(:turbolinks_cache_control) %>">
     <% end %>
@@ -22,7 +25,7 @@
       <main class="govuk-main-wrapper">
         <% # @see BackHelper.rb for more information %>
         <%= yield(:hide_back_link) == 'true' ? clear_previous_stack : previous_page_link{ yield(:hide_back_link) } %>
-        <%= content_for?(:public_landing_return_link) ? link_to(yield(:public_landing_return_link), Rails.configuration.x.external_links.public_landing_return_page, class: 'govuk-back-link') : '' %>
+        <%= content_for?(:public_landing_return_link) ? link_to(yield(:public_landing_return_link), external_link_url('CANCEL_HOME'), class: 'govuk-back-link') : '' %>
         <%= yield :form_errors %>
         <%# The tabindex='-1' property is needed for the <h1> so that the screen reader can read the heading 1 of
             the page, by putting the focus on it %>
@@ -36,5 +39,6 @@
     <% raise ScriptError, 'page view missing, add: content_for :page_view, render_page_view(__FILE__) to your page' unless content_for?(:page_view) %>
     <%= content_for :page_view %>
     <%= render "/layouts/footer" %>
+    <%= render "/layouts/cookies" %>
   </body>
 </html>

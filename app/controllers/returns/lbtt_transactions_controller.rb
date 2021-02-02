@@ -57,7 +57,7 @@ module Returns
     def linked_transactions
       wizard_list_step(nil, setup_step: :setup_linked_transactions_step,
                             next_step: :calculate_next_step, cache_index: LbttController,
-                            merge_list: :merge_linked_transactions, list_attribute: :link_transactions,
+                            list_required: :linked_ind, list_attribute: :link_transactions,
                             new_list_item_instance: :new_list_item_link_transactions)
     end
 
@@ -65,7 +65,8 @@ module Returns
     def reliefs_on_transaction
       wizard_list_step(nil, setup_step: :setup_reliefs_on_transaction_step,
                             next_step: :calculate_next_step, cache_index: LbttController,
-                            merge_list: :merge_non_ads_relief_claims, list_attribute: :non_ads_relief_claims,
+                            list_required: :non_ads_reliefclaim_option_ind,
+                            list_attribute: :non_ads_relief_claims,
                             new_list_item_instance: :new_list_item_non_ads_relief_claims)
     end
 
@@ -78,7 +79,7 @@ module Returns
     def rental_years
       wizard_list_step(nil, setup_step: :setup_yearly_rents,
                             next_step: :calculate_next_step, cache_index: LbttController,
-                            merge_list: :merge_rental_years, list_attribute: :yearly_rents,
+                            list_not_required: :rent_for_all_years, list_attribute: :yearly_rents,
                             new_list_item_instance: :new_list_item_yearly_rents)
     end
 
@@ -112,64 +113,20 @@ module Returns
 
     # Used in wizard_list_step as part of the merging of data.
     # @return [Object] new instance of ReliefClaim class that has attributes with value.
-    def new_list_item_non_ads_relief_claims(hash_attributes = {})
-      Lbtt::ReliefClaim.new(hash_attributes)
-    end
-
-    # Merge relief array hash data submitted in the params into the right ReliefClaim objects in the model
-    # @return [Boolean] if the merge was successful and the models are valid
-    def merge_non_ads_relief_claims
-      return true unless @lbtt_return.non_ads_reliefclaim_option_ind == 'Y'
-
-      # Merge link transactions array hash data submitted in the params into the right link transactions objects
-      # @see merge_params_and_validate_with_list to know more
-      yield
-
-      # Special case we need to validated that we don't have duplicated now we can only do this once
-      # they are all loaded then trigger validation again on the model
-      @lbtt_return.valid?(:non_ads_reliefclaim_option_ind)
-      # Now we need to check if there are errors on the reliefs
-      @lbtt_return.non_ads_relief_claims.all? { |obj| obj.errors.none? }
+    def new_list_item_non_ads_relief_claims
+      Lbtt::ReliefClaim.new
     end
 
     # Used in wizard_list_step as part of the merging of data.
     # @return [Object] new instance of YearlyRent class that has attributes with value.
-    def new_list_item_yearly_rents(hash_attributes = {})
-      Lbtt::YearlyRent.new(hash_attributes)
-    end
-
-    # Merge rental year array hash data submitted in the params into the right RentalYear objects in the model
-    # @return [Boolean] if the merge was successful and the models are valid
-    def merge_rental_years
-      # If the flag isn't set then do not return
-      # We have to do this in the controller rather than the model as this is about creating entries in the model
-      return true unless @lbtt_return.rent_for_all_years == 'N'
-
-      # Merges the params values with the wizard object's list attribute and validates each as they're merged
-      # @see merge_params_and_validate_with_list to know more
-      yield
+    def new_list_item_yearly_rents
+      Lbtt::YearlyRent.new
     end
 
     # Used in wizard_list_step as part of the merging of data.
     # @return [Object] new instance of LinkTransactions class that has attributes with value.
-    def new_list_item_link_transactions(hash_attributes = {})
-      Lbtt::LinkTransactions.new(hash_attributes)
-    end
-
-    # Merge link transactions array hash data submitted in the params into the right link transactions objects
-    # in the model
-    # @return [Boolean] if the merge was successful and the models are valid
-    def merge_linked_transactions
-      # If the flag isn't set then do not return
-      # We have to do this in the controller rather than the model as this is about creating entries in the model
-      return true unless @lbtt_return.linked_ind == 'Y'
-
-      # @see merge_params_and_validate_with_list to learn more about how this is being used
-      @list_item_validation_key = @lbtt_return.flbt_type
-
-      # Merges the params values with the wizard object's list attribute and validates each as they're merged
-      # @see merge_params_and_validate_with_list to know more
-      yield
+    def new_list_item_link_transactions
+      Lbtt::LinkTransactions.new(convey: @lbtt_return.convey?)
     end
 
     # change the page flow as lbtt return type
@@ -192,8 +149,8 @@ module Returns
 
     # convert lease return specific date
     def convert_lease_transaction_date
-      @lbtt_return.lease_start_date = @lbtt_return.lease_start_date.to_date unless @lbtt_return.lease_start_date.nil?
-      @lbtt_return.lease_end_date = @lbtt_return.lease_end_date.to_date unless @lbtt_return.lease_end_date.nil?
+      @lbtt_return.lease_start_date = @lbtt_return.lease_start_date&.to_date
+      @lbtt_return.lease_end_date = @lbtt_return.lease_end_date&.to_date
     end
 
     # Updates the yearly rents array as per the initial values of (or changes to) the lease start and end date.
@@ -222,7 +179,7 @@ module Returns
     end
 
     # Either creates a new array, deletes items or adds new instances of YearlyRents object to (/from) the yearly_rents
-    # @param previous [Integer] See 'previous' description from {#update_yearly_rents} method
+    # @param previous [Integer] See 'previous' description from {#update_yearly_rents_and_calculate} method
     def update_yearly_rents_array(previous)
       # The value of the difference between 'previous' calculated years and the calculated years now.
       difference = calculate_yearly_rents_years - previous
@@ -245,9 +202,9 @@ module Returns
 
     # Loads existing wizard models from the wizard cache or redirects to the first step.
     # @return [Waste] the model for wizard saving
-    def load_step(_sub_object_attribute = nil)
-      @post_path = wizard_post_path(LbttController.name)
-      @lbtt_return = wizard_load_or_redirect(returns_lbtt_summary_url, {}, Returns::LbttController)
+    def load_step(sub_object_attribute = nil)
+      @post_path = wizard_post_path
+      @lbtt_return = wizard_load_or_redirect(returns_lbtt_summary_url, sub_object_attribute, Returns::LbttController)
     end
 
     # Custom setup for this step.  Calls @see #load_step to set up the model.
@@ -281,9 +238,9 @@ module Returns
     def setup_transaction_dates_step
       model = load_step
 
-      @lbtt_return.effective_date = @lbtt_return.effective_date.to_date unless @lbtt_return.effective_date.nil?
-      @lbtt_return.relevant_date = @lbtt_return.relevant_date.to_date unless @lbtt_return.relevant_date.nil?
-      @lbtt_return.contract_date = @lbtt_return.contract_date.to_date unless @lbtt_return.contract_date.nil?
+      @lbtt_return.effective_date = @lbtt_return.effective_date&.to_date
+      @lbtt_return.relevant_date = @lbtt_return.relevant_date&.to_date
+      @lbtt_return.contract_date = @lbtt_return.contract_date&.to_date
       convert_lease_transaction_date
 
       model

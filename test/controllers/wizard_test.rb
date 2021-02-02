@@ -32,15 +32,13 @@ class WizardTest < ActionController::TestCase
     # Simulate the request session which isn't available in tests
     attr_accessor :session
 
-    # Override method to not be private so can be called for test
+    # Override method to not be private  and with default class name
     def wizard_cache_key(cache_index = self.class.name)
       super
     end
 
     # Override method to not be private so can be called for test
-    def wizard_cache_expiry_time
-      super
-    end
+    public :wizard_cache_expiry_time
   end
 
   # Another controller that includes Wizard.
@@ -69,7 +67,8 @@ class WizardTest < ActionController::TestCase
     controller.wizard_save(slft)
 
     # merge in something else
-    controller.wizard_merge_and_save(controller.wizard_load, nil, 'tare_reference' => 'mars') { true }
+    obj = controller.wizard_load
+    controller.wizard_merge_and_save(obj, obj, 'tare_reference' => 'mars') { true }
 
     # save a decoy under another controller in the same session
     another = AnotherWizardController.new
@@ -81,7 +80,8 @@ class WizardTest < ActionController::TestCase
     assert_equal('mars', cached_data.tare_reference, 'Saved and loaded data should exist')
 
     # change the value
-    controller.wizard_merge_and_save(controller.wizard_load, nil, 'tare_reference' => 'under the sea') { true }
+    obj = controller.wizard_load
+    controller.wizard_merge_and_save(obj, obj, 'tare_reference' => 'under the sea') { true }
     cached_data = controller.wizard_load
     assert_equal('under the sea', cached_data.tare_reference, 'Overriding values should be allowed')
 

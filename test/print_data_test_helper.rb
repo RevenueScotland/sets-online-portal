@@ -35,10 +35,10 @@ module PrintDataTestHelper
   # @return [Array] two json values which are the print data of the model and file.
   # @note "printdata" associates with the file (and file name), and "print_data" associates with the output.
   def model_and_printdata_json(folder, layout)
-    model_json = File.read(PRINT_TEST_PATH + folder + '/model.json')
+    model_json = File.read("#{PRINT_TEST_PATH}#{folder}/model.json")
     printdata_name = { print_layout: '', print_layout_receipt: '_receipt' }[layout]
     # An example is: test/fixtures/print_data_test_data/lbtt_conveyance_a/printdata.json
-    printdata_json = File.read(PRINT_TEST_PATH + folder + "/printdata#{printdata_name}.json")
+    printdata_json = File.read("#{PRINT_TEST_PATH}#{folder}/printdata#{printdata_name}.json")
 
     [model_json, printdata_json]
   end

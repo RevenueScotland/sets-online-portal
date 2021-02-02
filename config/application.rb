@@ -80,32 +80,6 @@ module RevScot
     config.x.authentication.password_due_period = 5
     # hold number of rows shown per page on table where pagination applied
     config.x.pagination.per_page = 10
-    # hold external scottish revenue url
-    config.x.external_links.accessibility = 'http://www.revenue.scot/accessibility'
-    config.x.external_links.legal_notices = 'http://www.revenue.scot/legal-notices'
-    config.x.external_links.site_map = 'http://www.revenue.scot/site-map'
-    config.x.external_links.foi = 'http://www.revenue.scot/contact-us/freedom-information-guide'
-    config.x.external_links.external_home = 'https://www.revenue.scot/'
-    config.x.external_links.public_landing_return_page = 'https://www.revenue.scot/'
-    config.x.external_links.eligibility_checker = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/worked-examples-additional/exam-63'
-
-    config.x.external_links.tax_act_2010 = 'http://www.legislation.gov.uk/ukpga/2010/4/section/1122'
-    config.x.external_links.lbtt7001_partnerships = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/partnerships'
-    config.x.external_links.lbtt8001_trusts = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/trusts'
-    config.x.external_links.lbtt10001_ads = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/lbtt10001-lbtt-additional-dwelling'
-    config.x.external_links.lbtt4010_residential_definition = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/tax-return/lbtt4010'
-    config.x.external_links.lbtt4012_non_residential_definition = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/tax-return/lbtt4012'
-    config.x.external_links.lbtt1004_effective_date = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/how-tax-works/lbtt1004'
-    config.x.external_links.scotland_tax_act_2013 = 'http://www.legislation.gov.uk/asp/2013/11/section/36'
-    config.x.external_links.lbtt1007_options = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/how-tax-works/lbtt1007'
-    config.x.external_links.lbtt2008_linked_transactions = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/determining-chargeable/lbtt2008'
-    config.x.external_links.lbtt3010_reliefs = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/exemptions-reliefs/lbtt3010-tax'
-    config.x.external_links.lbtt2005_contingent_events = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/determining-chargeable/lbtt2005'
-    config.x.external_links.lbtt2001_determining_chargeable = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/determining-chargeable'
-    config.x.external_links.lbtt2002_what_chargeable = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/determining-chargeable/lbtt2002'
-    config.x.external_links.lbtt2009_not_chargeable = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/determining-chargeable/lbtt2009'
-    config.x.external_links.lbtt2006_non_rent = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/leases/lbtt6003/lbtt6006'
-    config.x.external_links.lbtt6011_npv = 'https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/leases/lbtt6009/lbtt6011'
 
     # Holds the temporary directory for use in upload and download files
     config.x.temp_folder = File.join(Dir.tmpdir, 'revscot')
@@ -137,6 +111,9 @@ module RevScot
 
     # Configuration for the days until amend is no longer visible/valid
     config.x.returns.amendable_days = 365.days
+
+    # The number of days before an amend can be completed to show the warning on the draft version
+    config.x.returns.amendable_warning_days = 7.days
 
     # Configuration flag to turn off download file virus scanning
     config.x.no_download_file_virus_scanning = ENV.key?('NO_DOWNLOAD_VIRUS_SCANNING')

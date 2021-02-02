@@ -57,6 +57,9 @@ en:
         token: "Token"
         user_is_signed_ta_cs: "I confirm that I have read and understood the terms & conditions (opens in a new window)"
         user_roles: "User roles"
+        memorable_question: Memorable word
+        memorable_answer: Memorable word hint
+        MEMORABLE_password: "Password"
       user_filter:
         full_name: "Name"
         user_is_current: "Current"
@@ -68,6 +71,8 @@ en:
         CREATE_new_password: "This must be a minimum of 9 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character, like, +, $, !"
         UPDATE_new_password: "This must be a minimum of 9 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character, like, +, $, !"
         token: "This is the token in the e-mail you have been sent"
+        MEMORABLE_password: Provide your password so that we know it is you making this change
+        memorable_answer: We may use the hint to remind you of the memorable word when you ring us up
       user_filter:
         full_name: "Enter part or all of the user's full name"
     errors:
@@ -108,3 +113,9 @@ en:
     update_tcs:
       title: "Terms and Conditions"
       description: "In order to proceed you must read and accept the terms and conditions"
+    memorable_word:
+      title: "Create or update memorable word"
+      description: "Revenue Scotland will use the memorable word to confirm that it is you when you ring them up. We will never ask you for the complete word."
+    memorable_word_confirmation:
+      title: "Change memorable word confirmation"
+      description: "Your memorable word has been successfully changed"

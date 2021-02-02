@@ -1,0 +1,289 @@
+{
+  "section": [
+    {
+      "sectioncode": "application_type",
+      "sectiontype": "list",
+      "sectiondivider": true,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Application",
+      "listitem": [
+        {
+          "itemcode": "case_reference",
+          "itemformat": null,
+          "itemlabel": "Case reference",
+          "itemdata": "\u003c%CASE_REFERENCE%\u003e"
+        },
+        {
+          "itemcode": "applicant_type",
+          "itemformat": null,
+          "itemlabel": "Select the relevant option that describes your role",
+          "itemdata": "Landfill operator"
+        },
+        {
+          "itemcode": "application_type",
+          "itemformat": null,
+          "itemlabel": "What application are you completing?",
+          "itemdata": "Application for an alternative weighing method"
+        },
+        {
+          "itemcode": "existing_agreement",
+          "itemformat": null,
+          "itemlabel": "Is this application a review of an existing agreement?",
+          "itemdata": "No"
+        }
+      ],
+      "itemcount": 4
+    },
+    {
+      "sectioncode": "applicant_details",
+      "sectiontype": "list",
+      "sectiondivider": true,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Landfill operator details",
+      "listitem": [
+        {
+          "itemcode": "organisation_name",
+          "itemformat": null,
+          "itemlabel": "Organisation name",
+          "itemdata": "Rave"
+        },
+        {
+          "itemcode": "slft_registration_number",
+          "itemformat": null,
+          "itemlabel": "SLfT registration Number",
+          "itemdata": "SLFT-LO-00001"
+        },
+        {
+          "itemcode": "telephone_number",
+          "itemformat": null,
+          "itemlabel": "Telephone number",
+          "itemdata": "0123456789"
+        },
+        {
+          "itemcode": "email_address",
+          "itemformat": null,
+          "itemlabel": "Email address",
+          "itemdata": "shrut@gmail.com"
+        }
+      ],
+      "itemcount": 4
+    },
+    {
+      "sectioncode": "address",
+      "sectiontype": "list",
+      "sectiondivider": false,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Landfill operator address",
+      "listitem": [
+        {
+          "itemcode": "address_line1",
+          "itemformat": null,
+          "itemlabel": "Building and street",
+          "itemdata": "9 Lavender Lane"
+        },
+        {
+          "itemcode": "town",
+          "itemformat": null,
+          "itemlabel": "Town",
+          "itemdata": "CIRENCESTER"
+        },
+        {
+          "itemcode": "county",
+          "itemformat": null,
+          "itemlabel": "County",
+          "itemdata": "Gloucestershire"
+        },
+        {
+          "itemcode": "postcode",
+          "itemformat": null,
+          "itemlabel": "Postcode",
+          "itemdata": "GL7 1PP"
+        }
+      ],
+      "itemcount": 4
+    },
+    {
+      "sectioncode": "details",
+      "sectiontype": "list",
+      "sectiondivider": true,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Landfill site details",
+      "listitem": [
+        {
+          "itemcode": "site_name",
+          "itemformat": null,
+          "itemlabel": "Site name",
+          "itemdata": "test 1"
+        },
+        {
+          "itemcode": "sepa_license_number",
+          "itemformat": null,
+          "itemlabel": "SEPA license number",
+          "itemdata": "123456"
+        }
+      ],
+      "itemcount": 2
+    },
+    {
+      "sectioncode": "address",
+      "sectiontype": "list",
+      "sectiondivider": false,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Site address",
+      "listitem": [
+        {
+          "itemcode": "address_line1",
+          "itemformat": null,
+          "itemlabel": "Building and street",
+          "itemdata": "11 Lavender Lane"
+        },
+        {
+          "itemcode": "town",
+          "itemformat": null,
+          "itemlabel": "Town",
+          "itemdata": "CIRENCESTER"
+        },
+        {
+          "itemcode": "county",
+          "itemformat": null,
+          "itemlabel": "County",
+          "itemdata": "Gloucestershire"
+        },
+        {
+          "itemcode": "postcode",
+          "itemformat": null,
+          "itemlabel": "Postcode",
+          "itemdata": "GL7 1PP"
+        }
+      ],
+      "itemcount": 4
+    },
+    {
+      "sectioncode": "details",
+      "sectiontype": "list",
+      "sectiondivider": true,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Landfill site details",
+      "listitem": [
+        {
+          "itemcode": "site_name",
+          "itemformat": null,
+          "itemlabel": "Site name",
+          "itemdata": "test 2"
+        },
+        {
+          "itemcode": "sepa_license_number",
+          "itemformat": null,
+          "itemlabel": "SEPA license number",
+          "itemdata": "12345"
+        }
+      ],
+      "itemcount": 2
+    },
+    {
+      "sectioncode": "address",
+      "sectiontype": "list",
+      "sectiondivider": false,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Site address",
+      "listitem": [
+        {
+          "itemcode": "address_line1",
+          "itemformat": null,
+          "itemlabel": "Building and street",
+          "itemdata": "12 Lavender Lane"
+        },
+        {
+          "itemcode": "town",
+          "itemformat": null,
+          "itemlabel": "Town",
+          "itemdata": "CIRENCESTER"
+        },
+        {
+          "itemcode": "county",
+          "itemformat": null,
+          "itemlabel": "County",
+          "itemdata": "Gloucestershire"
+        },
+        {
+          "itemcode": "postcode",
+          "itemformat": null,
+          "itemlabel": "Postcode",
+          "itemdata": "GL7 1PP"
+        }
+      ],
+      "itemcount": 4
+    },
+    {
+      "sectioncode": "supporting_documents",
+      "sectiontype": "list",
+      "sectiondivider": true,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Supporting documentation",
+      "listitem": [
+        {
+          "itemcode": "supporting_document_list",
+          "itemformat": "list",
+          "itemlabel": "Supporting document list",
+          "itemdata": "Evidence of exception circumstances that make it impossible or impractical to use the available weighbridge on your site or one within close proximity : Yes\nEvidence that your weighbridge or another nearby weighbridge has broken down, and you would incur unreasonable costs by using any other weighbridge : Yes\nProgramme of repair for your weighbridge, or a nearby weighbridge, including time-scale of completion : No\nDetails of the alternative weighting method to be used, including evidence that the method will produce a fair and reasonable calculation of weight : No\nSEPA environmental team correspondence regarding alternative : No\nOther : No"
+        }
+      ],
+      "itemcount": 1
+    },
+    {
+      "sectioncode": "declaration",
+      "sectiontype": "list",
+      "sectiondivider": true,
+      "pagebreak": null,
+      "displaytitle": true,
+      "sectiontitle": "Declarations",
+      "listitem": [
+        {
+          "itemcode": "declaration",
+          "itemformat": null,
+          "itemlabel": "The information I have given in this application and in the supporting documents is complete, correct and accurate to the best of my knowledge",
+          "itemdata": "Yes"
+        },
+        {
+          "itemcode": "change_declaration",
+          "itemformat": null,
+          "itemlabel": "In the event of any of the information in this application ceasing to be correct or complete, I will notify Revenue Scotland immediately about all changes or alterations",
+          "itemdata": "Yes"
+        },
+        {
+          "itemcode": "declaration_name",
+          "itemformat": null,
+          "itemlabel": "Full name",
+          "itemdata": "Shrutika patil SE"
+        },
+        {
+          "itemcode": "declaration_position",
+          "itemformat": null,
+          "itemlabel": "Job title or position",
+          "itemdata": "SE"
+        },
+        {
+          "itemcode": "declaration_telephone_number",
+          "itemformat": null,
+          "itemlabel": "Telephone",
+          "itemdata": "0123456789"
+        },
+        {
+          "itemcode": "declaration_email_address",
+          "itemformat": null,
+          "itemlabel": "Email address",
+          "itemdata": "shrut@gmail.com"
+        }
+      ],
+      "itemcount": 6
+    }
+  ]
+}

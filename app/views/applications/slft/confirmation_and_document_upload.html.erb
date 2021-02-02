@@ -1,0 +1,22 @@
+<% content_for :hide_back_link, true %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for :page_title, t('.title') %>
+<%= form_for @slft_application, url: @post_path, html: { multipart: true }, local: true do |f| %>
+  <%= form_errors_for [@slft_application, @resource_items_hash] %>
+  <%= display_paragraph_components(body: t('.reference_message_html', case_reference: @slft_application.case_references.to_sentence(),
+                                                                      count: @slft_application.case_references.length)) %>
+  <%= display_paragraph_components(body: t('.submitted_date', system_date: DateFormatting.to_display_date_format(Date.today))) %>
+  <%= display_paragraph_components(body: UtilityHelper.swap_texts(t('.contact_us').html_safe,
+                                                                  text_link: { t('.contact_us_link_text') => link_to(t('.contact_us_link_text'), 
+                                                                                                                       external_link_url('CONTACT_US'),
+                                                                                                                       target: '_blank') })) %>
+  <%= navigational_links( [{link: ('.print'), path: nil, link_html_options: {class:'print govuk-link'} },
+                           { link: :download_application_pdf, path: download_pdf_applications_slft_path, link_html_options: { target: '_blank' } } ] )%>
+
+
+  <%= display_paragraph_components(heading: t('.evidence_heading'), body: t('.evidence_body')) %>
+  <%= display_table(@slft_application.display_supporting_document_list, [:code, :value], [], { code: { label: t('.code') }, value: { label: t('.value') } }) %>
+  <%= render "/layouts/file_upload_component", file_upload_hint: full_lazy_lookup_path('.file_upload_hint'), multiple: true %>
+<% end %>
+<%= link_to t('go_to_dashboard'), dashboard_path if current_user %>
+<%= link_to t('finish'), external_link_url('CANCEL_HOME') unless current_user %>

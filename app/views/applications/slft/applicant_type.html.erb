@@ -1,0 +1,8 @@
+<% content_for :hide_back_link, :remove_param_new %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for :page_title, t('.title') %>
+<%= form_for @slft_application, url: @post_path, local: true do |f| %>
+  <%= form_errors_for @slft_application %>
+  <%= f.collection_radio_buttons_fields(:applicant_type, @slft_application.list_ref_data(:applicant_type), alignment: 'vertical') %>
+  <%= f.button %>
+<% end %>

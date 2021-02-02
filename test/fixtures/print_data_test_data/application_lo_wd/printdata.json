@@ -1,0 +1,334 @@
+{
+    "section": [
+        {
+            "sectioncode": "application_type",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Application",
+            "listitem": [
+                {
+                    "itemcode": "case_reference",
+                    "itemformat": null,
+                    "itemlabel": "Case reference",
+                    "itemdata": "\u003c%CASE_REFERENCE%\u003e"
+                },
+                {
+                    "itemcode": "applicant_type",
+                    "itemformat": null,
+                    "itemlabel": "Select the relevant option that describes your role",
+                    "itemdata": "Landfill operator"
+                },
+                {
+                    "itemcode": "application_type",
+                    "itemformat": null,
+                    "itemlabel": "What application are you completing?",
+                    "itemdata": "Application to receive water discounted waste"
+                },
+                {
+                    "itemcode": "existing_agreement",
+                    "itemformat": null,
+                    "itemlabel": "Is this application a review of an existing agreement?",
+                    "itemdata": "No"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "applicant_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Landfill operator details",
+            "listitem": [
+                {
+                    "itemcode": "organisation_name",
+                    "itemformat": null,
+                    "itemlabel": "Organisation name",
+                    "itemdata": "Rave"
+                },
+                {
+                    "itemcode": "slft_registration_number",
+                    "itemformat": null,
+                    "itemlabel": "SLfT registration Number",
+                    "itemdata": "SLFT-LO-00001"
+                },
+                {
+                    "itemcode": "telephone_number",
+                    "itemformat": null,
+                    "itemlabel": "Telephone number",
+                    "itemdata": "0123456789"
+                },
+                {
+                    "itemcode": "email_address",
+                    "itemformat": null,
+                    "itemlabel": "Email address",
+                    "itemdata": "shrut@gmail.com"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Landfill operator address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "Grosmont Wood Farm"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Grosmont"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "ABERGAVENNY"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "NP7 8LB"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "waste_producer_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Waste producer details",
+            "listitem": [
+                {
+                    "itemcode": "organisation_name",
+                    "itemformat": null,
+                    "itemlabel": "Organisation name",
+                    "itemdata": "Rave"
+                },
+                {
+                    "itemcode": "telephone_number",
+                    "itemformat": null,
+                    "itemlabel": "Telephone number",
+                    "itemdata": "0123456789"
+                },
+                {
+                    "itemcode": "email_address",
+                    "itemformat": null,
+                    "itemlabel": "Email address",
+                    "itemdata": "shrut@gmail.com"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Waste producer address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "Coffee Nero"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Waverley Railway Station"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "EDINBURGH"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "EH1 1BB"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Landfill site details",
+            "listitem": [
+                {
+                    "itemcode": "site_name",
+                    "itemformat": null,
+                    "itemlabel": "Site name",
+                    "itemdata": "test 1"
+                },
+                {
+                    "itemcode": "sepa_license_number",
+                    "itemformat": null,
+                    "itemlabel": "SEPA license number",
+                    "itemdata": "1234"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Site address",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "7 Lavender Lane"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "CIRENCESTER"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": "Gloucestershire"
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "GL7 1PP"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "wastes",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Site waste details",
+            "listitem": [
+                {
+                    "itemcode": "further_treatment",
+                    "itemformat": null,
+                    "itemlabel": "Will the waste undergo further treatment at the landfill site to reduce the water content?",
+                    "itemdata": "waste undergo further treat"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "wastes",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": null,
+            "listitem": [
+                {
+                    "itemcode": "type_of_waste",
+                    "itemformat": null,
+                    "itemlabel": "Type of waste",
+                    "itemdata": "Type of waste"
+                },
+                {
+                    "itemcode": "final_destination",
+                    "itemformat": null,
+                    "itemlabel": "Final destination",
+                    "itemdata": "destination"
+                },
+                {
+                    "itemcode": "use",
+                    "itemformat": null,
+                    "itemlabel": "Use",
+                    "itemdata": "Use"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "declaration",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Declarations",
+            "listitem": [
+                {
+                    "itemcode": "declaration",
+                    "itemformat": null,
+                    "itemlabel": "I declare that I apply to operate the scheme which allows discounting of water content for Scottish landfill tax purposes, of certain water materials produced by the waste producer, named within, subject to discount being approved by Revenue Scotland",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "change_declaration",
+                    "itemformat": null,
+                    "itemlabel": "In the event of any of the information in this application ceasing to be correct or complete, I will notify Revenue Scotland immediately about all changes or alterations",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "declaration_name",
+                    "itemformat": null,
+                    "itemlabel": "Full name",
+                    "itemdata": "Shrutika patil SE"
+                },
+                {
+                    "itemcode": "declaration_position",
+                    "itemformat": null,
+                    "itemlabel": "Job title or position",
+                    "itemdata": "SE"
+                },
+                {
+                    "itemcode": "declaration_telephone_number",
+                    "itemformat": null,
+                    "itemlabel": "Telephone",
+                    "itemdata": "0123456789"
+                },
+                {
+                    "itemcode": "declaration_email_address",
+                    "itemformat": null,
+                    "itemlabel": "Email address",
+                    "itemdata": "shrut@gmail.com"
+                }
+            ],
+            "itemcount": 6
+        }
+    ]
+}

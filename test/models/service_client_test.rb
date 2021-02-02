@@ -40,6 +40,7 @@ class ServiceClientTest < ActiveSupport::TestCase
 
     # need to touch errors for it to exist
     def initialize
+      super
       @errors = ActiveModel::Errors.new(self)
     end
   end

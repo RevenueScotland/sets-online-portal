@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'request_summary_logging/log_middleware'
-require_relative '../cache.rb'
+require_relative '../cache'
 
 Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # Settings specified here will take precedence over those in config/application.rb.
@@ -24,7 +24,7 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   }
 
   # Show full error reports
-  config.consider_all_requests_local       = true
+  config.consider_all_requests_local = true
 
   # Turns caching on
   config.action_controller.perform_caching = true

@@ -4,6 +4,6 @@
   <%= form_errors_for @property %>
   <%= f.collection_radio_buttons_fields(:ads_due_ind, @property.list_ref_data(:ads_due_ind),
                                         text_link: { t('.ads_due_ind_link') =>
-                                                    link_to(t('.ads_due_ind_link'), "#{Rails.configuration.x.external_links.lbtt10001_ads}", target: '_blank') }) %>
+                                                    link_to(t('.ads_due_ind_link'), external_link_url('LBTT_ADS'), target: '_blank') }) %>
   <%= f.button %>
 <% end %>

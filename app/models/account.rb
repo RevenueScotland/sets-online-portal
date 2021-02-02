@@ -106,12 +106,10 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   private_class_method def self.assign_from_back_office(account, body)
     account.forename = body[:forename]
     account.surname = body[:surname]
-    account.contact_number = body[:phone_number]
-    account.email_address_confirmation = body[:email_address] = account.email_address = body[:email_address]
     account.dd_instruction_available = ActiveModel::Type::Boolean.new.cast(body[:curr_dd_instruction_avail])
     account.party_account_type = body[:party_account_type]
     account.taxes = extract_services(body[:user_services])
-    assign_sub_objects_from_back_office account, body
+    assign_sub_objects_from_back_office(account, body)
   end
 
   # @!method self.assign_sub_objects_from_back_office(account, body)
@@ -123,7 +121,9 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     account.account_address(body[:address]) unless body[:address].nil?
     account.account_company(body)
     account.account_type = AccountType.from_account(account)
+    account.email_address_confirmation = account.email_address = body[:email_address]
     account.nino = body[:party_nino]
+    account.contact_number = body[:phone_number]
     account
   end
 
@@ -171,7 +171,7 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     address = response[:registered_address]
     self.company = Company.new(company_number: response[:registration_number],
                                company_name: response[:company_name])
-    company_address(address) unless address.nil?
+    company_address(company, address) unless address.nil?
   end
 
   # Surrogate getter to return the company address at the account level
@@ -215,7 +215,7 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   private
 
   # Maps an address hash map to a company structure
-  def company_address(address)
+  def company_address(company, address)
     company.address_line1 = address[:address_line1]
     company.address_line2 = address[:address_line2]
     company.locality = address[:address_town_or_city]

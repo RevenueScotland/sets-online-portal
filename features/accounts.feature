@@ -119,10 +119,10 @@ Feature: Account
         And I click on the "Confirm" button
 
         Then I should see the "Sign up details" page
-        And I should see the value flipped/stored using marker "account_user_forename"
-        And I should see the value flipped/stored using marker "account_user_surname"
-        And I should see the value flipped/stored using marker "account_contact_number"
-        And I should see the value flipped/stored using marker "account_email_address"
+        And I should see the text "account_user_forename"
+        And I should see the text "account_user_surname"
+        And I should see the text "account_contact_number"
+        And I should see the text "account_email_address"
 
     Scenario: Update basic details of a registered company validation rules
         Given I have signed in "PORTAL.NORTHGATE" and password "Password1!"
@@ -164,8 +164,8 @@ Feature: Account
         And I click on the "Confirm" button
 
         Then I should see the "Sign up details" page
-        And I should see the value flipped/stored using marker "account_email_address"
-        And I should see the value flipped/stored using marker "account_contact_number"
+        And I should see the text "account_email_address"
+        And I should see the text "account_contact_number"
 
     Scenario: Update basic details of a other company validation rules
         Given I have signed in
@@ -211,9 +211,9 @@ Feature: Account
         And I click on the "Confirm" button
 
         Then I should see the "Sign up details" page
-        And I should see the value flipped/stored using marker "account_company_company_name"
-        And I should see the value flipped/stored using marker "account_email_address"
-        And I should see the value flipped/stored using marker "account_contact_number"
+        And I should see the text "account_company_company_name"
+        And I should see the text "account_email_address"
+        And I should see the text "account_contact_number"
 
     Scenario: Update address details validation
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
@@ -309,7 +309,7 @@ Feature: Account
         And I click on the "Confirm" button
 
         Then I should see the "Sign up details" page
-        And I should see the value flipped/stored using marker "address_address_line1"
+        And I should see the text "address_address_line1"
 
     Scenario: Change password of user account(validation)
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
@@ -373,3 +373,79 @@ Feature: Account
         And I click on the "Confirm" button
 
         Then I should see the "Completed registration" page
+
+    # Marked as wip as memorable word has been removed from the CIMP4 release
+    @wip
+    Scenario: Set memorable word and memorable hint for current user
+        Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
+
+        # Link should be visible with text "Create or update memorable word"
+        When I click on the "Account details" link
+        Then I should see the "Sign up details" page
+
+        When I click on the "Create or update memorable word" link
+        Then I should see the "Create or update memorable word" page
+        And I clear the "Memorable word" field
+        And I clear the "Memorable word hint" field
+
+        # Memorable hint is mandatory to fill if memorable word is provided
+        When I enter "1234" in the "Memorable word" field
+        And  I enter "Password1!" in the "Password" field
+
+        When I click on the "Submit" button
+        And I should receive the message "Memorable word hint can't be blank"
+
+        # Memorable word is mandetory to fill if memorable hint is provided
+        When I clear the "Memorable word" field
+        And  I enter "1234" in the "Memorable word hint" field
+        And  I enter "Password1!" in the "Password" field
+
+        When I click on the "Submit" button
+        Then I should receive the message "Memorable word can't be blank"
+
+        # Validation check on the length of word and hint
+        When I enter "RANDOM_text,101" in the "Memorable word" field
+        And  I enter "RANDOM_text,101" in the "Memorable word hint" field
+
+        When I click on the "Submit" button
+        Then I should receive the message "Memorable word is too long (maximum is 100 characters)"
+        And I should receive the message "Memorable word hint is too long (maximum is 100 characters)"
+        And I should receive the message "Password can't be blank"
+
+        When I enter "Test memorable word" in the "Memorable word" field
+        And  I enter "Test memorable word hint" in the "Memorable word hint" field
+        And  I enter "Password1!" in the "Password" field
+
+        When I click on the "Submit" button
+        Then I should see the "Change memorable word confirmation" page
+        And I should see the text "Your memorable word has been successfully changed"
+
+        When I click on the "Continue" button
+        Then I should see the "Sign up details" page
+        And I should see the text "Test memorable word"
+        And I should see the text "Test memorable word hint"
+
+        When I click on the "Create or update memorable word" link
+        Then I should see the "Create or update memorable word" page
+
+        # Check previously stored values are available in fields
+        And I should see the text "Test memorable word" in field "Memorable word"
+        And I should see the text "Test memorable word hint" in field "Memorable word hint"
+
+        # Memorable word and memorable hint can be blank together
+        And I clear the "Memorable word" field
+        And I clear the "Memorable word hint" field
+        And  I enter "Password1!" in the "Password" field
+
+        When I click on the "Submit" button
+        Then I should see the "Change memorable word confirmation" page
+        And I should see the text "Your memorable word has been successfully changed"
+
+        When I click on the "Continue" button
+        Then I should see the "Sign up details" page
+        And I should see the text "Memorable word"
+        And I should see the text "Memorable word hint"
+
+        # Check for the values been vanished from "Sign up details" page since Memorable word and hint been saved blank
+        And I should not see the text "Test memorable word"
+        And I should not see the text "Test memorable word hint"

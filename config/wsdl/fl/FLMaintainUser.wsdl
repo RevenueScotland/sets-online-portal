@@ -249,6 +249,8 @@
 														<xsd:element name="EmailAddress" type="xsd:string"/>
 														<xsd:element name="PreferredLanguage" type="xsd:string"/>
 														<xsd:element name="PhoneNumber" type="flc:PhoneNumberType"/>
+														<xsd:element name="MemorableQuestion" type="xsd:string"/>
+														<xsd:element name="MemorableAnswer" type="xsd:string"/>
 														<xsd:element name="UserRoles" type="UserRolesType"/>
 													</xsd:sequence>
 												</xsd:complexType>

@@ -23,12 +23,12 @@
 <h2><%= t('.your_user_details') %></h2>
 <%= display_region( {
   header: { model: @account.current_user, attribute: :full_name },
-  data: [ { model: @account.current_user, attributes: [:email_address, :phone_number, :username] }
+  data: [ { model: @account.current_user, attributes: [:email_address, :phone_number, :username ] }
         ]
   } )
 %>
 <%# Passing code as 'REGTSANDCS' to display text related to registration on show page %>
 <%# It will form url like 'http://localhost:3000/en/website_texts/REGTSANDCS' %>
-<%= navigational_links( [ { link: :change_password, path: user_change_password_path }, 
-                          { link: :create_update_users, path: users_path, link_html_options: { requires_action: AuthorisationHelper::CREATE_USERS } }, 
-													{ link: :about_registration, path: website_text_path("REGTSANDCS"), link_html_options: { target: '_blank' } } ] )%><br>
+<%= navigational_links( [ { link: :change_password, path: user_change_password_path },
+                          { link: :create_update_users, path: users_path, link_html_options: { requires_action: AuthorisationHelper::CREATE_USERS } },
+                          { link: :about_registration, path: website_text_path("REGTSANDCS"), link_html_options: { target: '_blank' } } ] )%><br>

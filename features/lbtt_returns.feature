@@ -3,6 +3,7 @@
 Feature: LBTT Returns
     As a user
     I want to be able to create a Lbtt return
+
     Scenario: Make a Conveyance return with ADS for a tax payer
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
         When I click on the "Create LBTT return" link
@@ -251,14 +252,13 @@ Feature: LBTT Returns
         Then I should receive the message "Property must be in Scotland for LBTT"
 
         And I click on the "Change" button
-        And I enter "EH1 1BE" in the "address_summary_postcode" field
+        And I enter "EH1 1HU" in the "address_summary_postcode" field
         And I click on the "Find Address" button
-        And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
+        And I select "31b/2 Chambers Street, EDINBURGH, EH1 1HU" from the "search_results"
         And if available, click the "Select" button
-        And I should see the text "Abellio Scotrail Ltd" in field "address_address_line1"
-        And I should see the text "Waverley Railway Station" in field "address_address_line2"
+        And I should see the text "31b/2 Chambers Street" in field "address_address_line1"
         And I should see the text "EDINBURGH" in field "address_town"
-        And I should see the text "EH1 1BE" in field "address_postcode"
+        And I should see the text "EH1 1HU" in field "address_postcode"
         And I click on the "Continue" button
         Then I should see the sub-title "Provide property details"
         Then "Local authority" should contain the option "Aberdeen City"
@@ -275,8 +275,8 @@ Feature: LBTT Returns
         # Verify modified details on return summary page
         Then I should see the "Return Summary" page
         And the table of data is displayed
-            | Address                                  | ADS? |
-            | Abellio Scotrail Ltd, EDINBURGH, EH1 1BE | Yes  |
+            | Address                                   | ADS? |
+            | 31b/2 Chambers Street, EDINBURGH, EH1 1HU | Yes  |
         And I should see the text "About the Additional Dwelling Supplement"
 
         When I click on the "Add ADS" link
@@ -331,14 +331,13 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
 
-        And I enter "EH1 1BE" in the "address_summary_postcode" field
+        And I enter "EH1 1HU" in the "address_summary_postcode" field
         And I click on the "Find Address" button
-        And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
+        And I select "31b/2 Chambers Street, EDINBURGH, EH1 1HU" from the "search_results"
         And if available, click the "Select" button
-        And I should see the text "Abellio Scotrail Ltd" in field "address_address_line1"
-        And I should see the text "Waverley Railway Station" in field "address_address_line2"
+        And I should see the text "31b/2 Chambers Street" in field "address_address_line1"
         And I should see the text "EDINBURGH" in field "address_town"
-        And I should see the text "EH1 1BE" in field "address_postcode"
+        And I should see the text "EH1 1HU" in field "address_postcode"
         And I click on the "Continue" button
         Then I should see the "Reliefs on ADS consideration" page
 
@@ -377,11 +376,11 @@ Feature: LBTT Returns
             | Type of relief    | Amount of tax saved by relief |
 
         And the table of data is displayed
-            | Address of existing main residence                                   | Abellio Scotrail Ltd, EDINBURGH, EH1 1BE |
-            | Does the buyer intend to sell their main residence within 18 months? | Yes                                      |
-            | Amount of ADS liability from new main residence                      | £40503                                   |
-            | Total consideration liable to ADS                                    | £40750                                   |
-            | Is relief being claimed from the ADS consideration?                  | Yes                                      |
+            | Address of existing main residence                                   | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
+            | Does the buyer intend to sell their main residence within 18 months? | Yes                                       |
+            | Amount of ADS liability from new main residence                      | £40503                                    |
+            | Total consideration liable to ADS                                    | £40750                                    |
+            | Is relief being claimed from the ADS consideration?                  | Yes                                       |
         # Transaction
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
@@ -542,7 +541,7 @@ Feature: LBTT Returns
         Then I should see the "Return saved" page
         And I should see the text "Your tax return has been saved so that you can return to either complete or cancel it."
         And I should see the text "It has not been submitted to Revenue Scotland."
-        And I should see the regex "Your return reference is RS\d{7}[a-zA-Z]{4}\."
+        And I should see the text "%r{Your return reference is RS\d{7}[a-zA-Z]{4}\.}"
         And I should store the generated value with id "ret_ref_val"
         And I should see a link with text "Go to dashboard"
 
@@ -550,7 +549,7 @@ Feature: LBTT Returns
         Then I should see the "Dashboard" page
 
         When I click on the "All returns" link
-        And I enter stored reference number "ret_ref_val" in field "Return reference"
+        And I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         And I should see a link with text "Continue"
 
@@ -566,8 +565,8 @@ Feature: LBTT Returns
         And I should see the text "Edit"
         # Property and check can still get to ADS page
         And the table of data is displayed
-            | Address                                  | ADS? |
-            | Abellio Scotrail Ltd, EDINBURGH, EH1 1BE | Yes  |
+            | Address                                   | ADS? |
+            | 31b/2 Chambers Street, EDINBURGH, EH1 1HU | Yes  |
         When I click on the 4 th "Edit" link
         Then I should see the "Property address" page
         When I click on the "Continue" button
@@ -581,11 +580,11 @@ Feature: LBTT Returns
         Then I should see the "Return Summary" page
         #ADS === YES
         And the table of data is displayed
-            | Address of existing main residence                                   | Abellio Scotrail Ltd, EDINBURGH, EH1 1BE |
-            | Does the buyer intend to sell their main residence within 18 months? | Yes                                      |
-            | Amount of ADS liability from new main residence                      | £40503                                   |
-            | Total consideration liable to ADS                                    | £40750                                   |
-            | Is relief being claimed from the ADS consideration?                  | Yes                                      |
+            | Address of existing main residence                                   | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
+            | Does the buyer intend to sell their main residence within 18 months? | Yes                                       |
+            | Amount of ADS liability from new main residence                      | £40503                                    |
+            | Total consideration liable to ADS                                    | £40750                                    |
+            | Is relief being claimed from the ADS consideration?                  | Yes                                       |
         # Transaction
         And the table of data is displayed
             | About the calculation      | Edit       |
@@ -623,7 +622,7 @@ Feature: LBTT Returns
         Then I should see the "Dashboard" page
         When I click on the "All returns" link
 
-        When I enter stored reference number "ret_ref_val" in field "Return reference"
+        When I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         And I should see a link with text "Amend"
 
@@ -691,14 +690,14 @@ Feature: LBTT Returns
 
         And I click on the "Submit return" button
         Then I should see the text "Your return has been submitted"
-        And I should store the value with the display region heading "Return reference"
+        And I should store the value with the display region heading "Return reference" as "ret_ref_val"
 
         # Load that return for amending
         When I click on the "Sign out" link
         And I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
         Then I should see the "Dashboard" page
         When I click on the "All returns" link
-        And I enter stored reference number "Return reference" in field "dashboard_dashboard_return_filter_tare_reference"
+        And I enter the stored value "ret_ref_val" in field "dashboard_dashboard_return_filter_tare_reference"
         And I click on the "Find" button
         And I click on the "Amend" link
         Then I should see the "Return Summary" page
@@ -726,11 +725,11 @@ Feature: LBTT Returns
         When I enter "03-07-2019" in the "What is the date of sale or disposal of the previous main residence?" date field
         And I click on the "Continue" button
         Then I should see the text "Confirm the address of the previous main residence that has been sold or disposed of"
-        When I enter "EH1 1BE" in the "address_summary_postcode" field
+        When I enter "EH1 1HU" in the "address_summary_postcode" field
         And I click on the "Find Address" button
-        And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
+        And I select "31b/2 Chambers Street, EDINBURGH, EH1 1HU" from the "search_results"
         And if available, click the "Select" button
-        And I should see the text "Abellio Scotrail Ltd" in field "address_address_line1"
+        And I should see the text "31b/2 Chambers Street" in field "address_address_line1"
         And I click on the "Continue" button
         Then I should see the text "When you submit the return you will be asked for the bank details for the repayment."
         When I enter "4321" in the "Amount of ADS you want to reclaim" field
@@ -740,14 +739,14 @@ Feature: LBTT Returns
         # Save the draft and reload it with the ads details on
         When I click on the "Save draft" button
         Then I should see the "Return saved" page
-        And I should see the regex "Your return reference is RS\d{7}[a-zA-Z]{4}\."
+        And I should see the text "%r{Your return reference is RS\d{7}[a-zA-Z]{4}\.}"
         And I should store the generated value with id "ret_ref_val"
         And I should see a link with text "Go to dashboard"
 
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
         When I click on the "All returns" link
-        And I enter stored reference number "ret_ref_val" in field "Return reference"
+        And I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         And I click on the "Continue" link
         Then I should see the "Return Summary" page
@@ -760,10 +759,9 @@ Feature: LBTT Returns
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
-        And I should see the text "Abellio Scotrail Ltd" in field "address_address_line1"
-        And I should see the text "Waverley Railway Station" in field "address_address_line2"
+        And I should see the text "31b/2 Chambers Street" in field "address_address_line1"
         And I should see the text "EDINBURGH" in field "address_town"
-        And I should see the text "EH1 1BE" in field "address_postcode"
+        And I should see the text "EH1 1HU" in field "address_postcode"
         And I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "4321" in field "Amount of ADS you want to reclaim"
@@ -831,17 +829,17 @@ Feature: LBTT Returns
         And I click on the "Submit return" button
         Then I should see the text "Your return has been submitted"
         # Make sure the return reference is the same
-        And I should see the value flipped/stored using marker "Return reference"
+        And I should see the text "ret_ref_val"
         And I should see the text "Return reference"
-        And I should see the regex "RS\d{7}[a-zA-Z]{4}"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
         And I should see the text "If you have any queries about this amendment"
         And the table of data is displayed
 
-            | Title number (if provided) | ABN 4567                                                           |
-            | Property address           | Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE |
-            | Buyer                      | Marks & Spencer Fund                                               |
-            | Description of transaction | Conveyance or transfer                                             |
-            | Effective date             | 02/08/2020                                                         |
+            | Title number (if provided) | ABN 4567                                  |
+            | Property address           | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
+            | Buyer                      | Marks & Spencer Fund                      |
+            | Description of transaction | Conveyance or transfer                    |
+            | Effective date             | 02/08/2020                                |
 
     Scenario: Make a Conveyance return without ADS for an Agent
         Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
@@ -856,7 +854,7 @@ Feature: LBTT Returns
         Then I should see the "Return saved" page
         And I should see the text "Your tax return has been saved so that you can return to either complete or cancel it."
         And I should see the text "It has not been submitted to Revenue Scotland."
-        And I should see the regex "Your return reference is RS\d{7}[a-zA-Z]{4}\."
+        And I should see the text "%r{Your return reference is RS\d{7}[a-zA-Z]{4}\.}"
 
         Then I should store the generated value with id "ret_ref_val"
         And I should see a link with text "Go to dashboard"
@@ -864,7 +862,7 @@ Feature: LBTT Returns
         Then I should see the "Dashboard" page
         When I click on the "All returns" link
 
-        When I enter stored reference number "ret_ref_val" in field "Return reference"
+        When I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
 
         And I should see a link with text "Continue"
@@ -1001,6 +999,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And I should see the text "JOHN LEWIS PLC"
+        And I should see the text "171 Victoria Street, London, SW1E 5NN"
 
         #Registered company as a seller
         When I click on the "Add a seller" link
@@ -1011,7 +1010,6 @@ Feature: LBTT Returns
         Then I should see the "Registered company" page
         And I click on the "Find Company" button
         Then I should receive the message "Company number can't be blank"
-        And I should receive the message "Company number is too short (minimum is 8 characters)"
         And I enter "0123" in the "Company number" field
         And I click on the "Find Company" button
         Then I should receive the message "Company number is too short (minimum is 8 characters)"
@@ -1025,7 +1023,6 @@ Feature: LBTT Returns
         When I click on the "Continue" button
 
         Then I should receive the message "Company number can't be blank"
-        And I should receive the message "Company number is too short (minimum is 8 characters)"
         And I should receive the message "A company must be chosen"
         When I enter "09338960" in the "Company number" field
         And I click on the "Find Company" button
@@ -1048,14 +1045,13 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
 
-        When I enter "EH1 1BE" in the "address_summary_postcode" field
+        When I enter "EH1 1HU" in the "address_summary_postcode" field
         And I click on the "Find Address" button
-        And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
+        And I select "31b/2 Chambers Street, EDINBURGH, EH1 1HU" from the "search_results"
         And if available, click the "Select" button
-        And I should see the text "Abellio Scotrail Ltd" in field "address_address_line1"
-        And I should see the text "Waverley Railway Station" in field "address_address_line2"
+        And I should see the text "31b/2 Chambers Street" in field "address_address_line1"
         And I should see the text "EDINBURGH" in field "address_town"
-        And I should see the text "EH1 1BE" in field "address_postcode"
+        And I should see the text "EH1 1HU" in field "address_postcode"
         And I click on the "Continue" button
 
         Then I should see the sub-title "Provide property details"
@@ -1088,23 +1084,68 @@ Feature: LBTT Returns
         And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
         And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
         And I click on the "Continue" button
+        # Test core list processing for add and delete, including error handling
         Then I should see the "Linked Transactions" page
+        When I click on the "Continue" button
+        Then I should receive the message "Are there any linked transactions can't be blank"
+
         When I check the "Yes" radio button
         Then I should not see the button with text "Delete row"
+
+        When I click on the "Continue" button
+        Then I should see the text "Return consideration can't be blank"
+
         When I enter "RS1234567ABCD" in the "returns_lbtt_lbtt_return_link_transactions_0_return_reference" field
         And I enter "1000" in the "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount" field
         And I click on the "Add row" button
         Then I should see the button with text "Delete row"
         And I should see the text "RS1234567ABCD" in field "returns_lbtt_lbtt_return_link_transactions_0_return_reference"
         And I should see the text "1000" in field "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount"
+
+        # Check you can't delete a row when there is an invalid row and that the message doesn't follow you
         When I click on the 1 st "Delete row" button
-        Then I should not see the button with text "Delete row"
+        Then I should receive the message "Return consideration can't be blank"
+        And I should see the text "RS1234567ABCD" in field "returns_lbtt_lbtt_return_link_transactions_0_return_reference"
+        And I should see the text "1000" in field "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount"
+        And I should see the button with text "Delete row"
+
+        When I click on the "Back" link
+        Then I should see the "About the transaction" page
+        And I should not receive the message "Return consideration can't be blank"
+
         When I click on the "Continue" button
-        Then I should see the text "Return consideration can't be blank"
+        Then I should see the "Linked Transactions" page
+        And I should see the text "RS1234567ABCD" in field "returns_lbtt_lbtt_return_link_transactions_0_return_reference"
+        And I should see the text "1000" in field "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount"
+        And I should see the button with text "Delete row"
+
+        # check we can delete the invalid row
+        When I click on the 2 nd "Delete row" button
+        Then I should not see the button with text "Delete row"
+        And I should see the text "RS1234567ABCD" in field "returns_lbtt_lbtt_return_link_transactions_0_return_reference"
+        And I should see the text "1000" in field "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount"
+
+        # Check that add also doesn't work when data is invalid and that data isn't saved
         When I enter "RS123456" in the "returns_lbtt_lbtt_return_link_transactions_0_return_reference" field
         And I click on the "Continue" button
-        Then I should see the text "Return reference (if known) format is invalid"
-        When I enter "RS1234567ABCD" in the "returns_lbtt_lbtt_return_link_transactions_0_return_reference" field
+        Then I should receive the message "Return reference (if known) format is invalid"
+
+        When I click on the "Add row" button
+        Then I should receive the message "Return reference (if known) format is invalid"
+        And I should not see the button with text "Delete row"
+
+        When I click on the "Back" link
+        Then I should see the "About the transaction" page
+        And I should not receive the message "Return consideration can't be blank"
+
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+        And I should see the text "RS1234567ABCD" in field "returns_lbtt_lbtt_return_link_transactions_0_return_reference"
+        And I should see the text "1000" in field "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount"
+        And I should not see the button with text "Delete row"
+
+        # Check other validation
+        When I clear the "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount" field
         And I click on the "Continue" button
         Then I should see the text "Return consideration can't be blank"
         When I enter "-1000" in the "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount" field
@@ -1420,14 +1461,14 @@ Feature: LBTT Returns
         And I click on the "Submit return" button
         Then I should see the text "Your return has been submitted"
         And I should see the text "Return reference"
-        And I should see the regex "RS\d{7}[a-zA-Z]{4}"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
         And I should see the text "If you have any queries about this return"
         And the table of data is displayed
-            | Title number (if provided) | ABN 1234                                                           |
-            | Property address           | Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE |
-            | Buyer                      | Partnership name                                                   |
-            | Description of transaction | Conveyance or transfer                                             |
-            | Effective date             | 15/07/2020                                                         |
+            | Title number (if provided) | ABN 1234                                  |
+            | Property address           | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
+            | Buyer                      | Partnership name                          |
+            | Description of transaction | Conveyance or transfer                    |
+            | Effective date             | 15/07/2020                                |
         # Check you can't submit again
         When I go to the "returns/lbtt/declaration" page
         Then I should see the "Payment and submission" page
@@ -1576,14 +1617,14 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
 
-        When I enter "EH1 1BE" in the "address_summary_postcode" field
+        When I enter "EH12 6TS" in the "address_summary_postcode" field
         And I click on the "Find Address" button
-        And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
+        And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
         And if available, click the "Select" button
-        And I should see the text "Abellio Scotrail Ltd" in field "address_address_line1"
-        And I should see the text "Waverley Railway Station" in field "address_address_line2"
+        And I should see the text "Royal Zoological Society Of Scotland" in field "address_address_line1"
+        And I should see the text "134 Corstorphine Road" in field "address_address_line2"
         And I should see the text "EDINBURGH" in field "address_town"
-        And I should see the text "EH1 1BE" in field "address_postcode"
+        And I should see the text "EH12 6TS" in field "address_postcode"
         And I click on the "Continue" button
 
         Then I should see the sub-title "Provide property details"
@@ -1956,7 +1997,7 @@ Feature: LBTT Returns
         Then I should see the "Return saved" page
         And I should see the text "Your tax return has been saved so that you can return to either complete or cancel it."
         And I should see the text "It has not been submitted to Revenue Scotland."
-        And I should see the regex "Your return reference is RS\d{7}[a-zA-Z]{4}\."
+        And I should see the text "%r{Your return reference is RS\d{7}[a-zA-Z]{4}\.}"
 
         Then I should store the generated value with id "ret_ref_val"
         And I should see a link with text "Go to dashboard"
@@ -1964,7 +2005,7 @@ Feature: LBTT Returns
         Then I should see the "Dashboard" page
         When I click on the "All returns" link
 
-        When I enter stored reference number "ret_ref_val" in field "Return reference"
+        When I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         And I should see a link with text "Continue"
 
@@ -2000,7 +2041,7 @@ Feature: LBTT Returns
         Then I should see the "Return saved" page
         And I should see the text "Your tax return has been saved so that you can return to either complete or cancel it."
         And I should see the text "It has not been submitted to Revenue Scotland."
-        And I should see the regex "Your return reference is RS\d{7}[a-zA-Z]{4}\."
+        And I should see the text "%r{Your return reference is RS\d{7}[a-zA-Z]{4}\.}"
 
         Then I should store the generated value with id "ret_ref_val"
         And I should see a link with text "Go to dashboard"
@@ -2008,7 +2049,7 @@ Feature: LBTT Returns
         Then I should see the "Dashboard" page
         When I click on the "All returns" link
 
-        When I enter stored reference number "ret_ref_val" in field "Return reference"
+        When I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         And I click on the "Continue" link
         Then I should see the "Return Summary" page
@@ -2073,9 +2114,9 @@ Feature: LBTT Returns
 
         # Property
         When I click on the "Add a property" link
-        And I enter "EH1 1BE" in the "address_summary_postcode" field
+        And I enter "EH12 6TS" in the "address_summary_postcode" field
         And I click on the "Find Address" button
-        And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
+        And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
         And if available, click the "Select" button
         And I click on the "Continue" button
 
@@ -2090,8 +2131,8 @@ Feature: LBTT Returns
         # Verify entered details on return summary page do not include ADS
         And I should see the text "Edit row"
         And the table of data is displayed
-            | Address                                  |
-            | Abellio Scotrail Ltd, EDINBURGH, EH1 1BE |
+            | Address                                                   |
+            | Royal Zoological Society Of Scotland, EDINBURGH, EH12 6TS |
         And I should not see the text "About the Additional Dwelling Supplement"
         And I should not see the text "ADS?"
 
@@ -2117,10 +2158,8 @@ Feature: LBTT Returns
         # Allow spanish phone number
         And I enter "+34629629629" in the "Telephone number" field
         And I enter "noreply@northgateps.com" in the "Email" field
-        And I open the "Tenant does not have NINO" summary item
-        And I select "ID Card" from the "Type of ID"
-        And I enter "SPAIN" in the "Country where ID was issued" select or text field
-        And I enter "1" in the "Reference number of the ID" field
+        And I enter "AB323455C" in the "National Insurance Number (NINO)" field
+
         And I click on the "Continue" button
         Then I should see the "Tenant address" page
         When I click on the "Enter an address manually" button
@@ -2162,17 +2201,12 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         And I should receive the message "Last name can't be blank"
         And I should receive the message "First name can't be blank"
-        And I should receive the message "Email can't be blank"
-        And I should receive the message "Telephone number can't be blank"
-        And I should receive the message "Provide a NINO or an alternate reference"
+
+
         When I enter "TenantSurname2" in the "Last name" field
         And I enter "TenantFirstname2" in the "First name" field
         And I select "Mr" from the "Title"
 
-        # Allow spanish phone number
-        And I enter "+34629629629" in the "Telephone number" field
-        And I enter "noreply@northgateps.com" in the "Email" field
-        And I enter "AB323456C" in the "National Insurance Number (NINO)" field
         And I click on the "Continue" button
 
         Then I should see the "New tenant address" page
@@ -2225,13 +2259,9 @@ Feature: LBTT Returns
         And I enter "fname" in the "First name" field
         And I select "Mr" from the "Title"
 
-        And I enter "0123456789" in the "Telephone number" field
-        And I enter "noreply@northgateps.com" in the "Email" field
-        And I enter "AB323456C" in the "National Insurance Number (NINO)" field
-        And I click on the "Continue" button
-        And I should receive the message "National Insurance Number (NINO) is a duplicate of that for Mr TenantFirstname2 TenantSurname2"
+        And I enter "0123456789" in the "Telephone number (optional)" field
+        And I enter "noreply@northgateps.com" in the "Email (optional)" field
 
-        And I enter "AB323455C" in the "National Insurance Number (NINO)" field
         And I click on the "Continue" button
 
         Then I should see the "New tenant address" page
@@ -2374,14 +2404,14 @@ Feature: LBTT Returns
 
         And I click on the "Submit return" button
         Then I should see the text "Your return has been submitted"
-        And I should store the value with the display region heading "Return reference"
-        And I should see the regex "RS\d{7}[a-zA-Z]{4}"
+        And I should store the value with the display region heading "Return reference" as "ret_ref_val"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
 
         # Load that return for amending
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
         When I click on the "All returns" link
-        And I enter stored reference number "Return reference" in field "dashboard_dashboard_return_filter_tare_reference"
+        And I enter the stored value "ret_ref_val" in field "dashboard_dashboard_return_filter_tare_reference"
         And I click on the "Find" button
         And I click on the "Amend" link
         Then I should see the "Return Summary" page
@@ -2398,11 +2428,10 @@ Feature: LBTT Returns
         And I enter "noreply@northgateps.com" in the "Email" field
         And I enter "AB323455C" in the "National Insurance Number (NINO)" field
         And I click on the "Continue" button
-        And I should receive the message "National Insurance Number (NINO) is a duplicate of that for Mr fname lname"
+        And I should receive the message "National Insurance Number (NINO) is a duplicate of that for Mr TenantFirstname TenantSurname"
         When I click on the "Back" link
         Then I should see the "About the tenant" page
         And I click on the "Back" link
-
         And I click on the "Submit return" button
         Then I should see the "Repayment details" page
         When I check the "No" radio button
@@ -2416,12 +2445,12 @@ Feature: LBTT Returns
         And I click on the "Submit return" button
         Then I should see the text "Your return has been submitted"
         And the table of data is displayed
-            | Title number (if provided)   | ABN 1234                                                           |
-            | Property address             | Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE |
-            | Tenant                       | Mr TenantFirstname TenantSurname                                   |
-            | Description of transaction   | Assignation                                                        |
-            | Effective date               | 02/08/2020                                                         |
-            | Your reference (if provided) | my agent ref                                                       |
+            | Title number (if provided)   | ABN 1234                                                                         |
+            | Property address             | Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS |
+            | Tenant                       | Mr TenantFirstname TenantSurname                                                 |
+            | Description of transaction   | Assignation                                                                      |
+            | Effective date               | 02/08/2020                                                                       |
+            | Your reference (if provided) | my agent ref                                                                     |
 
     Scenario: Make a lease review return return for a public user
         # Check signed in user does not have access
@@ -2488,9 +2517,9 @@ Feature: LBTT Returns
 
         When I click on the "Add a property" link
         Then I should see the "Property address" page
-        When I enter "EH1 1BE" in the "address_summary_postcode" field
+        When I enter "EH12 6TS" in the "address_summary_postcode" field
         And I click on the "Find Address" button
-        And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
+        And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
         And if available, click the "Select" button
         And I click on the "Continue" button
         Then I should see the sub-title "Provide property details"
@@ -2558,6 +2587,7 @@ Feature: LBTT Returns
         And I should not see the text "secure message"
         And I should not see the text "dashboard"
 
+
     Scenario: Make a lease termination return for a taxpayer
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
         When I click on the "Create LBTT return" link
@@ -2597,9 +2627,9 @@ Feature: LBTT Returns
         # Property
         # Adding and then immediately deleting the row of property data added
         When I click on the "Add a property" link
-        And I enter "EH1 1BE" in the "address_summary_postcode" field
+        And I enter "EH12 6TS" in the "address_summary_postcode" field
         And I click on the "Find Address" button
-        And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
+        And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
         And if available, click the "Select" button
         And I click on the "Continue" button
 
@@ -2614,12 +2644,12 @@ Feature: LBTT Returns
         And I click on the 1 st "Delete row" link
         And if available, click the confirmation dialog
         # no wait as the not implies a wait anyway
-        Then I should not see the text "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE"
+        Then I should not see the text "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS"
 
         When I click on the "Add a property" link
-        And I enter "EH1 1BE" in the "address_summary_postcode" field
+        And I enter "EH12 6TS" in the "address_summary_postcode" field
         And I click on the "Find Address" button
-        And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
+        And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
         And if available, click the "Select" button
         And I click on the "Continue" button
 
@@ -2634,8 +2664,8 @@ Feature: LBTT Returns
         # Verify entered details on return summary page do not include ADS
         And I should see the text "Edit row"
         And the table of data is displayed
-            | Address                                  |
-            | Abellio Scotrail Ltd, EDINBURGH, EH1 1BE |
+            | Address                                                   |
+            | Royal Zoological Society Of Scotland, EDINBURGH, EH12 6TS |
         And I should not see the text "About the Additional Dwelling Supplement"
         And I should not see the text "ADS?"
 
@@ -2774,7 +2804,7 @@ Feature: LBTT Returns
         Then I should see the "Return saved" page
         And I should see the text "Your tax return has been saved so that you can return to either complete or cancel it."
         And I should see the text "It has not been submitted to Revenue Scotland."
-        And I should see the regex "Your return reference is RS\d{7}[a-zA-Z]{4}\."
+        And I should see the text "%r{Your return reference is RS\d{7}[a-zA-Z]{4}\.}"
         Then I should store the generated value with id "ret_ref_val"
         And I should see a link with text "Go to dashboard"
         And I should see a link with text "Back to return summary"
@@ -2783,7 +2813,7 @@ Feature: LBTT Returns
         Then I should see the "Return Summary" page
         When I click on the "Save draft" button
         Then I should see the "Return saved" page
-        And I should see the regex "Your return reference is RS\d{7}[a-zA-Z]{4}\."
+        And I should see the text "%r{Your return reference is RS\d{7}[a-zA-Z]{4}\.}"
 
         # Download test for the LBTT pdf on dashboard home page
         When I click on the "Go to dashboard" link
@@ -2793,13 +2823,13 @@ Feature: LBTT Returns
         When I click on the "All returns" link
 
         # Download test for the LBTT pdf on all returns index page
-        When I enter stored reference number "ret_ref_val" in field "Return reference"
+        When I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         And I should see a link with text "Download PDF"
         When I click on the 1 st "Download PDF" link to download a file
         Then I should see the downloaded "PDF" content of "LBTT" by looking up "ret_ref_val"
 
-        When I enter stored reference number "ret_ref_val" in field "Return reference"
+        When I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         And I should see a link with text "Continue"
 
@@ -2838,14 +2868,15 @@ Feature: LBTT Returns
         And I click on the "Submit return" button
         Then I should see the text "Your return has been submitted"
         And I should see the text "Return reference"
-        And I should see the regex "RS\d{7}[a-zA-Z]{4}"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
         And the table of data is displayed
-            | Title number (if provided)   | ABN 1234                                                           |
-            | Property address             | Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE |
-            | Tenant                       | Mr firstname surname                                               |
-            | Description of transaction   | Termination                                                        |
-            | Effective date               | 02/08/2019                                                         |
-            | Your reference (if provided) | my agent ref                                                       |
+            | Title number (if provided)   | ABN 1234                                                                         |
+            | Property address             | Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS |
+            | Tenant                       | Mr firstname surname                                                             |
+            | Description of transaction   | Termination                                                                      |
+            | Effective date               | 02/08/2019                                                                       |
+            | Your reference (if provided) | my agent ref                                                                     |
+
 
     Scenario: Make a lease return for an agent
         Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
@@ -2951,14 +2982,14 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
 
-        When I enter "EH1 1BE" in the "address_summary_postcode" field
+        When I enter "EH12 6TS" in the "address_summary_postcode" field
         And I click on the "Find Address" button
-        And I select "Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE" from the "search_results"
+        And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
         And if available, click the "Select" button
-        And I should see the text "Abellio Scotrail Ltd" in field "address_address_line1"
-        And I should see the text "Waverley Railway Station" in field "address_address_line2"
+        And I should see the text "Royal Zoological Society Of Scotland" in field "address_address_line1"
+        And I should see the text "134 Corstorphine Road" in field "address_address_line2"
         And I should see the text "EDINBURGH" in field "address_town"
-        And I should see the text "EH1 1BE" in field "address_postcode"
+        And I should see the text "EH12 6TS" in field "address_postcode"
         And I click on the "Continue" button
 
         Then I should see the sub-title "Provide property details"
@@ -3023,7 +3054,7 @@ Feature: LBTT Returns
         Then I should see the "Return saved" page
         And I should see the text "Your tax return has been saved so that you can return to either complete or cancel it."
         And I should see the text "It has not been submitted to Revenue Scotland."
-        And I should see the regex "Your return reference is RS\d{7}[a-zA-Z]{4}\."
+        And I should see the text "%r{Your return reference is RS\d{7}[a-zA-Z]{4}\.}"
 
         Then I should store the generated value with id "ret_ref_val"
 
@@ -3032,7 +3063,7 @@ Feature: LBTT Returns
         Then I should see the "Dashboard" page
         When I click on the "All returns" link
 
-        When I enter stored reference number "ret_ref_val" in field "Return reference"
+        When I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         And I should see a link with text "Continue"
 
@@ -3046,13 +3077,13 @@ Feature: LBTT Returns
         And I click on the "Submit return" button
         Then I should see the text "Your return has been submitted"
         And I should see the text "Return reference"
-        And I should see the regex "RS\d{7}[a-zA-Z]{4}"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
         And the table of data is displayed
-            | Title number (if provided) | ABN 1234                                                           |
-            | Property address           | Abellio Scotrail Ltd, Waverley Railway Station, EDINBURGH, EH1 1BE |
-            | Tenant                     | Mr firstname surname                                               |
-            | Description of transaction | Lease                                                              |
-            | Effective date             | 02/08/2019                                                         |
+            | Title number (if provided) | ABN 1234                                                                         |
+            | Property address           | Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS |
+            | Tenant                     | Mr firstname surname                                                             |
+            | Description of transaction | Lease                                                                            |
+            | Effective date             | 02/08/2019                                                                       |
 
     @mock_update_lbtt_details
     Scenario: Update Lbtt return details with mocking to simulate a corruption error
@@ -3097,7 +3128,7 @@ Feature: LBTT Returns
         When I click on the "Submit return" button
 
         # hooks file purposely incomplete to simulate back office loading lost data = validation message
-        Then I should receive the message "About the calculation has errors that need to be corrected, please edit it"
+        Then I should receive the message "About the calculation has errors that need to be corrected, edit it"
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
 
@@ -3225,4 +3256,365 @@ Feature: LBTT Returns
 
         When I click on the "Save draft" button
         Then I should see the "Return saved" page
-        And I should see the regex "Your return reference is RS\d{7}[a-zA-Z]{4}\."
+        And I should see the text "%r{Your return reference is RS\d{7}[a-zA-Z]{4}\.}"
+
+    Scenario: To test the ADS claim draft created prior to 12 months but does not submit until after the relevant date
+        Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
+
+        #Step 1:  Create new ADS return and check Amend is available
+        When I click on the "Create LBTT return" link
+        Then I should see the "About the return" page
+
+        When I check the "Conveyance or transfer" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Check you can see agent details and non provided for the reference
+        And the table of data is displayed
+            | Name             | Your reference |
+            | Adam Portal-Test | None provided  |
+
+        # Buyer as organisation
+        When I click on the "Add a buyer" link
+        Then I should see the "About the buyer" page
+
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+        Then I should see the "Buyer details" page
+        When I enter "Victoria" in the "Last name" field
+        And I enter "Dilbert" in the "First name" field
+        And I enter "0123456789" in the "Telephone number" field
+        And I enter "noreply@northgateps.com" in the "Email" field
+        And I enter "AB123456C" in the "National Insurance Number (NINO)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Buyer address" page
+
+        When I enter "LU1 1AA" in the "address_summary_postcode" field
+        And I click on the "Find Address" button
+        And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+        And if available, click the "Select" button
+        And I click on the "Continue" button
+        Then I should see the "Buyer's contact address" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Buyer details" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Buyer details" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Seller with Private individual
+        When I click on the "Add a seller" link
+        Then I should see the "About the seller" page
+
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+
+        Then I should see the "Seller details" page
+
+        When I enter "surname" in the "Last name" field
+        And I enter "firstname" in the "First name" field
+        And I select "Mr" from the "Title"
+        And I click on the "Continue" button
+
+        Then I should see the "Seller address" page
+        And I enter "LU1 1AA" in the "address_summary_postcode" field
+        And I click on the "Find Address" button
+        And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+        And if available, click the "Select" button
+        And I click on the "Continue" button
+
+        Then I should see the "Return Summary" page
+
+        When I click on the "Add a property" link
+        Then I should see the "Property address" page
+
+        When I enter "EH1 1BB" in the "address_summary_postcode" field
+        And I click on the "Find Address" button
+        And I select "Boots The Chemists Ltd, Waverley Railway Station, EDINBURGH, EH1 1BB" from the "search_results"
+        And if available, click the "Select" button
+        And I click on the "Continue" button
+
+        Then I should see the sub-title "Provide property details"
+        When I select "Aberdeen City" from the "Local authority"
+        And I select "ABN" from the "returns_lbtt_property_title_code"
+        And I enter "1234" in the "returns_lbtt_property_title_number" field
+        And I select "ANG" from the "returns_lbtt_property_parent_title_code"
+        And I enter "4567" in the "returns_lbtt_property_parent_title_number" field
+
+        When I click on the "Continue" button
+        Then I should see the "About the property" page
+        When I check the "Yes" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Verify modified details on return summary page
+        Then I should see the "Return Summary" page
+
+        When I click on the "Add ADS" link
+        Then I should see the "Additional Dwelling Supplement (ADS)" page
+
+        When I check the "No" radio button
+        And I click on the "Continue" button
+
+        Then I should see the text "Total consideration liable to ADS"
+        And I enter "40750" in the "Total consideration liable to ADS" field
+        And I click on the "Continue" button
+
+        Then I should see the "Additional Dwelling Supplement (ADS)" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+
+        Then I should see the "Reliefs on ADS consideration" page
+        And I check the "No" radio button
+        And I click on the "Continue" button
+
+        When I click on the "Add transaction details" link
+        Then I should see the "About the transaction" page
+
+        When I check the "Residential" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the dates" page
+
+        When I enter "11-12-2019" in the "Effective date of transaction" date field
+        And I enter "22-07-2020" in the "Relevant date" date field
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "About future events" page
+
+        When I check the "returns_lbtt_lbtt_return_contingents_event_ind_n" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+        And I should not see the text "Linked transaction consideration"
+
+        When I enter "1234565" in the "Total consideration" field
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        When I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+
+        When I check the "BACS" radio button
+        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        And I click on the "Submit return" button
+
+        Then I should see the text "Your return has been submitted"
+        And I should store the value with the display region heading "Return reference" as "ret_ref_val"
+
+        When I click on the "Go to dashboard" link
+        Then I should see the "Dashboard" page
+
+        When I click on the "All returns" link
+        And I enter the stored value "ret_ref_val" in field "dashboard_dashboard_return_filter_tare_reference"
+        And I click on the "Find" button
+
+        When I click on the "Amend" link
+        Then I should see the "Return Summary" page
+
+        # Step 2: Save the created return in draft list with less than seven days left to submit return
+        #         Check warning message is visible on screen
+        When I click on the "Save draft" button
+        Then I should see the "Return saved" page
+        And I should store the generated value with id "ret_ref_val"
+
+        When I click on the "Go to dashboard" link
+        Then I should see the "Dashboard" page
+
+        And the table of data is displayed
+            | Return reference | Your reference | Description            | Version | Action_1 | Action_2     | Action_3 |
+            | ret_ref_val      |                | Conveyance or transfer | 2       | Continue | Download PDF | Delete   |
+
+        When I click on the "All returns" link
+        And I enter the stored value "ret_ref_val" in field "Return reference"
+
+        When I click on the "Find" button
+        Then I should not see the text "This return is no longer amendable, use the claim option"
+        And I should not see the text "You have until TOMORROW_DATE to complete this draft"
+        When I click on the "Continue" link
+        Then I should see the "Return Summary" page
+
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+
+        When I enter 394 days ago in the "Relevant date" date field
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        When I click on the "Save draft" button
+        Then I should see the "Return saved" page
+        And I should store the generated value with id "ret_ref_val"
+
+        When I click on the "Go to dashboard" link
+        Then I should see the "Dashboard" page
+
+        And the table of data is displayed
+            | Return reference | Your reference | Description            | Version | Action_1 | Action_2     | Action_3 | Action_4                                            |
+            | ret_ref_val      |                | Conveyance or transfer | 2       | Continue | Download PDF | Delete   | You have until TOMORROW_DATE to complete this draft |
+
+        When I click on the "All returns" link
+        And I enter the stored value "ret_ref_val" in field "Return reference"
+
+        When I click on the "Find" button
+        Then I should not see the text "This return is no longer amendable, use the claim option"
+        And I should see the text "You have until TOMORROW_DATE to complete this draft"
+
+
+        # Test for allowing to submit drafted return until the relevant date
+
+        When I click on the "Continue" link
+        Then I should see the "Return Summary" page
+
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+
+        When I enter 395 days ago in the "Relevant date" date field
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        When I click on the "Save draft" button
+        Then I should see the "Return saved" page
+        And I should store the generated value with id "ret_ref_val"
+
+        When I click on the "Go to dashboard" link
+        Then I should see the "Dashboard" page
+
+        And the table of data is displayed
+            | Return reference | Your reference | Description            | Version | Action_1 | Action_2     | Action_3 | Action_4                                       |
+            | ret_ref_val      |                | Conveyance or transfer | 2       | Continue | Download PDF | Delete   | You have until NOW_DATE to complete this draft |
+
+        When I click on the "All returns" link
+        And I enter the stored value "ret_ref_val" in field "Return reference"
+
+        When I click on the "Find" button
+        Then I should not see the text "This return is no longer amendable, use the claim option"
+        And I should see the text "You have until NOW_DATE to complete this draft"
+
+
+
+        # Step 3: Amend saved return in draft list change date to after 12 months and 30 day to submit return
+        #         Check return is not amendable warning message is visible on screen and "Continue" link is not available
+
+        When I click on the "Continue" link
+        Then I should see the "Return Summary" page
+
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+
+        When I enter 398 days ago in the "Relevant date" date field
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+
+        When I click on the "Save draft" button
+        Then I should see the "Return saved" page
+        And I should store the generated value with id "ret_ref_val"
+
+        When I click on the "Go to dashboard" link
+        Then I should see the "Dashboard" page
+
+        And the table of data is displayed
+            | Return reference | Your reference | Description            | Version | Action_1     | Action_2 | Action_3                                                 |
+            | ret_ref_val      |                | Conveyance or transfer | 2       | Download PDF | Delete   | This return is no longer amendable, use the claim option |
+
+        When I click on the "All returns" link
+        And I enter the stored value "ret_ref_val" in field "Return reference"
+
+        When I click on the "Find" button
+        Then I should see the text "This return is no longer amendable, use the claim option"
+        And I should not see the text "You have until "
+        And I should not see a link with text "Continue"
+
+        When I click on the "Delete" link
+        Then if available, click the confirmation dialog
+
+        Then I should see the "Dashboard" page
+        When I click on the "All returns" link
+
+        When I enter the stored value "ret_ref_val" in field "Return reference"
+        And I open the "Show more filter options" summary item
+        And I select "Draft" from the "Return status"
+        And I click on the "Find" button
+        Then I should see the text "There are no returns to be shown..."

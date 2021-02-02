@@ -38,13 +38,9 @@ module Returns
 
     # Party wizard - individual steps page
     def party_details
-      # If the NINO is entered then we shouldn't have to store the data about the country on does not have a NINO.
       party_details_hash = params[:returns_lbtt_party]
-      unless party_details_hash.nil?
-        params[:returns_lbtt_party][:ref_country] = '' if !party_details_hash[:nino].blank? &&
-                                                          party_details_hash[:alrt_type].blank? &&
-                                                          party_details_hash[:alrt_reference].blank?
-      end
+      # If the NINO is entered then make sure county code is blank.
+      party_details_hash[:ref_country] = '' if party_details_hash && party_details_hash[:nino].present?
       wizard_step(INDVAL_STEPS)
     end
 
@@ -156,7 +152,7 @@ module Returns
     # @raise [Error::AppError] if the party_id is missing (provided as a param)
     # @return [Party] the model for wizard saving
     def setup_step
-      @post_path = wizard_post_path(LbttController.name)
+      @post_path = wizard_post_path
 
       party_id, party_type = about_the_party_params
       setup_party(party_id, party_type)
@@ -206,7 +202,7 @@ module Returns
     # @see #setup_step)
     # @return [Party] the model for wizard saving
     def load_step(_sub_object_attribute = nil)
-      @post_path = wizard_post_path(LbttController.name)
+      @post_path = wizard_post_path
       @party = wizard_load_or_redirect(returns_lbtt_summary_url)
     end
 

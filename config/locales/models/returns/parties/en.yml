@@ -61,10 +61,10 @@ en:
     hints:
       returns/lbtt/party:
         agent_reference: "This is your reference for this return"
-        BUYER_buyer_seller_linked_ind: "The buyer and seller are connected if they have an existing personal or business relationship. See Section 1122 of the Corporation Tax Act 2010 (opens in a new window) for further details"
-        TENANT_buyer_seller_linked_ind: "The tenant and landlord are connected if they have an existing personal or business relationship. See Section 1122 of the Corporation Tax Act 2010 (opens in a new window) for further details"
-        is_acting_as_trustee_BUYER: "See guidance LBTT7001 - Partnerships (opens in a new window) and LBTT8001 - Trusts (opens in a new window) for further details"
-        is_acting_as_trustee_TENANT: "See guidance LBTT7001 - Partnerships (opens in a new window) and LBTT8001 - Trusts (opens in a new window) for further details"
+        BUYER_buyer_seller_linked_ind: "The buyer and seller are connected if they have an existing personal or business relationship. See guidance on if the buyer and seller are linked (opens in a new window) for further details"
+        TENANT_buyer_seller_linked_ind: "The tenant and landlord are connected if they have an existing personal or business relationship. See guidance on if the buyer and seller are linked  (opens in a new window) for further details"
+        is_acting_as_trustee_BUYER: "See guidance on partnerships (opens in a new window) and trusts (opens in a new window) for further details"
+        is_acting_as_trustee_TENANT: "See guidance on partnerships (opens in a new window) and trusts (opens in a new window) for further details"
         UNAUTHENTICATED_telephone: "To contact you in case we have any queries about this application"
         AUTHENTICATED_telephone: "To contact the tax payer in case we have any queries about this application"
         UNAUTHENTICATED_email_address: "We'll use this to send you an email confirmation"
@@ -115,15 +115,15 @@ en:
         NEWTENANT_title: "New tenant's contact address"
       parties_relation:
         BUYER_title: "Buyer details"
-        buyer_seller_linked_ind: "Section 1122 of the Corporation Tax Act 2010 (opens in a new window)"
+        buyer_seller_linked_ind: "the buyer and seller are linked (opens in a new window)"
         SELLER_title: "Seller details"
         LANDLORD_title: "Landlord details"
         TENANT_title: "Tenant details"
         NEWTENANT_title: "New tenant details"
       acting_as_trustee:
         BUYER_title: "Buyer details"
-        is_acting_as_trustee_partnership: "LBTT7001 - Partnerships (opens in a new window)"
-        is_acting_as_trustee_trust: "LBTT8001 - Trusts (opens in a new window)"
+        is_acting_as_trustee_partnership: "partnerships (opens in a new window)"
+        is_acting_as_trustee_trust: "trusts (opens in a new window)"
         TENANT_title: "Tenant details"
         NEWTENANT_title: "New tenant details"
       company_number:

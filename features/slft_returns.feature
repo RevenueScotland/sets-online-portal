@@ -62,7 +62,7 @@ Feature: SLfT Returns
         Then I should see the "Return saved" page
         And I should see the text "Your tax return has been saved so that you can return to either complete or cancel it."
         And I should see the text "It has not been submitted to Revenue Scotland."
-        And I should see the regex "Your return reference is RS\d{7}[a-zA-Z]{4}\."
+        And I should see the text "%r{Your return reference is RS\d{7}[a-zA-Z]{4}\.}"
         Then I should store the generated value with id "ret_ref_val"
         And I should see a link with text "Go to dashboard"
         When I click on the "Go to dashboard" link
@@ -77,7 +77,7 @@ Feature: SLfT Returns
         When I click on the "All returns" link
 
         # Download tests for slft pdf and slft waste (.zip) on the all returns page
-        When I enter stored reference number "ret_ref_val" in field "Return reference"
+        When I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         And I should see a link with text "Download PDF"
         And I should see a link with text "Download waste details"
@@ -539,7 +539,7 @@ Feature: SLfT Returns
         And I have signed in "portal.waste.new" and password "Password1!"
         Then I should see the "Dashboard" page
         When I click on the "All returns" link
-        And I enter stored reference number "ret_ref_val" in field "Return reference"
+        And I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         And I click on the "Continue" link
         Then I should see the "Return summary" page
@@ -552,10 +552,11 @@ Feature: SLfT Returns
             | Have you ceased to operate a non-disposal area on any of your sites? | Y                               |
 
         And the table of data is displayed
-            | Credits claimed                                | Edit credit details |
-            | Contribution to environmental bodies           | £1234.00            |
-            | Credit claimed in relation to the contribution | £59.30              |
-            | Permanent removal claim amount                 | £564.22             |
+            | Credits claimed                                         | Edit credit details |
+            | Contribution to environmental bodies                    | £1234.00            |
+            | Credit claimed in relation to the contribution          | £59.30              |
+            | Do you have any claims to make in relation to bad debt? | No                  |
+            | Permanent removal claim amount                          | £564.22             |
 
         And the table of data is displayed
             |              | Lower rate    | Standard rate | Exempt  | Total   |
@@ -651,7 +652,8 @@ Feature: SLfT Returns
 
         When I click on the "Continue" button
         Then I should see the "Payment and submission" page
-
+        And I should see the text "Your credit claimed cannot be more than 90% of your qualifying contribution for the accounting period and must not exceed 5.6% of your SLFT liability in the contribution year"
+        And I should see the text "If you give false information, you may face penalties and/or prosecution"
         # Verify the fpay_method information has been cleared
         And the radio button "BACS" should not be selected
         And the radio button "Cheque" should not be selected
@@ -837,10 +839,10 @@ Feature: SLfT Returns
         # Begin calculation part
         # the loaded data is bogus and clicking calculate revalidates the model
         When I click on the "calculate_return" button
-        Then I should receive the message "Credits claimed has errors that need to be corrected, please edit it"
-        And I should receive the message "Waste details with EWC code 03 02 02/Aciiiiiiid for Waste Site 1 has errors that need to be corrected, please edit it"
-        And I should receive the message "Waste details with EWC code 01 03 07/Aciiiiiiid for Waste Site 2 has errors that need to be corrected, please edit it"
-        And I should receive the message "Credits claimed has errors that need to be corrected, please edit it"
+        Then I should receive the message "Credits claimed has errors that need to be corrected, edit it"
+        And I should receive the message "Waste details with EWC code 03 02 02/Aciiiiiiid for Waste Site 1 has errors that need to be corrected, edit it"
+        And I should receive the message "Waste details with EWC code 01 03 07/Aciiiiiiid for Waste Site 2 has errors that need to be corrected, edit it"
+        And I should receive the message "Credits claimed has errors that need to be corrected, edit it"
 
         # Go back and correct credit claimed wizard
         When I click on the "Edit credit details" link
@@ -1051,7 +1053,7 @@ Feature: SLfT Returns
         And I click on the "Save draft" button
 
         Then I should see the "Return saved" page
-        And I should see the regex "Your return reference is RS\d{7}[a-zA-Z]{4}\."
+        And I should see the text "%r{Your return reference is RS\d{7}[a-zA-Z]{4}\.}"
 
         Then I should store the generated value with id "ret_ref_val"
 
@@ -1059,7 +1061,7 @@ Feature: SLfT Returns
         Then I should see the "Dashboard" page
         When I click on the "All returns" link
 
-        When I enter stored reference number "ret_ref_val" in field "Return reference"
+        When I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
 
         And I should see a link with text "Delete"
@@ -1069,6 +1071,6 @@ Feature: SLfT Returns
         Then I should see the "Dashboard" page
         When I click on the "All returns" link
 
-        When I enter stored reference number "ret_ref_val" in field "Return reference"
+        When I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
         Then I should see the text "There are no returns to be shown..."

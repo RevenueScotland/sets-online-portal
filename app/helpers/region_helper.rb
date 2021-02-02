@@ -551,7 +551,7 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
     link = hash[:link]
     return if link.nil? # && !authorised?(current_user, hash[:link_options])
 
-    table_data_tag(link_to(t('.link.' + link.to_s), hash[:path], link_html_options(hash)),
+    table_data_tag(link_to(t(".link.#{link}"), hash[:path], link_html_options(hash)),
                    link_cell_html_options(options))
   end
 

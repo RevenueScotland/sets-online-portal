@@ -63,7 +63,7 @@ module Returns
     # Searches the LBTT wizard for a property
     # @param property_id [String] the property_id to look for
     # @param delete [Boolean] option to delete the party if found, defaults to false
-    def look_for_property(property_id, lbtt_return, delete = false)
+    def look_for_property(property_id, lbtt_return, delete: false)
       return if lbtt_return.properties.nil?
 
       return unless lbtt_return.properties.key? property_id
@@ -98,7 +98,7 @@ module Returns
     # @raise [Error:AppError] if the property_id is missing (provided as a param)
     # @return [Property] the model for wizard saving
     def setup_step
-      @post_path = wizard_post_path(LbttController.name)
+      @post_path = wizard_post_path
 
       # load existing or setup new property on first entering the step
       if params[:property_id]
@@ -139,7 +139,7 @@ module Returns
     # Loads existing wizard models from the wizard cache or redirects to the summary page
     # @return [Property] the model for wizard saving
     def load_step(_sub_object_attribute = nil)
-      @post_path = wizard_post_path(LbttController.name)
+      @post_path = wizard_post_path
       @property = wizard_load_or_redirect(returns_lbtt_summary_url)
       @property
     end

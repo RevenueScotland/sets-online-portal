@@ -1,4 +1,4 @@
-
+// This file contains JS that applies to the file upload feature
 $(function () {
 	$(".file").each(function () {
 		var file = $(this);

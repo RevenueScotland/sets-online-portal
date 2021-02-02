@@ -1,0 +1,719 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "03a100e6191f94b6c49489d31bf6b2236ce7a710780944fa5c074f9bd43f900a",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/premium_paid.html.erb",
+      "line": 8,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".lease_premium\"), external_link_url(\"OTHER_CONS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "premium_paid",
+          "line": 89,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/premium_paid",
+            "file": "app/views/returns/lbtt_transactions/premium_paid.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/premium_paid"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "149879578a3e544616549ca53064c85c6c82e49632cba0089f5beb6e194a129a",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_tax/npv.html.erb",
+      "line": 5,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".npv\"), external_link_url(\"TAX_ON_RENT\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTaxController",
+          "method": "npv",
+          "line": 37,
+          "file": "app/controllers/returns/lbtt_tax_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_tax/npv",
+            "file": "app/views/returns/lbtt_tax/npv.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_tax/npv"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "1d5a37cd40638c9a0c549dc967dd40b70771befc61d846c8e26b373f22dbb908",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/conveyance_values.html.erb",
+      "line": 15,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".linked_consideration\"), external_link_url(\"LINKED_TRANS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "conveyance_values",
+          "line": 47,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/conveyance_values",
+            "file": "app/views/returns/lbtt_transactions/conveyance_values.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/conveyance_values"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "1d703e20b016009abaa37e77de68412d4bb9fc7b0b63c0936e5ded4aebb7a136",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/dashboard/messages/confirmation.html.erb",
+      "line": 12,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".paragraph2_link_text\"), external_link_url(\"HOME\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Dashboard::MessagesController",
+          "method": "confirmation",
+          "line": 59,
+          "file": "app/controllers/dashboard/messages_controller.rb",
+          "rendered": {
+            "name": "dashboard/messages/confirmation",
+            "file": "app/views/dashboard/messages/confirmation.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "dashboard/messages/confirmation"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "20a09e2ef65c075f7f66330ca858e28e0c94372bb74df1bec0f4698c21b6db68",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/about_the_transaction.html.erb",
+      "line": 6,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".previous_option_ind\"), external_link_url(\"PRE_EXEMPTION\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "about_the_transaction",
+          "line": 54,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/about_the_transaction",
+            "file": "app/views/returns/lbtt_transactions/about_the_transaction.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/about_the_transaction"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "26c9702a42f507b56f1de240d65ed53971c3f3e0b2f16818749dd7ddf0498634",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/property_type.html.erb",
+      "line": 9,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".property_type_non_residential\"), external_link_url(\"NON_RESIDENTIAL\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "property_type",
+          "line": 29,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/property_type",
+            "file": "app/views/returns/lbtt_transactions/property_type.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/property_type"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "2cd89d8412bfcdc17cdc07effa185ebd5ae574eb5bbae6bbc696cd7c5b85b11c",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/conveyance_values.html.erb",
+      "line": 21,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".non_chargeable\"), external_link_url(\"NON_CHARGE_CONS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "conveyance_values",
+          "line": 47,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/conveyance_values",
+            "file": "app/views/returns/lbtt_transactions/conveyance_values.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/conveyance_values"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "350f91c997815a7c52c57d1ff2d669fded75deffa6bc65f550d08f145e73a867",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_properties/property_ads_applies.html.erb",
+      "line": 7,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".ads_due_ind_link\"), external_link_url(\"LBTT_ADS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttPropertiesController",
+          "method": "property_ads_applies",
+          "line": 42,
+          "file": "app/controllers/returns/lbtt_properties_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_properties/property_ads_applies",
+            "file": "app/views/returns/lbtt_properties/property_ads_applies.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_properties/property_ads_applies"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "3bb6e375fb75d6ece143035ee1904df1746e3d773e57013904faa733a20d896e",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_parties/acting_as_trustee.html.erb",
+      "line": 9,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".is_acting_as_trustee_trust\"), external_link_url(\"TRUSTS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttPartiesController",
+          "method": "acting_as_trustee",
+          "line": 74,
+          "file": "app/controllers/returns/lbtt_parties_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_parties/acting_as_trustee",
+            "file": "app/views/returns/lbtt_parties/acting_as_trustee.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_parties/acting_as_trustee"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "41f4b0ac38b6c26902e2131527ae8ce81d79064a24927ad0c7c131fe7ae4cd7f",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/conveyance_values.html.erb",
+      "line": 27,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".remaining_chargeable\"), external_link_url(\"DET_CHARGE_CONS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "conveyance_values",
+          "line": 47,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/conveyance_values",
+            "file": "app/views/returns/lbtt_transactions/conveyance_values.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/conveyance_values"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "549f580f49ac6b44e169892d703a74e7fdba33505f248fcd45831ec89107f2b4",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/applications/slft/confirmation_and_document_upload.html.erb",
+      "line": 10,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".contact_us_link_text\"), external_link_url(\"CONTACT_US\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Applications::SlftController",
+          "method": "confirmation_and_document_upload",
+          "line": 133,
+          "file": "app/controllers/applications/slft_controller.rb",
+          "rendered": {
+            "name": "applications/slft/confirmation_and_document_upload",
+            "file": "app/views/applications/slft/confirmation_and_document_upload.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "applications/slft/confirmation_and_document_upload"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "6a8e8ca0a7f82c0971fa4f7dcdbe07a31f925e25048c981c85365a2015565fa9",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/about_the_calculation.html.erb",
+      "line": 6,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".contingents_event_ind\"), external_link_url(\"CONTINGENT\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "about_the_calculation",
+          "line": 101,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/about_the_calculation",
+            "file": "app/views/returns/lbtt_transactions/about_the_calculation.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/about_the_calculation"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "6e98c6a60f7e7d2e036e35ca1d38af5cc7fe9dc55efb113d2fa8dc338e25ee26",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_parties/acting_as_trustee.html.erb",
+      "line": 7,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".is_acting_as_trustee_partnership\"), external_link_url(\"PARTNERSHIPS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttPartiesController",
+          "method": "acting_as_trustee",
+          "line": 74,
+          "file": "app/controllers/returns/lbtt_parties_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_parties/acting_as_trustee",
+            "file": "app/views/returns/lbtt_parties/acting_as_trustee.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_parties/acting_as_trustee"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "8c4ce95558c6812cbb283b1e5415fd5301b0745856e34ec705ed40fef3b5da3a",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/claim/claim_payments/confirmation_of_payment.html.erb",
+      "line": 21,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".contact_us_link_text\"), external_link_url(\"CONTACT_US\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Claim::ClaimPaymentsController",
+          "method": "confirmation_of_payment",
+          "line": 127,
+          "file": "app/controllers/claim/claim_payments_controller.rb",
+          "rendered": {
+            "name": "claim/claim_payments/confirmation_of_payment",
+            "file": "app/views/claim/claim_payments/confirmation_of_payment.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "claim/claim_payments/confirmation_of_payment"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "a864c4b4252e9170e80ec74410814bb2f2209ba52e74c2ed3c078cbaec28a4bb",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/transaction_dates.html.erb",
+      "line": 9,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".effective_date\"), external_link_url(\"EFFECTIVE_DATE\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "transaction_dates",
+          "line": 34,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/transaction_dates",
+            "file": "app/views/returns/lbtt_transactions/transaction_dates.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/transaction_dates"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "acb6264ba18f3145b6d588d482969601a23a8dc1d9a76299231e684ea08737fa",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/reliefs_on_transaction.html.erb",
+      "line": 7,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".non_ads_reliefclaim_option_ind\"), external_link_url(\"TAX_RELIEFS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "reliefs_on_transaction",
+          "line": 67,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/reliefs_on_transaction",
+            "file": "app/views/returns/lbtt_transactions/reliefs_on_transaction.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/reliefs_on_transaction"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "c423ba089d3866abff06fe4cc478a9825e4c154df76cf220e94e02466cc79c64",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/conveyance_values.html.erb",
+      "line": 11,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".total_vat\"), external_link_url(\"CHARGE_CONS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "conveyance_values",
+          "line": 47,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/conveyance_values",
+            "file": "app/views/returns/lbtt_transactions/conveyance_values.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/conveyance_values"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "c8f1414548e5f620dd91a217eb69fc53e481d1f12ebe0d94688a662fb8f88512",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/transaction_dates.html.erb",
+      "line": 11,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".relevant_date\"), external_link_url(\"RELEVANT_DATE\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "transaction_dates",
+          "line": 34,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/transaction_dates",
+            "file": "app/views/returns/lbtt_transactions/transaction_dates.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/transaction_dates"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "cbd95fa213f5be54847373711ea76e72a9c17fc338d094f50cce963361de1394",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/claim/claim_payments/eligibility.html.erb",
+      "line": 7,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".ref_message\"), external_link_url(\"CLAIM_EXAMPLES\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Claim::ClaimPaymentsController",
+          "method": "eligibility",
+          "line": 50,
+          "file": "app/controllers/claim/claim_payments_controller.rb",
+          "rendered": {
+            "name": "claim/claim_payments/eligibility",
+            "file": "app/views/claim/claim_payments/eligibility.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "claim/claim_payments/eligibility"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "d3e52f0be0007024a3a67906dfc897af9b8275954ad19d4859e7dd068f83eccf",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/conveyance_values.html.erb",
+      "line": 7,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".total_consideration\"), external_link_url(\"DET_CHARGE_CONS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "conveyance_values",
+          "line": 47,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/conveyance_values",
+            "file": "app/views/returns/lbtt_transactions/conveyance_values.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/conveyance_values"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "d8d21d67fc7a754a816538975f485707d0902706ad491be838632a49008062f7",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/property_type.html.erb",
+      "line": 7,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".property_type_residential\"), external_link_url(\"RESIDENTIAL\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "property_type",
+          "line": 29,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/property_type",
+            "file": "app/views/returns/lbtt_transactions/property_type.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/property_type"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "e1392b3b2922e9a969f53bebd28bde3910c0a796864b83bb8b3abc54f0ece0ed",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/linked_transactions.html.erb",
+      "line": 8,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".linked_ind\"), external_link_url(\"LINKED_TRANS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "linked_transactions",
+          "line": 59,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/linked_transactions",
+            "file": "app/views/returns/lbtt_transactions/linked_transactions.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/linked_transactions"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "ff80be07fadd6ab5bfa09f3cf576ab03f44bfd28af28381b2a5ea77a00b448ad",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_parties/parties_relation.html.erb",
+      "line": 7,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".buyer_seller_linked_ind\"), external_link_url(\"BUYER_SELLER\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttPartiesController",
+          "method": "parties_relation",
+          "line": 68,
+          "file": "app/controllers/returns/lbtt_parties_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_parties/parties_relation",
+            "file": "app/views/returns/lbtt_parties/parties_relation.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_parties/parties_relation"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": "noopener noreferrer is handled in core code"
+    }
+  ],
+  "updated": "2020-07-10 12:59:26 +0100",
+  "brakeman_version": "4.8.2"
+}

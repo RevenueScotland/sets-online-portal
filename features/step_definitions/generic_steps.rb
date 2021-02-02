@@ -19,7 +19,7 @@ end
 # and a number; all of given length
 def random_password_string(length)
   charset = Array('0'..'9') + Array('A'..'Z') + Array('a'..'z')
-  Array.new(length) { charset.sample }.push('A', 'a', '0').last(length - 1).join + '!'
+  "#{Array.new(length) { charset.sample }.push('A', 'a', '0').last(length - 1).join}!"
 end
 
 Given('I have signed in') do
@@ -42,6 +42,8 @@ end
 # Login with given username and password
 def sign_in(username, password)
   visit('/login')
+  # Clear the cookies menu if shown
+  step 'if available, click the "OK, thanks" button'
   fill_in('Username', with: username)
   fill_in('Password', with: password)
   click_button('Sign in')
@@ -54,7 +56,7 @@ When('I go to the {string} page') do |string|
   if string == '/'
     visit('/')
   else
-    visit('/' + string.downcase)
+    visit("/#{string.downcase}")
   end
 end
 
@@ -104,47 +106,47 @@ When('I enter {string} in the {string} field') do |string, string2|
     # If the string value starts with random then generate a value
     # the format is RANDOM_xxxxx,length,UPCASE
     # UPCASE if you want the variable to be uppercase
-    @stored_values = {} if @stored_values.nil?
     list = string.split(',')
-    @stored_values[list[0]] = random_string(list[1].to_i, list[2])
-    string = @stored_values[list[0]]
+    store_result(list[0], random_string(list[1].to_i, list[2]))
+    string = lookup_result(list[0])
   end
   fill_in(string2, with: string)
 end
 
 When('I enter {string} in the {string} date field') do |date_string, field|
-  # Rack test supports both dd-mm-yyyy and yyy-mm-dd
-  # Chrome only supports dd-mm-yyyy and firefox yyyy-mm-dd hence the below
-  date = Date.parse(date_string) unless date.is_a? Date
-  date_string = if %i[selenium_firefox selenium_remote_firefox].include?(Capybara.current_driver)
-                  date.strftime('%Y-%m-%d')
-                else
-                  date.strftime('%d-%m-%Y')
-                end
-  fill_in(field, with: date_string)
+  date = Date.parse(date_string)
+
+  fill_in(field, with: formatted_date_string(date))
+end
+
+When('I enter {int} days ago in the {string} date field') do |days, field|
+  date = Date.today - days
+
+  fill_in(field, with: formatted_date_string(date))
 end
 
 When('I enter {string} in the {string} and {string} field') do |string, string2, string3|
   if string.start_with?('PASSWORD')
     # if string value starts with PASSWORD then generate a value
     # the format is PASSWORD,length
-    @stored_values = {} if @stored_values.nil?
     list = string.split(',')
-    @stored_values[list[0]] = random_password_string(list[1].to_i)
-    string = @stored_values[list[0]]
+    store_result(list[0], random_password_string(list[1].to_i))
+    string = lookup_result(list[0])
   end
   fill_in(string2, with: string)
   fill_in(string3, with: string)
 end
 
 When('I click on the {string} link to download a file') do |string|
-  @original_page = page.current_url if Capybara.current_driver == :rack_test
-  step "I click on the 1 st '#{string}' link"
+  step "I click on the 1 st '#{string}' link to download a file"
 end
 
 When('I click on the {int} st/nd/rd/th {string} link to download a file') do |integer, string|
   # @note there is a page.current_path which strips out the query strings and "http://www.example.com"
-  @original_page = page.current_url if Capybara.current_driver == :rack_test
+  if Capybara.current_driver == :rack_test
+    @original_page = page.current_url
+    string.gsub!(/\s/, '+') if string.include?('.')
+  end
   step "I click on the #{integer} th '#{string}' link"
 end
 
@@ -209,11 +211,7 @@ When('I uncheck the {string} checkbox') do |string|
 end
 
 When('I filter on {string}') do |name|
-  value = if name.start_with?('RANDOM_SURNAME')
-            @stored_values[name]
-          else
-            name
-          end
+  value = parse_string(name)
   fill_in('Name', with: value)
   click_button('Find')
 end
@@ -260,15 +258,24 @@ Then('I should store the generated value with id {string}') do |id|
 end
 
 # Step allows storing the value next to a heading in a display region table
-Then('I should store the value with the display region heading {string}') do |string|
-  th = page.find('th', text: string)
+Then('I should store the value with the display region heading {string} as {string}') do |header, marker|
+  th = page.find('th', text: header)
   tr = th.find(:xpath, './parent::tr')
   result = tr.find(:xpath, 'td', match: :first).text
-  store_result(string, result)
+  store_result(marker, result)
+end
+
+# Step to retrieve the stored referenced and to check the number
+Then('I should see {int} generated values in {string}') do |number_values, marker|
+  ref_value_count = lookup_result(marker).split(/,/).length
+
+  assert_equal(number_values, ref_value_count, "#{ref_value_count} references found not #{number_values}")
 end
 
 # Retrieves the stored reference number
-When('I enter stored reference number {string} in field {string}') do |marker, field|
+# Note we have a specific step for this rather than using the parse string as the normal enter value
+# is responsible for generating strings in the first place
+When('I enter the stored value {string} in field {string}') do |marker, field|
   ref_value = lookup_result(marker)
   fill_in(field, with: ref_value)
 end
@@ -326,7 +333,7 @@ Then('I should see the downloaded content {string}') do |filename|
   is_file_found = false
   # Normally selenium drivers don't respond to the response_headers['Content-Disposition'] so the downloaded
   # content will be checked by looking into the actual download directory and see if the file name exists there.
-  if ENV['CAPYBARA_DRIVER'].to_s.include?('selenium')
+  if Capybara.current_driver.to_s.include?('selenium')
     # Gets the full path for the downloaded file.
     # Trying to get the full path of the downloaded file (joined with the file name itself) normally gives a list
     # of files (with .file_type), so as this should only have one occurrence then we could always look for the first
@@ -344,7 +351,7 @@ Then('I should see the downloaded content {string}') do |filename|
     end
 
     # So that locally we won't have to clear things out manually, the file is removed when it's been viewed
-    if is_file_found && !ENV['CAPYBARA_DRIVER'].to_s.include?('remote')
+    if is_file_found && !Capybara.current_driver.to_s.include?('remote')
       Rails.logger.info('  Attempting to remove the file from the download directory')
       # Removes the downloaded file from where we have found it.
       FileUtils.rm_r(result) if File.exist?(result)
@@ -357,6 +364,7 @@ Then('I should see the downloaded content {string}') do |filename|
     Rails.logger.info("\n\tCurrent url : #{page.current_url.inspect}\n\tWindow_handles : #{page.windows.inspect}")
   else
     # On rack_test driver do below - non-selenium driver
+    filename.gsub!(/\s/, '%2B')
     assert !page.response_headers['Content-Disposition'].nil?
     is_file_found = (/#{filename}/ =~ page.response_headers['Content-Disposition'])
 
@@ -397,19 +405,22 @@ rescue StandardError => e
 end
 
 Then('I should see the text {string}') do |string|
-  string.sub! 'NOW_DATE', DateFormatting.to_display_date_format(Date.today) if string.include?('NOW_DATE')
+  string = parse_string(string)
   assert page.has_content?(string)
 end
 
-Then('I should see the regex {string}') do |regex|
-  assert page.has_content?(/#{regex}/)
-end
-
 Then('I should not see the text {string}') do |string|
+  string = parse_string(string)
   assert !page.has_content?(string, wait: not_present_wait)
 end
 
 Then('I should see a link with text {string}') do |string|
+  assert has_link?(string)
+end
+
+Then('I should see a link to the file {string}') do |string|
+  # has link doesn't support regexp so need to manually change the string for the file for rack_test
+  string.gsub!(/\s/, '+') if Capybara.current_driver == :rack_test && string.include?('.')
   assert has_link?(string)
 end
 
@@ -430,9 +441,7 @@ Then('the table of data is displayed') do |table|
   data.each do |row|
     row.each do |key, value|
       assert page.has_content?(key), "#{key} is missing" unless key.start_with?('Action_')
-      value = @stored_values[value] if value.start_with?('RANDOM_')
-      # Time.now.strftime - For items that has the current date
-      value = DateFormatting.to_display_date_format(Date.today) if value.start_with?('NOW_DATE')
+      value = parse_string(value)
       assert page.has_content?(value), "#{value} is missing"
     end
   end
@@ -477,7 +486,9 @@ Then('I should see the text {string} in display field {string}') do |string, fie
 end
 
 Then('I should see the text {string} in field {string}') do |string, field|
-  assert find_field(field).value == string, "I cannot see the value #{string} in #{field}"
+  string = parse_string(string)
+  field_value = find_field(field).value
+  assert field_value == string, "I cannot see the value #{string} in #{field}, the value was #{field_value}"
 end
 
 Then('field {string} should be readonly') do |string|
@@ -512,36 +523,61 @@ rescue NoMethodError
   Rails.logger.info('No dialog found - fine if JS is not enabled')
 end
 
-Then('I should see the flipped value in {string} field using marker {string}') do |field_id, marker|
-  actual_value = find_field(field_id).value
-  expected_value = lookup_result(marker)
-  assert expected == actual, "I cannot see the value #{expected_value} in #{field_id}, instead was '#{actual_value}'"
-end
-
-Then('I should see the value flipped\/stored using marker {string}') do |marker|
-  expected_value = lookup_result(marker)
-  assert page.has_content?(expected_value), "I cannot see the flipped value #{expected_value}"
-end
-
 # Check the selected option on a select drop-down
 Then('I should see the {string} option selected in {string}') do |string, field|
   assert page.has_select?(field, selected: string), "I cannot see the value #{string} selected in #{field}"
 end
 
-# Stores a value for use in a later step so we can test a value which alternates each test, knowning we're
-# testing the right value.  Stores under the ENV['APPLICATION_VERSION'] variable (and then under a specific
-# marker) to eliminate any concerns about multi-threaded issues when running tests on Jenkins.
+# Stores a value for use in a later step. Stored under the ENV['APPLICATION_VERSION'] variable (and then under a
+# specific marker) to eliminate any concerns about multi-threaded issues when running tests on Jenkins.
 # @param marker [String] the key used to store/lookup the value
 # @param value [Object] the data to store
 def store_result(marker, value)
   # initialize storage if not already available
-  @flip_flop_results || @flip_flop_results = { ENV['APPLICATION_VERSION'] => {} }
-  @flip_flop_results[ENV['APPLICATION_VERSION']][marker] = value
+  @stored_values = { ENV['APPLICATION_VERSION'] => {} } if @stored_values.nil?
+  log("...Storing #{value} at #{marker}")
+  @stored_values[ENV['APPLICATION_VERSION']][marker] = value
 end
 
-# Retrieve a result from a Stored/Flipped value @see #store_result
+# Retrieve a result from a Stored value @see #store_result
 # @param marker [String] the key used to store/lookup the value
+# @return [String] the stored value or the marker
 def lookup_result(marker)
-  log("...Flip flop/lookup result for #{marker} is #{@flip_flop_results[ENV['APPLICATION_VERSION']][marker]}")
-  @flip_flop_results[ENV['APPLICATION_VERSION']][marker]
+  return marker if @stored_values.nil? || !@stored_values[ENV['APPLICATION_VERSION']].key?(marker)
+
+  value = @stored_values[ENV['APPLICATION_VERSION']][marker]
+  log("...Retrieving #{value} at #{marker}")
+  value
+end
+
+# Rack test supports both dd-mm-yyyy and yyy-mm-dd
+# Chrome only supports dd-mm-yyyy and firefox yyyy-mm-dd hence the below
+# @return [String] date string in a appropriate browser expected format
+def formatted_date_string(date)
+  return date.strftime('%Y-%m-%d') if %i[selenium_firefox selenium_remote_firefox].include?(Capybara.current_driver)
+
+  date.strftime('%d-%m-%Y')
+end
+
+# Utility routine to parse the string and return the actual string or regex to use
+# If the string is a stored value then replace the string with the actual value
+# Also parse it for key words that need replacing e.g. current date
+def parse_string(string)
+  # below returns the string if not found as stored value
+  string = lookup_result(string)
+
+  string = string.sub 'NOW_DATE', DateFormatting.to_display_date_format(Date.today) if string.include?('NOW_DATE')
+  if string.include?('TOMORROW_DATE')
+    string = string.sub 'TOMORROW_DATE', DateFormatting.to_display_date_format(Date.today + 1)
+  end
+  string_or_regexp(string)
+end
+
+# Utility routine that processes the passed string and if it
+# contains a regular expression then converts it to a regular expression
+# @param value [String] the string to be parsed
+# @return [String|Regexp] either the original string or a regexp
+def string_or_regexp(value)
+  value = eval(value) if value.start_with?('%r{', '/') # rubocop:disable Security/Eval
+  value
 end

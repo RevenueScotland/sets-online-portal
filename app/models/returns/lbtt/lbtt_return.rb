@@ -583,13 +583,13 @@ module Returns
         output[:version] = lbtt[:version]
         output.merge!(lbtt[:lbtt_return_details])
 
-        raw_hash_parties = convert_parties(output)
-        output[:buyers] = convert_to_party_type(raw_hash_parties, 'BUYER')
-        output[:sellers] = convert_to_party_type(raw_hash_parties, 'SELLER')
-        output[:tenants] = convert_to_party_type(raw_hash_parties, 'TENANT')
-        output[:landlords] = convert_to_party_type(raw_hash_parties, 'LANDLORD')
-        output[:new_tenants] = convert_to_party_type(raw_hash_parties, 'NEWTENANT')
-        output[:agent] = convert_to_party_type(raw_hash_parties, 'AGENT')
+        hash_parties = convert_parties(output)
+        output[:buyers] = split_by_party_type(hash_parties, 'BUYER')
+        output[:sellers] = split_by_party_type(hash_parties, 'SELLER')
+        output[:tenants] = split_by_party_type(hash_parties, 'TENANT')
+        output[:landlords] = split_by_party_type(hash_parties, 'LANDLORD')
+        output[:new_tenants] = split_by_party_type(hash_parties, 'NEWTENANT')
+        output[:agent] = split_by_party_type(hash_parties, 'AGENT')
 
         output[:link_transactions] = convert_to_link_transactions(output) unless output[:linked_transactions].blank?
         output[:yearly_rents] = convert_to_yearly_rents(output) unless output[:rent].blank?
@@ -658,8 +658,8 @@ module Returns
         #  Depending on the property type, this changes the attribute to match the specific attribute
         #  that has the translation text that we want for when it's 'Residential to be displayed.
         return :total_consideration_residential if attribute == :total_consideration && @property_type == '1'
-        return (attribute.to_s + '_' + flbt_type).to_sym if %i[effective_date relevant_date annual_rent]
-                                                            .include?(attribute)
+        return "#{attribute}_#{flbt_type}".to_sym if %i[effective_date relevant_date annual_rent]
+                                                     .include?(attribute)
         return attribute unless %i[authority_ind repayment_agent_declaration lease_declaration
                                    declaration repayment_declaration].include?(attribute)
 
@@ -668,14 +668,10 @@ module Returns
 
       # Convert the parties data received from back-office to our model specific format
       private_class_method def self.convert_parties(lbtt_return)
-        parties = lbtt_return[:parties][:party] unless lbtt_return[:parties].nil?
-        return {} if parties.nil?
-
-        # wrap party in an array if it's not already (ie when there's only 1 party)
-        parties = [parties] unless parties.is_a? Array
+        return {} if lbtt_return[:parties].nil?
 
         output = {}
-        parties.each do |raw_hash|
+        ServiceClient.iterate_element(lbtt_return[:parties]) do |raw_hash|
           party = Party.convert_back_office_hash(raw_hash, lbtt_return[:flbt_type], lbtt_return[:agent_reference])
           output[party.party_id] = party
         end
@@ -683,11 +679,13 @@ module Returns
       end
 
       # Convert the incoming parties data into specific type for example into buyers, sellers depending on type
-      private_class_method def self.convert_to_party_type(parties, party_type)
+      # @param parties [Hash] an hash of parties objects indexed on the key
+      # @param party_type [String] The party type to look for
+      private_class_method def self.split_by_party_type(parties, party_type)
         return {} if parties.nil?
 
         output = {}
-        ServiceClient.iterate_element(parties) do |party|
+        parties.each_value do |party|
           return party if party.party_type == party_type && party_type == 'AGENT'
 
           output[party.party_id] = party if party.party_type == party_type
@@ -740,16 +738,11 @@ module Returns
 
       # Convert the linked_transactions data into link_transactions objects
       private_class_method def self.convert_to_link_transactions(lbtt)
-        linked_transactions =  lbtt[:linked_transactions][:linked_transaction] unless lbtt[:linked_transactions].nil?
-        return nil if linked_transactions.nil?
-
-        # convert to array if it isn't already
-        linked_transactions = [linked_transactions] unless linked_transactions.is_a? Array
+        return if lbtt[:linked_transactions].nil?
 
         output = []
-
-        linked_transactions.each do |raw_hash|
-          output << LinkTransactions.convert_back_office_hash(raw_hash)
+        ServiceClient.iterate_element(lbtt[:linked_transactions]) do |raw_hash|
+          output << LinkTransactions.convert_back_office_hash(raw_hash, lbtt[:flbt_type])
         end
 
         output
@@ -757,14 +750,11 @@ module Returns
 
       # Convert the yearly_rents data into yearly_rents objects
       private_class_method def self.convert_to_yearly_rents(lbtt)
-        yearly_rents = lbtt[:rent][:yearly_rents] unless lbtt[:rent].nil?
-        return nil if yearly_rents.nil?
-
-        yearly_rents = [yearly_rents] unless yearly_rents.is_a? Array
+        return if lbtt[:rent].nil?
 
         output = []
-        yearly_rents.each_with_index do |raw_hash, i|
-          output[i] = YearlyRent.convert_back_office_hash(raw_hash)
+        ServiceClient.iterate_element(lbtt[:rent]) do |raw_hash|
+          output << YearlyRent.convert_back_office_hash(raw_hash)
         end
         output
       end
@@ -844,7 +834,7 @@ module Returns
                       'ins1:UKInd': convert_to_backoffice_yes_no_value(@uk_ind))
         xml_element_if_present(output, 'ins1:AgentReference', @agent.agent_reference) unless @agent.nil?
         parties_hash = all_parties.values
-        parties_hash = parties_hash.push(@agent) unless @agent.nil?
+        parties_hash.push(@agent) unless @agent.nil?
         output['ins1:Parties'] = { 'ins1:Party': parties_hash.map { |p| p.request_save(authority_ind) } }
 
         if @linked_ind == 'Y'
@@ -969,7 +959,7 @@ module Returns
                    "#{flbt_type}_#{translation_options}"
                  end
 
-        (attribute.to_s + '_' + suffix).to_sym
+        "#{attribute}_#{suffix}".to_sym
       end
 
       # print data for return reference

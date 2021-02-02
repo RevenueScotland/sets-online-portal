@@ -107,7 +107,7 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # Clear the resource items from the session, and local variable, whilst keeping the last uploaded file
   # @param force [Boolean] Force a clear even if processing and add or delete
   # i.e. @resource_item
-  def clear_resource_items(force = true)
+  def clear_resource_items(force: true)
     return if !force && (params[:add_resource] || params[:delete_resource])
 
     file_upload_end
@@ -185,7 +185,7 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   def initialise_fileupload_variables
     @supported_types = if respond_to?(:content_type_whitelist, true)
                          # @see locales/defaults/en.yml to learn about where this is getting the translated texts from.
-                         content_type_whitelist.map { |name| (I18n.t 'label_' + name) }.join(', ')
+                         content_type_whitelist.map { |name| (I18n.t "label_#{name}") }.join(', ')
                        else
                          ''
                        end
@@ -201,7 +201,7 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # @param check_resource_items [Boolean] Only create a blank resource item if not already loaded
   #   if set to true then an item is not created in the hash if it exists in the already loaded resource items
   # @return [Array][ResourceItem] array of resource items
-  def initialise_resource_items_hash(overrides, check_resource_items = false)
+  def initialise_resource_items_hash(overrides, check_resource_items: false)
     old_resource_items_hash = @resource_items_hash || {}
     @resource_items_hash = {}
 
@@ -254,7 +254,7 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
     # The below line will add in any missing resource item types if we don't have one in the hash
     # i.e. the user loaded only one file, the true means don't create one if the file loaded previously
     # (and is in the resource items list)
-    initialise_resource_items_hash(overrides, true)
+    initialise_resource_items_hash(overrides, check_resource_items: true)
     @resource_items_hash.values
   end
 
@@ -322,7 +322,7 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
     # This uses the list of the content_type_whitelist and alias_content_type to translate it into texts.
     # @see locales/defaults/en.yml to learn about where this is getting the translated texts from, which is
     #   used as the whitelist of suffixes for file uploads.
-    valid_content_types.map { |name| '.' + (I18n.t 'label_' + name) }
+    valid_content_types.map { |name| ".#{I18n.t("label_#{name}")}" }
   end
 
   # Returns the list of file types (symbols) to load (e.g. proof of sale, proof of occupancy)

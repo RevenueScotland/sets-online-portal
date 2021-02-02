@@ -15,20 +15,20 @@ def mock_dashboard_calls(party_ref, requestor, filename)
 end
 
 def mock_all_returns(party_ref, requestor)
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'dashboard/list_all_returns.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}dashboard/list_all_returns.xml")
   message = { ParRefno: party_ref, Username: requestor }
   @savon.expects(:view_all_returns_wsdl).with(message: message).returns(fixture)
 end
 
 def mock_list_financial_transactions(party_ref, requestor)
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'dashboard/list_transactions.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}dashboard/list_transactions.xml")
   message = { ParRefno: party_ref, RequestUser: requestor }
   @savon.expects(:get_transactions_wsdl).with(message: message).returns(fixture)
 end
 
 # list of secure message
 def mock_list_secure_messages(party_ref, requestor)
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'dashboard/list_secure_messages.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}dashboard/list_secure_messages.xml")
   message = { ParRefno: party_ref, Username: requestor,
               WrkRefno: 1, SRVCode: nil, SmsgOriginalRefno: '',
               Pagination: { 'ins1:StartRow' => 1, 'ins1:NumRows' => 3 } }
@@ -36,12 +36,12 @@ def mock_list_secure_messages(party_ref, requestor)
 end
 
 def mock_list_user
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'dashboard/list_users.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}dashboard/list_users.xml")
   @savon.expects(:maintain_user_wsdl).with(message: :any).returns(fixture)
 end
 
 def mock_get_account_details(party_ref, requestor, filename)
-  fixture = File.read(FIXTURES_MOCK_ROOT + 'dashboard/' + filename + '.xml')
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}dashboard/#{filename}.xml")
   message = { PartyRef: party_ref, 'ins1:Requestor': requestor }
   @savon.expects(:get_party_details_wsdl).with(message: message).returns(fixture)
 end

@@ -148,40 +148,40 @@ en:
     hints:
       returns/lbtt/lbtt_return:
         sale_include_option: "Select all that apply"
-        total_consideration: "See guidance LBTT2001 - Determining the chargeable consideration (opens in a new window) for further details"
-        total_consideration_residential: "See guidance LBTT2001 - Determining the chargeable consideration (opens in a new window) for further details"
-        total_vat: "See guidance LBTT2002 - What is chargeable consideration (opens in a new window) for further details"
+        total_consideration: "See guidance on determining the chargeable consideration (opens in a new window) for further details"
+        total_consideration_residential: "See guidance on determining the chargeable consideration (opens in a new window) for further details"
+        total_vat: "See guidance on what is chargeable consideration (opens in a new window) for further details"
         non_chargeable: "This is the amount that LBTT does not apply to"
         premium_paid: "This is paid by the tenant to the owner, in addition to the rent"
         relevant_rent: This is your annual rent, including VAT. If you have linked transactions, it will be the total of all rents
         account_number: "This should be 8 digits"
         branch_code: "The sort code should be entered in the format 99-99-99"
-        effective_date_CONVEY: "This is usually the date the land transaction is completed (e.g. the date of settlement). See guidance LBTT1004 - The effective date (opens in a new window) for further details"
-        effective_date_LEASERET: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details"
-        effective_date_LEASEREV: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details"
-        effective_date_ASSIGN: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details"
-        effective_date_TERMINATE: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance LBTT1004 - The effective date (opens in a new window) for further details"
-        relevant_date_CONVEY: "This is usually the same as the effective date. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details"
-        relevant_date_LEASERET: "This is usually the same as the effective date. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details"
-        relevant_date_LEASEREV: "This is the date of the triennial anniversary. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details"
-        relevant_date_ASSIGN: "This is the date the lease was assigned. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details"
-        relevant_date_TERMINATE: "This is the date the lease was terminated or came to an end. See guidance Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window) for further details"
+        effective_date_CONVEY: "This is usually the date the land transaction is completed (e.g. the date of settlement). See guidance on the effective date (opens in a new window) for further details"
+        effective_date_LEASERET: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
+        effective_date_LEASEREV: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
+        effective_date_ASSIGN: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
+        effective_date_TERMINATE: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
+        relevant_date_CONVEY: "This is usually the same as the effective date. See guidance on the relevant date (opens in a new window) for further details"
+        relevant_date_LEASERET: "This is usually the same as the effective date. See guidance on the relevant date (opens in a new window) for further details"
+        relevant_date_LEASEREV: "This is the date of the triennial anniversary. See guidance on the relevant date (opens in a new window) for further details"
+        relevant_date_ASSIGN: "This is the date the lease was assigned. See guidance on the relevant date (opens in a new window) for further details"
+        relevant_date_TERMINATE: "This is the date the lease was terminated or came to an end. See guidance on the relevant date (opens in a new window) for further details"
         fpay_method: "The payment method will only be used if a payment is actually due on this return"
-        property_type: "See guidance LBTT4010 - Meaning of residential property (opens in a new window) and LBTT4012 - Meaning of non-residential property and treatment of ‘mixed’ property (opens in a new window) for further details"
-        previous_option_ind: "See guidance LBTT1007 - Options and rights of pre-emption (opens in a new window) for further details"
-        linked_ind: "See guidance LBTT2008 - Linked transactions (opens in a new window) for further details"
-        non_ads_reliefclaim_option_ind: "See guidance LBTT3010 - Tax Reliefs (opens in a new window) for further details"
-        contingents_event_ind: "See guidance LBTT2005 - Contingent, uncertain or unascertained consideration (opens in a new window) for further details"
-        linked_consideration: "See guidance LBTT2008 - Linked transactions (opens in a new window) for further details"
-        non_chargeable: "See guidance LBTT2009 - What is not chargeable consideration (opens in a new window) for further details"
-        remaining_chargeable: "See guidance LBTT2001 - Determining the chargeable consideration (opens in a new window) for further details"
-        lease_premium: "See guidance LBTT6006 - Consideration other than rent (opens in a new window) for further details"
+        property_type: "See guidance on the meaning of residential property (opens in a new window) and of non-residential property and the treatment of ‘mixed’ property (opens in a new window) for further details"
+        previous_option_ind: "See guidance on options and rights of pre-emption (opens in a new window) for further details"
+        linked_ind: "See guidance on linked transactions (opens in a new window) for further details"
+        non_ads_reliefclaim_option_ind: "See guidance on Tax Reliefs (opens in a new window) for further details"
+        contingents_event_ind: "See guidance on contingent, uncertain or unascertained consideration (opens in a new window) for further details"
+        linked_consideration: "See guidance on linked transactions (opens in a new window) for further details"
+        non_chargeable: "See guidance on what is not chargeable consideration (opens in a new window) for further details"
+        remaining_chargeable: "See guidance on determining the chargeable consideration (opens in a new window) for further details"
+        lease_premium: "See guidance on consideration other than rent (opens in a new window) for further details"
       returns/lbtt/tax:
         calculated: "This is the derived LBTT liability from values provided in this form"
         ads_due: "This is ADS liability"
         total_ads_reliefs: "This is the total amount of reliefs claimed"
         total_non_ads_reliefs_claimed: "This is the total amount of reliefs claimed"
-        npv: "This is the amount on which tax is calculated. See guidance LBTT6011 - Tax due on the rent (opens in a new window) for further details"
+        npv: "This is the amount on which tax is calculated. See guidance on tax due on the rent (opens in a new window) for further details"
         total_reliefs: "This is the total amount of LBTT reliefs claimed"
         amount_already_paid: "How much you have already paid for any previous returns that relate to this lease agreement"
       returns/lbtt/ads:
@@ -339,11 +339,11 @@ en:
     lbtt_transactions:
       property_type:
         title: "About the transaction"
-        property_type_residential: "LBTT4010 - Meaning of residential property (opens in a new window)"
-        property_type_non_residential: "LBTT4012 - Meaning of non-residential property and treatment of ‘mixed’ property (opens in a new window)"
+        property_type_residential: "meaning of residential property (opens in a new window)"
+        property_type_non_residential: "non-residential property and the treatment of ‘mixed’ property (opens in a new window)"
       about_the_transaction:
         title: "About the transaction"
-        previous_option_ind: "LBTT1007 - Options and rights of pre-emption (opens in a new window)"
+        previous_option_ind: "options and rights of pre-emption (opens in a new window)"
       sale_of_business:
         title: "About the transaction"
       reliefs_on_transaction:
@@ -355,30 +355,30 @@ en:
           "Certain reliefs amounts will be calculated as part of the return and therefore cannot be entered at this point.<br>
           For all others, if you know the values for any relief you are claiming, enter it into the ‘Amount of tax saved by relief’ field, if you don’t know the value now then enter 0.<br>
           All Reliefs amounts can be seen later in this return and can be changed as required before submission"
-        non_ads_reliefclaim_option_ind: "LBTT3010 - Tax Reliefs (opens in a new window)"
+        non_ads_reliefclaim_option_ind: "Tax Reliefs (opens in a new window)"
       conveyance_values:
         title: "About the conveyance or transfer"
         subtitle: "Provide the following values"
-        total_consideration: "LBTT2001 - Determining the chargeable consideration (opens in a new window)"
-        total_vat: "LBTT2002 - What is chargeable consideration (opens in a new window)"
-        linked_consideration: "LBTT2008 - Linked transactions (opens in a new window)"
-        non_chargeable: "LBTT2009 - What is not chargeable consideration (opens in a new window)"
-        remaining_chargeable: "LBTT2001 - Determining the chargeable consideration (opens in a new window)"
+        total_consideration: "determining the chargeable consideration (opens in a new window)"
+        total_vat: "what is chargeable consideration (opens in a new window)"
+        linked_consideration: "linked transactions (opens in a new window)"
+        non_chargeable: "what is not chargeable consideration (opens in a new window)"
+        remaining_chargeable: "determining the chargeable consideration (opens in a new window)"
       linked_transactions:
         title: "Linked Transactions"
         return_reference: "Return reference (if known)"
         consideration_amount: "Return consideration"
         npv_inc: "NPV (inc VAT)"
         premium_inc: "Premium (inc VAT)"
-        linked_ind: "LBTT2008 - Linked transactions (opens in a new window)"
+        linked_ind: "linked transactions (opens in a new window)"
       about_the_calculation:
         title: "About future events"
-        contingents_event_ind: "LBTT2005 - Contingent, uncertain or unascertained consideration (opens in a new window)"
+        contingents_event_ind: "contingent, uncertain or unascertained consideration (opens in a new window)"
       transaction_dates:
         title: "About the dates"
         subtitle: "Provide the following dates"
-        effective_date_CONVEY: "LBTT1004 - The effective date (opens in a new window)"
-        relevant_date: "Land and Buildings Transaction Tax (Scotland) Act 2013 (opens in a new window)"
+        effective_date: "the effective date (opens in a new window)"
+        relevant_date: "the relevant date (opens in a new window)"
       tenant_landlord_relation:
         title: Landlord details
       lease_values:
@@ -389,7 +389,7 @@ en:
         year: Year
       premium_paid:
         title: About the lease values
-        lease_premium: "LBTT6006 - Consideration other than rent (opens in a new window)"
+        lease_premium: "consideration other than rent (opens in a new window)"
       relevant_rent:
         title: About the lease values
     lbtt_claim:
@@ -408,4 +408,4 @@ en:
         title: "Calculated tax"
       npv:
         title: Calculated Net Present Value (NPV)
-        npv: "LBTT6011 - Tax due on the rent (opens in a new window)"
+        npv: "tax due on the rent (opens in a new window)"

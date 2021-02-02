@@ -1,0 +1,18 @@
+<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for :page_title, t('.title') %>
+<%= form_for @slft_application, url: @post_path, local: true do |f| %>
+  <%= form_errors_for @slft_application %>
+  <%= govuk_warning( t('.warning') ) %>
+  <% if @slft_application.application_type != 'LO-WD'%>
+    <p class="govuk-label">
+      <%= t('.declare')%>
+    </p>
+  <% end %>
+  <%= f.check_box_field(:declaration) %>
+  <%= f.check_box_field(:change_declaration) if @slft_application.change_declaration_required? %>
+  <%= f.text_field :declaration_name %>
+  <%= f.text_field :declaration_position %>
+  <%= f.text_field :declaration_telephone_number %>
+  <%= f.text_field :declaration_email_address %>
+  <%= f.button 'submit',  { :name => 'continue' } %>
+<% end %>

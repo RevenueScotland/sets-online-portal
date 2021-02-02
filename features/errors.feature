@@ -14,4 +14,4 @@ Feature: Errors
         Then I should see the "Dashboard" page
         When I go to the "dashboard/dashboard_returns/251-1-LBTT-RS/load" page
         Then I should see the "Something has gone wrong" page
-        And I should see the regex "To report this error quote : \d\d\d\d\d"
+        And I should see the text "%r{To report this error quote : \d\d\d\d\d}"

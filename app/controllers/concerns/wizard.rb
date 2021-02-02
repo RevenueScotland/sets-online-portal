@@ -8,11 +8,21 @@
 # wizard (which make back links and saving and restoring data nice and easy).
 # The index is based on the controller name, so each controller has it's own wizard cache, and also on the user's
 # session, so wizard data is not shared between users.
+# Note: This does mean that each session can only have on instance of a wizard open at a time (i.e. I can't create
+# two lbtt_returns at the same time, the code is not tab safe)
 #
-# A simple wizard is one where the data is stored in one model object, where the user visits the pages (aka steps),
+# A simple wizard is one where the data is stored in one object, where the user visits the pages (aka steps),
 # in order, from start to finish.
-# A complex wizard is one where the result needs to be copied into some other wizard cache's model at the end and/or
-# the pages' order may vary based on user input.
+# A complex wizard is one where the result needs to be copied into some other wizard object at the end and/or
+# the pages' order may vary based on user input or you have a nested object within a parent object
+#
+# Although this is transparent when you using this method conceptually this code deals with two objects
+# The cached object is the object that is stored in the cache
+# The page object is the object that is being edited on the page, this may be the same as the cached object
+# or if the :sub_object_attribute is provided a sub object of the main object
+#
+# There are also specialist wizard steps where the page does an address search, a company search or maintains
+# a table of date @see WizardAddressHelper @see WizardCompanySearch @see WizardListHelper
 #
 # @example including wizard code into a controller
 #   include Wizard
@@ -34,20 +44,25 @@
 # refactoring due to coupling between methods.
 #
 # @example wizard step entry in routes.rb
-#   match 'slft/credit_bad_debt',                 to: 'slft#credit_bad_debt',                 via: %i[get post]
+#    resource :slft, controller: :slft
+#      member do
+#        get 'public_landing'
+#        post 'public_landing'
 #
 # Conventions :
 #  1) @example view excerpt
-#       <%= form_for @your_model, url: @post_path, method: :post, local: true do |f| %>
-#     where @your_model and @post_path are set both set up by a common controller method called by the wizard code
+#       <%= form_for @your_object, url: @post_path, method: :post, local: true do |f| %>
+#     where @your_object and @post_path are set both set up by a common controller method called by the wizard code
 #     usually called load_step (the default) or setup_step for the 1st step which will create objects (that way
 #     starting a wizard part way through will fail @see #wizard_load_or_redirect).
-#     @your_model must be returned from the setup method.
+#     @your_object must be returned from the setup method and load method
+#     For a more complex situation you may end up returning the chain of objects from the parent cached object
+#     down to the actual object on the page
 #  2) Prefix all controller actions in a wizard with a common word so its obvious in the controller and routes
 #     files which ones are grouped together (ie it's possible to have multiple wizards per controller, so we want an
 #     easy way to organise them)
-#  3) Define the model's non-sensitive attributes in a list which is then re-used by a controller method to limit
-#     the parameters to just those accepted by the model - ie Don't Repeat Yourself (@see SlftController#filter_params)
+#  3) Define the object's non-sensitive attributes in a list which is then re-used by a controller method to limit
+#     the parameters to just those accepted by the object - ie Don't Repeat Yourself (@see SlftController#filter_params)
 #     This will mean that all attributes are accepted by all forms, so for sensitive attributes, consider leaving
 #     them out of this list  (so user's can't attempt to change data they're not supposed to).
 #  4) Give the submit button the name "continue" so the Wizard code knows to merge and save the data rather than
@@ -55,10 +70,10 @@
 #        <%= f.button 'continue', { :name => 'continue' }  %>
 #      this is the default so the below works
 #        <%= f.button %>
-#  5) Provide two setup methods, setup_step for the first step which will create the model if it doesn't already
-#     exist, and load_step which won't create the model, but will load it or else redirect somewhere appropriate
-#     if it doesn't exist.  This will help prevent users entering a wizard part way through and encountering errors
-#     later on.
+#  5) Provide two setup methods, setup_step for the first step which will create the object if it doesn't already
+#     exist, and load_step which won't create the object, but will load the object (or objects) or else redirect
+#     somewhere appropriate if it doesn't exist.  This will help prevent users entering a wizard part way through
+#     and encountering errors later on.
 #     Put the methods at the bottom of the private section of the controller.
 #     Extra setup for specific pages should go in its own setup method unless it's trivial.
 #
@@ -81,7 +96,7 @@
 #
 # FAQ :
 #   @example - Just get the wizard data (hits Redis ie performance hit with each use)
-#     @your_model = wizard_load
+#     @your_object = wizard_load
 #
 #   @example - Merge data from current wizard into another, parent, wizard
 #     @parent_data = wizard_load(OtherController)
@@ -99,19 +114,23 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   include SessionCacheHandler
 
   # Performs a step in a simple wizard.
-  # There are two halves to a step, the first sets up the model for the view, with the same name as the controller
+  # There are two halves to a step, the first sets up the page object for the view, with the same name as the controller
   # action method, to be called.  The second part validates then stores the submitted parameters in the wizard cache
-  # model (provided by the setup method) for later use, and redirects to the next step.  If validation
+  # object (provided by the setup method) for later use, and redirects to the next step.  If validation
   # fails then the view is shown again rather than being saved.
   #
   # A yield accepts a hash allowing optional overrides with the following keys :
   # :params -      pointer to method to run to get the parameters to be saved (defaults to #filter_params)
-  #                this is normally set to be the filtered list of parameters for the model
+  #                this is normally set to be the filtered list of parameters for the object
   # :cache_index - overrides the cache key used when saving data (defaults to the current controller name)
   #                useful when you want two controllers to work on the same wizard cached data.
   # :after_merge - pointer to method to run after the merge and save has happened (can be used to insert data into
-  #                somewhere else on the last step of the wizard for example) - a call to #wizard_save may be needed
-  #                in this method if you want to persist the data in the wizard cache.
+  #                somewhere else on the last step of the wizard for example) Any data in the main object is saved
+  #                following this step. If you want to take the current wizard object and add it into a parent object
+  #                then you will need to load and save the parent object e.g. when merging a party back to the main
+  #                return object
+  #                NOTE: The method found from this needs to return a boolean value true if validation passes, but
+  #                false if it fails.
   # :next_step -   pointer to method [to run after the merge has happened] which returns the next page.  This allows
   #                just-in-time conditional navigation
   # :clear_cache - Clear the wizard cache at _start_ of the first step ie before #overrides[:setup_step] is called.
@@ -121,7 +140,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   # :setup_step -  Changes the setup method called.  Specify this for the first step in a wizard (eg to point to
   #                :setup_step) or if the step needs custom setup (eg @my_list = complex_setup_just_for_one_step).
   # :validates  -  List of extra validation contexts.  By default submitted params will be validated if a validation
-  #                context exists on the model for that name.  This option allows us to add others, eg to provide
+  #                context exists on the object for that name.  This option allows us to add others, eg to provide
   #                page/step/action -based validation eg to check for un-checked check boxes on declaration pages.
   # :loop       -  this is used for wizard page(s) that needs to loop around a (set of) page(s).
   #                There are three specific values it only accepts
@@ -133,9 +152,9 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   #                3. :<page-name> - this should be added to the last page of the looping/indexing feature, as this
   #                                  means that it will go back to that page to loop around when there's still more
   #                                  objects in the list.
-  # :sub_object_attribute - this contains the attribute in the model where the sub-object(s) is stored, that attribute
-  #                contents can be an array of sub-objects. But the value assigned to this key must be a symbol. It
-  #                will also be used to find the accessed objects and edit & store it back into the model.
+  # :sub_object_attribute - this contains the attribute(s) in the object where the sub-object(s) is/are stored.
+  #                The attributes must be symbols. The contents can be an array of sub-objects.
+  #                This is used to extract and save objects
   #
   # This method is designed to be pretty much the only thing the controller action calls.  If you find yourself putting
   # it in an if statement, you're probably doing it wrong.
@@ -158,7 +177,10 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     wizard_step_submitted(steps, overrides)
   end
 
-  # Clears the cache iff the overrides[:clear_cache] says so.  @see #wizard_step for more information.
+  # Clears the cache and ends the wizard as per the overrides
+  # @see #wizard_step for more information.
+  # @param overrides [Hash] the keys used in this method :
+  #   - :clear_cache to indicate that cache should be cleared
   def wizard_handle_clear_cache(overrides)
     # allow "clear_cache: true"
     overrides[:clear_cache] = self.class.name if overrides[:clear_cache] == true
@@ -172,126 +194,116 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   #        If you do provide a name it will get that controller's wizard data instead.
   def wizard_load(cache_index = self.class.name)
     session_key = wizard_session_key(cache_index)
-    model = session_cache_data_load(session_key, cache_index)
-    return if model.nil?
+    cached_object = session_cache_data_load(session_key, cache_index)
+    return if cached_object.nil?
 
-    # it is possible that the model was saved with errors
-    # normally we should not save a model with errors but in the event of a submit error we
-    # need to clear the submitted flag and save the model and this will have errors
+    # it is possible that the object was saved with errors
+    # normally we should not save an object with errors but in the event of a submit error we
+    # need to clear the submitted flag and save the object and this will have errors
     # Note we can't clear when we save as that clears the errors before we show them to the user
-    model.errors.clear
-    model
+    cached_object.errors.clear
+    cached_object
   end
 
-  # Calls @see #wizard_load but if it fails, redirects to the given URL
+  # Calls @see #wizard_load and if it fails, redirects to the given URL
+  # This will return either one object (the cached object), or if :sub_object_attribute is provided in the overrides,
+  # it will return an array of nested sub objects in the cached object in the order given by the sub object attributes
+  # Note that the order given in the sub_object_attributes must be in the correct nesting order
+  # i.e. cached_object->sub_object->sub_sub_object etc
+  # You can disregard those objects returned that aren't needed on the page (you may only need the last sub object)
   # @param redirect_url [String] the URL to redirect to
-  # @param overrides [Hash] The key/value here are used for loading the a sub-object of the model
+  # @param sub_object_attribute [Symbol|Array] A single symbol or an array of symbols
   # @param cache_index [String] the identifier for the cache index, defaults to the class name (the controller)
-  # @return [Object|Array] The object or array of objects that the wizard is referring to according to the
-  #   fields on the page.
+  # @return [Object|Array] The object or array of nested objects
   # @example wizard_load_or_redirect(returns_slft_site_waste_summary_url)
   # @raise WizardRedirectError to stop execution of this action, log it happened and redirect
-  def wizard_load_or_redirect(redirect_url, overrides = {}, cache_index = self.class.name)
-    model = wizard_load(cache_index)
-    output = model
-    unless overrides[:sub_object_attribute].blank?
-      # This is used for iterating through a list of sub_object objects
-      index = wizard_page_index
-      sub_object_or_collection = model.send(overrides[:sub_object_attribute])
-      # Gets the sub-object
-      sub_object = index.nil? ? sub_object_or_collection : sub_object_or_collection[index - 1]
-      output = [model, sub_object]
-    end
-    return output unless model.nil?
+  def wizard_load_or_redirect(redirect_url, sub_object_attribute = nil, cache_index = self.class.name)
+    wizard_cached_object = wizard_load(cache_index)
+    raise Error::WizardRedirectError, redirect_url if wizard_cached_object.nil?
 
-    raise Error::WizardRedirectError, redirect_url
+    # if there are no sub object attributes the calling code is just expecting a single object
+    return wizard_cached_object if sub_object_attribute.nil?
+
+    # We pass down the sub object_override as an override to this routine
+    wizard_all_objects_array(wizard_cached_object, { sub_object_attribute: sub_object_attribute })
   end
 
-  # Assign wizard_params method output to model or a sub-object and save it in the wizard cache.
+  # Assign wizard_params method output to a page object and save it in the wizard cache.
   # Optionally yields to check validation.  No yield, no validation checks, just saves.  @see #wizard_valid?
-  # @param model [Object] the object to save in the wizard cache
-  # @param sub_object [Object|nil] To be used for assigning param values to if the overrides gives the instruction.
-  # @param wizard_params [Hash] usually the method providing the submitted form data, data will be merged into the model
+  # @param wizard_cached_object [Object] the object being cached
+  # @param wizard_page_object [Object] the object on the page, a child or the same as the cached object
+  # @param wizard_params [Hash] The method providing the submitted form data which will be merged into the page object
   # @param overrides [Hash] the keys used in this method and it's child-methods:
   #   - :after_merge [Symbol] the routine to run if the validation is successful
   #   - :cache_index [String] the identifier for the cache index, defaults to the class name (the controller)
   #   - :loop [Symbol] used for determining if the params should be assigned to the sub-object
-  #   - :sub_object_attribute [Symbol] this is the attribute of the model which contains the sub-object
+  #   - :sub_object_attribute [Symbol] this is the attribute(s) of the cached object which contains the sub-object
   # @return [Boolean] false if validation fails or the after merge fails, else true
-  def wizard_merge_and_save(model, sub_object, wizard_params, overrides = {})
-    wizard_page_object = sub_object || model
-
+  def wizard_merge_and_save(wizard_cached_object, wizard_page_object, wizard_params, overrides = {})
     merge_params_with_object(wizard_page_object, wizard_params)
 
     # check validation via yield
     valid = yield(wizard_page_object, wizard_params)
-    Rails.logger.debug "  Validation overall result is #{valid}"
 
-    # if sub-object exists this will validate the model.
-    valid = validate_model_after_sub_object_merge(model, sub_object, overrides, valid)
-
-    save_valid_model_to_cache(model, overrides, valid)
+    valid = save_cached_object_to_cache(wizard_cached_object, overrides) if valid
+    valid
   end
 
-  # Merges the wizard params with the main object in the wizard page, the object could either be the
-  # model or sub-object.
-  # @note If the wizard_page_object is a sub-object of the model then this will also update the model's attribute where
-  #   the sub-object is stored as that variable is a pointer to it. So there's no need to re-assign the sub-object
-  #   back to the model's attribute.
+  # Merges the wizard params with the object in the wizard page
+  # @note The wizard page object is actually a pointer to the object within the cached object. So updating it
+  #  will also update the cached object 'version'
   def merge_params_with_object(wizard_page_object, wizard_params)
-    # nothing in params is usually a page containing only an un-checked checkbox, so don't attempt merge
+    # nothing in params is usually a page containing only an un-checked check box, so don't attempt merge
     return if wizard_params.nil?
 
     Rails.logger.debug("  Merging/assigning params #{wizard_params}")
-    # errors on this line usually mean the parameter doesn't match a model attribute or incorrect filter_params
+    # errors on this line usually mean the parameter doesn't match an object attribute or incorrect filter_params
     wizard_page_object.assign_attributes(wizard_params)
   end
 
-  # Validates the model if the sub-object exists.
-  # @param valid [Boolean] related to validation before merging the model with the sub-object.
-  # @param validate [Boolean] used to determine if the model needs validating after merging the sub-object in.
-  # @return [Boolean] is the model valid after merging the sub-object into it, if there isn't a sub-object OR
-  #   it's given an instruction to not validate then it will be the previous validation value.
-  def validate_model_after_sub_object_merge(model, sub_object, overrides, valid, validate = true)
-    return valid if sub_object.nil? || !validate
-
-    # Validates the model according to the sub-object attribute
-    model.valid?(overrides[:sub_object_attribute]) && valid
-  end
-
-  # Validate the model based on the submitted parameters.
-  # Builds up a list of validation contexts based on the parameters, so if you want validation for an attribute,
-  # define it in the model with a validation context with the same name as the attribute.
-  # @example validation in model
+  # Validate the cached and page object based on the linking attributes and the submitted parameters.
+  # Note that as per standard load processing the page object is the last object extracted from the cached object
+  #
+  # The list of validation contexts based on the parameters and the linking attribute, so if you want
+  # validation for an attribute, define it in the class with a validation context with the same name as the attribute.
+  # @example validation in class
   #   validates :year, presence: true, on: :year
   #
   # This allows the validation to be run based on what's submitted (ie submitted for that wizard step) without us ever
   # having to specify or update the relationship between wizard step and validation.
-  # @param model - the model to validate
-  # @param wizard_params - params submitted eg on a form the keys of which will be the validation contexts to check
-  # @param overrides - checks for the validates option to add contexts @see #wizard_step for more details
+  # @param wizard_cached_object [Object] the object to validate
+  # @param wizard_params [Hash] params submitted eg on a form the keys of which will be the validation contexts to check
+  # @param overrides [Hash] the keys used in this method and it's child-methods:
+  #   - :validates [Symbol] extra validation contexts to be used
+  #   - :sub_object_attribute [Symbol] this is the attribute(s) of the cached object which contains the sub-object
   # @return [Boolean] true if valid else false
-  def wizard_valid?(model, wizard_params, overrides)
-    # check it's not empty
-    wizard_params ||= {}
+  def wizard_valid?(wizard_cached_object, wizard_params, overrides)
+    # Set up the values for validation
+    all_objects = wizard_all_objects_array(wizard_cached_object, overrides)
+    sub_object_attributes = wizard_sub_object_attributes(overrides)
+    page_object_contexts = add_validation_contexts((wizard_params || {}).keys.map(&:to_sym), overrides)
+    valid = true
 
-    # extract validation contexts from the keys
-    validation_contexts = add_validation_contexts(wizard_params.keys.map(&:to_sym), overrides)
+    # Do validation prior to the page object
+    # at this stage all objects is [cached_object sub_object(*) page_object]
+    # attributes is [sub_object_attribute(*) page_object_attribute]
+    all_objects.each_with_index do |o, i|
+      validation_context = (i < sub_object_attributes.size ? sub_object_attributes[i] : page_object_contexts)
+      valid &&= o.valid?(validation_context)
+      Rails.logger.debug "  Validation for #{validation_context} valid is now #{valid}"
+    end
 
-    # do validation
-    output = model.valid?(validation_contexts)
-    Rails.logger.debug "  Validation for #{validation_contexts} is #{output}"
-    output
+    valid
   end
 
   # _Overwrite_ the wizard cache object.  Use with caution.
-  # @param master_object - the object to store in the cache
+  # @param wizard_cached_object - the object to store in the cache
   # @param cache_index [String] the identifier for the cache index, defaults to the class name (the controller)
-  def wizard_save(master_object, cache_index = self.class.name)
+  def wizard_save(wizard_cached_object, cache_index = self.class.name)
     # allow blank to be passed as argument for cache_index but still use default in that case
     cache_index = self.class.name if cache_index.nil?
     session_key = wizard_session_key(cache_index)
-    session_cache_data_save(master_object, session_key, cache_index)
+    session_cache_data_save(wizard_cached_object, session_key, cache_index)
   end
 
   # Cleans up wizard cache and session at the end to delete it/free up resources.
@@ -302,16 +314,11 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     clear_session_cache(session_key, cache_index)
   end
 
-  # When the wizard form should submit to the same action that created it, returns the action attribute.
-  # If you find this does not return the right value, check if you've got your namespaces and routing correct.
-  # @param [String] controller_name optional override to provide path based on another controller (defaults to self)
-  # @return [String] the url for the form's post action, calculated from the wizard controller class and current action
-  def wizard_post_path(controller_name = self.class.name)
-    index = wizard_page_index
-    # Array of options to build the url, used as the post url of a wizard page
-    url_options_array = [controller_name.underscore.tr!('/', '_').sub('controller', action_name).to_sym]
-    url_options_array.append(sub_object_index: index) if index.present?
-    url_options_array
+  # This returns the path to be used for posting the response to a wizard page.
+  # This is basically the same as the URL for the current page
+  # @return [String] the url for the form's post action
+  def wizard_post_path
+    request.path
   end
 
   # Methods added to the including class as self.<method> which is the context that #standard_wizard_step_actions
@@ -349,44 +356,92 @@ module Wizard # rubocop:disable Metrics/ModuleLength
 
   private
 
-  # Aids code re-use by calling the right setup_step method to return the model.
-  # By default, calls load_step to load the model but can be overriden by providing the :setup_step override
-  # to create objects for the first step or do a custom step setup.
-  # @param overrides [Hash] @see #wizard_step
-  # @return the wizard cache model returned by the setup step method called
-  def wizard_setup_step(overrides)
-    return send(overrides[:setup_step]) if overrides.key?(:setup_step)
+  # Gets all levels of sub-objects. This also handles where the sub object is an array, the individual item in the array
+  # is extracted. This uses index which are passed on the parameters and are totally handled within the wizard code
+  # @param wizard_cached_object [Object] The object of the wizard.
+  # @param overrides [Hash] the overrides from the wizard step
+  #  - :sub_object_attribute [Symbol|Array] A single symbol or an array of symbols for the attributes for the sub object
+  # @example wizard_all_objects_array(<LbttReturn...>, { sub_object_attribute: [buyers company] }) will return
+  #   [<LbttReturn>, <Party>, <Company>]
+  # @return [Array] the cached object and all the levels of the sub-objects, ordered from cached object to
+  #   the lowest level sub-object).
+  def wizard_all_objects_array(wizard_cached_object, overrides)
+    all_objects = [wizard_cached_object]
+    sub_object_attributes = wizard_sub_object_attributes(overrides)
+    return all_objects if sub_object_attributes.blank?
 
-    # This may return an array of the model and sub-object, but in most cases it will just be the model object.
-    load_step(overrides[:sub_object_attribute])
+    sub_object_attributes.each do |a|
+      # Depending on the contents in the attribute, this could be an array of objects or just a single object
+      objects_from_attribute = all_objects.last.send(a)
+      # extract the sub object from the array if it is an array, we need to know if is the last attribute as that uses
+      # the standard name for the index parameter name
+      all_objects << extracted_sub_object(objects_from_attribute, sub_object_attributes.last == a)
+    end
+    all_objects
+  end
+
+  # Extracts the sub-object from the parent object attribute.
+  # @param sub_objects [Object|Array] the contents of the attribute of the parent
+  # @param last_attribute [Boolean] is the method being used on the last attribute within
+  #   the attributes list?
+  # @return [Object] the sub-object extracted from it's parent
+  def extracted_sub_object(sub_objects, last_attribute)
+    return sub_objects unless sub_objects.is_a?(Array)
+
+    # On the last attribute wizard page index uses the default name, so don't pass down the class name
+    class_name = sub_objects.first.class.name unless last_attribute
+    index = wizard_object_index(class_name)
+
+    sub_objects[index - 1]
+  end
+
+  # Aids code re-use by calling the right setup_step method to return the objects.
+  # By default, calls load_step to load the objects but can be overridden by providing the :setup_step override
+  # to create objects for the first step or do a custom step setup.
+  # The load step/setup step provided may return one object or an array of objects if we are dealing with nested objects
+  # this routine always returns two objects, the root cached object and the object on the page. These may be the same
+  # The object on the page is always the lowest object sub_object_attribute list for this page
+  # @param overrides [Hash] the keys used in this method and it's child-methods:
+  #   - :setup_step [Symbol] The method to call to do the setup of the objects
+  #   - :sub_object_attribute [Symbol] this is the attribute(s) of the cached object which contains the sub-object
+  # @return [Array] The cached object and the page object.
+  def wizard_setup_step(overrides)
+    # This may return an array of the cached object and all sub-objects, or just the cached object.
+    objects_from_setup = if overrides.key?(:setup_step)
+                           send(overrides[:setup_step])
+                         else
+                           load_step(overrides[:sub_object_attribute])
+                         end
+
+    return [objects_from_setup.first, objects_from_setup.last] if objects_from_setup.is_a? Array
+
+    # This is the standard scenario where we only have one object
+    # This is actually returning two pointers to the same object, so in the calling routine changing
+    # attributes on one changes both
+    [objects_from_setup, objects_from_setup]
   end
 
   # The second half of wizard_step, separated out because it's getting too big. Manages merging, validation and saving.
-  # Calls wizard_setup_step to get the model we're working on.
+  # Calls wizard_setup_step to get the objects we're working on.
   # @see #wizard_step for more details.
   # @param steps [List] @see #wizard_step
   # @param overrides [Hash] @see #wizard_step
   def wizard_step_submitted(steps, overrides = {})
-    model = wizard_setup_step(overrides)
-    # NOTE: sub_object is normally present when an overrides param includes an attribute (of the model with value that
-    #       contains an object), and it gets set up in the {#wizard_setup_step} method.
-    model, sub_object = model if model.is_a?(Array)
+    wizard_cached_object, wizard_page_object = wizard_setup_step(overrides)
 
     # get the parameters submitted
     wizard_params = resolve_params(overrides)
-    # To be used for validation checking, if we have a sub object, then that should be used for the validation.
-    wizard_page_object = sub_object || model
 
     # add submitted params to the cached object and save if validation passes
     # if validation fails then returns without doing the navigation
     # # overrides[:after_merge], overrides[:cache_index]) do
-    return unless wizard_merge_and_save(model, sub_object, wizard_params, overrides) do
-      # validate model (@note this is a block called by #wizard_merge_and_save)
-      wizard_valid?(wizard_page_object, wizard_params, overrides)
+    return unless wizard_merge_and_save(wizard_cached_object, wizard_page_object, wizard_params, overrides) do
+      # validate object (@note this is a block called by #wizard_merge_and_save)
+      wizard_valid?(wizard_cached_object, wizard_params, overrides)
     end
 
     # We want to know if there is a collection of sub-objects that the page is traversing through.
-    sub_object_size = collection_of_sub_object_size(model, overrides)
+    sub_object_size = wizard_page_objects_size(wizard_cached_object, overrides)
 
     # redirect to the next step unless there were errors added by the after_merge section
     # if the merge fails then we would have returned above
@@ -394,32 +449,42 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     wizard_navigation_step(steps, overrides, sub_object_size) unless wizard_page_object.errors.any?
   end
 
-  # Counts the total size of the collection of sub-objects in the model, if the found collection turns out
+  # Counts the total size of the collection of sub-objects in the cached object, if the found collection turns out
   # to not be a collection, then it will return nil.
   # @see wizard_step_submitted as this is only to be used in that method.
-  # @return [Integer|nil] Total size or nil if model's contents doesn't contain a collection.
-  def collection_of_sub_object_size(model, overrides)
-    return if overrides[:sub_object_attribute].nil?
+  # @param wizard_cached_object [Object] The object of the wizard.
+  # @param overrides [Hash] the overrides from the wizard step
+  #    :sub_object_attribute [Symbol|Array] A single symbol or an array of symbols for the attributes for the sub object
+  # @return [Integer|nil] Total size or nil if cached objects contents doesn't contain a collection.
+  def wizard_page_objects_size(wizard_cached_object, overrides)
+    sub_object_attributes = wizard_sub_object_attributes(overrides)
+    return if sub_object_attributes.blank?
 
-    collection_or_sub_object = model.send(overrides[:sub_object_attribute])
+    all_objects = wizard_all_objects_array(wizard_cached_object, overrides)
+    # As we are trying to get the list of sub-objects and not a specific one, we'll get it by looking at the
+    # second last object and look at it's contents.
+    collection_or_sub_object = all_objects[-2].send(sub_object_attributes.last)
     return unless collection_or_sub_object.is_a?(Array)
 
     collection_or_sub_object.size
   end
 
-  # This part is the saving of the valid model to cache.
+  # Runs the after merge method (if needed) and if that is successful saves the object to the cache
   # @see wizard_merge_and_save as this should only be used there, and this is done to split up the method.
-  # @return [Boolean] true if the validation has passed, which means there's no errors found.
-  def save_valid_model_to_cache(model, overrides, valid)
+  # @param wizard_cached_object [Object] The object of the wizard.
+  # @param overrides [Hash] the overrides from the wizard step
+  #    :after_merge [Symbol|Array] A pointer to the after merge method to run
+  #    :cache_index [Symbol] The index to use to save the object
+  # @return [Boolean] false if the after merge failed.
+  def save_cached_object_to_cache(wizard_cached_object, overrides)
     after_merge = overrides[:after_merge]
-    cache_index = overrides[:cache_index] || self.class.name
-    Rails.logger.debug "  Validation overall result is #{valid}"
 
     # custom method to run after successful merge and save
-    valid = send(after_merge) if after_merge && valid
+    valid = true
+    valid = send(after_merge) if after_merge
     Rails.logger.debug "  After merge call to #{after_merge} failed with #{valid.inspect}" unless valid
 
-    wizard_save(model, cache_index) if valid
+    wizard_save(wizard_cached_object, overrides[:cache_index] || self.class.name) if valid
     valid
   end
 
@@ -435,7 +500,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
       validations = overrides[:validates]
 
       # turn it into an array if it's not already
-      validations = [validations] unless validations.is_a? Array
+      validations = Array(validations)
 
       # add to the list of validation contexts
       validations.each { |v| new_validation_contexts << v }
@@ -458,20 +523,20 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   # @param overrides [Hash] contains the instruction to do the loop feature or overriding of the next_step
   #   - :loop [Symbol] mainly used for calculating the sub_object_index to be used for loading the new page
   #   - :next_step [Symbol|String] used for overriding the next step.
-  # @param total_pages [Integer|nil] defaults to nil but may also contain nil. This is used for a type of wizard
+  # @param total_objects [Integer|nil] defaults to nil but may also contain nil. This is used for a type of wizard
   #   pages that has the feature to loop back to a starting page, it is used to determine if the looping cycle
   #   should continue or break.
   # @see http://localhost:3000/rails/info/routes but consider if it'd be better todo something like :
   #      ['current_action', STEPS.first] which is another option.
-  def wizard_navigation_step(steps, overrides, total_pages = nil)
+  def wizard_navigation_step(steps, overrides, total_objects = nil)
     loop_instruction = overrides[:loop]
     # custom method to run which sets the next_step override
     steps = wizard_navigation_override_next_step(loop_instruction, overrides[:next_step]) || steps
 
     # normal case - find next step in list and redirect to that action (on current controller)
     if steps.is_a?(Array)
-      # @see wizard_page_index to know how the :sub_object_index is being taken
-      wizard_navigation_from_list_next_step(steps, loop_instruction, wizard_page_index, total_pages) && return
+      # @see wizard_object_index to know how the :sub_object_index is being taken
+      wizard_navigation_from_list_next_step(steps, loop_instruction, wizard_object_index, total_objects) && return
     end
 
     # redirect to a specific path eg returns_slft_declaration_repayment_path
@@ -497,10 +562,10 @@ module Wizard # rubocop:disable Metrics/ModuleLength
 
   # Navigates the wizard to redirect to a page by looking at the array of steps and figuring out which would the
   # next step be. This may also add an index according to the loop_instruction.
-  def wizard_navigation_from_list_next_step(steps, loop_instruction, current_page, total_pages)
+  def wizard_navigation_from_list_next_step(steps, loop_instruction, current_index, total_objects)
     calculated_next_step = next_step_in_list(steps)
     Rails.logger.debug "Redirecting to next step/action: #{calculated_next_step}"
-    action, index = build_action_and_index(calculated_next_step, loop_instruction, current_page, total_pages)
+    action, index = build_action_and_index(calculated_next_step, loop_instruction, current_index, total_objects)
 
     # Next step with index, or the normal next step
     index.present? ? redirect_to(action: action, sub_object_index: index) : redirect_to(action: action)
@@ -509,17 +574,17 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   # Builds the action and index for the next step, which is only used for the array of steps.
   # @see wizard_navigation_from_list_next_step as it should only be used there.
   # @return [Array] of two items which should be a String for the action and an Integer (or nil) for the index.
-  def build_action_and_index(action, loop_instruction, current_page, total_pages)
+  def build_action_and_index(action, loop_instruction, current_index, total_objects)
     # index is related to the sub_object_index
     index = nil
     if loop_instruction.present?
       # If :continue is found in the loop_instruction, this means that we're on a page in between the start and last
       # A page with loop_instruction of :start_next_step means that the next page is the start of the looping
       # (indexing) wizard pages.
-      index = { start_next_step: 1, continue: current_page }[loop_instruction]
+      index = { start_next_step: 1, continue: current_index }[loop_instruction]
       # Having no index with a loop_instruction present means that we're looping back to the start page
-      if index.nil? && current_page < total_pages
-        index = current_page + 1
+      if index.nil? && current_index < total_objects
+        index = current_index + 1
         action = loop_instruction.to_s
       end
     end
@@ -551,11 +616,32 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     session_cache_data_expiry_time
   end
 
-  # Some wizard pages have :sub_object_index which is mainly used for traversing through an array of sub-objects of
-  # the model. This is also used for loading up the next wizard page.
-  def wizard_page_index
-    return if params[:sub_object_index].nil?
+  # Where we are traversing an array on objects in an object. This returns the current index of the object from the
+  # parameters
+  # The default name of the index is sub_object_index which is always used for the last subject in the chain
+  # (or if there is only one sub object in the chain). For other indexes it is based on the class name
+  # This routine is also used for when calculating the index for the next page.
+  # @param class_name [String] Class name of an object (<Object>.class.name), if this is the last object
+  #   in the chain MUST be passed as nil
+  # @return [Integer] The sub_object_index from the page. The sub_object_index starts the count
+  #   from 1, so to use it on arrays don't forget to -1 it.
+  def wizard_object_index(class_name = nil)
+    key = :sub_object_index
+    key = "#{class_name.demodulize.singularize.underscore}_#{key}".to_sym unless class_name.nil?
+    return if params[key].nil?
 
-    params[:sub_object_index].to_i
+    params[key].to_i
+  end
+
+  # Returns the array of sub object attributes from the override parameter, handling that it may be a single value
+  # or an array. It always returns an array
+  # @param overrides [Hash] the overrides from the wizard step
+  #    :sub_object_attribute [Symbol|Array] A single symbol or an array of symbols for the attributes for the sub object
+  # @return [Array] an array of symbols
+  def wizard_sub_object_attributes(overrides)
+    sub_object_attribute = (overrides || {})[:sub_object_attribute]
+    return [] if sub_object_attribute.nil?
+
+    (sub_object_attribute.is_a?(Array) ? sub_object_attribute : [sub_object_attribute])
   end
 end

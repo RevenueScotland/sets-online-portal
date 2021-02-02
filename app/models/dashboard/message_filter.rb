@@ -49,9 +49,10 @@ module Dashboard
 
     # @return a hash suitable for use in a list secure messages filter
     def direction_description
-      if @direction_code.to_s == 'I'
+      case @direction_code.to_s
+      when 'I'
         'Inbound'
-      elsif @direction_code.to_s == 'O'
+      when 'O'
         'Outbound'
       end
     end
