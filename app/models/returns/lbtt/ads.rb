@@ -21,6 +21,9 @@ module Returns
       # Not including in the attribute_list so it can't be changed by the user
       attr_accessor :flbt_type # HACK: values copied from LbttReturn
 
+      # For each of the numeric fields create a setter, don't do this if there is already a setter
+      strip_attributes :ads_amount_liable, :ads_consideration, :ads_repay_amount_claimed
+
       # ADS validation
       validates :ads_consideration_yes_no, presence: true, on: :ads_consideration_yes_no
       validates :ads_sell_residence_ind, presence: true, on: :ads_sell_residence_ind
@@ -143,11 +146,11 @@ module Returns
         # since ADS data was added)
         # is the ADS section currently available to the user
         output['ins1:AdsSellResidenceInd'] = convert_to_backoffice_yes_no_value(@ads_sell_residence_ind)
-        output['ins1:AdsAddress'] = @ads_main_address.format_to_back_office_address unless @ads_main_address.blank?
+        output['ins1:AdsAddress'] = @ads_main_address.format_to_back_office_address if @ads_main_address.present?
         xml_element_if_present(output, 'ins1:AdsConsideration', @ads_consideration)
         xml_element_if_present(output, 'ins1:AdsAmountLiable', @ads_amount_liable)
         # Note that the ads reliefs are merged in as part of the parent return
-        unless @rrep_ads_sold_address.blank?
+        if @rrep_ads_sold_address.present?
           output['ins1:AdsSoldAddress'] = @rrep_ads_sold_address.format_to_back_office_address
         end
         return if @rrep_ads_sold_date.blank?
@@ -160,36 +163,35 @@ module Returns
       # Sort of like the opposite of @see #request_save
       def self.convert_back_office_hash(output) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         ads_output = {}
-        unless output[:ads_address].blank?
+        if output[:ads_address].present?
           ads_output[:ads_main_address] = Address.convert_hash_to_address(output[:ads_address])
         end
         yes_nos_to_yns(output, %i[ads_sell_residence_ind])
-        ads_output.merge!(convert_to_reliefs_claims(output[:reliefs])) unless output[:reliefs].blank?
+        ads_output.merge!(convert_to_reliefs_claims(output[:reliefs])) if output[:reliefs].present?
         ads_output[:ads_sell_residence_ind] = output.delete(:ads_sell_residence_ind)
         ads_output[:ads_consideration_yes_no] = output.delete(:ads_consideration_yes_no)
         ads_output[:ads_consideration] = output.delete(:ads_consideration)
         ads_output[:ads_amount_liable] = output.delete(:ads_amount_liable)
-        unless output[:ads_sold_address].blank?
+        if output[:ads_sold_address].present?
           ads_output[:rrep_ads_sold_address] = Address.convert_hash_to_address(output.delete(:ads_sold_address))
         end
         # Set sold property details if we have a sold date
-        unless output[:ads_sold_date].blank?
+        if output[:ads_sold_date].present?
           ads_output[:ads_sold_main_yes_no] = 'Y'
           ads_output[:ads_repay_amount_claimed] = output[:repayment_amount_claimed]
           ads_output[:rrep_ads_sold_date] = output.delete(:ads_sold_date)
         end
         # derive yes no based on the data now that we've finished moving it around
-        derive_yes_nos_in(ads_output) unless ads_output[:ads_sell_residence_ind].nil?
+        derive_yes_nos_in(ads_output)
         Ads.new_from_fl(ads_output)
       end
 
       # Some attributes yes_no type depending on some other attribute value, so here we are setting them
       private_class_method def self.derive_yes_nos_in(lbtt)
-        to_derive = {
-          ads_reliefclaim_option_ind: :ads_relief_claims,
-          ads_consideration_yes_no: :ads_consideration
-        }
-        derive_yes_nos(lbtt, to_derive, true)
+        lbtt[:ads_reliefclaim_option_ind] = derive_yes_no(value: lbtt[:ads_relief_claims],
+                                                          default_n: lbtt[:ads_sell_residence_ind].present?)
+        lbtt[:ads_consideration_yes_no] = derive_yes_no(value: lbtt[:ads_consideration],
+                                                        default_n: lbtt[:ads_sell_residence_ind].present?)
       end
 
       # Convert the relief_claim data into relief objects separated into ADS and non-ADS reliefs.
@@ -215,7 +217,7 @@ module Returns
       # @param raw_hash [Hash] data loaded from the back office about a relief
       private_class_method def self.convert_and_organise_relief(raw_hash, output)
         relief = ReliefClaim.convert_back_office_hash(raw_hash)
-        output[:ads_relief_claims] << relief if /ADS.*/.match?(relief.relief_type)
+        output[:ads_relief_claims] << relief if relief.ads?
       end
     end
   end

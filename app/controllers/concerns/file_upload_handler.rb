@@ -14,12 +14,12 @@
 # 1. Store file in resource_item object @see ResourceItem
 # 2. Validate resource_item object :
 #  Along with basic validation, you can configure though application.rb file :
-#  i) config.x.file_upload_content_type_whitelist
+#  i) config.x.file_upload_content_type_allowlist
 #     Default is to support all file types, to support a specific file type you need to overwrite a
-#     #content_type_whitelist method which should return an array containing supporting files content type.
+#     #content_type_allowlist method which should return an array containing supporting files content type.
 #     @example to support gif and jpeg file method defined as per below
 #
-#     def content_type_whitelist
+#     def content_type_allowlist
 #       ['image/gif', 'image/jpeg', image/jpg']
 #     end
 #
@@ -173,7 +173,7 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
     resource_items = session_cache_data_load(file_upload_session_key) || []
     doc_refno = params[:doc_refno]
     resource_item = resource_items.select { |u| u.doc_refno == doc_refno }
-    file_path = FileStorageHelper.file_temp_storage_path(:upload, sub_directory, resource_item[0].file_name)
+    file_path = ResourceItem.file_temp_storage_path(:upload, sub_directory, resource_item[0].file_name)
     send_file_from_path file_path,
                         filename: resource_item[0].original_filename,
                         disposition: 'attachment'
@@ -183,9 +183,9 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # The resource items hash is more complex and is processed separately
   # @return [Array][ResourceItem] array of resource items
   def initialise_fileupload_variables
-    @supported_types = if respond_to?(:content_type_whitelist, true)
+    @supported_types = if respond_to?(:content_type_allowlist, true)
                          # @see locales/defaults/en.yml to learn about where this is getting the translated texts from.
-                         content_type_whitelist.map { |name| (I18n.t "label_#{name}") }.join(', ')
+                         content_type_allowlist.map { |name| (I18n.t "label_#{name}") }.join(', ')
                        else
                          ''
                        end
@@ -272,7 +272,7 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   def save_attachment(resource_item)
     return if resource_item.nil? || resource_item.file_data.nil? || resource_item.file_name.nil?
 
-    File.open(FileStorageHelper.file_temp_storage_path(:upload, sub_directory, resource_item.file_name),
+    File.open(ResourceItem.file_temp_storage_path(:upload, sub_directory, resource_item.file_name),
               'wb') do |file|
       file.write(resource_item.file_data)
     end
@@ -282,7 +282,7 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # @param file_name [String]  name of the file to be deleted
   # @return nil
   def delete_attachment(file_name)
-    file_path = FileStorageHelper.file_temp_storage_path(:upload, sub_directory, file_name)
+    file_path = ResourceItem.file_temp_storage_path(:upload, sub_directory, file_name)
     File.delete(file_path) if File.exist?(file_path)
   end
 
@@ -311,7 +311,7 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # i.e. CSV mime type should be text/csv, but with a machine with Excel on it, the
   # type would be application/vnd.ms-excel
   def valid_content_types
-    content_type = respond_to?(:content_type_whitelist, true) ? content_type_whitelist : []
+    content_type = respond_to?(:content_type_allowlist, true) ? content_type_allowlist : []
     content_type += alias_content_type if respond_to?(:alias_content_type, true)
     content_type
   end
@@ -319,9 +319,9 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # Returns a list of valid file extensions. File extensions are only checked if the content type
   # sent by the browser to the application matches that defined in config.x.file_upload_unknown_content_type
   def valid_file_extensions
-    # This uses the list of the content_type_whitelist and alias_content_type to translate it into texts.
+    # This uses the list of the content_type_allowlist and alias_content_type to translate it into texts.
     # @see locales/defaults/en.yml to learn about where this is getting the translated texts from, which is
-    #   used as the whitelist of suffixes for file uploads.
+    #   used as the allow list of suffixes for file uploads.
     valid_content_types.map { |name| ".#{I18n.t("label_#{name}")}" }
   end
 

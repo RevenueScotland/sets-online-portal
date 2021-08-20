@@ -55,7 +55,7 @@ module ReferenceData
       def self.cache_key
         # only define the test key once
         @test_key ||= "system_parameter_test_#{Time.now.to_i}_#{rand(1..100)}"
-        Rails.logger.debug("Using cache key #{@test_key}")
+        Rails.logger.debug { "Using cache key #{@test_key}" }
         @test_key
       end
 

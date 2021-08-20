@@ -16,6 +16,10 @@ module Returns
 
       attribute_list.each { |attr| attr_accessor attr }
 
+      # For each of the numeric fields create a setter, don't do this if there is already a setter
+      # relief_amount has a setter
+      strip_attributes :relief_override_amount
+
       # We validate relief_type_auto so the linking works on the page
       validates :relief_type_auto, presence: true
       validates :relief_override_amount, relief_type_maximum: true
@@ -50,7 +54,8 @@ module Returns
 
       # Override setter so that relief amount to 0 for auto calculated relief claim amount
       def relief_amount=(value)
-        @relief_amount = (value == ReliefClaim.calculated_text && auto_calculated? ? 0 : value)
+        # Using strip to remove leading spaces as this is a numeric field
+        @relief_amount = (value == ReliefClaim.calculated_text && auto_calculated? ? 0 : value.try(:strip) || value)
       end
 
       # Get relief amount
@@ -84,19 +89,24 @@ module Returns
       # Obtain the description of this relief type
       # Used in the print data
       def relief_type_description
-        relief_type_hash[@relief_type].description
+        @relief_type_description ||= relief_type_hash[@relief_type].description
+      end
+
+      # Obtain the class of this relief type.
+      def relief_type_class
+        return if @relief_type.blank?
+
+        @relief_type_class ||= relief_type_hash[@relief_type].type_class
+      end
+
+      # check if relief is ads type or not.
+      def ads?
+        (relief_type_class == 'ADS')
       end
 
       # Fetch claim relief type information from cache
       def relief_type_hash
         @relief_type_hash ||= ReferenceData::TaxReliefType.lookup('RELIEF_TYPES', 'LBTT', 'RSTU')
-      end
-
-      # check if relief is ads type or not.
-      def ads?
-        return true if /ADS.*/.match?(@relief_type)
-
-        false
       end
 
       # @return a hash suitable for use in a save request to the back office
@@ -115,7 +125,7 @@ module Returns
       def request_for_main_calc
         output = {}
         output['ins1:ReliefType'] = @relief_type
-        output['ins1:ReliefAmount'] = @relief_amount unless @relief_amount.blank?
+        output['ins1:ReliefAmount'] = @relief_amount if @relief_amount.present?
         output
       end
 
@@ -123,17 +133,17 @@ module Returns
       def request_for_relief_type_calc
         output = {}
         output['ins1:ReliefType'] = @relief_type
-        output['ins1:ReliefAmount'] = @relief_amount unless @relief_amount.blank?
-        output['ins1:ReliefOverrideAmount'] = @relief_override_amount unless @relief_override_amount.blank?
+        output['ins1:ReliefAmount'] = @relief_amount if @relief_amount.present?
+        output['ins1:ReliefOverrideAmount'] = @relief_override_amount if @relief_override_amount.present?
         output
       end
 
       # Create a new instance based on a back office style hash (@see LbttReturn.convert_back_office_hash).
       # Sort of like the opposite of @see #request_save
       def self.convert_back_office_hash(output)
-        output[:relief_type] = output[:type] unless output[:type].blank?
-        output[:relief_override_amount] = output[:amount] unless output[:amount].blank?
-        output[:relief_amount] = output[:orig_amount] unless output[:orig_amount].blank?
+        output[:relief_type] = output[:type] if output[:type].present?
+        output[:relief_override_amount] = output[:amount] if output[:amount].present?
+        output[:relief_amount] = output[:orig_amount] if output[:orig_amount].present?
         # strip out attributes we don't want yet
         delete = %i[type amount orig_amount]
         delete.each { |key| output.delete(key) }

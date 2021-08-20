@@ -26,6 +26,10 @@ module Returns
 
       attribute_list.each { |attr| attr_accessor attr }
 
+      # For each of the numeric fields create a setter, don't do this if there is already a setter
+      strip_attributes :standard_tonnage, :lower_tonnage, :water_tonnage, :exempt_tonnage,
+                       :nda_ex_tonnage, :restoration_ex_tonnage, :other_ex_tonnage
+
       # Not including in the attribute_list so it can't be posted on every slft form, ie to prevent data injection.
       # uuid represents the waste entry in a site (ie just for keeping track of it during editing).
       # site_name is also denormalised mainly so it can be displayed on the page during edits
@@ -155,26 +159,26 @@ module Returns
 
       # Getter for standard tonnage to return the default of zero
       # @return [String] the string for the tonnage
-      def standard_tonnage
-        @standard_tonnage || 0
+      def standard_tonnage_display
+        @standard_tonnage.presence || 0
       end
 
       # Getter for lower tonnage to return the default of zero
       # @return [String] the string for the tonnage
-      def lower_tonnage
-        @lower_tonnage || 0
+      def lower_tonnage_display
+        @lower_tonnage.presence || 0
       end
 
       # Getter for exempt tonnage to return the default of zero
       # @return [String] the string for the tonnage
-      def exempt_tonnage
-        @exempt_tonnage || 0
+      def exempt_tonnage_display
+        @exempt_tonnage.presence || 0
       end
 
       # Getter for water tonnage to return the default of zero
       # @return [String] the string for the tonnage
-      def water_tonnage
-        @water_tonnage || 0
+      def water_tonnage_display
+        @water_tonnage.presence || 0
       end
 
       # Getter for nda_ex_tonnage taking into account flags
@@ -297,10 +301,9 @@ module Returns
 
       # Derive waste specific yes nos based on the data
       private_class_method def self.derive_yes_nos_in(raw_hash)
-        to_derive = { nda_ex_yes_no: :nda_ex_tonnage, restoration_ex_yes_no: :restoration_ex_tonnage,
-                      other_ex_yes_no: :other_ex_tonnage }
-
-        derive_yes_nos(raw_hash, to_derive, true)
+        raw_hash[:nda_ex_yes_no] = derive_yes_no(value: raw_hash[:nda_ex_tonnage])
+        raw_hash[:restoration_ex_yes_no] = derive_yes_no(value: raw_hash[:restoration_ex_tonnage])
+        raw_hash[:other_ex_yes_no] = derive_yes_no(value: raw_hash[:other_ex_tonnage])
       end
 
       # Create a new instance based on a back office style hash (@see SlftReturn.convert_back_office_hash).
@@ -328,8 +331,15 @@ module Returns
       private_class_method def self.add_exempt_total(raw_hash)
         exempt_tonnage = raw_hash[:nda_ex_tonnage].to_f + raw_hash[:restoration_ex_tonnage].to_f +
                          raw_hash[:other_ex_tonnage].to_f
-        # special case remove trailing 0 which may have been added
-        raw_hash[:exempt_tonnage] = (exempt_tonnage == exempt_tonnage.to_i ? exempt_tonnage.to_i : exempt_tonnage)
+        raw_hash[:exempt_tonnage] = if exempt_tonnage.zero?
+                                      # so that the exempt tonnage field will not get populated with a "0"
+                                      nil
+                                    elsif exempt_tonnage == exempt_tonnage.to_i
+                                      # special case remove trailing 0 which may have been added
+                                      exempt_tonnage.to_i
+                                    else
+                                      exempt_tonnage
+                                    end
       end
 
       private
@@ -340,11 +350,11 @@ module Returns
       def post_csv_import
         # Because of the getters above the order is important and needs to mirror the page
         total = @nda_ex_tonnage.to_f + @restoration_ex_tonnage.to_f + @other_ex_tonnage.to_f
+        # don't set the yes no flags if no exempt values
+        return if total.zero?
+
         # remove trailing zeros
         @exempt_tonnage = (total == total.to_i ? total.to_i : total)
-        # don't set the yes no flags if no exempt values
-        return if @exempt_tonnage.zero?
-
         @nda_ex_yes_no = (@nda_ex_tonnage.nil? ? 'N' : 'Y')
         @restoration_ex_yes_no = (@restoration_ex_tonnage.nil? ? 'N' : 'Y')
         @other_ex_yes_no = (@other_ex_tonnage.nil? ? 'N' : 'Y')
@@ -388,7 +398,8 @@ module Returns
         # If the sum is not equal set the message on the first set value
         return if (sum_exemptions.to_f - @exempt_tonnage.to_f).abs < Float::EPSILON
 
-        errors.add(:base, :exemption_tonnage_isnt_equal, link_id: 'new_returns_slft_waste')
+        errors.add(:base, :exemption_tonnage_isnt_equal, exempt_tonnage: @exempt_tonnage, total_tonnage: sum_exemptions,
+                                                         link_id: 'new_returns_slft_waste')
       end
 
       # Sum the exemptions

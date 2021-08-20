@@ -38,9 +38,6 @@ module Returns
 
     # Party wizard - individual steps page
     def party_details
-      party_details_hash = params[:returns_lbtt_party]
-      # If the NINO is entered then make sure county code is blank.
-      party_details_hash[:ref_country] = '' if party_details_hash && party_details_hash[:nino].present?
       wizard_step(INDVAL_STEPS)
     end
 
@@ -116,7 +113,7 @@ module Returns
       params = filter_params
       return INDVAL_STEPS if params.nil?
 
-      Rails.logger.debug("Chosen party type is #{params[:type]}")
+      Rails.logger.debug { "Chosen party type is #{params[:type]}" }
       STEP_CHOICES[params[:type]]
     end
 
@@ -124,7 +121,7 @@ module Returns
     # For landlord and seller, save the party data into the LBTT wizard and skip to summary page.
     def next_page_or_summary
       # need to load party object here otherwise it returns nil
-      @party = wizard_load
+      @party = load_step
       if %w[TENANT NEWTENANT BUYER].include?(@party.party_type)
         STEP_CHOICES[@party.type]
       else
@@ -163,7 +160,7 @@ module Returns
       # save the newly loaded party into this wizard's cache ready for the next step
       wizard_save(@party)
 
-      Rails.logger.debug("Loaded party #{@party.party_id}")
+      Rails.logger.debug { "Loaded party #{@party.party_id}" }
       @party
     end
 
@@ -191,7 +188,7 @@ module Returns
                end
 
       # assign hash of used NINO'S to hash_for_nino
-      lbtt_return = wizard_load(LbttController)
+      lbtt_return = wizard_load_or_redirect(returns_lbtt_summary_url, nil, LbttController)
       @party.hash_for_nino = lbtt_return.list_of_used_ninos(@party.nino)
 
       @party

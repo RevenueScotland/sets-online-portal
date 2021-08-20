@@ -62,5 +62,10 @@ en:
           financial_transactions: "All transactions"
           hint:
             # new: "Create and send a new message to Revenue Scotland"
+        pagination:
+          context:
+            message_page: "unread messages"
+            returns_page: "draft returns"
+            balance_page: "outstanding balance"
 
         find: "Find"

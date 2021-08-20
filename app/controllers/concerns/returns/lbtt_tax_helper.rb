@@ -33,16 +33,16 @@ module Returns
     # @param calc_type [Symbol] the type of calculation npv or main
     # @return [Boolean] true if this was successful
     def process_tax_calculation(calc_type = :main)
-      Rails.logger.debug("Checking if ready to call for tax #{calc_type} calculation")
+      Rails.logger.debug { "Checking if ready to call for tax #{calc_type} calculation" }
       # if haven't enough information for tax calculation then consider successful.i.e. call
       # hasn't failed.
       return true unless @lbtt_return.ready_for_tax_calc?
 
       success = @lbtt_return.tax.calculate_tax(current_user, @lbtt_return, calc_type)
       if success
-        Rails.logger.debug("Updating wizard_cache with tax #{calc_type} calculations - #{@lbtt_return.tax}")
+        Rails.logger.debug { "Updating wizard_cache with tax #{calc_type} calculations - #{@lbtt_return.tax}" }
         success = @lbtt_return.tax.valid?(%i[total_reliefs])
-        Rails.logger.debug("Tax model validation for tax #{calc_type} success - #{success}")
+        Rails.logger.debug { "Tax model validation for tax #{calc_type} success - #{success}" }
         wizard_save(@lbtt_return, LbttController) if success
       end
       success

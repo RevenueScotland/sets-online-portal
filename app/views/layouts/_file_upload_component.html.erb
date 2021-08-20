@@ -41,8 +41,8 @@ end
   %>
   <%= fields_for resource_item do |ri| %>
     <div class="file">
-      <label class="govuk-label" for=<%= "resource_item_" + index.to_s + "_file_data" %>><%= t(file_upload_label + '_' + index.to_s).html_safe if local_assigns[:file_upload_label] %></label>
-      <span class="govuk-hint"><%= (t(file_upload_hint + '_' + index.to_s, **file_upload_hint_variables)).html_safe if local_assigns[:file_upload_hint] %>
+      <label class="govuk-label" for=<%= "resource_item_" + index.to_s + "_file_data" %>><%= t(file_upload_label + '_' + index.to_s) if local_assigns[:file_upload_label] %></label>
+      <span class="govuk-hint"><%= (t(file_upload_hint + '_' + index.to_s + '_html', **file_upload_hint_variables)) if local_assigns[:file_upload_hint] %>
         <% unless local_assigns[:hide_size_hint] %>
           <br>
           <% if @supported_types.nil? %>

@@ -5,12 +5,12 @@
   <%= form_errors_for @property %>
   <%= f.select :lau_code, @property.list_ref_data(:lau_code), {}, {} %>
   <%= f.fieldset_fields({ label: t('.title_code') }) do |field_set| %>
-    <% field_set.select(:title_code, @property.list_ref_data(:title_code)) + %>
-    <% field_set.text_field(:title_number) %>
+    <%= field_set.select(:title_code, @property.list_ref_data(:title_code)) %>
+    <%= field_set.text_field(:title_number) %>
   <% end %>
   <%= f.fieldset_fields({ label: t('.parent_title_code'), hint: t('.parent_title_hint') }) do |field_set| %>
-    <% field_set.select(:parent_title_code, @property.list_ref_data(:parent_title_code)) + %>
-    <% field_set.text_field(:parent_title_number) %>
+    <%= field_set.select(:parent_title_code, @property.list_ref_data(:parent_title_code)) %>
+    <%= field_set.text_field(:parent_title_number) %>
   <% end %>
   <%= f.button %>
 <% end %>

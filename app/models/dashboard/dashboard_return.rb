@@ -146,7 +146,7 @@ module Dashboard
 
       # The below deals with various types. The parameter is a rails duration of .days if you take an integer from it
       # it assumes the integer is seconds so turn the integer into a days duration
-      (Rails.configuration.x.returns.amendable_days - (Date.today - filing_date).to_i.days)
+      (Rails.configuration.x.returns.amendable_days - (Time.zone.today - filing_date).to_i.days)
     end
 
     # Returns the cut off date for the amendable period
@@ -186,7 +186,7 @@ module Dashboard
     def return_is_claimable
       return false unless indicator_is_latest
 
-      filing_days_old = (Date.today - filing_date).to_i.days
+      filing_days_old = (Time.zone.today - filing_date).to_i.days
       # If the filing date is 365 days old or older then true (used for showing the claim)
       (filing_days_old >= Rails.configuration.x.returns.amendable_days)
     end
@@ -251,7 +251,7 @@ module Dashboard
     # @param ext [String] file extension
     # @return [String] temporary filename
     private_class_method def self.make_tmpname(requested_by, ext)
-      FileStorageHelper.file_temp_storage_path(:download, requested_by.username, "#{SecureRandom.urlsafe_base64}#{ext}")
+      ResourceItem.file_temp_storage_path(:download, requested_by.username, "#{SecureRandom.urlsafe_base64}#{ext}")
     end
 
     # @!method self.zip_folder(dir, zip_file)

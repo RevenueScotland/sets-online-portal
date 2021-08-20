@@ -530,12 +530,12 @@
                     "itemcode": "address_line1",
                     "itemformat": null,
                     "itemlabel": "Address",
-                    "itemdata": "Peoplebuilding 2 Peoplebuilding Estate"
+                    "itemdata": "1st Floor, Imex Centre"
                 },
                 {
                     "itemcode": "address_line2",
                     "itemformat": null,
-                    "itemdata": "Maylands Avenue"
+                    "itemdata": "575-599 Maxted Road"
                 },
                 {
                     "itemcode": "locality",
@@ -553,7 +553,7 @@
                     "itemcode": "postcode",
                     "itemformat": null,
                     "itemlabel": "Postcode",
-                    "itemdata": "HP2 4NW"
+                    "itemdata": "HP2 7DX"
                 },
                 {
                     "itemcode": "country",

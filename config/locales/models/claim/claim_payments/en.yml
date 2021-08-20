@@ -144,11 +144,11 @@ en:
         UNAUTHENTICATED_title: "Evidence to support your claim"
         AUTHENTICATED_title: "Evidence to support the claim"
         label_sale: "1. Proof of sale of previous main residence"
-        hint_sale: "The following will be accepted as evidence:<br/><ul><li>The disposition of the sale</li><li>Land registration documents</li><li>A letter from your solicitor that clearly states the date of sale</li></ul>"
+        hint_sale_html: "The following will be accepted as evidence:<br/><ul><li>The disposition of the sale</li><li>Land registration documents</li><li>A letter from your solicitor that clearly states the date of sale</li></ul>"
         label_portal_sale: "1. Proof of sale of previous main residence"
-        hint_portal_sale: "The following will be accepted as evidence:<br/><ul><li>The disposition of the sale</li><li>Land registration documents</li><li>A letter from the agent that clearly states the date of sale</li></ul>"
+        hint_portal_sale_html: "The following will be accepted as evidence:<br/><ul><li>The disposition of the sale</li><li>Land registration documents</li><li>A letter from the agent that clearly states the date of sale</li></ul>"
         label_occupancy: "2. Evidence of occupancy of previous main residence"
-        hint_occupancy: "Evidence all buyers occupied the previous property as their only or main residence at any time between %{date_range_start} and %{date_range_end}.<br/><br/>The following will be accepted as evidence:<ul><li>Council tax bill</li><li>Utilities bill</li><li>Bank statement</li></ul>"
+        hint_occupancy_html: "Evidence all buyers occupied the previous property as their only or main residence at any time between %{date_range_start} and %{date_range_end}.<br/><br/>The following will be accepted as evidence:<ul><li>Council tax bill</li><li>Utilities bill</li><li>Bank statement</li></ul>"
       confirmation_of_payment:
         title: "Your request has been sent to Revenue Scotland"
         UNAUTHENTICATED_confirmation_note: "If you have provided an email address, a confirmation will be sent to this address"
@@ -167,7 +167,7 @@ en:
       before_you_start:
         title: "Before you start"
         info_needed_heading: "What you will need"
-        info_needed_description:
+        info_needed_description_html:
           "<p>To complete this form, you’ll need the following:</p>
           <ul>
           <li>tax return reference (the solicitor who dealt with your new property purchase will have this)</li>
@@ -177,8 +177,8 @@ en:
           </ul>
           <p>You may also need to provide proof of sale of the previous property and evidence that all buyers occupied it as their only or main residence. We'll let you know if we need this once the first 3 questions have been answered.</p>"
         form_completion_heading: "Completing the form"
-        form_completion_description: "If more than one buyer was involved in the new property purchase, all buyers should be present when completing this form. Once you have started the form you will need to complete it - you won't be able to save a draft and go back to it later. If you have all the information to hand, the form should take 5-10 minutes to complete.<br/><br/> If you are an agent, please %{ref_link} to make this claim."
-        ref_message: Sign in
+        form_completion_description_html: "If more than one buyer was involved in the new property purchase, all buyers should be present when completing this form. Once you have started the form you will need to complete it - you won't be able to save a draft and go back to it later. If you have all the information to hand, the form should take 5-10 minutes to complete.<br/><br/> If you are an agent, please Sign in to make this claim."
+        form_completion_description_link: Sign in
       return_reference_number:
         title: "Return reference"
       public_claim_landing:
@@ -191,5 +191,5 @@ en:
         receive_repayment_description: "We aim to process claims within 10 working days."
       eligibility:
         title: "Eligibility checker"
-        unsure_description: "If you’re unsure whether or not you are eligible for a refund, %{ref_link}."
-        ref_message: look at these examples (opens in a new window)
+        unsure_description: "If you’re unsure whether or not you are eligible for a refund, look at these examples (opens in a new window)."
+        unsure_description_link: look at these examples (opens in a new window)

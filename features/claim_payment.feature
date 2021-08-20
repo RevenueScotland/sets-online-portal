@@ -359,7 +359,7 @@ Feature: Claim payment
         And I click on the "Continue" button
         Then I should receive the message "Claiming amount can't be blank"
 
-        When I enter "90" in the "How much are you claiming from Revenue Scotland" field
+        When I enter " 90" in the "How much are you claiming from Revenue Scotland" field
         And I click on the "Continue" button
 
         # Since RS3000002AAAA has number of buyer is 1
@@ -439,6 +439,14 @@ Feature: Claim payment
         And if available, click the "Select" button
 
         When I click on the "Continue" button
+        And I enter "RANDOM_text,256" in the "Name of the account holder" field
+        And I enter "RANDOM_text,11" in the "Bank / building society account number" field
+        And I enter "RANDOM_text,9" in the "Branch sort code" field
+        And I enter "RANDOM_text,256" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+        Then I should receive the message "Bank / building society account number must be 8 digits long"
+        And I should receive the message "Branch sort code must be in the format 99-99-99"
+
         When I enter "Fred Flintstone" in the "Name of the account holder" field
         And I enter "12345678" in the "Bank / building society account number" field
         And I enter "10-11-12" in the "Branch sort code" field

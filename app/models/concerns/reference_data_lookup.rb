@@ -46,7 +46,7 @@ module ReferenceDataLookup
 
     return false unless respond_to?(:cached_ref_data_codes)
 
-    Rails.logger.debug("Initializing ref data into the model cache for #{self.class.name}")
+    Rails.logger.debug { "Initializing ref data into the model cache for #{self.class.name}" }
 
     # lookup all the codes in one go
     codes = send(:cached_ref_data_codes)
@@ -81,7 +81,7 @@ module ReferenceDataLookup
   #
   # @param attribute [String] key linked to ref data defined in #cached_ref_data_codes or #uncached_ref_data_codes
   def lookup_ref_data(attribute)
-    Rails.logger.debug("Model ref data lookup for #{attribute}")
+    Rails.logger.debug { "Model ref data lookup for #{attribute}" }
     return @cached_ref_data[attribute] if initialize_ref_data && @cached_ref_data.key?(attribute)
 
     lookup_uncached_ref_data(attribute)
@@ -139,7 +139,7 @@ module ReferenceDataLookup
          respond_to?(:uncached_ref_data_codes)
 
     comp_key = uncached_ref_data_codes[attribute]
-    Rails.logger.debug("Model ref data uncached lookup for #{attribute} #{comp_key}")
+    Rails.logger.debug { "Model ref data uncached lookup for #{attribute} #{comp_key}" }
 
     return ReferenceDataLookup.lookup_yesno if comp_key == YESNO_COMP_KEY
 

@@ -46,7 +46,7 @@ module Dashboard
       all_transactions = all_transactions.values
       # Gets a single transaction for the related financial transactions page.
       # The way of doing the pagination in this method does not apply to it, therefor it doesn't need to be returned.
-      return all_transactions[0] unless filter.transaction_reference.blank?
+      return all_transactions[0] if filter.transaction_reference.present?
 
       # This completes the pagination as we get pagination data from the back office
       pagination = Pagination.paginate_back_office(pagination, back_office_pagination)
@@ -104,28 +104,14 @@ module Dashboard
 
     # The request elements to get data from the backoffice
     private_class_method def self.request_elements(requested_by, filter, pagination)
-      { RequestUser: requested_by.username, ParRefno: requested_by.party_refno,
-        includeOutstandingOnly: filter.include_outstanding_only, excludeTransfers: filter.exclude_transfers,
-        excludeHolds: filter.exclude_holds }.merge(request_optional_elements(pagination, filter))
+      { RequestUser: requested_by.username, ParRefno: requested_by.party_refno }
+        .merge(request_pagination_elements(pagination))
+        .merge(filter.request_elements)
     end
 
-    # These are the request elements which are optional but also used to get back office data
-    private_class_method def self.request_optional_elements(pagination, filter)
-      { Pagination: { 'ins1:StartRow' => pagination.start_row, 'ins1:NumRows' => pagination.num_rows },
-        TransactionReference: filter.transaction_reference,
-        CustomerReference: filter.customer_reference, TransactionType: filter.transaction_type,
-        TransactionTypeGroup: filter.transaction_type_group, RelatedReference: filter.related_reference,
-        MinimumAmount: filter.minimum_amount,
-        MaximumAmount: filter.maximum_amount }.merge(request_date_elements(filter))
-    end
-
-    # These are the request elements for the date which are optional and used to specify the data
-    # to be retrieved from back office
-    private_class_method def self.request_date_elements(filter)
-      { ActualDateFrom: DateFormatting.to_xml_date_format(filter.actual_date_from),
-        ActualDateTo: DateFormatting.to_xml_date_format(filter.actual_date_to),
-        EffectiveDateFrom: DateFormatting.to_xml_date_format(filter.effective_date_from),
-        EffectiveDateTo: DateFormatting.to_xml_date_format(filter.effective_date_to) }
+    # Pagination request elements which are optional but also used to get back office data
+    private_class_method def self.request_pagination_elements(pagination)
+      { Pagination: { 'ins1:StartRow' => pagination.start_row, 'ins1:NumRows' => pagination.num_rows } }
     end
   end
 end

@@ -24,6 +24,9 @@ module Applications
 
       attribute_list.each { |attr| attr_accessor attr }
 
+      # For each of the numeric fields create a setter, don't do this if there is already a setter
+      strip_attributes :estimated_tonnage
+
       # application_type
       #   WP-WD : waste producer - water discount
       #   LO-WD : landfill operator - water discount,

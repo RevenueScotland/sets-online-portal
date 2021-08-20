@@ -4,7 +4,7 @@
 <% content_for :page_description, t('.description') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <!-- Applies the CSS class 'external-link' to the navigation bar options, see return-form-dirty.js for details -->
-<% content_for :nav_bar_html_options, { class: 'external-link' } %>
+<% content_for :nav_bar_html_options, '{ class: "govuk-link external-link" }'.html_safe %>
 <!-- See return-form-dirty.js for details of the application of form-dirty-warning-message value of data property -->
 <%= form_for @slft_return, url: returns_slft_summary_path, method: :post, 
             :data => { 'form-dirty-warning-message' => t('.form_dirty_warning_message') } , local: true do |f| %>
@@ -25,8 +25,10 @@
     { header: { link_cell_class: 'text_align_right' },
       data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
   %>
+  <% sites_description = @slft_return.sites.blank? ? { region_description: t('.no_sites_description_html') } : {} %>
   <%= display_table_region( { 
       header: { label: t('.sites_subtitle') }, 
+      description: sites_description,
       table: { models: @slft_return.sites&.values, attributes: [:site_name, :net_lower_tonnage, :net_standard_tonnage, :exempt_tonnage, :total_tonnage],
                actions: [ { label: t('.add_waste_details'), path: :returns_slft_site_waste_summary_path } ],
                options: { summary: { total: { attributes: %i[net_lower_tonnage net_standard_tonnage exempt_tonnage total_tonnage], label: { cell: :site_name, text: t('.total') } }

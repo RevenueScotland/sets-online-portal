@@ -95,7 +95,7 @@ module Returns
 
     # The method used to retrieve the pdf summary of the return
     def download_receipt
-      @slft_return = wizard_load
+      @slft_return = load_step
       success, attachment = Dashboard::DashboardReturn.return_pdf(current_user,
                                                                   @slft_return.back_office_receipt_request, 'Receipt')
       return unless success
@@ -111,7 +111,7 @@ module Returns
     # Cleans and saves the return by sending to the back office.
     def save_draft
       Rails.logger.debug('Actioning Save Draft')
-      @slft_return = wizard_load
+      @slft_return = load_step
       Rails.logger.debug('Wizard Loaded')
       @slft_return.save_draft(current_user)
       Rails.logger.debug('Out of Save')

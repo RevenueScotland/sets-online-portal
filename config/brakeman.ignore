@@ -29,7 +29,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -60,7 +60,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -91,7 +91,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -122,7 +122,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -153,7 +153,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -184,7 +184,27 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
+    },
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "28794ed69b0940f5144fd08f6c9034a6c1e10d60f8852f77b3350789e57cedd6",
+      "check_name": "FileAccess",
+      "message": "Model attribute used in file name",
+      "file": "app/controllers/concerns/file_upload_handler.rb",
+      "line": 286,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "File.delete(ResourceItem.file_temp_storage_path(:upload, sub_directory, file_name))",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "FileUploadHandler",
+        "method": "delete_attachment"
+      },
+      "user_input": "ResourceItem.file_temp_storage_path(:upload, sub_directory, file_name)",
+      "confidence": "Medium",
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -215,7 +235,27 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
+    },
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "2f5b4addecb63c3e82b43a16c3e08e21a05de12bc9172eca609c546114aa0f7c",
+      "check_name": "FileAccess",
+      "message": "Model attribute used in file name",
+      "file": "app/controllers/concerns/download_helper.rb",
+      "line": 41,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "File.delete(ResourceItem.file_temp_storage_path(:scanning, sub_directory, SecureRandom.uuid))",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "DownloadHelper",
+        "method": "check_for_virus_in_attachment"
+      },
+      "user_input": "ResourceItem.file_temp_storage_path(:scanning, sub_directory, SecureRandom.uuid)",
+      "confidence": "Medium",
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -246,7 +286,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -263,7 +303,7 @@
           "type": "controller",
           "class": "Returns::LbttPartiesController",
           "method": "acting_as_trustee",
-          "line": 74,
+          "line": 70,
           "file": "app/controllers/returns/lbtt_parties_controller.rb",
           "rendered": {
             "name": "returns/lbtt_parties/acting_as_trustee",
@@ -277,7 +317,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -308,7 +348,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -325,7 +365,7 @@
           "type": "controller",
           "class": "Applications::SlftController",
           "method": "confirmation_and_document_upload",
-          "line": 133,
+          "line": 136,
           "file": "app/controllers/applications/slft_controller.rb",
           "rendered": {
             "name": "applications/slft/confirmation_and_document_upload",
@@ -339,7 +379,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -370,7 +410,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -387,7 +427,7 @@
           "type": "controller",
           "class": "Returns::LbttPartiesController",
           "method": "acting_as_trustee",
-          "line": 74,
+          "line": 70,
           "file": "app/controllers/returns/lbtt_parties_controller.rb",
           "rendered": {
             "name": "returns/lbtt_parties/acting_as_trustee",
@@ -401,7 +441,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -410,7 +450,7 @@
       "check_name": "ReverseTabnabbing",
       "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
       "file": "app/views/claim/claim_payments/confirmation_of_payment.html.erb",
-      "line": 21,
+      "line": 19,
       "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
       "code": "link_to(t(\".contact_us_link_text\"), external_link_url(\"CONTACT_US\"), :target => \"_blank\")",
       "render_path": [
@@ -418,7 +458,7 @@
           "type": "controller",
           "class": "Claim::ClaimPaymentsController",
           "method": "confirmation_of_payment",
-          "line": 127,
+          "line": 130,
           "file": "app/controllers/claim/claim_payments_controller.rb",
           "rendered": {
             "name": "claim/claim_payments/confirmation_of_payment",
@@ -432,7 +472,38 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "9328b420886c7ab42d193029602507bc0c81ab4f4e7546105aedf2f72d808ca0",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/claim/claim_payments/eligibility.html.erb",
+      "line": 9,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".unsure_description_link\"), external_link_url(\"CLAIM_EXAMPLES\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Claim::ClaimPaymentsController",
+          "method": "eligibility",
+          "line": 53,
+          "file": "app/controllers/claim/claim_payments_controller.rb",
+          "rendered": {
+            "name": "claim/claim_payments/eligibility",
+            "file": "app/views/claim/claim_payments/eligibility.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "claim/claim_payments/eligibility"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -441,7 +512,7 @@
       "check_name": "ReverseTabnabbing",
       "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
       "file": "app/views/returns/lbtt_transactions/transaction_dates.html.erb",
-      "line": 9,
+      "line": 8,
       "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
       "code": "link_to(t(\".effective_date\"), external_link_url(\"EFFECTIVE_DATE\"), :target => \"_blank\")",
       "render_path": [
@@ -463,7 +534,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -494,7 +565,27 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
+    },
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "b202887ba5711aa01a0c810503bdf91390153757f46cef65e74729fa1d9b14a5",
+      "check_name": "FileAccess",
+      "message": "Model attribute used in file name",
+      "file": "app/controllers/concerns/file_upload_handler.rb",
+      "line": 275,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "File.open(ResourceItem.file_temp_storage_path(:upload, sub_directory, resource_item.file_name), \"wb\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "FileUploadHandler",
+        "method": "save_attachment"
+      },
+      "user_input": "ResourceItem.file_temp_storage_path(:upload, sub_directory, resource_item.file_name)",
+      "confidence": "Medium",
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -525,7 +616,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -534,7 +625,7 @@
       "check_name": "ReverseTabnabbing",
       "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
       "file": "app/views/returns/lbtt_transactions/transaction_dates.html.erb",
-      "line": 11,
+      "line": 10,
       "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
       "code": "link_to(t(\".relevant_date\"), external_link_url(\"RELEVANT_DATE\"), :target => \"_blank\")",
       "render_path": [
@@ -556,38 +647,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
-    },
-    {
-      "warning_type": "Reverse Tabnabbing",
-      "warning_code": 111,
-      "fingerprint": "cbd95fa213f5be54847373711ea76e72a9c17fc338d094f50cce963361de1394",
-      "check_name": "ReverseTabnabbing",
-      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
-      "file": "app/views/claim/claim_payments/eligibility.html.erb",
-      "line": 7,
-      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
-      "code": "link_to(t(\".ref_message\"), external_link_url(\"CLAIM_EXAMPLES\"), :target => \"_blank\")",
-      "render_path": [
-        {
-          "type": "controller",
-          "class": "Claim::ClaimPaymentsController",
-          "method": "eligibility",
-          "line": 50,
-          "file": "app/controllers/claim/claim_payments_controller.rb",
-          "rendered": {
-            "name": "claim/claim_payments/eligibility",
-            "file": "app/views/claim/claim_payments/eligibility.html.erb"
-          }
-        }
-      ],
-      "location": {
-        "type": "template",
-        "template": "claim/claim_payments/eligibility"
-      },
-      "user_input": null,
-      "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -618,7 +678,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -649,7 +709,7 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -680,7 +740,27 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
+    },
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "e55fdd745f9c1dcaeaa49754546ded26730e273659f8a3eeb237032b41c1bb11",
+      "check_name": "FileAccess",
+      "message": "Model attribute used in file name",
+      "file": "app/controllers/concerns/download_helper.rb",
+      "line": 39,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "File.open(ResourceItem.file_temp_storage_path(:scanning, sub_directory, SecureRandom.uuid), \"wb\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "DownloadHelper",
+        "method": "check_for_virus_in_attachment"
+      },
+      "user_input": "ResourceItem.file_temp_storage_path(:scanning, sub_directory, SecureRandom.uuid)",
+      "confidence": "Medium",
+      "note": ""
     },
     {
       "warning_type": "Reverse Tabnabbing",
@@ -697,7 +777,7 @@
           "type": "controller",
           "class": "Returns::LbttPartiesController",
           "method": "parties_relation",
-          "line": 68,
+          "line": 64,
           "file": "app/controllers/returns/lbtt_parties_controller.rb",
           "rendered": {
             "name": "returns/lbtt_parties/parties_relation",
@@ -711,9 +791,9 @@
       },
       "user_input": null,
       "confidence": "Medium",
-      "note": "noopener noreferrer is handled in core code"
+      "note": ""
     }
   ],
-  "updated": "2020-07-10 12:59:26 +0100",
-  "brakeman_version": "4.8.2"
+  "updated": "2021-01-19 21:20:02 +0000",
+  "brakeman_version": "4.10.1"
 }

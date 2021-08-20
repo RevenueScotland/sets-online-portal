@@ -8,12 +8,12 @@
                                                     link_to(t('.linked_ind'), external_link_url('LINKED_TRANS'), target: '_blank')}) %>
   <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden' >
     <%= f.table_fields(@lbtt_return, :link_transactions) do |table_form| %>
-      <% table_form.text_field(:return_reference) + %>
+      <%= table_form.text_field(:return_reference) %>
       <% if @lbtt_return.flbt_type == "#{$convey_type}" %>
-        <% table_form.currency_field(:consideration_amount) %>
+        <%= table_form.currency_field(:consideration_amount) %>
       <% else %>
-        <% table_form.currency_field(:npv_inc) + %>
-        <% table_form.currency_field(:premium_inc) %>
+        <%= table_form.currency_field(:npv_inc) %>
+        <%= table_form.currency_field(:premium_inc) %>
       <% end %>
     <% end %>
   </div>

@@ -1,6 +1,6 @@
 Cookies = require("js.cookie");
 
-'use strict';
+'use lax';
 
 var manageCookies = {
     init: function () {
@@ -22,7 +22,7 @@ var manageCookies = {
     setCookie: function (accept_cookies) {
         // Set the appropriate secure if https is on
         var isSecure = location.protocol === 'https:';
-        Cookies.set('revscot_cookies', accept_cookies, { path: '/', expires: 90, secure: isSecure, samesite: 'strict' });
+        Cookies.set('revscot_cookies', accept_cookies, { path: '/', expires: 90, secure: isSecure, samesite: 'lax' });
 
         if (accept_cookies == 'no') {
             // If they check no then remove all but the whitelisted cookies

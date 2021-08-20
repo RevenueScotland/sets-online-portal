@@ -98,9 +98,9 @@ class ApplicationController < ActionController::Base
   # @param [Boolean] force_update - true to overwrite the session variable, false to only set if doesn't exist already
   def update_ttl(session_index, ttl_value, force_update)
     if force_update
-      session[session_index] = Time.now + (ttl_value * 1.minute)
+      session[session_index] = Time.zone.now + (ttl_value * 1.minute)
     else
-      session[session_index] ||= Time.now + (ttl_value * 1.minute)
+      session[session_index] ||= Time.zone.now + (ttl_value * 1.minute)
     end
   end
 
@@ -130,9 +130,9 @@ class ApplicationController < ActionController::Base
 
   # @return true if either of the session expiry times are up, else false if the user may continue.
   def session_has_expired
-    return true if Time.now >= session[:MAX_SESSION_EXPIRE_TIME_INDEX]
+    return true if Time.zone.now >= session[:MAX_SESSION_EXPIRE_TIME_INDEX]
 
-    return true if Time.now >= session[:SESSION_TTL_INDEX]
+    return true if Time.zone.now >= session[:SESSION_TTL_INDEX]
 
     false
   end

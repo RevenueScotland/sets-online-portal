@@ -122,7 +122,7 @@
         {
           "itemcode": "sepa_license_number",
           "itemformat": null,
-          "itemlabel": "SEPA license number",
+          "itemlabel": "SEPA licence number",
           "itemdata": "123456"
         }
       ],
@@ -180,7 +180,7 @@
         {
           "itemcode": "sepa_license_number",
           "itemformat": null,
-          "itemlabel": "SEPA license number",
+          "itemlabel": "SEPA licence number",
           "itemdata": "12345"
         }
       ],

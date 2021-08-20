@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="2.7.2"
+def RUBY_VERSION="2.7.3"
 
 /*
 	* Back office names
@@ -690,10 +690,12 @@ def postAutotestSuccess(String environment = "autotest") {
 				ssh rsdocs@vm-rstp-bld01.global.internal "unlink /var/www/html/${APPLICATION}/coverage ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/coverage /var/www/html/${APPLICATION}/coverage"
 				popd
 
-                scp tmp/gemsurance_report.html rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
-				ssh rsdocs@vm-rstp-bld01.global.internal "[ -L "/var/www/html/${APPLICATION}/gemsurance_report.html" ] && unlink /var/www/html/${APPLICATION}/gemsurance_report.html ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/gemsurance_report.html /var/www/html/${APPLICATION}/gemsurance_report.html"
+                                if [[ -f tmp/gemsurance_report.html ]] ; then
+                                        scp tmp/gemsurance_report.html rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				        ssh rsdocs@vm-rstp-bld01.global.internal "[ -L "/var/www/html/${APPLICATION}/gemsurance_report.html" ] && unlink /var/www/html/${APPLICATION}/gemsurance_report.html ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/gemsurance_report.html /var/www/html/${APPLICATION}/gemsurance_report.html"
+                                fi
 
-                scp tmp/licensed.txt rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+                                scp tmp/licensed.txt rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
 				ssh rsdocs@vm-rstp-bld01.global.internal "[ -L "/var/www/html/${APPLICATION}/licensed.txt" ] && unlink /var/www/html/${APPLICATION}/licensed.txt ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/licensed.txt /var/www/html/${APPLICATION}/licensed.txt"
 
 			'''

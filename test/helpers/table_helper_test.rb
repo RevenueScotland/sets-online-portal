@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'table_helper'
 
 # Unit Test for the table helper
 class TableHelperTest < ActionView::TestCase
-  include TableHelper
-  include TableBuilderHelper
+  include TableTagHelper
 
-  # overiding translate method to display label name as its attribute to avoid
+  # overriding translate method to display label name as its attribute to avoid
   # entry in translation file
   def t(attribute, _scope = [])
     attribute
@@ -48,25 +46,25 @@ class TableHelperTest < ActionView::TestCase
   # return expected output for test with action
   def expected_output_with_action
     '<table class="govuk-table"><thead class="govuk-table__head"><tr class="govuk-table__row">' \
-             '<th class="govuk-table__header">Username</th><th class="govuk-table__header">Name</th>' \
-             '</tr></thead><tbody class="govuk-table__body"><tr class="govuk-table__row">' \
-             '<td class="govuk-table__cell remove_border_bottom_line">one</td>' \
-             '<td class="govuk-table__cell remove_border_bottom_line">John Smith</td>' \
-             '</tr><tr class="govuk-table__row"><td class="govuk-table__cell" colspan="2">' \
-             '<a class="table_action_item govuk-link" aria-label="show for one" href="/dashboard/messages">show</a>' \
-             '<a class="table_action_item govuk-link" aria-label="edit for one" href="/dashboard/messages/new">edit' \
-             '</a></td></tr></tbody></table>'
+      '<th class="govuk-table__header">Username</th><th class="govuk-table__header">Name</th>' \
+      '</tr></thead><tbody class="govuk-table__body"><tr class="govuk-table__row">' \
+      '<td class="govuk-table__cell remove_border_bottom_line">one</td>' \
+      '<td class="govuk-table__cell remove_border_bottom_line">John Smith</td>' \
+      '</tr><tr class="govuk-table__row"><td class="govuk-table__cell" colspan="2">' \
+      '<a class="table_action_item govuk-link" aria-label="show for one" href="/dashboard/messages">show</a>' \
+      '<a class="table_action_item govuk-link" aria-label="edit for one" href="/dashboard/messages/new">edit' \
+      '</a></td></tr></tbody></table>'
   end
 
   # return expected output for test with out action
   def expected_output_without_action
     '<table class="govuk-table">' \
-             '<thead class="govuk-table__head"><tr class="govuk-table__row">' \
-             '<th class="govuk-table__header">Username</th></tr></thead>' \
-             '<tbody class="govuk-table__body">' \
-             '<tr class="govuk-table__row"><td class="govuk-table__cell remove_border_bottom_line">one</td></tr>' \
-             '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="1"></td></tr>' \
-             '</tbody></table>'
+      '<thead class="govuk-table__head"><tr class="govuk-table__row">' \
+      '<th class="govuk-table__header">Username</th></tr></thead>' \
+      '<tbody class="govuk-table__body">' \
+      '<tr class="govuk-table__row"><td class="govuk-table__cell remove_border_bottom_line">one</td></tr>' \
+      '<tr class="govuk-table__row"><td class="govuk-table__cell" colspan="1"></td></tr>' \
+      '</tbody></table>'
   end
 
   # Dummy test user class

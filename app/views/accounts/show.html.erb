@@ -1,4 +1,4 @@
-<%= content_for :hide_back_link, true %>
+<% content_for :hide_back_link, true %>
 <% content_for :page_title, t('.title') %>
 <% content_for :page_description, t('.description') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
@@ -18,9 +18,9 @@
                         } )
 %>
 <% if registered_organisation? %>
-  <p><%= t('.change_company_registered_address') %></p>
+  <%= display_paragraph_components(body: t('.change_company_registered_address')) %>
 <% end %>
-<h2><%= t('.your_user_details') %></h2>
+<%= sub_heading %>
 <%= display_region( {
   header: { model: @account.current_user, attribute: :full_name },
   data: [ { model: @account.current_user, attributes: [:email_address, :phone_number, :username ] }

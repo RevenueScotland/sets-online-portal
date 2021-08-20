@@ -1,0 +1,57 @@
+/**
+ * Stylesheet related to jquery-ui's datepicker and autocomplete fields
+ */
+
+// The drop-down for the autocomplete field needs to have it's height set to a fixed value so that
+// it wouldn't open up the whole list without a scrollbar.
+.ui-autocomplete {
+  max-height: 300px;
+  overflow-y: auto;   // prevent horizontal scrollbar
+  overflow-x: hidden; // add padding to account for vertical scrollbar
+  z-index:1000 !important;
+}
+// Style for the 'Show all items' button used for the autocomplete field to show the drop down.
+.custom-combobox-toggle {
+  background-color: #fff;
+  position: relative;
+  margin-left: -25px; // Button needs to be pushed to the left since it's initially outside the field
+  border: 0px;
+  // The three below are needed because the width of the button is too wide, so some extra styling are
+  // added to make it look better.
+  padding-left: 1px;
+  padding-right: 1px;
+  max-width: 18px;
+}
+
+// The datepicker related css, the button to trigger the datepicker is initially shown outside of the date field.
+.ui-datepicker-trigger {
+  background-color: #fff;
+  border: 0px;
+  position: relative;
+  vertical-align: middle;
+  margin-left: -55px;
+  margin-top: -2px;
+  background-repeat: no-repeat;
+  padding: 10.5px;
+  background-image: image-url("date_picker_calendar_21px.png");
+}
+
+// To make the datepicker's button have the standard looks, the on focus is overriden.
+.ui-datepicker-trigger:focus {
+  outline: 3px solid #fd0;
+  border: 1px solid #000;
+}
+
+// To make the datepicker's button feel like a button, the hover is overriden.
+.ui-datepicker-trigger:hover {
+  border: 1px solid #000;
+  background-color: #aaa;
+}
+
+// When the width of the page gets smaller, the date field will span the full width, so instead of the datepicker
+// button being placed below the date field, it will now be moved inside the date field.
+@media (min-width:40.0625em) {
+  .ui-datepicker-trigger {
+    margin-left: 5px;
+  }
+}

@@ -56,6 +56,12 @@ en:
         exempt_tonnage: "Exempt tonnage"
         water_tonnage: "Water discount tonnage"
         total_tonnage: "Total tonnage"
+        # Display-only column title for the table
+        lower_tonnage_display: "Lower tonnage"
+        standard_tonnage_display: "Standard tonnage"
+        exempt_tonnage_display: "Exempt tonnage"
+        water_tonnage_display: "Water tonnage"
+        total_tonnage_display: "Total tonnage"
       returns/slft/site:
         site_name: "Site"
         net_lower_tonnage: "Lower rate<br>tonnage (net)"
@@ -91,7 +97,7 @@ en:
             nda_ex_yes_no:
               missing_exemption_tonnage: "%{attribute} or restoration or other must be selected"
             base:
-              exemption_tonnage_isnt_equal: "The total tonnage of these exemptions must be equal to the exempt tonnage"
+              exemption_tonnage_isnt_equal: "The total tonnage %{total_tonnage} of these exemptions must be equal to the exempt tonnage of %{exempt_tonnage}"
     hints:
       returns/slft/slft_return:
         slcf_credit_claimed: "This can't be more than %{env_contrib_cut_off}% of your total contribution for the accounting period and must not exceed %{liability_cut_off}% of your SLFT liability in the contribution year"
@@ -113,6 +119,7 @@ en:
         sites_subtitle: "Registered site list"
         deleted_sites_subtitle: "Removed site list"
         deleted_sites_description: "The sites listed are not owned by you during this period and will not be saved, if this is incorrect change the return period"
+        no_sites_description_html: "No registered sites for this period"
         credits_subtitle: "Credits claimed"
         warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
         form_dirty_warning_message: "You are about to leave this return. If you haven't saved your changes click 'Cancel' followed by the 'Save draft' button on the return summary screen. Any unsaved changes will be lost."

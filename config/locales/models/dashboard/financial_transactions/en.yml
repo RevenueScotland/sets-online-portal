@@ -91,9 +91,15 @@ en:
         show: "View related"
         find: "Find"
         no_data_found: "There are no transactions to be shown..."
+        pagination:
+          context:
+            page: "all financial transactions"
       show:
         title: "Financial transaction"
         heading: "Related financial transactions"
         link:
           dashboard: "Dashboard"
           financial_transactions: "Go to all financial transactions"
+        pagination:
+          context:
+            page: "related financial transactions"

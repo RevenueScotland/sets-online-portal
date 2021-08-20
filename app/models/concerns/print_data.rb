@@ -289,11 +289,11 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     layout_print.each_with_index do |section, i|
       next if section.nil?
 
-      Rails.logger.debug("Section #{section[:code]} Type #{section[:type]} Extra Data #{extra_data.inspect}")
+      Rails.logger.debug { "Section #{section[:code]} Type #{section[:type]} Extra Data #{extra_data.inspect}" }
       next if skip_section(section, parent_section, extra_data)
 
       section_list += process_section(layout, section, extra_data, parent_section,
-                                      (first_object && i.zero? ? true : false))
+                                      (first_object && i.zero?))
     end
     section_list # return the section list
   end
@@ -404,9 +404,9 @@ module PrintData # rubocop:disable Metrics/ModuleLength
 
     value = include_item_or_section_value(when_method, extra_data)
     response = value_is_in_check(value, is_array, true) && !value_is_in_check(value, is_not_array, false)
-    Rails.logger.debug(
+    Rails.logger.debug do
       "Include Check #{when_method} Value #{value} is in #{is_array} is not in #{is_not_array} response: is #{response}"
-    )
+    end
     response
   end
 
@@ -538,7 +538,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
       # We're passing in the index of the object so that we can use it with things like showing or hiding a row of data
       # depending on the index of the object.
       extra_data[:object_index] = i
-      section_list += object.sections(layout, extra_data, parent_section, first_object: (i.zero? ? true : false))
+      section_list += object.sections(layout, extra_data, parent_section, first_object: i.zero?)
     end
     section_list
   end
@@ -562,7 +562,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param extra_data [Hash] a hash of extra translation options keyed on a value
   # @return [Object] The value to be checked
   def include_item_or_section_value(when_method, extra_data)
-    Rails.logger.debug("When Method #{when_method} (#{respond_to?(when_method)}) Extra Data #{extra_data.inspect}")
+    Rails.logger.debug { "When Method #{when_method} (#{respond_to?(when_method)}) Extra Data #{extra_data.inspect}" }
 
     if !extra_data.nil? && extra_data.key?(when_method)
       extra_data[when_method]
@@ -671,7 +671,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     # Skip sections which have visibility rules
     return true unless include_item_or_section?(section[:when], section[:is], section[:is_not], extra_data)
 
-    Rails.logger.debug("Section #{section[:code]} Not Skipped")
+    Rails.logger.debug { "Section #{section[:code]} Not Skipped" }
     false
   end
 end

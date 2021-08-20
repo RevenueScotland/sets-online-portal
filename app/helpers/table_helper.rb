@@ -41,11 +41,12 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   #                ],
   #                { attribute1 : { format: : money} })
   def display_table(objects, attributes, actions = nil, options = {})
-    return if objects.nil? || objects.empty?
+    return if objects.blank?
 
-    table_tag(table_head_tag(table_heading_row(objects[0], attributes, options)) +
-      display_table_body(objects, attributes, actions, options) +
-      display_table_footer(attributes, options))
+    head = table_head_tag(table_heading_row(objects[0], attributes, options))
+    body, table_summary = display_table_body(objects, attributes, actions, options)
+    footer = display_table_footer(attributes, table_summary, options)
+    table_tag(head + body + footer)
   end
 
   private
@@ -59,7 +60,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
       table_header_tag_cell(attribute, options[attribute], label)
     end
 
-    table_row_tag(cols.join(''))
+    table_row_tag(safe_join(cols))
   end
 
   # Create table header cell applying the GDS standard.
@@ -67,7 +68,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   # @param label [String] text that is passed in for the table header contents
   # @return [HTML block element] the standard table header <th> element with the appropriate class
   def table_header_tag_cell(attribute, options, label = '')
-    return '' if skip_cell?(options)
+    return ''.html_safe if skip_cell?(options)
 
     table_heading_class = table_cell_class(attribute, options, :th)
     option_class = table_heading_class.blank? ? {} : { class: table_heading_class }
@@ -82,7 +83,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   # @param options [Hash] is used to add extra information into this attribute
   # @return [HTML block element] the standard table data <td> element with the appropriate class
   def table_data_tag_cell(text = '', attribute = nil, options = {})
-    return '' if skip_cell?(options)
+    return ''.html_safe if skip_cell?(options)
 
     options = {} if options.nil?
     table_data_class = table_cell_class(attribute, options)
@@ -151,26 +152,27 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   #   to be shown on the table data.
   # @param actions [Array] a collection of hash that is used for actions, such as action for a link to edit page.
   # @param options [Hash] is used for adding extra option class to the specified column by its attribute.
-  # @return [HTML block element] the standard table body element with the appropriate class
+  # @return [HTML block element, Hash] the standard table body element with the appropriate class and an
+  #   associated summary if required
   def display_table_body(objects, attributes, actions, options)
     return if objects.nil?
 
-    setup_table_summary(options)
+    table_summary = setup_table_summary(options)
 
     # @note This collects the rows that builds the table with indexing. See {#actions_cell} method to learn more
     #   about what the index is used for.
     rows = objects.collect.with_index do |object, index|
       # Collects each of the attributes from the object which is then placed in a table data.
-      cols = display_table_body_row_cells(object, attributes, options)
+      cols = display_table_body_row_cells(object, attributes, table_summary, options)
 
       # Creating the two rows:
       # 1. first one is the row of the collected attributes data of the object,
       # 2. the second one is the row of actions related to that object of which it's attributes data are shown.
-      table_row_tag(cols.join(''), table_row_highlight_class(object)) +
+      table_row_tag(safe_join(cols), table_row_highlight_class(object)) +
         table_row_tag(actions_cell(object, attributes, actions, cols, index))
     end
 
-    table_body_tag(rows.join(''))
+    [table_body_tag(safe_join(rows)), table_summary]
   end
 
   # create table footer from the summary data applying gds CSS class
@@ -184,21 +186,22 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   #
   # @param attributes [Array] a collection of attributes related to the objects, these attributes are
   #   to be shown on the table data.
+  # @param table_summary [Hash] a hash of options and values to be used to generate a summary footer if required.
   # @param options [Hash] is used for adding extra option class to the specified column by its attribute.
   # @return [HTML block element] the standard table body element with the appropriate class
-  def display_table_footer(attributes, options)
-    return if @table_summary.nil?
+  def display_table_footer(attributes, table_summary, options)
+    return if table_summary.nil?
 
     rows = []
-    @table_summary.each do |type, type_hash|
+    table_summary.each do |type, type_hash|
       # We have other hash in the table summary e.g. with the data ignore these
       # note used include for when we add other totals
       next unless %i[total].include?(type)
 
-      cols = display_table_footer_row_cells(type, type_hash, attributes, options)
-      rows << table_row_tag(cols.join(''), class: 'table_footer')
+      cols = display_table_footer_row_cells(type, type_hash, attributes, table_summary, options)
+      rows << table_row_tag(safe_join(cols), class: 'table_footer')
     end
-    table_footer_tag(rows.join(''))
+    table_footer_tag(safe_join(rows))
   end
 
   # This is used to determine whether an item is to be highlighted or not.
@@ -227,7 +230,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   # @return [HTML block element] a HTML table data <td> of the action anchor elements
   def actions_cell(object, attributes, actions, cols, index)
     # creating column for actions
-    action_cols = ''
+    action_cols = ''.html_safe
     actions.nil? || actions.each do |action|
       # Main reason why we have the if-statement is to know which actions to show/add.
       # break-down of conditions:
@@ -250,7 +253,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
       end
     end
 
-    table_data_tag_cell(action_cols.html_safe, nil, html_options: { colspan: cols.size })
+    table_data_tag_cell(action_cols, nil, html_options: { colspan: cols.size })
   end
 
   # This method is used to check if the action link should be visible or not. Also
@@ -299,7 +302,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
       label = format(label, value: value)
     end
     options[:class] = action_class_option(options, :text)
-    content_tag(:span, label, options)
+    tag.span(label, options)
   end
 
   # Create action tag like edit, show more details available at url
@@ -378,7 +381,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
     #   is equals to action_display_tag({ action: :display, label: 'Hello'})
     return send(path, param_or_query) if path
 
-    action_link.html_safe
+    action_link
   end
 
   # Adds the index of the object to the param or query using the object_index_attribute.
@@ -477,47 +480,51 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   # @param object [Object] The object being processed
   # @param attributes [Array] a collection of attributes related to the objects, these attributes are
   #   to be shown on the table data.
+  # @param table_summary [Hash] The hash being used to build up data for the table summary.
   # @param options [Hash] is used for adding extra option class to the specified column by its attribute.
   # @return [Array] An array of HTML cells
-  def display_table_body_row_cells(object, attributes, options)
+  def display_table_body_row_cells(object, attributes, table_summary, options)
     attributes.collect do |attribute|
       attr_options = options[attribute] || {}
-      table_data_tag_cell(table_display_value_text(object, attribute, attr_options), attribute, attr_options)
+      table_data_tag_cell(table_display_value_text(object, attribute, table_summary, attr_options), attribute,
+                          attr_options)
     end
   end
 
   # Sets up an internal hash used to store the values for generating a summary if one is needed
   # @param options [Hash] the hash passed in this will contain the summary tag if one is provided
+  # @return [Hash] A hash that is used to drive and hold the summary footer
   def setup_table_summary(options)
-    @table_summary = options.delete(:summary)
-    return if @table_summary.nil?
+    table_summary = options.delete(:summary)
+    return if table_summary.nil?
 
     # Create a nested hash to hold totals for any attributes from any of the summary lines
     # This is then used to hold a list of values that are then totalled or summarised as needed when the footer is
     # produced
     # Need to create and then merge as cannot add into a hash during iteration
     data = {}
-    @table_summary.each_value do |value|
+    table_summary.each_value do |value|
       array = value[:attributes]
       array.each { |sym| data[sym] = [] }
     end
-    @table_summary.merge!(data)
+    table_summary.merge!(data)
   end
 
   # Builds an array of cells for a  footer row for a given total type
   # @param type [Symbol] the type of total being derived
   # @param type_hash [Hash] the hash of options for this type
   # @param attributes [Array] the list of attributes (cells) in the table
+  # @param table_summary [Hash] a hash of options and values to be used to generate a summary footer if required.
   # @param options [Hash] the array of general options
   # @return [array] the array of html for cells on this row
-  def display_table_footer_row_cells(type, type_hash, attributes, options)
+  def display_table_footer_row_cells(type, type_hash, attributes, table_summary, options)
     cols = []
     attributes.each do |attribute|
       attr_options = options[attribute] || {}
       value = table_footer_label_value(attribute, type_hash[:label])
 
       # work out what the summary value is, currently only total is supported
-      value = table_footer_summary_value(@table_summary[attribute], type) if type_hash[:attributes].include?(attribute)
+      value = table_footer_summary_value(table_summary[attribute], type) if type_hash[:attributes].include?(attribute)
       cols << table_footer_tag_cell(CommonFormatting.format_text(value, attr_options), attr_options)
     end
     cols

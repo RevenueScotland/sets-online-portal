@@ -1,10 +1,8 @@
-<%= content_for :hide_back_link, true %>
-<%= content_for :public_landing_return_link, t('cancel')%>
+<% content_for :hide_back_link, true %>
+<% content_for :public_landing_return_link, t('cancel')%>
 <% content_for :page_view, render_page_view(__FILE__) %>
-<%= content_for :page_title, t('.title') %>
-<ul>
-  <%= t('.info_needed').html_safe %>
-</ul>
-<%= t('.start_warning') %>
+<% content_for :page_title, t('.title') %>
+<%= display_paragraph_components(body: t('.info_needed_html')) %>
+<%= display_paragraph_components(body: t('.start_warning')) %>
 <br>
 <p><%= link_to(t('start_now'), returns_lbtt_public_return_type_path, class: 'scot-rev-button') %></p>

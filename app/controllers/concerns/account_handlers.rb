@@ -5,6 +5,11 @@ module AccountHandlers
   extend ActiveSupport::Concern
   include AddressHelper
 
+  # Allow pages to be unauthenticated
+  included do
+    skip_before_action :require_user, only: %I[activate_account process_activate_account]
+  end
+
   # show account details
   def show
     # since this is the landing page after login, don't redirect to the login screen if there's a non-validation

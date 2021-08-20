@@ -93,8 +93,8 @@ module Dashboard
     private
 
     # which file types are allowed to be uploaded.
-    def content_type_whitelist
-      Rails.configuration.x.file_upload_content_type_whitelist.split(/\s*,\s*/)
+    def content_type_allowlist
+      Rails.configuration.x.file_upload_content_type_allowlist.split(/\s*,\s*/)
     end
 
     # Retrieve download file details

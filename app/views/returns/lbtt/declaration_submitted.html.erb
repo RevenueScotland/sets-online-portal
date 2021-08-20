@@ -1,39 +1,36 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <% content_for :hide_back_link, true %>
-<div class="govuk-width-container">
-  <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <div class="govuk-panel govuk-panel--confirmation">
-          <h1 class="govuk-panel__title">
-            <%= t('.return_submitted') %>
-          </h1>
-        </div>
-        <% if @lbtt_return.version == "1"
-              if @lbtt_return.flbt_type == 'CONVEY' 
-                return_type = 'LBTT_CONVEYANCE' 
-              elsif @lbtt_return.flbt_type == 'LEASERET' 
-                return_type = 'LBTT_LEASE'  
-              else
-                return_type = 'LBTT'
-              end
-            else
-              return_type = 'AMEND_LBTT'
-            end
-        %>
-        <%= render "/layouts/tax_return_submit_text", return_type: return_type,
-                                                      return_reference: @lbtt_return.tare_reference,
-                                                      payment_method: @lbtt_return.lookup_ref_data_value(:fpay_method),
-                                                      payment_due_date: @lbtt_return.payment_date %>
-        <p class="govuk-body">
-          <%= link_to t('go_to_dashboard'), dashboard_path if current_user %> <br>
-          <% link = [
-            { link: :public_landing_return_page, path: external_link_url('CANCEL_HOME') }
-            ] %>
-          <%= navigational_links(link) unless current_user%>
-        </p>
-      </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <%# On this page, the page_title above has been set to nil so that this is the only h1 tag that's on this page %>
+      <h1 class="govuk-panel__title">
+        <%= t('.return_submitted') %>
+      </h1>
     </div>
-  </main>
+    <% if @lbtt_return.version == "1"
+          if @lbtt_return.flbt_type == 'CONVEY' 
+            return_type = 'LBTT_CONVEYANCE' 
+          elsif @lbtt_return.flbt_type == 'LEASERET' 
+            return_type = 'LBTT_LEASE'  
+          else
+            return_type = 'LBTT'
+          end
+        else
+          return_type = 'AMEND_LBTT'
+        end
+    %>
+    <%= render "/layouts/tax_return_submit_text", return_type: return_type,
+                                                  return_reference: @lbtt_return.tare_reference,
+                                                  payment_method: @lbtt_return.lookup_ref_data_value(:fpay_method),
+                                                  payment_due_date: @lbtt_return.payment_date %>
+    <p class="govuk-body">
+      <%= link_to t('go_to_dashboard'), dashboard_path if current_user %> <br>
+      <% link = [
+        { link: :public_landing_return_page, path: external_link_url('CANCEL_HOME') }
+        ] %>
+      <%= navigational_links(link) unless current_user%>
+    </p>
+  </div>
 </div>

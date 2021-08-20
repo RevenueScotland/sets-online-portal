@@ -22,6 +22,9 @@ module Claim
 
     attribute_list.each { |attr| attr_accessor attr }
 
+    # For each of the numeric fields create a setter, don't do this if there is already a setter
+    strip_attributes :claiming_amount, :account_number
+
     validates :reason, presence: true, on: :reason
     validates :claim_desc, presence: true, length: { maximum: 255 }, on: :claim_desc, if: :claim_desc_required?
     validates :date_of_sale, presence: true, custom_date: true, on: :date_of_sale
@@ -30,8 +33,7 @@ module Claim
                                                 allow_blank: true }, presence: true,
                                 two_dp_pattern: true, on: :claiming_amount, if: :claim_amount_required?
     validates :account_holder_name, :bank_name, presence: true, length: { maximum: 255 }, on: :account_holder_name
-    validates :account_number, numericality: { only_integer: true, allow_blank: true }, presence: true,
-                               length: { is: 8 }, on: :account_holder_name
+    validates :account_number, account_number: true, presence: true, on: :account_holder_name
     validates :branch_code, presence: true, bank_sort_code: true, on: :account_holder_name
     # Note validation context @see ClaimPaymentsController#authenticated_declaration2
     validates :authenticated_declaration1, :authenticated_declaration2, acceptance: { accept: ['Y'] },
@@ -158,7 +160,7 @@ module Claim
       return if value.nil?
 
       value.each do |d|
-        @unauthenticated_declarations[d.to_i].checked = 'Y' unless d.blank?
+        @unauthenticated_declarations[d.to_i].checked = 'Y' if d.present?
       end
     end
 
@@ -234,7 +236,7 @@ module Claim
     def pre_claim?
       return false if filing_date.blank?
 
-      filing_days_old = (Date.today - filing_date).to_i.days
+      filing_days_old = (Time.zone.today - filing_date).to_i.days
 
       # If the filing date is 365 days old or older then true (used for showing the claim)
       (filing_days_old <= Rails.configuration.x.returns.amendable_days)
@@ -312,7 +314,7 @@ module Claim
         @repayment_ref_no = body[:claim_repayment][:repayment_ref_no]
         # This submitted_date is used only for display purpose of confirmation page
         # and is not being submitted to the back office
-        @submitted_date = Date.today
+        @submitted_date = Time.zone.today
       end
     end
 

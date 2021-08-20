@@ -11,7 +11,6 @@ require("@rails/ujs").start()
 require("turbolinks").start()
 
 // All vendor/assets/stylesheet/ javascript files
-import 'govuk-frontend-3.0.0.min.js';
 import 'spin.js';
 
 // All the jquery-ui widgets javascript files we need
@@ -33,8 +32,8 @@ import 'file-upload';
 import 'auto-complete';
 import 'date-picker';
 import 'manageCookies';
+import GOVUKFrontend from "govuk-frontend";
 // all imports below are dependent of toggle-hide-fields.js
-import 'details.polyfill';
 import 'views/claim';
 import 'views/lbtt-return-relief-amount';
 import 'views/lbtt-return';
@@ -43,6 +42,7 @@ import 'views/registration';
 import 'views/slft-application';
 import 'views/slft-return';
 
+window.GOVUKFrontend = GOVUKFrontend;
 // Uncomment to copy all static images under ../images to the output folder and reference
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
 // or the `imagePath` JavaScript helper below.

@@ -22,9 +22,9 @@ class Address < FLApplicationRecord
   validates :address_line2, :address_line3, :address_line4, length: { maximum: 255 }, on: :save
   validates :town, presence: true, length: { maximum: 100 }, on: :save
   validates :county, length: { maximum: 50 }, on: :save
-  validates_format_of :postcode,
-                      with: /\A([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})\z/i,
-                      on: :save, if: proc { |p| p.postcode.present? }
+  validates :postcode,
+            format: /\A([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})\z/i,
+            on: :save, if: proc { |p| p.postcode.present? }
   validate :address_selected?, on: :address_selected
   validates :country, presence: true, on: :save
 
@@ -119,7 +119,7 @@ class Address < FLApplicationRecord
   def self.convert_hash_to_address(address_hash)
     # map back-office fields with attributes in Address model
     address_hash[:town] = address_hash.delete(:address_town_or_city)
-    unless address_hash[:address_county_or_region].blank?
+    if address_hash[:address_county_or_region].present?
       address_hash[:county] = address_hash.delete(:address_county_or_region)
     end
     address_hash[:postcode] = address_hash.delete(:address_postcode_or_zip)

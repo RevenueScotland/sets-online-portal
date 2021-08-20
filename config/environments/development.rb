@@ -22,7 +22,7 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # Enable/disable caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.
   # This is a RAILS thing, we didn't invent it.
-  if Rails.root.join('tmp', 'caching-dev.txt').exist?
+  if Rails.root.join('tmp/caching-dev.txt').exist?
     config.action_controller.perform_caching = true
     config.action_controller.enable_fragment_cache_logging = true
 
@@ -79,7 +79,7 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
       end
     else
       # GetReferenceData/ReferenceValues refresh job
-      RefreshRefDataJob.schedule_next_run(1.seconds)
+      RefreshRefDataJob.schedule_next_run(1.second)
 
       # GetSystemParameters refresh job
       RefreshSystemParametersJob.schedule_next_run(3.seconds)

@@ -21,7 +21,7 @@ module Returns
       site_id ||= selected_site
 
       # store the site id in the session
-      Rails.logger.debug("Storing selected site #{site_id} in session")
+      Rails.logger.debug { "Storing selected site #{site_id} in session" }
       session[:returns_slft_site] = site_id
 
       load_site
@@ -94,7 +94,7 @@ module Returns
     # Remove a waste entry from the current site
     # @param uuid [SecureRandom.uuid] the waste's ID in the current site's wastes list
     def delete_waste_entry(uuid)
-      Rails.logger.debug("Deleting Waste entry #{uuid} from site #{@site.lasi_refno}")
+      Rails.logger.debug { "Deleting Waste entry #{uuid} from site #{@site.lasi_refno}" }
 
       # check have required info
       load_site if @site.nil?
@@ -116,8 +116,11 @@ module Returns
     # SlftController's wizard cache.
     def load_site
       site_id = selected_site
-      Rails.logger.debug("Loading site #{site_id}")
-      @slft_return = wizard_load(SlftController)
+      Rails.logger.debug { "Loading site #{site_id}" }
+      @slft_return = wizard_load_or_redirect(returns_slft_summary_url, nil, SlftController)
+      # If they have entered part way through they may have a return with no sites so send them back
+      raise Error::WizardRedirectError, returns_slft_summary_url if @slft_return.sites.nil?
+
       @site = @slft_return.sites[site_id]
     end
 
@@ -182,7 +185,7 @@ module Returns
     def validate_and_import_waste_file(resource_item)
       return if resource_item.nil?
 
-      Rails.logger.debug("Importing File #{resource_item.original_filename}")
+      Rails.logger.debug { "Importing File #{resource_item.original_filename}" }
 
       imported_wastes = @site.import_waste_csv_data resource_item
       duplicate_waste_errors_into_resource_item(resource_item, imported_wastes)
@@ -222,15 +225,15 @@ module Returns
     end
 
     # Call back from FileUploadHandler, which returns file types are allowed to be uploaded.
-    def content_type_whitelist
-      Rails.configuration.x.slft_waste_file_upload_content_type_whitelist.split(/\s*,\s*/)
+    def content_type_allowlist
+      Rails.configuration.x.slft_waste_file_upload_content_type_allowlist.split(/\s*,\s*/)
     end
 
     # Call back from FileUploadHandler, which returns additional/alias content types are allowed
     # i.e. CSV mime type should be text/csv, but with a machine with Excel on it, the
     # type would be application/vnd.ms-excel
     def alias_content_type
-      Rails.configuration.x.slft_waste_file_upload_alias_content_type_whitelist.split(/\s*,\s*/)
+      Rails.configuration.x.slft_waste_file_upload_alias_content_type_allowlist.split(/\s*,\s*/)
     end
 
     # Sets up wizard model if it doesn't already exist in the cache

@@ -192,7 +192,7 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
     table = display_table_section(region)
     table[0] = table_head_tag(display_header_section(region, header_options) +
                                 display_description_section(region, description_options) + table[0])
-    table_tag(table.join)
+    table_tag(safe_join(table))
   end
 
   private
@@ -331,7 +331,7 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
   # @return [HTML block element] The standard header region section.
   def display_header_section(item, options)
     header = item[:header]
-    return '' if header.blank?
+    return ''.html_safe if header.blank?
 
     # The region header's heading text, it is stored in a variable for readability purposes.
     header_text = header[:label] || header[:model].send(header[:attribute])
@@ -350,7 +350,7 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
   # @return [HTML block element] The standard description region section. [ <td> | <td link OPTIONAL>]
   def display_description_section(item, options)
     description = item[:description]
-    return '' if description.blank?
+    return ''.html_safe if description.blank?
 
     # The region description's text, it is stored in a variable for readability purposes.
     description_text = description[:region_description] || description[:model].send(description[:attribute])
@@ -382,9 +382,9 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
   def display_data_rows_section(item, options)
     # rows = items[:data]
     # If in the display_region([<hash>]) -> if <hash> doesn't have :data then escape.
-    return '' if item[:data].blank?
+    return ''.html_safe if item[:data].blank?
 
-    row_display = ''
+    row_display = ''.html_safe
     # Look at each rows of hash contents of the array :data
     item[:data].each do |data|
       next if skip?(nil, data)
@@ -396,7 +396,7 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
         row_display += display_data_in_table(data[:model], row, options)
       end
     end
-    row_display.html_safe
+    row_display
   end
 
   # Creates a standard data row of a table using the model and attribute structure supplied. Typically this
@@ -423,8 +423,8 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
     options = data_html_options(options, id)
 
     # If the contents of the array :attributes is a symbol instead of a hash.
-    return display_data_row(object, attribute, options) { nil } unless attribute.is_a?(Hash)
-    return '' if skip?(object, attribute)
+    return display_data_row(object, attribute, nil, options) unless attribute.is_a?(Hash)
+    return ''.html_safe if skip?(object, attribute)
 
     # If hash is found, then we need to get the actual attribute from it and apply the options found
     # from the hash.
@@ -434,29 +434,27 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
     # For the data that has a link, we need to revert the colspan back to 1. The reason lies in {#options_setup}
     # where the base colspan for any data is set to 2 whenever we have a link on any data.
     options[:data_html_options][:colspan] = 1 unless link.nil?
-    display_data_row(object, attribute_content, options) { link }
+    display_data_row(object, attribute_content, link, options)
   end
 
   # Creates a standard display field in a row of a table using the attribute (as the label)
   # and the attribute of the object (as the value). This is used in {#display_region} method.
   #
-  # @example
-  #   display_data_row(@account.user, :username, {})
-  #
-  # @yield A yield allows additional columns to be added to the row
   # @param object [Object] see display_data_in_table's object param description.
   # @param attribute [Object] is used as the label and the value of the object to be displayed.
+  # @param extra_columns [HTML block element] extra columns to be added to the row
   # @return [HTML block element] see display_data_in_table's object return description.
-  def display_data_row(object, attribute, options)
-    return '' if object.nil?
+  def display_data_row(object, attribute, extra_columns, options)
+    return ''.html_safe if object.nil?
 
-    data_text_value = table_display_value_text(object, attribute, options)
+    # We do not have a table summary in a display region so pass in nil
+    data_text_value = table_display_value_text(object, attribute, nil, options)
     data_text_heading = UtilityHelper.label_text(object, attribute, options)
 
     table_row_tag(
       table_heading_tag(data_text_heading, options[:heading_html_options]) +
         table_data_tag(data_text_value, options[:data_html_options]) +
-        yield
+        extra_columns
     )
   end
 
@@ -467,7 +465,7 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
   #   the table head <thead> and the second item is to go into the table body <tbody> and the third the <tfoot>.
   def display_table_section(item)
     # If we're not using the table, or our table's array of models object is empty.
-    return Array.new(3, '') if split_table(item[:table]).nil?
+    return Array.new(3, ''.html_safe) if split_table(item[:table]).nil?
 
     # Partly because of rubocop, all the contents of the :table hash has been split into four variables
     models, attributes, actions, options = split_table(item[:table])
@@ -475,12 +473,12 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
     # To complete the table, it needs to have parts of the head first.
     # @see table_helper#table_heading_row as it's being used to create the row of headings.
     head = table_heading_row(models[0], attributes, options)
-    return Array.new(3, '') if head.blank?
+    return Array.new(3, ''.html_safe) if head.blank?
 
     # @see table_helper#display_table_body as this is using that method to create the body of the table.
-    body = display_table_body(models, attributes, actions, options)
+    body, table_summary = display_table_body(models, attributes, actions, options)
 
-    footer = display_table_footer(attributes, options)
+    footer = display_table_footer(attributes, table_summary, options)
 
     [head, body, footer]
   end
@@ -492,7 +490,7 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
     return if table.blank?
     return if table[:models].blank?
 
-    options = table[:options].blank? ? {} : table[:options]
+    options = table[:options].presence || {}
     [table[:models], table[:attributes], table[:actions], options]
   end
 
@@ -523,7 +521,7 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
   # @param skip [Boolean] true means that the displaying of that attribute should be skipped.
   # @return [Boolean] true, should skip that row(s).
   def skip_on_boolean(skip)
-    return false if skip.is_a?(Symbol) || ![true, false].include?(skip)
+    return false if skip.is_a?(Symbol) || [true, false].exclude?(skip)
 
     skip
   end
@@ -544,12 +542,12 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
   # Creates a standard link block in a table cell.
   # @param hash [Hash] should contain the link to be displayed. This should at least consist of the :link, :path
   #   and it could have the optional :link_options. See above (2. a.) :header for more details of it's contents.
-  # @return [HTML block element] the standarad link within a standard table data <td> element for links.
+  # @return [HTML block element] the standard link within a standard table data <td> element for links.
   def display_link_cell(hash, options)
     return unless hash.key?(:link) && authorised?(current_user, hash[:link_options])
 
     link = hash[:link]
-    return if link.nil? # && !authorised?(current_user, hash[:link_options])
+    return if link.nil?
 
     table_data_tag(link_to(t(".link.#{link}"), hash[:path], link_html_options(hash)),
                    link_cell_html_options(options))

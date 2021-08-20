@@ -51,9 +51,9 @@ class ActionRoles < FLApplicationRecord
   # @return List of roles associated with the supplied action_code
   private_class_method def self.find_for(action_code)
     key = cache_key(action_code)
-    Rails.logger.debug("Getting cache data for #{key}")
+    Rails.logger.debug { "Getting cache data for #{key}" }
     Rails.cache.fetch(key, expires_in: cache_expiry_time) do
-      Rails.logger.debug("Cache miss for #{key}, fetching back office data")
+      Rails.logger.debug { "Cache miss for #{key}, fetching back office data" }
       success, roles = back_office_data(action_code)
       # if the back office call fails, then return nil, but don't store that in the cache
       return nil unless success

@@ -82,7 +82,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'registration/address',            to: 'registration#address',            via: %i[get post]
       match 'registration/taxes',              to: 'registration#taxes',              via: %i[get post]
       match 'registration/user_details',       to: 'registration#user_details',       via: %i[get post]
-      match 'registration/confirmation',       to: 'registration#confirmation',       via: %i[get]
+      get 'registration/confirmation', to: 'registration#confirmation'
     end
 
     # LBTT
@@ -90,10 +90,10 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'lbtt/summary',                        to: 'lbtt#summary',                                via: %i[get post]
       match 'lbtt/return_type',                    to: 'lbtt#return_type',                            via: %i[get post]
       match 'lbtt/return_reference_number',        to: 'lbtt#return_reference_number',                via: %i[get post]
-      match 'lbtt/save_draft',                     to: 'lbtt#save_draft',                             via: :get
+      get 'lbtt/save_draft', to: 'lbtt#save_draft'
       match 'lbtt/declaration',                    to: 'lbtt#declaration',                            via: %i[get post]
       match 'lbtt/declaration_submitted',          to: 'lbtt#declaration_submitted',                  via: %i[get post]
-      match 'lbtt/public_landing',                 to: 'lbtt#public_landing',                         via: %i[get]
+      get 'lbtt/public_landing', to: 'lbtt#public_landing'
       match 'lbtt/public_return_type',             to: 'lbtt#public_return_type',                     via: %i[get post]
       match 'lbtt/reliefs_calculation',            to: 'lbtt#reliefs_calculation',                    via: %i[get post]
       get 'lbtt/download-receipt',                 to: 'lbtt#download_receipt'

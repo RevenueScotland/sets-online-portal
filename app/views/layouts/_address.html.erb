@@ -17,9 +17,7 @@
   <% else %>
     <%= asf.text_field :postcode %>
     <div class="govuk-form-group">
-      <%# An autofocus is added here so that when the user has clicked on this button, which should show the select
-          field, it would then focus on this button. %>
-      <%= asf.submit '.search', { :name => 'search', autofocus: !@search_results.nil? } %>
+      <%= asf.submit '.search', { :name => 'search' } %>
     </div>
   <% end %>
   <%= hidden_field_tag 'show_manual_address', @show_manual_address %>
@@ -27,8 +25,10 @@
   <% unless @search_results.nil? %>
     <div class="govuk-form-group">
       <%= label_tag "search_results", t('address_select'), class: 'govuk-label' %>
+      <%# An autofocus is added here so that when the user has clicked on the "Find Address" button, 
+          which should show the select field, it would then focus on the select field. %>
       <%= select_tag "search_results", options_for_select(@search_results.collect { |v| [v.formatted_address, v.address_identifier] }),
-                     { width:'two-thirds' }, { include_blank: t('.no_of_address_select', count: @search_results.length ) } %>
+                     { width:'two-thirds' }, { include_blank: t('.no_of_address_select', count: @search_results.length ), autofocus: true } %>
     </div>
     <div class="js-hidden ">
       <%= asf.submit '.select', {:name => 'select'} %>
@@ -46,8 +46,10 @@
 <div class="govuk-form-group <%= ' js-hidden' unless  @show_manual_address %>" id="address_detail">
   <%= fields_for @address_detail, html: { multipart: true } do |adf| %>
     <%# Autofocus is set to true when the address_line1 is an editable text field or when the user has selected an
-        address through the select field options. %>
-    <%= adf.text_field :address_line1, { width: 'one-half' }, { readonly: @address_read_only, autofocus: ((!@address_summary.postcode.blank? || !@address_read_only) && !@form_error_found) } %>
+        address through the select field options. 
+        The @search_results.nil? part of the autofocus means that if the select options for list of address is shown,
+        then we don't want to focus on address line 1 as this text field is rendered but still visibly hidden %>
+    <%= adf.text_field :address_line1, { width: 'one-half' }, { readonly: @address_read_only, autofocus: ((!@address_summary.postcode.blank? || !@address_read_only) && !content_for?(:form_error_found) && @search_results.nil?) } %>
     <%= adf.text_field :address_line2, { width: 'one-half', label: '' }, { readonly: @address_read_only } %>
     <%= adf.text_field :address_line3, { width: 'one-half', label: '' }, { readonly: @address_read_only } %>
     <%= adf.text_field :address_line4, { width: 'one-half', label: '' }, { readonly: @address_read_only } %>

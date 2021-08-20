@@ -4,7 +4,7 @@
       <div class="govuk-header__logo">
         <a href="<%= external_link_url('HOME') %>" class="govuk-header__link govuk-header__link--homepage">
           <span class="govuk-header__logotype">
-            <%=image_tag("https://www.revenue.scot/sites/all/themes/rs_201407/logo.png", alt:"The Scottish Government") %>
+            <%=image_tag("logo.svg", alt: t('revenue_scotland')) %>
           </span>
         </a>
       </div>
@@ -15,7 +15,8 @@
             <nav>
               <ul id="navigation" class="govuk-header__navigation " aria-label="Top Level Navigation">
                 <% if yield(:hide_nav_bar) != 'true'  %>
-                  <%= account_links eval(CGI.unescapeHTML(yield(:nav_bar_options))) || {}, eval(CGI.unescapeHTML(yield(:nav_bar_html_options))) || {} %>
+                  <% # using eval to convert the string from content for into the hash expected   %>
+                  <%= account_links eval(yield(:nav_bar_options)), eval(yield(:nav_bar_html_options)) %>
                 <% end %>
               </ul>
             </nav>

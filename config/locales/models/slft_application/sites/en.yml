@@ -6,7 +6,7 @@ en:
         landfill_operator: Landfill operator
         slft_registration_number: Landfill operator SLfT registration number
         add_site: Add site
-        sepa_license_number: SEPA license number
+        sepa_license_number: SEPA licence number
         type_of_waste_text: Type of waste
         # Non disposal area site details
         intended_use: Specify the intended use of the area(s) to which material will be temporarily deposited

@@ -48,7 +48,7 @@ class CompareDateValidator < ActiveModel::EachValidator
   # Effective date of transaction must be after 01/04/2015
   # validates :effective_date, compare_date: true, on: :effective_date
   def date_after_mentioned_date(record, date_attr, date)
-    return unless date.present?
+    return if date.blank?
 
     return if date_start_before_end?(Rails.configuration.x.earliest_start_date, date)
 

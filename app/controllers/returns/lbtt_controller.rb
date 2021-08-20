@@ -94,6 +94,9 @@ module Returns
       end
     end
 
+    # Public landing page, just renders the view
+    def public_landing; end
+
     # This is the public version of the #return_type page/step.  It's separate mainly so we can distinguish the links
     # between a version that needs login and one that doesn't (ie so we don't mix them up accidentally).
     # Clears the cache and sets up the model.
@@ -145,7 +148,7 @@ module Returns
 
     # Cleans and saves the return by sending to the back office.
     def save_draft
-      @lbtt_return = wizard_load
+      @lbtt_return = load_step
       @lbtt_return.clean_up_yes_nos
       @lbtt_return.save_draft(current_user)
       @post_path = '.'
@@ -188,7 +191,7 @@ module Returns
 
       # If the return type matches with the old type or if this is the first time the return type has been chosen
       # then there's no need to clean it.
-      return unless (flbt_type != current_flbt_type) && !current_flbt_type.blank?
+      return unless (flbt_type != current_flbt_type) && current_flbt_type.present?
 
       # Clears the caches (LBTT and sub-types)
       clear_caches
@@ -197,7 +200,7 @@ module Returns
       # The current_flbt_type is set to flbt_type to reset it.
       @lbtt_return = Lbtt::LbttReturn.new(flbt_type: flbt_type, current_flbt_type: flbt_type,
                                           orig_return_reference: @lbtt_return.orig_return_reference,
-                                          is_public: (current_user.nil? ? true : false))
+                                          is_public: current_user.nil?)
       setup_sub_models
     end
 
@@ -272,7 +275,7 @@ module Returns
     # @return [LbttReturn] the model for wizard saving
     def setup_step
       @post_path = wizard_post_path
-      @lbtt_return = wizard_load || Lbtt::LbttReturn.new(is_public: (current_user.nil? ? true : false))
+      @lbtt_return = wizard_load || Lbtt::LbttReturn.new(is_public: current_user.nil?)
 
       setup_sub_models(save_wizard: false)
 

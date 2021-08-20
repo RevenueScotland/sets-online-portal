@@ -2,8 +2,10 @@
   <div class="revscot_cookies">
     <div class="revscot_cookies-content">
       <span class="revscot_cookies-text">
-        <h2><%= t('.header') %></h2>
-        <p><%= t('.body_html') %></p>
+        <%= sub_heading %>
+        <%# NOTE: The translated text contains a link, and cookies has it's own styling for a link,
+          #       so the display_paragraph_components cannot be used as that applies the govuk standards %>
+        <p class="govuk-body"><%= t('.body_html') %></p>
       </span>
       <span class="revscot_cookies-buttons">
         <button class="revscot_cookies-ok"> <%= t('.ok_thanks') %> </button>

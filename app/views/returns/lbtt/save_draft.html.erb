@@ -8,13 +8,12 @@
   <%= form_errors_for @lbtt_return %>
 <% end %>
 <% if @lbtt_return.errors.blank? %>
-  <%= t('.information') %>
+  <%= display_paragraph_components(body: t('.information')) %>
   <br>
-  <b><%= t('.caution') %></b>
+  <%= display_paragraph_components(body: "<b>#{t('.caution')}</b>".html_safe) %>
   <br>
-  <%= t('.return_html') %>
-  <b><span id= "ret_ref_val"><%= @lbtt_return.tare_reference%></span>.</b>
-  <%= t('.reference_html') %>
+  <%= display_paragraph_components(body: t('.return_html') + " <b><span id= 'ret_ref_val'>#{@lbtt_return.tare_reference}</span>.</b>".html_safe ) %>
+  <%= display_paragraph_components(body: t('.reference_html')) %>
 <% end %>
 <%= navigational_links( [ { link: :back_to_return_summary, path: returns_lbtt_summary_path }, 
                           { link: :go_to_dashboard, path: dashboard_path} ] ) %>

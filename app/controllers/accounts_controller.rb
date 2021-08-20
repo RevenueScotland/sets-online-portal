@@ -7,9 +7,6 @@ class AccountsController < ApplicationController
   include AccountHandlers
   include RegistrationAccountsCommon
 
-  # Allow pages to be unauthenticated
-  skip_before_action :require_user, only: %I[activate_account process_activate_account new create]
-
   helper_method %I[registered_organisation? other_organisation? individual?]
 
   authorise route: :show, requires: AuthorisationHelper::VIEW_ACCOUNTS

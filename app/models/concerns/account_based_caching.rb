@@ -34,9 +34,9 @@ module AccountBasedCaching
     # @return the cached data @see #back_office_data on implementing classes for more details.
     def all(requested_by)
       key = cache_key(requested_by.party_refno)
-      Rails.logger.debug("Getting cache data for #{key}")
+      Rails.logger.debug { "Getting cache data for #{key}" }
       Rails.cache.fetch(key, expires_in: cache_expiry_time) do
-        Rails.logger.debug("Cache miss for #{key}, fetching back office data")
+        Rails.logger.debug { "Cache miss for #{key}, fetching back office data" }
         back_office_data(requested_by)
       end
     end

@@ -50,8 +50,8 @@ class ServiceClientTest < ActiveSupport::TestCase
 
     test_instance.extract_errors(
       success: false, messages: { message: { text: 'This is message one', severity: 'VAL', code: 'SEC-1' } },
-      "@xmlns": 'http://northgate-is.com/FL/MaintainUser', "@xmlns:xsi": 'http://www.w3.org/2001/XMLSchema-instance',
-      "@xmlns:core": 'http://northgate-is.com/FL/Core'
+      '@xmlns': 'http://northgate-is.com/FL/MaintainUser', '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+      '@xmlns:core': 'http://northgate-is.com/FL/Core'
     )
 
     assert_equal ['This is message one'], test_instance.errors.full_messages, 'Could not extract one message'
@@ -62,8 +62,8 @@ class ServiceClientTest < ActiveSupport::TestCase
 
     test_instance.extract_errors(
       success: false, messages: nil,
-      "@xmlns": 'http://northgate-is.com/FL/MaintainUser', "@xmlns:xsi": 'http://www.w3.org/2001/XMLSchema-instance',
-      "@xmlns:core": 'http://northgate-is.com/FL/Core'
+      '@xmlns': 'http://northgate-is.com/FL/MaintainUser', '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+      '@xmlns:core': 'http://northgate-is.com/FL/Core'
     )
 
     assert_equal [], test_instance.errors.full_messages, 'Could not extract no messages'
@@ -74,8 +74,8 @@ class ServiceClientTest < ActiveSupport::TestCase
 
     test_instance.extract_errors(
       success: false,
-      "@xmlns": 'http://northgate-is.com/FL/MaintainUser', "@xmlns:xsi": 'http://www.w3.org/2001/XMLSchema-instance',
-      "@xmlns:core": 'http://northgate-is.com/FL/Core'
+      '@xmlns': 'http://northgate-is.com/FL/MaintainUser', '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+      '@xmlns:core': 'http://northgate-is.com/FL/Core'
     )
 
     assert_equal [], test_instance.errors.full_messages, 'Could not extract no message element'
@@ -88,8 +88,8 @@ class ServiceClientTest < ActiveSupport::TestCase
       success: false, messages: { message:
       [{ text: 'This is message one', severity: 'VAL', code: 'SEC-1' },
        { text: 'This is message two', severity: 'VAL', code: 'SEC-2' }] },
-      "@xmlns": 'http://northgate-is.com/FL/MaintainUser', "@xmlns:xsi": 'http://www.w3.org/2001/XMLSchema-instance',
-      "@xmlns:core": 'http://northgate-is.com/FL/Core'
+      '@xmlns': 'http://northgate-is.com/FL/MaintainUser', '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+      '@xmlns:core': 'http://northgate-is.com/FL/Core'
     )
 
     assert_equal ['This is message one', 'This is message two'], test_instance.errors.full_messages,
@@ -100,8 +100,8 @@ class ServiceClientTest < ActiveSupport::TestCase
   test 'ora errors at class level result in exception raised' do
     mes = { success: 'false',
             messages: { message: { text: 'Oracle drained your bank account', severity: 'VAL', code: 'ORA-1234' } },
-            "@xmlns": 'http://northgate-is.com/FL/MaintainUser', "@xmlns:xsi": 'http://www.w3.org/2001/XMLSchema-instance',
-            "@xmlns:core": 'http://northgate-is.com/FL/Core' }
+            '@xmlns': 'http://northgate-is.com/FL/MaintainUser', '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+            '@xmlns:core': 'http://northgate-is.com/FL/Core' }
     assert_raises(Error::AppError) do
       ServiceClient.assert_not_failure(false, mes)
     end
@@ -112,15 +112,15 @@ class ServiceClientTest < ActiveSupport::TestCase
     test_instance = DummyTest.new
     mes = { success: 'false',
             messages: { message: { text: 'Oracle drained your bank account', severity: 'VAL', code: 'ORA-1234' } },
-            "@xmlns": 'http://northgate-is.com/FL/MaintainUser', "@xmlns:xsi": 'http://www.w3.org/2001/XMLSchema-instance',
-            "@xmlns:core": 'http://northgate-is.com/FL/Core' }
+            '@xmlns': 'http://northgate-is.com/FL/MaintainUser', '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+            '@xmlns:core': 'http://northgate-is.com/FL/Core' }
 
     test_instance.extract_errors(mes)
 
     assert test_instance.errors&.present?, 'expected errors message missing'
     assert_match(
       /Something unexpected happened, you can try again in a few minutes or to report this error quote : \d\d\d\d\d/,
-      test_instance.errors.values.first.first, 'Unexpected message'
+      test_instance.errors.map(&:message).first, 'Unexpected message'
     )
   end
 
@@ -130,8 +130,8 @@ class ServiceClientTest < ActiveSupport::TestCase
   test 'failure without messages results in user friendly message' do
     test_instance = DummyTest.new
     mes = { success: 'false',
-            "@xmlns": 'http://northgate-is.com/FL/MaintainUser', "@xmlns:xsi": 'http://www.w3.org/2001/XMLSchema-instance',
-            "@xmlns:core": 'http://northgate-is.com/FL/Core' }
+            '@xmlns': 'http://northgate-is.com/FL/MaintainUser', '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+            '@xmlns:core': 'http://northgate-is.com/FL/Core' }
 
     test_instance.send(:ensure_message_on_fail, false, mes)
     test_instance.send(:extract_errors, mes)
@@ -139,7 +139,7 @@ class ServiceClientTest < ActiveSupport::TestCase
     assert test_instance.errors&.present?, 'expected errors message missing'
     assert_match(
       /Something unexpected happened, you can try again in a few minutes or to report this error quote : \d\d\d\d\d/,
-      test_instance.errors.values.first.first, 'Unexpected message'
+      test_instance.errors.map(&:message).first, 'Unexpected message'
     )
   end
 end

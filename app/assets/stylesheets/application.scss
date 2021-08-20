@@ -10,66 +10,16 @@
  * files in this directory. Styles in this file should be added after the last require_* statement.
  * It is generally better to create a new file per style scope.
  *= require 'jquery-ui'
- *= require 'govuk-frontend-3.0.0.min'  
+ *= require 'govuk-frontend'
+ *= require 'jquery-ui-overrides'
+ *= require 'govuk-frontend-overrides'
  *= require 'spin'  
  *= require 'cookies'
- *= require_tree .
+ *= require 'headerfooter'
+ *= require 'pagination'
+ *= require 'scot-rev'
  *= require_self
  */
-
-// The drop-down for the autocomplete field needs to have it's height set to a fixed value so that
-// it wouldn't open up the whole list without a scrollbar.
-.ui-autocomplete {
-  max-height: 300px;
-  overflow-y: auto;   // prevent horizontal scrollbar
-  overflow-x: hidden; // add padding to account for vertical scrollbar
-  z-index:1000 !important;
-}
-// Style for the 'Show all items' button used for the autocomplete field to show the drop down.
-.custom-combobox-toggle {
-  background-color: #fff;
-  position: relative;
-  margin-left: -25px; // Button needs to be pushed to the left since it's initially outside the field
-  border: 0px;
-  // The three below are needed because the width of the button is too wide, so some extra styling are
-  // added to make it look better.
-  padding-left: 1px;
-  padding-right: 1px;
-  max-width: 18px;
-}
-
-// The datepicker related css, the button to trigger the datepicker is initially shown outside of the date field.
-.ui-datepicker-trigger {
-  background-color: #fff;
-  border: 0px;
-  position: relative;
-  vertical-align: middle;
-  margin-left: -55px;
-  margin-top: -2px;
-  background-repeat: no-repeat;
-  padding: 10.5px;
-  background-image: image-url("icons/date_picker_calendar_21px.png");
-}
-
-// To make the datepicker's button have the standard looks, the on focus is overriden.
-.ui-datepicker-trigger:focus {
-  outline: 3px solid #fd0;
-  border: 1px solid #000;
-}
-
-// To make the datepicker's button feel like a button, the hover is overriden.
-.ui-datepicker-trigger:hover {
-  border: 1px solid #000;
-  background-color: #aaa;
-}
-
-// When the width of the page gets smaller, the date field will span the full width, so instead of the datepicker
-// button being placed below the date field, it will now be moved inside the date field.
-@media (min-width:40.0625em) {
-  .ui-datepicker-trigger {
-    margin-left: 5px;
-  }
-}
 
 // The fieldset-input... are css used for when we create fields under the fieldset_fields.
 // This is equivalent to the contents of .govuk-date-input from govuk-frontend-1.3.0.min.css
@@ -90,41 +40,8 @@
   margin-bottom: 0;
 }
 
-// override the font globally
-* {
-    font-family: "Raleway", Verdana, Helvetica, Arial, sans-serif !important;
-}
-
-.govuk-header__link:link,
-.govuk-header__link:visited {
-    color: #000;
-}
-
-.govuk-focus-colour {
-    background: #DAC9EE
-}
-.govuk-header {
-    background: #fff;
-}
-
-.govuk-header__container {
-    border-bottom: #ebebeb 5px solid;
-}
-
-.govuk-textarea {
-    min-height: 150px;
-}
-
 .table_field_textarea {
   min-height: 50px;
-}
-
-.govuk-label,
-.govuk-fieldset__heading {
-    font-weight: 600;
-}
-.govuk-header__navigation-item {
-   border-bottom: 1px solid #fff;
 }
 
 .display-field {
@@ -139,27 +56,12 @@
   font-weight: 700;
 }
 
-@media (min-width: 48.0625em) {
-    .govuk-header__navigation {
-        float: right;
-    }
-}
-
 .display-inline-text {
-    display: inline-block;
+  display: inline-block;
 }
 
 .span-padding-left-5 {
-    padding-left: 5px;
-}
-
-html body {
-    font: 13px/1.5 Verdana, Helvetica, Arial, sans-serif;
-    font-family: "Raleway", Verdana, Helvetica, Arial, sans-serif;
-}
-
-.govuk-width-container {
-    font-size: 18px !important;
+  padding-left: 5px;
 }
 
 .clearfix:after {
@@ -178,193 +80,46 @@ html body {
     display: none;
 }
 
-.text_align_right
-{
+.text_align_right {
   text-align: right;
 }
 
-.flash_error
-{
+.flash_error {
     color: #b10e1e;
     font-weight: 700;
 }
 
-.region_data_heading
-{
+.region_data_heading {
   font-weight: normal;
 }
 
-.table_action_item
-{
+.table_action_item {
   margin-right: 40px;
 }
 
-.money_format
-{
+.money_format {
   text-align: right;
 }
 
-.currency{
+.currency {
   padding-right: 5px;
   display: inline;
 }
 
-.percentage{
+.percentage {
   padding-left: 5px;
   display: inline;
-}
-
-// Button that looks like a link.
-.scot-rev-button_link {
-  border: 0px;
-  padding: 0px;
-  font-size: 19px;
-  text-decoration: underline;
-  color: #1d70b8;
-  background-color: transparent;
-  cursor: pointer; 
-}
-
-.govuk-header__menu-button
-{
-  color:black;
 }
 
 input[type=file] {
 	width:100%;
 }	
 
-.scot-rev-button {
-  background-color: #224096;
-  padding: 0 20px 0 20px;
-  line-height: 46px;
-  height: 46px;
-  display: inline-block;
-  color: #fff;
-  font-weight: 700;
-  border: 0;
-  outline-offset: 0;
-  font-size: 16px;
-  text-decoration-line: none;
-  position: relative;
-  margin: 0 20px 0 0;
-  overflow: visible;
-}
-
-// For links that looks like a button.
-// Using the ARC toolkit for the text-spacing feature, this type of button will not lose parts of its appearance.
-a[class~="scot-rev-button"]
-{
-  line-height: 23px;
-  height: 23px;
-  padding-top: 11.5px;
-  padding-bottom: 11.5px;
-}
-
-.scot-rev-button:after {
-  content: "";
-  width: 30px;
-  height: 67px;
-  background: transparent image-url("blue-icon.png") no-repeat 0px 0px;
-  right: -30px;
-  position: absolute;
-  display: inline-block;
-  top:-2px;
-}
-
-
-.scot-rev-button:focus {
-outline: 3px solid #ffbf47;
-}
-
-.scot-rev-button:focus:after {
-  content: "";
-  width: 30px;
-  height: 67px;
-  background: transparent image-url("blue-icon-focus.png") no-repeat 0px 0px;
-  right: -30px;
-  position: absolute;
-  display: inline-block;
-}
-
-.scot-rev-submit {
-  background-color: #224096;
-  height: 46px;
-  display: inline-block;
-  border: 0;
-  outline-offset: 0;
-  font-size: 16px;
-  text-decoration-line: none;
-  position: relative;
-  margin-right: 20px;
-}
-
-.scot-rev-submit input[type="submit"]{
-  background-color: transparent;
-  border:0px;
-  height: 46px;
-  display: inline-block;
-  color: #fff;
-  font-weight: 700;
-  border: 0;
-  outline-offset: 0;
-  font-size: 16px;
-  text-decoration-line: none;
-  padding: 0px 20px ;
-}
-
-.scot-rev-submit-image {
-  content: "";
-  width: 30px;
-  height: 67px;
-  background: transparent image-url("blue-icon.png") no-repeat 0px 0px;
-  right: -30px;
-  position: absolute;
-  display: inline-block;
-  top:-2px;
-}
-
-.scot-rev-submit input[type="submit"]:focus {
-  outline: 3px solid #ffbf47;
-  padding: 14px 20px ;
-}
-
-.scot-rev-submit input[type="submit"]:focus + .scot-rev-submit-image {
-  content: "";
-  width: 30px;
-  height: 67px;
-  background: transparent image-url("blue-icon-focus.png") no-repeat 0px 0px;
-  right: -30px;
-  position: absolute;
-  display: inline-block;
-}
-
-// For all buttons (or button look-alike) when screen is resized down to certain width,
-// it will change the width to full.
-@media (max-width: 40.0625em) {
-  .scot-rev-button, .scot-rev-submit, .scot-rev-submit input[type="submit"] {
-    width: 100%;
-
-    margin-bottom: 32px;
-    font-size: 19px;
-    font-size: 1.1875rem;
-  }
-
-  // The anchor tag seems to have a wider 100% width, so this was done to match the correct
-  // width (as a normal button's).
-  a[class~="scot-rev-button"] {
-    max-width: 92.5%;
-    text-align: center;
-  }
-}
-
-input[type="CURRENCY"]
-{
+input[type="CURRENCY"] {
   display: inline;
 }
 
-span.avoidwrap 
-{ 
+span.avoidwrap { 
   display: block;
   clear: both;
 }

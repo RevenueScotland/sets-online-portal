@@ -7,7 +7,7 @@
 <%= display_field @financial_transaction,:description %>
 <%= display_field @financial_transaction,:amount, format: :money  %>
 <%= display_field @financial_transaction, :outstanding_balance, format: :money %>
-<h2><%= t('.heading') %> </h2>
+<%= sub_heading %>
 <%= display_table(@related_transactions,
                   [:actual_date, :effective_date, :description, :matched_amount, :original_amount],
                   [],

@@ -48,7 +48,7 @@ Before('@mock_due_password') do
   fixture = File.read("#{FIXTURES_MOCK_ROOT}normal_login/due_password_signin.xml")
 
   # To run this test successfully,replaces expiry_date to 4 days future date
-  fixture.sub!(/\d{4}-\d{2}-\d{2}/, (Date.today + 4).to_s)
+  fixture.sub!(/\d{4}-\d{2}-\d{2}/, (Time.zone.today + 4).to_s)
 
   @savon.expects(:authenticate_user_wsdl).with(message: message).returns(fixture)
   mock_dashboard_calls('189', 'DUE.PASSWORD', 'get_due_password_account_details')

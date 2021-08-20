@@ -173,7 +173,7 @@ module ServiceClient # rubocop:disable Metrics/ModuleLength
   # in this format: "user/mail/inbox".
   # @return [String] the path location of the WSDL
   private_class_method def self.wsdl_location(wsdl_file, service_config)
-    File.join(Rails.root, 'config/wsdl', service_config[:wsdl_root], wsdl_file)
+    Rails.root.join('config/wsdl', service_config[:wsdl_root], wsdl_file)
   end
 
   # @return [Array] array of objects about the WSSE Authentication information

@@ -83,7 +83,7 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
       end
     else
       # GetReferenceData/ReferenceValues refresh job
-      RefreshRefDataJob.schedule_next_run(1.seconds)
+      RefreshRefDataJob.schedule_next_run(1.second)
 
       # GetSystemParameters refresh job
       RefreshSystemParametersJob.schedule_next_run(3.seconds)

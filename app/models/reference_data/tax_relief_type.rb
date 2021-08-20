@@ -60,7 +60,7 @@ module ReferenceData
     # @return [Boolean] True if this is to be included
     def filter_relief(type_class, return_type, current_only)
       return false if @type_class != type_class || (current_only && @current_ind != 'yes')
-      return false if !@return_types.nil? && !@return_types.split(':').include?(return_type)
+      return false if !@return_types.nil? && @return_types.split(':').exclude?(return_type)
 
       true
     end

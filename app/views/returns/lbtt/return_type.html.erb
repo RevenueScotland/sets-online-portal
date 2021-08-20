@@ -1,6 +1,6 @@
 <% content_for :hide_back_link, :remove_param_new %>
 <% content_for :page_view, render_page_view(__FILE__) %>
-<%= content_for :page_title, t('.title')%>
+<% content_for :page_title, t('.title')%>
 <%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
   <%= f.hidden_field :current_flbt_type, {}, { value: @lbtt_return.flbt_type } %>

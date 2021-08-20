@@ -31,7 +31,7 @@ module Returns
     # @return [Boolean] true if successful
     def store_agent_into_lbtt_wizard
       # load lbtt wizard and save agent details into it and finally save lbtt_return wizard in cache.
-      lbtt_return = wizard_load(LbttController)
+      lbtt_return = wizard_load_or_redirect(returns_lbtt_summary_url, nil, LbttController)
       lbtt_return.agent = @agent
       wizard_save(lbtt_return, LbttController)
       true
@@ -45,7 +45,7 @@ module Returns
       # First time it loads details from lbtt object where it has already pre populated details from account
       # we use the party id of new to tell is if we need to re-load or not
       if params[:party_id] == 'new'
-        @agent = wizard_load(LbttController).agent
+        @agent = wizard_load_or_redirect(returns_lbtt_summary_url, nil, LbttController).agent
         # make sure party type is set to agent
         @agent.party_type = 'AGENT'
         wizard_save(@agent)
@@ -58,7 +58,7 @@ module Returns
     # Loads existing wizard models from the wizard cache or redirects to the summary page
     # @return model to use on the form/wizard
     def load_step(_sub_object_attribute = nil)
-      @agent = wizard_load
+      @agent = wizard_load_or_redirect(returns_lbtt_summary_url)
     end
 
     # Return the parameter list filtered for the attributes of the Party model

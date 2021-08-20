@@ -29,6 +29,7 @@
 # To learn more, please read the Rails Internationalization guide
 # available at http://guides.rubyonrails.org/i18n.html.
 en:
+  revenue_scotland: "Revenue Scotland"
   action: "Action"
   this: "This"
   working: "Working ..."
@@ -91,6 +92,12 @@ en:
   no_address_search_results: "The postcode doesn't return any addresses"
   no_company_search_results: "The company number doesn't return a company"
   no_address_find_results: "Address could not be found"
+  pagination:
+    hidden-label:
+      previous: "Previous page of %{context}"
+      next: "Next page of %{context}"
+      items: "Items of %{context}"
+  next: "Next"
   previous: "Previous"
   continue: "Continue"
   confirm: "Confirm"
@@ -116,7 +123,7 @@ en:
   send_secure_message_text: Send secure message
   lbtt_acknowledgment: "Acknowledgment of validated LBTT return"
   lbtt_amend_acknowledgment: "Acknowledgment of LBTT return amendment"
-  include_transaction_ref: "The transaction ID must be included with any payment submitted or in any correspondence regarding this transaction. This acknowledgment should <b>not</b> be sent to Registers of Scotland as part of the land registration process."
+  include_transaction_ref_html: "The transaction ID must be included with any payment submitted or in any correspondence regarding this transaction. This acknowledgment should <b>not</b> be sent to Registers of Scotland as part of the land registration process."
   invalid_csv: "File is invalid CSV file: %{message}"
   csv_too_many_errors: "File is invalid, greater than %{failure}% of rows had the wrong number of columns"
 
@@ -133,7 +140,7 @@ en:
         accessibility: "Accessibility"
         legal_notices: "Legal Notices"
         site_map: "Site Map"
-        foi: "Freedom of <br />Information"
+        foi_html: "Freedom of <br />Information"
         cookies: "Cookies"
     address:
       search: "Find Address"
@@ -142,7 +149,7 @@ en:
     company_search:
       search: "Find Company"
     cookies:
-      header: "We use cookies on this site to enhance your user experience"
+      heading: "We use cookies on this site to enhance your user experience"
       body_html: By clicking any link on this page you are giving your consent for us to set cookies. <a href="website_texts/COOKIES">more info</a>
       ok_thanks: "OK, thanks"
       no_thanks: "No, thanks"
@@ -153,6 +160,8 @@ en:
         full_property_address: "Property address"
     errors:
       messages:
+        account_number_is_invalid: "%{attribute} must be 8 digits long"
+        sort_code_is_invalid: "%{attribute} must be in the format 99-99-99"
         is_invalid: "%{attribute} is invalid"
         is_not_in_list: "%{attribute} value of %{value} is not allowed"
         format_is_invalid: "%{attribute} format is invalid"

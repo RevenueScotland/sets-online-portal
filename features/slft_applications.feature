@@ -78,9 +78,9 @@ Feature: Slft applications
 
         Then I should see the "Landfill site details" page
         When I click on the "Continue" button
-        Then I should receive the message "SEPA license number can't be blank"
+        Then I should receive the message "SEPA licence number can't be blank"
         And I should receive the message "Site name can't be blank"
-        When I enter "12345678" in the "SEPA license number" field
+        When I enter "12345678" in the "SEPA licence number" field
         And I enter "First site" in the "Site name" field
         And I click on the "Continue" button
 
@@ -107,7 +107,7 @@ Feature: Slft applications
         Then I should see the "Landfill sites" page
 
         And the table of data is displayed
-            | SEPA license number | Site name  |
+            | SEPA licence number | Site name  |
             | 12345678            | First site |
 
         And I should see a link with text "Edit"
@@ -117,7 +117,7 @@ Feature: Slft applications
         When I click on the "Add site" link
 
         Then I should see the "Landfill site details" page
-        When I enter "121212" in the "SEPA license number" field
+        When I enter "121212" in the "SEPA licence number" field
         And I enter "Second site name" in the "Site name" field
         And I click on the "Continue" button
 
@@ -131,7 +131,7 @@ Feature: Slft applications
         Then I should see the "Landfill sites" page
 
         And the table of data is displayed
-            | SEPA license number | Site name        |
+            | SEPA licence number | Site name        |
             | 12345678            | First site       |
             | 121212              | Second site name |
 
@@ -146,14 +146,14 @@ Feature: Slft applications
         Then I should see the "Landfill sites" page
 
         And the table of data is displayed
-            | SEPA license number | Site name  |
+            | SEPA licence number | Site name  |
             | 12345678            | First site |
 
         And I should see a link with text "Add site"
 
         When I click on the "Edit" link
         Then I should see the "Landfill site details" page
-        When I enter "123456789" in the "SEPA license number" field
+        When I enter "123456789" in the "SEPA licence number" field
 
         And I click on the "Continue" button
         Then I should see the "Site address" page
@@ -165,19 +165,19 @@ Feature: Slft applications
         Then I should see the "Landfill sites" page
 
         And the table of data is displayed
-            | SEPA license number | Site name  |
+            | SEPA licence number | Site name  |
             | 123456789           | First site |
 
         When I click on the "Edit" link
         Then I should see the "Landfill site details" page
-        When I enter "1234567" in the "SEPA license number" field
+        When I enter "1234567" in the "SEPA licence number" field
         And I enter "Changed site name" in the "Site name" field
         And I click on the "Continue" button
 
         And I click on the "Continue" button
         Then I should see the "Landfill sites" page
         And the table of data is displayed
-            | SEPA license number | Site name         |
+            | SEPA licence number | Site name         |
             | 1234567             | Changed site name |
 
         When I click on the "Continue" button
@@ -321,7 +321,7 @@ Feature: Slft applications
         When I click on the "Add site" link
 
         Then I should see the "Landfill site details" page
-        When I enter "12345678" in the "SEPA license number" field
+        When I enter "12345678" in the "SEPA licence number" field
         And I enter "First site" in the "Site name" field
         And I click on the "Continue" button
 
@@ -349,7 +349,7 @@ Feature: Slft applications
         Then I should see the "Landfill sites" page
 
         And the table of data is displayed
-            | SEPA license number | Site name  |
+            | SEPA licence number | Site name  |
             | 12345678            | First site |
 
         And I should see a link with text "Edit"
@@ -411,7 +411,7 @@ Feature: Slft applications
         When I click on the "Add site" link
 
         Then I should see the "Landfill site details" page
-        When I enter "12345678" in the "SEPA license number" field
+        When I enter "12345678" in the "SEPA licence number" field
         And I enter "First site" in the "Site name" field
         And I click on the "Continue" button
 
@@ -455,7 +455,7 @@ Feature: Slft applications
         Then I should see the "Landfill sites" page
 
         And the table of data is displayed
-            | SEPA license number | Site name  |
+            | SEPA licence number | Site name  |
             | 12345678            | First site |
 
         And I should see a link with text "Edit"
@@ -515,7 +515,7 @@ Feature: Slft applications
         When I click on the "Add site" link
 
         Then I should see the "Landfill site details" page
-        When I enter "12345678" in the "SEPA license number" field
+        When I enter "12345678" in the "SEPA licence number" field
         And I enter "First site" in the "Site name" field
         And I click on the "Continue" button
 
@@ -547,7 +547,7 @@ Feature: Slft applications
         Then I should see the "Landfill sites" page
 
         And the table of data is displayed
-            | SEPA license number | Site name  |
+            | SEPA licence number | Site name  |
             | 12345678            | First site |
 
         And I should see a link with text "Edit"
@@ -602,7 +602,7 @@ Feature: Slft applications
         Then I should receive the message "Existing agreement number can't be blank"
         And I should receive the message "Is this a renewal or review of an existing water discount agreement can't be blank"
         When I check the "Review" radio button
-        And I enter "12345678" in the "Provide previously approved water discount agreement number" field
+        And I enter "12345678" in the "Provide the previously approved water discount agreement number" field
         And I click on the "Continue" button
 
         Then I should see the "Waste producer details" page
@@ -660,7 +660,7 @@ Feature: Slft applications
         Then I should receive the message "What percentage of water content is waste must be less than 100"
         And I should receive the message "What is the percentage of added water content must be less than 100"
         And I should receive the message "Provide what percentage is naturally occurring can't be blank"
-        When I enter "5" in the "What percentage of water content is waste" field
+        When I enter " 5" in the "What percentage of water content is waste" field
         And I enter "5" in the "What is the percentage of added water content" field
         And I check the "No" radio button
         And I click on the "Continue" button
@@ -687,12 +687,12 @@ Feature: Slft applications
 
         Then I should see the "Landfill site details" page
         When I click on the "Continue" button
-        Then I should receive the message "SEPA license number can't be blank"
+        Then I should receive the message "SEPA licence number can't be blank"
         And I should receive the message "Site name can't be blank"
         And I should receive the message "Landfill operator can't be blank"
         And I should receive the message "Landfill operator SLfT registration number can't be blank"
 
-        When I enter "12345678" in the "SEPA license number" field
+        When I enter "12345678" in the "SEPA licence number" field
         And I enter "First site" in the "Site name" field
         And I enter "John" in the "Landfill operator" field
         And I enter "SLFT-LO-00001" in the "Landfill operator SLfT registration number" field
@@ -716,12 +716,12 @@ Feature: Slft applications
         Then I should receive the message "Provide an estimate of the weight in tonnes which will be sent to this site annually can't be blank"
         And I should receive the message "Type of waste can't be blank"
         When I enter "Liquid Waste" in the "What type of waste will be sent to this site" field
-        And I enter "12" in the "Provide an estimate of the weight in tonnes which will be sent to this site annually" field
+        And I enter " 12" in the "Provide an estimate of the weight in tonnes which will be sent to this site annually" field
         And I click on the "Continue" button
 
         Then I should see the "Landfill sites" page
         And the table of data is displayed
-            | SEPA license number | Site name  | Landfill operator | Landfill operator SLfT registration number |
+            | SEPA licence number | Site name  | Landfill operator | Landfill operator SLfT registration number |
             | 12345678            | First site | John              | SLFT-LO-00001                              |
 
 
@@ -729,7 +729,7 @@ Feature: Slft applications
         When I click on the "Add site" link
 
         Then I should see the "Landfill site details" page
-        When I enter "9876543" in the "SEPA license number" field
+        When I enter "9876543" in the "SEPA licence number" field
         And I enter "Second site" in the "Site name" field
         And I enter "Mark" in the "Landfill operator" field
         And I enter "SLFT-LO-00002" in the "Landfill operator SLfT registration number" field
@@ -753,14 +753,14 @@ Feature: Slft applications
 
         Then I should see the "Landfill sites" page
         And the table of data is displayed
-            | SEPA license number | Site name   | Landfill operator | Landfill operator SLfT registration number |
+            | SEPA licence number | Site name   | Landfill operator | Landfill operator SLfT registration number |
             | 12345678            | First site  | John              | SLFT-LO-00001                              |
             | 9876543             | Second site | Mark              | SLFT-LO-00002                              |
 
         When I click on the "Add site" link
 
         Then I should see the "Landfill site details" page
-        When I enter "8976182" in the "SEPA license number" field
+        When I enter "8976182" in the "SEPA licence number" field
         And I enter "Third site" in the "Site name" field
         And I enter "Steve" in the "Landfill operator" field
         And I enter "12345" in the "Landfill operator SLfT registration number" field
@@ -784,7 +784,7 @@ Feature: Slft applications
 
         Then I should see the "Landfill sites" page
         And the table of data is displayed
-            | SEPA license number | Site name   | Landfill operator | Landfill operator SLfT registration number |
+            | SEPA licence number | Site name   | Landfill operator | Landfill operator SLfT registration number |
             | 12345678            | First site  | John              | SLFT-LO-00001                              |
             | 9876543             | Second site | Mark              | SLFT-LO-00002                              |
             | 8976182             | Third site  | Steve             | 12345                                      |
@@ -900,7 +900,7 @@ Feature: Slft applications
         When I click on the "Add site" link
 
         Then I should see the "Landfill site details" page
-        When I enter "12345678" in the "SEPA license number" field
+        When I enter "12345678" in the "SEPA licence number" field
         And I enter "First site" in the "Site name" field
         And I enter "John" in the "Landfill operator" field
         And I enter "SLFT-LO-00001" in the "Landfill operator SLfT registration number" field
@@ -924,7 +924,7 @@ Feature: Slft applications
 
         Then I should see the "Landfill sites" page
         And the table of data is displayed
-            | SEPA license number | Site name  | Landfill operator | Landfill operator SLfT registration number |
+            | SEPA licence number | Site name  | Landfill operator | Landfill operator SLfT registration number |
             | 12345678            | First site | John              | SLFT-LO-00001                              |
 
 
@@ -932,7 +932,7 @@ Feature: Slft applications
         When I click on the "Add site" link
 
         Then I should see the "Landfill site details" page
-        When I enter "9876543" in the "SEPA license number" field
+        When I enter "9876543" in the "SEPA licence number" field
         And I enter "Second site" in the "Site name" field
         And I enter "Mark" in the "Landfill operator" field
         And I enter "SLFT-LO-00001" in the "Landfill operator SLfT registration number" field
@@ -956,7 +956,7 @@ Feature: Slft applications
 
         Then I should see the "Landfill sites" page
         And the table of data is displayed
-            | SEPA license number | Site name   | Landfill operator | Landfill operator SLfT registration number |
+            | SEPA licence number | Site name   | Landfill operator | Landfill operator SLfT registration number |
             | 12345678            | First site  | John              | SLFT-LO-00001                              |
             | 9876543             | Second site | Mark              | SLFT-LO-00001                              |
 

@@ -108,7 +108,7 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   # Start ActiveJobs
   config.after_initialize do
     # GetReferenceData/ReferenceValues refresh job
-    RefreshRefDataJob.schedule_next_run(1.seconds)
+    RefreshRefDataJob.schedule_next_run(1.second)
 
     # GetSystemParameters refresh job
     RefreshSystemParametersJob.schedule_next_run(10.seconds)

@@ -27,8 +27,7 @@ module UserValidation
     validates :forename, presence: true, length: { maximum: 50 }, on: %i[save update forename]
     validates :surname, presence: true, length: { maximum: 100 }, on: %i[save update surname]
 
-    validates :user_is_current, presence: true, on: %i[save update]
-    validates_format_of :user_is_current, with: /\A(Y|N)\z/i, on: %i[save update]
+    validates :user_is_current, presence: true, format: /\A(Y|N)\z/i, on: %i[save update]
 
     validates :user_is_signed_ta_cs, acceptance: { accept: ['Y'] }, on: :confirm_tcs
   end
@@ -58,7 +57,7 @@ module UserValidation
 
   # Return number of days remaining for password to expire
   def days_to_password_expiry
-    no_of_days_remaining = (password_expiry_date.to_date - Date.today).to_i
+    no_of_days_remaining = (password_expiry_date.to_date - Time.zone.today).to_i
     no_of_days_remaining.to_i unless no_of_days_remaining >= Rails.configuration.x.authentication.password_due_period
   end
 end

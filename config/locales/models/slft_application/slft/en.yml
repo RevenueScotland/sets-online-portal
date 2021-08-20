@@ -9,8 +9,8 @@ en:
         existing_agreement_WP: Does this form relate to an existing water discount agreement
         renewal_or_review: Is this a renewal or review of an existing water discount agreement
         previous_case_reference: Existing agreement number
-        previous_case_reference_LO: If yes, provide an existing agreement number if known
-        previous_case_reference_WP: Provide previously approved water discount agreement number
+        previous_case_reference_LO: Provide the existing agreement number
+        previous_case_reference_WP: Provide the previously approved water discount agreement number
         supporting_document_other_description: "Other description"
         why_water_present: Choose the relevant options below which describes how the water to be discounted relates to the waste
         added_for_transport: The water has been added to the waste for transportation to disposal
@@ -54,7 +54,7 @@ en:
       public_landing:
         title: "Online SLfT application form"
         application_info_heading: "Use this online form to submit a new or review form for the following:"
-        application_info_description:
+        application_info_description_html:
           <ul>
           <li>Water discount applications for waste producer or landfill operator</li>
           <li>Full or partial restoration notifications</li>
@@ -116,7 +116,7 @@ en:
         code: Number
         value: Document
         evidence_body: Upload the documents that you specified within the application for all relevant sites. These include the following
-        file_upload_hint_default: Failure to upload the supporting documents at this stage may result in the application needing to be repeated.
+        file_upload_hint_default_html: Failure to upload the supporting documents at this stage may result in the application needing to be repeated.
         link:
           print: Print confirmation details
           download_application_pdf: Download details of application

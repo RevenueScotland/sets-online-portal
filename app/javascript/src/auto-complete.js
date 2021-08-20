@@ -6,7 +6,7 @@
 // CSS used for it is in /vendor/assets/stylesheets/jquery-ui.min.css which is applied to application.scss
 // and source is http://jqueryui.com/download/. Version 1.12.1.
 //
-// Related icons used are in /assets/images/ui-icons_<hex>_256x240.png
+// Related icons used are in jquery-ui-rails gem jquery-ui-rails/app/assets/images/jquery-ui/
 // @example How to use this on a page - simply add { text_auto_complete: true } in the options (3rd parameter) section of the select field
 //   <%= form.select : country, ReferenceData:: ReferenceValue.list('COUNTRIES', 'SYS', 'RSTU'), { text_auto_complete: true }, {} %>
 //   @see party_details.html.erb for an example of where it's being used.
@@ -80,10 +80,11 @@ $(function () {
         _createShowAllButton: function () {
             var input = this.input,
                 wasOpen = false;
+            var buttonTitle = "Show all " + $("label[for='" + this.input.attr("id") + "']").text();
 
             $("<a>")
                 .attr("tabIndex", -1)
-                .attr("title", "Show all items")
+                .attr("title", buttonTitle)
                 .tooltip()
                 .insertBefore(this.element)
                 .button({

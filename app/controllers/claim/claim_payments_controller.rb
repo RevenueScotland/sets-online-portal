@@ -107,7 +107,7 @@ module Claim
     # For all types upload evidence
     def upload_evidence
       # loading wizard so that we can save the attachment in the claim_payment model
-      @claim_payment ||= wizard_load
+      @claim_payment ||= load_step
       # clearing previous file upload cache if its new get request
       # second && condition to avoid clear cache on back
       file_upload_end if request.get? && @claim_payment.evidence_files.nil?
@@ -129,7 +129,7 @@ module Claim
       handle_file_upload('confirmation_of_payment',
                          before_add: :add_additional_document,
                          before_delete: :delete_additional_document,
-                         clear_cache: request.get? ? true : false)
+                         clear_cache: request.get?)
     end
 
     # For all types do the declaration, this also triggers the submit
@@ -144,7 +144,7 @@ module Claim
     # The "target: '_blank'" page used to download the pdf file of the return according
     # to its details.
     def view_claim_pdf
-      @claim_payment ||= wizard_load
+      @claim_payment ||= load_step
       success, claim_pdf = @claim_payment.view_claim_pdf
       return unless success
 
@@ -157,6 +157,11 @@ module Claim
     end
 
     private
+
+    # Returns the fallback_url if a model isn't loaded
+    def fallback_url
+      (current_user.nil? ? claim_claim_payments_public_claim_landing_url : dashboard_url)
+    end
 
     # Save the evidence_file in the claim_payment model
     # calls back-office to send data collected in claim_payment wizard
@@ -177,8 +182,8 @@ module Claim
     end
 
     # which file types are allowed to be uploaded.cl
-    def content_type_whitelist
-      Rails.configuration.x.file_upload_content_type_whitelist.split(/\s*,\s*/)
+    def content_type_allowlist
+      Rails.configuration.x.file_upload_content_type_allowlist.split(/\s*,\s*/)
     end
 
     # Send document to back office
@@ -198,7 +203,7 @@ module Claim
     # Overwrites the user method to pass unique id for unauthenticated user to create folder on server
     # folder will hold the file uploaded by user
     def sub_directory
-      @claim_payment ||= wizard_load
+      @claim_payment ||= load_step
       return @claim_payment.tare_reference if current_user.blank?
 
       current_user.username
@@ -226,11 +231,10 @@ module Claim
     # Loads existing wizard models from the wizard cache or redirects to the dashboard page
     def load_step(sub_object_attribute = nil)
       @post_path = wizard_post_path
-      redirect_url = (current_user.nil? ? claim_claim_payments_public_claim_landing_url : dashboard_url)
       if sub_object_attribute.nil?
-        @claim_payment = wizard_load_or_redirect(redirect_url)
+        @claim_payment = wizard_load_or_redirect(fallback_url)
       elsif sub_object_attribute == :taxpayers
-        @claim_payment, @party = wizard_load_or_redirect(redirect_url, sub_object_attribute)
+        @claim_payment, @party = wizard_load_or_redirect(fallback_url, sub_object_attribute)
       end
     end
 

@@ -2,9 +2,6 @@
 
 # Generic helpers for this application
 module ApplicationHelper # rubocop:disable Metrics/ModuleLength
-  include RegionHelper
-  include AuthorisationHelper
-
   # Provides the appropriate language links replacing the locale on the current path.
   #
   # @todo
@@ -28,9 +25,34 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     page_title = t('default_title')
     page_title = "#{title} | #{page_title}" unless title.nil?
     # The title should now have the word 'Error:' when we find any errors in the form, see the {#form_errors_for}.
-    page_title = "#{t('error')}: #{page_title}" if @form_error_found
+    page_title = "#{t('error')}: #{page_title}" if content_for?(:form_error_found)
+    # Mark resulting string as html safe as we trust it
+    page_title.html_safe # rubocop:disable Rails/OutputSafety
+  end
 
-    page_title.html_safe
+  # Creates a standard sub heading part of the page
+  # @param options [Hash] mainly consists of instructions to build the text
+  # @param html_options [Hash] contains element attributes to build the element
+  # @return [HTML block element] by default it looks something like <h2 class="govuk-heading-m">heading</h2>
+  def sub_heading(options = {}, html_options = {})
+    # Default text is translated from .heading of the page this is used on
+    options[:text] ||= t('.heading')
+    html_options[:class] = html_options[:class].nil? ? 'govuk-heading-m' : "govuk-heading-m #{html_options[:class]}"
+    tag.h2(options[:text], html_options)
+  end
+
+  # Creates a standard sub sub heading part of the page
+  def sub_sub_heading(options = {}, html_options = {})
+    # Default text is translated from .heading of the page this is used on
+    options[:text] ||= t('.heading')
+    html_options[:class] = html_options[:class].nil? ? 'govuk-heading-s' : "govuk-heading-s #{html_options[:class]}"
+    tag.h3(options[:text], html_options)
+  end
+
+  # Displays section break
+  # @return [HTML block element] <hr class="govuk-section-break govuk-section-break--m">
+  def section_break
+    tag.hr(nil, class: 'govuk-section-break govuk-section-break--m')
   end
 
   # Provides link to account-handling actions, which is shown at the header area.
@@ -44,11 +66,14 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # add CSS class 'external-link' on link so that warning message will be shown on leaving a specific page
   # when user click on it.
   # @example - in html page
-  #  <% content_for :nav_bar_options, { class: 'external-link' } %>
+  #  <% content_for :nav_bar_html_options, '{ class: "external-link" }'.html_safe %>
   # @param options [Hash] options for creating the account_links. Currently supported are: hide_nav_elements
   # @param html_options [Hash] html options passed into the creation of the links.
   # @return [HTML link element] the appropriate links.
   def account_links(options = {}, html_options = {})
+    options ||= {}
+    html_options ||= {}
+
     return if options[:hide_all]
 
     if current_user.nil?
@@ -82,7 +107,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
 
     label = display_field_label(object, attribute, options, display_field_label_html_options(html_options[:label]))
     text = display_field_text(object, attribute, options, display_field_text_html_options(html_options[:text], label))
-    content_tag(:div, label + text, display_field_wrapper_html_options(html_options[:wrapper]))
+    tag.div(label + text, display_field_wrapper_html_options(html_options[:wrapper]))
   end
 
   # Creates the standard heading and body paragraph(s) using the passed parameters.
@@ -97,12 +122,12 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # @return [HTML block element] the heading (if this exists) and a body paragraph with the correct classes.
   def display_paragraph_components(contents)
     # The <h2> automatically gets added to an existing :heading, otherwise leave it an empty string.
-    title = contents[:heading].present? ? content_tag(:h2, contents[:heading]) : ''
-    body = contents[:body].html_safe
+    title = contents[:heading].present? ? tag.h2(contents[:heading]) : ''.html_safe
+    body = contents[:body]
     # Only add a <p> tag if the contents of the :body does not have <p> or paragraph tag with attributes,
     # like <p class='hello'>
-    body = content_tag(:p, body) unless body.include?('<p>') || !(body =~ /<p["=\w\s'\d]*>/).nil?
-    UtilityHelper.standardize_elements(title + body).html_safe
+    body = tag.p(body) unless body.include?('<p>') || !(body =~ /<p["=\w\s'\d]*>/).nil?
+    UtilityHelper.standardize_elements(title + body)
   end
 
   # Create a list of navigational links.
@@ -151,16 +176,17 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # @param links [Array] contains an array of hashes of information to create the link(s)
   # If links array contain only one record then display link without unordered list
   def navigational_links(links, html_options = { class: 'govuk-list govuk-list--bullet' })
-    li_contents = ''
+    li_contents = ''.html_safe # Start with a html safe string so concatenation does not remove the safe
     return navigational_link(links[0]) if links.size == 1
 
     links.each do |link|
       link_content = navigational_link(link)
       next if link_content.nil?
 
-      li_contents += content_tag(:li, link_content, link[:list_html_options])
+      # second parameter cannot be nil, must be a hash
+      li_contents += tag.li(link_content, link[:list_html_options] || {})
     end
-    content_tag(:ul, li_contents.html_safe, html_options)
+    tag.ul(li_contents, html_options)
   end
 
   # This determines the web browser currently being used, by retrieving the user agent and parsing it through.
@@ -181,19 +207,16 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # @return [HTML element block] standard error region. If no error is passed.
   def form_errors_for(object = nil, options = nil)
     error_hashes = extract_all_errors(object)
-    # This variable is currently being used to determine what the page title will include. It's used
-    # to check if there's any errors found. This gets refreshed on page load.
-    @form_error_found = error_hashes.any?
-    render('layouts/form_errors', error_hashes: error_hashes, options: options) if @form_error_found || flash.any?
+    # Set that an error has been found, this is used in the page title and in some pages to change focus
+    content_for(:form_error_found, true) if error_hashes.any?
+    render('layouts/form_errors', error_hashes: error_hashes, options: options) if error_hashes.any? || flash.any?
   end
 
   # Renders the standard gov uk warning with the text specified
   def govuk_warning(text)
-    content_tag(:div,
-                content_tag(:span, '!', class: 'govuk-warning-text__icon', aria: { hidden: true }) +
-                content_tag(:strong, content_tag(:span, 'Warning', class: 'govuk-warning-text__assistive') + text,
-                            class: 'govuk-warning-text__text'),
-                class: 'govuk-warning-text')
+    tag.div(tag.span('!', class: 'govuk-warning-text__icon', aria: { hidden: true }) +
+                tag.strong(tag.span('Warning', class: 'govuk-warning-text__assistive') + text,
+                           class: 'govuk-warning-text__text'), class: 'govuk-warning-text')
   end
 
   private
@@ -207,8 +230,10 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # @return [HTML link element] with links to the dashboard, account details and logout.
   def signed_in_user_links(options, html_options)
     # NB '/accounts' rather than 'accounts' so that this method works from different namespaces
-    # empty content_tag:div just so the addition works with possible nil entries
-    content_tag(:div) +
+    # The ActiveSupport::SafeBuffer is able to add add nil values to it, and this empty SafeBuffer
+    # is needed because a string cannot be added to a nil value using the plus symbol,
+    # which sometimes the method dashboard_link returns (nil).
+    ''.html_safe +
       dashboard_link(options, html_options) + account_details_link(options, html_options) + change_password_link +
       account_list_item_tag(link_to(t('signout'), logout_path, html_options))
   end
@@ -244,7 +269,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
 
   # The standard list item <li> tag used for any list item of account links.
   def account_list_item_tag(contents)
-    content_tag(:li, contents.html_safe, class: 'govuk-header__navigation-item')
+    tag.li(contents, class: 'govuk-header__navigation-item')
   end
 
   # Check to show a navigational link
@@ -255,7 +280,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     return true if options.nil? || !options.key?(:hide_nav_elements)
 
     hidden = options[:hide_nav_elements].is_a?(Array) ? options[:hide_nav_elements] : [options[:hide_nav_elements]]
-    !hidden.include?(element)
+    hidden.exclude?(element)
   end
 
   # Extracts all the errors associated with the passed object or array of objects including any sub-objects
@@ -359,7 +384,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     return if message_list.size.zero?
 
     # Adds all the errors found to the errs array
-    (0..href_list.size).each do |n|
+    href_list.each_index do |n|
       errs << { href: href_list[n], message: message_list[n] }
     end
   end
@@ -426,7 +451,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # @see display_field for more details about the parameter values and how this is used.
   # @return [HTML block element] the standard label used for a normal display field.
   def display_field_label(object, attribute, options, html_options)
-    label(@object_name, attribute, html_options) do
+    label(object, attribute, html_options) do
       UtilityHelper.label_text(object, attribute, options)
     end
   end
@@ -438,7 +463,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # @return [HTML block element] the standard text used for a normal display field.
   def display_field_text(object, attribute, options, html_options)
     text = CommonFormatting.format_text(object.send(attribute), options)
-    content_tag(:span, text, html_options)
+    tag.span(text, html_options)
   end
 
   # Generates the display_field <div> wrapper's html_options.
@@ -467,6 +492,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   def display_field_text_html_options(html_options, label)
     html_options = html_options.dup || {}
     html_options[:id] = label.to_s.scan(/for="([^"]*)"/).last.first
+    html_options[:class] = html_options[:class].nil? ? 'govuk-body' : "govuk-body #{html_options[:class]}"
     html_options
   end
 
@@ -493,7 +519,7 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   # @return [HTML link element] standard navigational link to a field. Or nil, if there is no link or path.
   def navigational_link_output(link, path, html_options)
     # html_options[:class] = UtilityHelper.link_class(html_options) unless html_options[:class] == ''
-    link_to(t(".link.#{link}").html_safe, path, html_options)
+    link_to(t(".link.#{link}"), path, html_options)
   end
 
   # Override of standard link_to method, to check for access to link.

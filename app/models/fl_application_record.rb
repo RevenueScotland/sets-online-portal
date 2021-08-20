@@ -7,6 +7,7 @@ class FLApplicationRecord
   include ActiveModel::Translation
   include ServiceClient
   include ReferenceDataLookup
+  include StripAttributes
 
   attr_accessor :new_record
 
@@ -76,38 +77,41 @@ class FLApplicationRecord
     'no'
   end
 
-  # Used when converting back office data.
-  # When data is loaded from the back office we sometimes need to derive Y/N based on other fields. This method sets
-  # them to 'Y' or 'N' based on whether some data exists.
+  # When data is loaded from the back office we sometimes need to derive Y/N based on if child data has been entered.
+  #
+  # For example where you have a yes no flag revealing another field or fields. If the other field is populated then
+  # the flag should be Y, if the other field is not populated then this may be because the indicator was N or the user
+  # has not yet been through the page. We look for later data to identify if the user has been through this page to
+  # determine if the value is 'N' or nil
+  # The back office may return 0 as a default when a value was not populated for numeric fields. Depending on the
+  # field we may need to treat 0 as 'N' or as a 'Y'
+  #
+  # When checking later data items these may also be Y/N flags set by this routine so make sure you chain them in the
+  # correct order to match the screen starting from the end of the wizard.
   #
   # @example
-  #    derive_yes_nos(back_office_hash, bad_debt_yes_no: :bad_debt_credit, true)
+  #    lbtt[:business_ind] = derive_yes_no(value: lbtt[:sale_include_option],
+  #                                        default_n: lbtt[:non_ads_reliefclaim_option_ind].present? )
   #
-  # @param hash [Hash] the data structure representing back office data
-  # @param to_derive [Hash] |key, value| key in hash to derive to 'Y' or 'N', value is the data to check.
-  #                                      Can have many entries to derive many fields in one go.
-  # @param clear_zero [Boolean] if true, a value of 0 will be deleted and will therefore dervice a 'N'
-  private_class_method def self.derive_yes_nos(hash, to_derive, clear_zero)
-    to_derive.each do |key, value|
-      hash[value] = nil if clear_zero && hash[value] == '0'
-      hash[key] = hash[value].blank? ? 'N' : 'Y'
-    end
-  end
+  # @example This is a numeric field so we treat 0 as N but not defaulting to N if nil
+  #    slft[:slcf_yes_no] = derive_yes_no(value: slft[:slcf_contribution], default_n: false)
+  #
+  # @example This is a text field so we treat 0 as populated
+  #    slft[:non_disposal_add_ind] = derive_yes_no(value: slft[:non_disposal_add_text])
+  #
+  # @param value [object] The value that sets the indicator to Y
+  # @param treat_zero_as_n [Boolean] Return N if a value is zero (otherwise 0 is treated as present and will return Y)
+  # @param default_n [Boolean] if true always return N when the value is not present, otherwise nil is returned
+  # @return [String] Y/N/nil depending on the rules value and parameters
+  private_class_method def self.derive_yes_no(value:, treat_zero_as_n: false, default_n: true)
+    # The below returns N if the value is zero. As floating points are not precise and the value may be a float
+    # we check for the difference between the value (as a float) and the level of inaccuracy we allow
+    # (Float::Epsilon may not be enough
+    # https://stackoverflow.com/questions/30216575/why-float-epsilon-and-not-zero)
+    return 'N' if treat_zero_as_n && value.present? && value.to_f.abs < 0.00001 # allow 1 thousandth of 2dp
+    return 'Y' if value.present?
 
-  # @!method self.derive_yes_no_nil(value)
-  # Used when converting back office data.
-  # When data is loaded from the back office we sometimes need to derive Y/N based on other fields.
-  # This method sets the flag to no yes or nil depending on if the value is 0, a value or nil
-  #
-  # @example
-  #    derive_yes_no_nil(value)
-  #
-  # @param value [Number] The numeric value to check
-  # @return [String] Y or N or Nil
-  private_class_method def self.derive_yes_no_nil(value)
-    return if value.nil?
-
-    ((value.to_f - 0).abs < Float::EPSILON ? 'N' : 'Y')
+    (default_n ? 'N' : nil)
   end
 
   # Used when converting back office data.  The hash we get is a representation of the XML the back office sends.
@@ -178,7 +182,7 @@ class FLApplicationRecord
   # @param value [Object] value assigned to hash
   # @return [Array] The  hash with the object
   def xml_element_if_present(hash, key, value)
-    hash[key] = value unless value.blank?
+    hash[key] = value if value.present?
   end
 
   private
@@ -191,7 +195,7 @@ class FLApplicationRecord
   # @param ind [Integer] The index of the object in an array
   # @return [Array] The  hash with the object: and optionally an index:
   def add_error_object(errs, var, obj, check_errors, ind = nil)
-    return errs unless obj.respond_to?(:errors)
+    return errs unless obj.is_a?(ActiveModel::Model)
     return errs if check_errors && obj.errors.none?
 
     Rails.logger.debug { "    Adding #{var}-#{ind} to error objects" }

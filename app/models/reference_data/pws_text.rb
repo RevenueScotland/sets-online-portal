@@ -14,7 +14,8 @@ module ReferenceData
 
     # @return [String] the contents of pws text
     def to_s
-      html_text.to_s.html_safe
+      # HTML is supported from the back office so allow this
+      html_text.to_s.html_safe # rubocop:disable Rails/OutputSafety
     end
 
     # Override == to compare code data.

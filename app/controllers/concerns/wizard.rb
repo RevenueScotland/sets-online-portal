@@ -256,7 +256,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     # nothing in params is usually a page containing only an un-checked check box, so don't attempt merge
     return if wizard_params.nil?
 
-    Rails.logger.debug("  Merging/assigning params #{wizard_params}")
+    Rails.logger.debug { "  Merging/assigning params #{wizard_params}" }
     # errors on this line usually mean the parameter doesn't match an object attribute or incorrect filter_params
     wizard_page_object.assign_attributes(wizard_params)
   end
@@ -290,7 +290,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     all_objects.each_with_index do |o, i|
       validation_context = (i < sub_object_attributes.size ? sub_object_attributes[i] : page_object_contexts)
       valid &&= o.valid?(validation_context)
-      Rails.logger.debug "  Validation for #{validation_context} valid is now #{valid}"
+      Rails.logger.debug { "  Validation for #{validation_context} valid is now #{valid}" }
     end
 
     valid
@@ -482,7 +482,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     # custom method to run after successful merge and save
     valid = true
     valid = send(after_merge) if after_merge
-    Rails.logger.debug "  After merge call to #{after_merge} failed with #{valid.inspect}" unless valid
+    Rails.logger.debug { "  After merge call to #{after_merge} failed with #{valid.inspect}" } unless valid
 
     wizard_save(wizard_cached_object, overrides[:cache_index] || self.class.name) if valid
     valid
@@ -541,7 +541,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
 
     # redirect to a specific path eg returns_slft_declaration_repayment_path
     calculated_next_step = steps
-    Rails.logger.debug "Redirecting to specific location: #{calculated_next_step}"
+    Rails.logger.debug { "Redirecting to specific location: #{calculated_next_step}" }
     redirect_to calculated_next_step
   end
 
@@ -564,7 +564,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   # next step be. This may also add an index according to the loop_instruction.
   def wizard_navigation_from_list_next_step(steps, loop_instruction, current_index, total_objects)
     calculated_next_step = next_step_in_list(steps)
-    Rails.logger.debug "Redirecting to next step/action: #{calculated_next_step}"
+    Rails.logger.debug { "Redirecting to next step/action: #{calculated_next_step}" }
     action, index = build_action_and_index(calculated_next_step, loop_instruction, current_index, total_objects)
 
     # Next step with index, or the normal next step
