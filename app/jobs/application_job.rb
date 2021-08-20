@@ -6,8 +6,8 @@ class ApplicationJob < ActiveJob::Base
 
   # Utility function that gets the interval period based on config or failsafe
   def self.get_interval(how_long, config, failsafe)
-    return how_long unless how_long.nil? || how_long < 1.seconds
-    return config unless config.nil? || config < 1.seconds
+    return how_long unless how_long.nil? || how_long < 1.second
+    return config unless config.nil? || config < 1.second
 
     failsafe
   end

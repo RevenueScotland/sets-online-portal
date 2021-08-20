@@ -15,7 +15,7 @@ module CsvHelper
   rescue CSV::MalformedCSVError => e
     @imported = []
     resource_item.errors.add(:file_data, I18n.t(:invalid_csv, message: e.message))
-  rescue Exceptions::CsvImportError => e
+  rescue Error::CsvImportError => e
     @imported = []
     resource_item.errors.add(:file_data, e.message)
   end
@@ -30,7 +30,7 @@ module CsvHelper
     attributes = csv_attribute_list model
     CSV.open(filename, 'wb') do |csv|
       write_headers csv, model, attributes
-      break if objects.nil? || objects.empty?
+      break if objects.blank?
 
       write_data csv, attributes, objects
     end
@@ -130,7 +130,7 @@ module CsvHelper
     csv_data.each do |row|
       if row.size != attribute_count
         failures += 1
-        raise Exceptions::CsvImportError, I18n.t(:csv_too_many_errors, failure: failure_percentage) if failures > limit
+        raise Error::CsvImportError, I18n.t(:csv_too_many_errors, failure: failure_percentage) if failures > limit
       end
     end
   end

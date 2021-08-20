@@ -26,6 +26,10 @@ module Returns
 
       attribute_list.each { |attr| attr_accessor attr }
 
+      # For each of the numeric fields create a setter, don't do this if there is already a setter
+      strip_attributes :slcf_contribution, :slcf_credit_claimed, :bad_debt_credit, :removal_credit, :amount_claimed,
+                       :bank_account_no
+
       # Holds items that are internal and not set by the user
       # current user is used for getting the sites do not expose this in the attribute list!
       # deleted sites is used for holding sites that get deleted if they are no longer needed
@@ -93,8 +97,7 @@ module Returns
                                                  allow_blank: true }, presence: true,
                                  two_dp_pattern: true, on: :repayment_yes_no, if: :repayment_details_needed?
       validates :account_holder, :bank_name, presence: true, length: { maximum: 255 }, on: :account_holder
-      validates :bank_account_no, numericality: { only_integer: true, allow_blank: true }, presence: true,
-                                  length: { is: 8 }, on: :account_holder
+      validates :bank_account_no, account_number: true, presence: true, on: :account_holder
       validates :bank_sort_code, presence: true, bank_sort_code: true, on: :account_holder
 
       # repayment declaration
@@ -249,7 +252,7 @@ module Returns
       # Export all the sites wastes details as separate CSV files into the supplied parent folder
       # @param parent_folder [String] the folder to put the CSV files into
       def export_site_wastes(parent_folder)
-        return if @sites.nil? || @sites.empty?
+        return if @sites.blank?
 
         @sites.each do |_, site|
           site.export_waste_csv_data tare_reference, parent_folder
@@ -372,18 +375,16 @@ module Returns
       # The back office is supposed to store the yes no _ind attributes we derive them here.
       # Also we've added _yes_no attributes for the UI, derive them here too.
       private_class_method def self.derive_yes_nos_in(slft)
-        to_derive = {
-          non_disposal_add_ind: :non_disposal_add_text,
-          non_disposal_delete_ind: :non_disposal_delete_text
-        }
-
         # sort out the Yes No fields
-        derive_yes_nos(slft, to_derive, false)
+        slft[:non_disposal_add_ind] = derive_yes_no(value: slft[:non_disposal_add_text])
+        slft[:non_disposal_delete_ind] = derive_yes_no(value: slft[:non_disposal_delete_text])
 
         # Custom as if amount is nil then flag is not set, otherwise yes or no based on value
-        slft[:slcf_yes_no] = derive_yes_no_nil(slft[:slcf_contribution])
-        slft[:bad_debt_yes_no] = derive_yes_no_nil(slft[:bad_debt_credit])
-        slft[:removal_credit_yes_no] = derive_yes_no_nil(slft[:removal_credit])
+        slft[:slcf_yes_no] = derive_yes_no(value: slft[:slcf_contribution], treat_zero_as_n: true, default_n: false)
+        slft[:bad_debt_yes_no] =
+          derive_yes_no(value: slft[:bad_debt_credit], treat_zero_as_n: true, default_n: false)
+        slft[:removal_credit_yes_no] =
+          derive_yes_no(value: slft[:removal_credit], treat_zero_as_n: true, default_n: false)
       end
 
       private
@@ -408,7 +409,7 @@ module Returns
         @last_fape_period = @fape_period
 
         # if sites.keys list is empty then back office/cache provided invalid data
-        Rails.logger.debug("Loading downloaded SLfT sites data #{@sites.keys}")
+        Rails.logger.debug { "Loading downloaded SLfT sites data #{@sites.keys}" }
       end
 
       # initialises the sites and deleted sites to move the deleted sites back to sites
@@ -456,9 +457,9 @@ module Returns
                       :slft_update
                     end
 
-        Rails.logger.debug(
+        Rails.logger.debug do
           "Tare Refno is #{@tare_refno} Version number is #{@version}, using the #{operation} operation"
-        )
+        end
         operation
       end
 

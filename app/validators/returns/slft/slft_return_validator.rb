@@ -14,7 +14,7 @@ module Returns
       def validate(slft)
         save_validation(slft)
         # return if there is validation failed for required object
-        return unless slft.errors.blank?
+        return if slft.errors.present?
 
         # list to store error messages to be added to the model at the end (so it doesn't get cleared
         # by calls to model.valid?)

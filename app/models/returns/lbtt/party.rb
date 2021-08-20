@@ -43,7 +43,7 @@ module Returns
       validates :telephone, phone_number: true, on: :telephone, if: :individual_but_not_seller_landlord_newtenant?
 
       validates :buyer_seller_linked_ind, presence: true, on: :buyer_seller_linked_ind,
-                                          if: proc { |p| !%w[SELLER LANDLORD].include?(p.party_type) }
+                                          if: proc { |p| %w[SELLER LANDLORD].exclude?(p.party_type) }
       validates :is_contact_address_different, presence: true, on: :is_contact_address_different,
                                                if: :individual_but_not_seller_landlord?
       validates :org_type, presence: true, on: :org_type, if: proc { |p| p.type == 'OTHERORG' }
@@ -75,9 +75,10 @@ module Returns
       validates :contact_tel_no, on: :contact_firstname, phone_number: true, if: :not_private_and_not_seller_landlord?
 
       validates :is_acting_as_trustee, presence: true, on: :is_acting_as_trustee,
-                                       if: proc { |p| !%w[SELLER LANDLORD].include?(p.party_type) }
+                                       if: proc { |p| %w[SELLER LANDLORD].exclude?(p.party_type) }
       # National insurance number and alternate related validation
       validate :no_nino_or_alternate?, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
+      validate :both_nino_and_alternate?, on: :nino
       validates :nino, nino: true, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
       validates :alrt_type, :ref_country, presence: true, on: :alrt_type, if: :incomplete_alternate?
       validates :alrt_reference, presence: true, length: { maximum: 30 }, on: :alrt_type, if: :incomplete_alternate?
@@ -89,7 +90,7 @@ module Returns
                                   }
       validates :org_contact_address, presence: true, on: :org_contact_address,
                                       if: proc { |p|
-                                        p.lplt_type != 'PRIVATE' && !%w[LANDLORD SELLER].include?(p.party_type)
+                                        p.lplt_type != 'PRIVATE' && %w[LANDLORD SELLER].exclude?(p.party_type)
                                       }
       validate :validation_for_duplicate_nino?, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
       validates :same_address, presence: true, on: :same_address, if: :claim?
@@ -308,7 +309,17 @@ module Returns
       # National insurance number and alternate related validation
       # No nino or alternate data is provided.
       def no_nino_or_alternate?
-        errors.add(:nino, :no_nino_or_alternate) if nino.blank? && alrt_type.blank? && alrt_reference.blank?
+        return unless nino.blank? && alrt_type.blank? && ref_country.blank? && alrt_reference.blank?
+
+        errors.add(:nino, :no_nino_or_alternate)
+      end
+
+      # National insurance number and alternate related validation
+      # No nino or alternate data is provided.
+      def both_nino_and_alternate?
+        return unless nino.present? && (alrt_type.present? || ref_country.present? || alrt_reference.present?)
+
+        errors.add(:nino, :both_nino_and_alternate)
       end
 
       # Validation for NINO if same NINO used more than once.
@@ -317,14 +328,15 @@ module Returns
 
         nino_items = hash_for_nino.select { |u| u == nino }
         # we get the party_name at the index[1] & get the party_id at the index[0]
-        errors.add(:nino, :duplicate_nino, party_name: nino_items.values[0][1]) unless nino_items.blank?
+        errors.add(:nino, :duplicate_nino, party_name: nino_items.values[0][1]) if nino_items.present?
       end
 
       # If the key alternate data has been started but not completed.
       # Only used for validating the nino and it's alternate related fields.
       def incomplete_alternate?
-        # This converts to !alrt_type.blank? || !alrt_reference.blank?
-        !(alrt_type.blank? && alrt_reference.blank?) && lplt_type == 'PRIVATE' && @party_type != 'AGENT'
+        # This converts to !alrt_type.blank? || !alrt_reference.blank? || !ref_country.blank?
+        !(alrt_type.blank? && alrt_reference.blank? && ref_country.blank?) &&
+          lplt_type == 'PRIVATE' && @party_type != 'AGENT'
       end
 
       # return true if contact address is different
@@ -334,17 +346,17 @@ module Returns
 
       # return true if party type is agent or type is private individual and not seller or landlord
       def individual_but_not_seller_landlord?
-        individual? && !%w[SELLER LANDLORD].include?(party_type)
+        individual? && %w[SELLER LANDLORD].exclude?(party_type)
       end
 
       # return true if party type is agent or type is private individual and not seller or landlord or NEWTENANT
       def individual_but_not_seller_landlord_newtenant?
-        individual? && !%w[SELLER LANDLORD NEWTENANT].include?(party_type)
+        individual? && %w[SELLER LANDLORD NEWTENANT].exclude?(party_type)
       end
 
       # validation method
       def not_private_and_not_seller_landlord?
-        type != 'PRIVATE' && !%w[SELLER LANDLORD].include?(party_type)
+        type != 'PRIVATE' && %w[SELLER LANDLORD].exclude?(party_type)
       end
 
       # return true if party is private individual or agent or party added while filling Claim
@@ -379,6 +391,11 @@ module Returns
         @party_id
       end
 
+      # Remove any spaces from the provided nino value
+      def nino=(value)
+        @nino = value&.delete(' ')
+      end
+
       # @return [String] the formatted name of the party.
       def full_name
         # @note the .strip method removes all leading and trailing whitespaces
@@ -391,7 +408,7 @@ module Returns
       # Custom getter to return the agent reference or text saying not provided
       # @return [String] the formatted name of the party.
       def agent_reference_or_not_provided
-        return @agent_reference unless @agent_reference.blank?
+        return @agent_reference if @agent_reference.present?
 
         I18n.t('.none_provided')
       end
@@ -447,9 +464,9 @@ module Returns
       def request_save(authority_ind) # rubocop:disable  Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         output = { 'ins1:PartyType': lplt_type == 'PRIVATE' ? 'PER' : 'ORG' }
         output['ins1:LpltType'] = lplt_type # Buyer Type
-        output['ins1:OtherTypeDescription'] = other_type_description unless other_type_description.blank?
+        output['ins1:OtherTypeDescription'] = other_type_description if other_type_description.present?
         output['ins1:FlptType'] = flpt_type # Party Type
-        output['ins1:ParRefno'] = @party_refno unless @party_refno.blank?
+        output['ins1:ParRefno'] = @party_refno if @party_refno.present?
         if individual?
           output['ins1:PersonName'] = { 'ins1:Title': @title,
                                         'ins1:Forename': @firstname,
@@ -460,20 +477,20 @@ module Returns
           # "address_line1"=>"First Floor", "address_line2"=>"73-75 High Street", "locality"=>"Stevenage",
           # "county"=>"Hertfordshire", "postcode"=>"SG1 3HR", "country"=>"GB"}
           # so spliting company details into fields company name, address, company number
-          output['ins1:ComCompanyName'] = @company.company_name unless @company.company_name.blank?
-          output['ins1:ComRegno'] = @company.company_number unless @company.company_number.blank?
+          output['ins1:ComCompanyName'] = @company.company_name if @company.company_name.present?
+          output['ins1:ComRegno'] = @company.company_number if @company.company_number.present?
 
           output['ins1:Address'] = @company.company_address.format_to_back_office_address
         else
-          output['ins1:ComCompanyName'] = @org_name unless @org_name.blank?
-          output['ins1:ComJurisdiction'] = @com_jurisdiction unless @com_jurisdiction.blank?
+          output['ins1:ComCompanyName'] = @org_name if @org_name.present?
+          output['ins1:ComJurisdiction'] = @com_jurisdiction if @com_jurisdiction.present?
         end
-        output['ins1:Address'] = @address.format_to_back_office_address unless @address.blank?
+        output['ins1:Address'] = @address.format_to_back_office_address if @address.present?
 
-        output['ins1:AgentDxNumber'] = @agent_dx_number unless @agent_dx_number.blank?
+        output['ins1:AgentDxNumber'] = @agent_dx_number if @agent_dx_number.present?
         output['ins1:AuthorityInd'] = @party_type == 'AGENT' && authority_ind == 'Y' ? 'yes' : 'no'
-        output['ins1:TelNo'] = @telephone unless @telephone.blank?
-        output['ins1:EmailAddress'] = @email_address unless @email_address.blank?
+        output['ins1:TelNo'] = @telephone if @telephone.present?
+        output['ins1:EmailAddress'] = @email_address if @email_address.present?
 
         output['ins1:CharityNumber'] = @charity_number if @org_type == 'CHARITY'
         if lplt_type == 'PRIVATE'
@@ -487,8 +504,8 @@ module Returns
             output['ins1:ContactAddress'] = @contact_address.format_to_back_office_address if contact_address_different?
           end
         else
-          output['ins1:ContactTelNo'] = @telephone unless output['ins1:ContactTelNo'].blank?
-          output['ins1:ContactEmailAddress'] = @email_address unless output['ins1:ContactEmailAddress'].blank?
+          output['ins1:ContactTelNo'] = @telephone if output['ins1:ContactTelNo'].present?
+          output['ins1:ContactEmailAddress'] = @email_address if output['ins1:ContactEmailAddress'].present?
 
           unless %w[LANDLORD SELLER].include? @party_type
             output['ins1:OrganisationContact'] = {
@@ -574,7 +591,7 @@ module Returns
           raw_hash[:job_title] = raw_hash[:organisation_contact][:contact_job_title]
           raw_hash[:contact_firstname] = raw_hash[:organisation_contact][:contact_forename]
           raw_hash[:contact_surname] = raw_hash[:organisation_contact][:contact_surname]
-          unless raw_hash[:organisation_contact][:contact_address].blank?
+          if raw_hash[:organisation_contact][:contact_address].present?
             address_raw_hash = raw_hash[:organisation_contact][:contact_address]
             raw_hash[:org_contact_address] = Address.convert_hash_to_address(address_raw_hash)
           end
@@ -602,12 +619,7 @@ module Returns
 
       # Set attributes which depend on some other attributes received from back-office
       private_class_method def self.derive_yes_nos_in(party)
-        to_derive = {
-          is_contact_address_different: :contact_address
-        }
-
-        # sort out the Yes No fields
-        derive_yes_nos(party, to_derive, true)
+        party[:is_contact_address_different] = derive_yes_no(value: party[:contact_address])
       end
 
       # convert to proper type like PRIVATE,CHARITY etc

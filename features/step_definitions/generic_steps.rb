@@ -81,16 +81,26 @@ end
 
 When('I open the {string} summary item') do |string|
   open = true
+  # On page load, if the details summary text has the ability to swap it's text depending on if a
+  # field under it has any value, then the js code should trigger a click on it.
+  # However, rack_test doesn't seem to click it on page load, which leaves the details not open
+  # and also not finding the fields in the autotest.
+  clickable_is_hidden = false
   if Capybara.current_driver == :rack_test
     clickable = find('details', text: string)
     open = false if clickable['open'].nil? || clickable['open'] == 'false'
   else
     # The JS code handles the summary differently so different selects
-    clickable = find('span', text: string)
-    details = clickable.ancestor('details')
-    open = false if details['open'].nil? || details['open'] == 'false'
+    begin
+      find('span', text: string, visible: :hidden)
+      clickable_is_hidden = true
+    rescue Capybara::ElementNotFound
+      clickable = find('span', text: string)
+      details = clickable.ancestor('details')
+      open = false if details['open'].nil? || details['open'] == 'false'
+    end
   end
-  clickable.click if open == false
+  clickable.click if open == false && clickable_is_hidden == false
 end
 
 When('I click on the {string} text with class {string}') do |string, css_class|
@@ -120,7 +130,7 @@ When('I enter {string} in the {string} date field') do |date_string, field|
 end
 
 When('I enter {int} days ago in the {string} date field') do |days, field|
-  date = Date.today - days
+  date = Time.zone.today - days
 
   fill_in(field, with: formatted_date_string(date))
 end
@@ -253,7 +263,7 @@ end
 
 # Step allows to store the value consist by particular control_id
 Then('I should store the generated value with id {string}') do |id|
-  refer_value = page.find_by_id(id).text
+  refer_value = page.find_by_id(id).text # rubocop:disable Rails/DynamicFindBy
   store_result(id, refer_value)
 end
 
@@ -285,7 +295,7 @@ Then('I should see the downloaded {string} content of {string} by looking up {st
   # I should see the downloaded content "SLFT_WASTE" by looking up "ret_ref_value"
   return_reference = lookup_result(lookup_id)
   filename = type.upcase # This is the return type, it should either be SLFT or LBTT
-  filename += "_Return#{return_reference}_v[0-9]+_#{Date.today.strftime('%Y%m%d')}[0-9]{6}.pdf" if detail == 'PDF'
+  filename += "_Return#{return_reference}_v[0-9]+_#{Time.zone.today.strftime('%Y%m%d')}[0-9]{6}.pdf" if detail == 'PDF'
   filename = "#{return_reference}-[0-9]+.zip" if detail == 'WASTE'
   log("...filename to look for should match #{filename.inspect}")
   step "I should see the downloaded content '#{filename}'"
@@ -293,7 +303,7 @@ end
 
 Then('I should see the downloaded {string} content of {string}') do |detail, type|
   filename = type.upcase # This is the return type, it should either be SLFT or LBTT
-  filename += "_Claim[0-9]+_#{Date.today.strftime('%Y%m%d')}[0-9]{6}.pdf" if detail == 'CLAIM'
+  filename += "_Claim[0-9]+_#{Time.zone.today.strftime('%Y%m%d')}[0-9]{6}.pdf" if detail == 'CLAIM'
   log("...filename to look for should match #{filename.inspect}")
   step "I should see the downloaded content '#{filename}'"
 end
@@ -322,7 +332,7 @@ end
 def check_file_downloaded_on_selenium_driver(filename, waiting_time)
   sleep(waiting_time)
   result = search_files_result(filename, downloaded_files_list)
-  [!result.blank?, result.first || '']
+  [result.present?, result.first || '']
 end
 
 # Check that we have downloaded the file.
@@ -351,7 +361,7 @@ Then('I should see the downloaded content {string}') do |filename|
     end
 
     # So that locally we won't have to clear things out manually, the file is removed when it's been viewed
-    if is_file_found && !Capybara.current_driver.to_s.include?('remote')
+    if is_file_found && Capybara.current_driver.to_s.exclude?('remote')
       Rails.logger.info('  Attempting to remove the file from the download directory')
       # Removes the downloaded file from where we have found it.
       FileUtils.rm_r(result) if File.exist?(result)
@@ -364,9 +374,9 @@ Then('I should see the downloaded content {string}') do |filename|
     Rails.logger.info("\n\tCurrent url : #{page.current_url.inspect}\n\tWindow_handles : #{page.windows.inspect}")
   else
     # On rack_test driver do below - non-selenium driver
-    filename.gsub!(/\s/, '%2B')
-    assert !page.response_headers['Content-Disposition'].nil?
-    is_file_found = (/#{filename}/ =~ page.response_headers['Content-Disposition'])
+    filename = filename.gsub(/\s/, '[+ ]')
+    assert page.response_headers['Content-Disposition'].present?
+    is_file_found = Regexp.new(filename).match?(page.response_headers['Content-Disposition'])
 
     # Need to go back to the original page as we're currently on the page of the downloaded file
     visit(@original_page)
@@ -499,7 +509,7 @@ Then('I should see the empty field {string}') do |field|
   assert (find_field(field).value.nil? ||
           find_field(field).value == ''),
          "I can see the field #{field} is not empty as it contains the value " \
-            "#{find_field(field).value}"
+         "#{find_field(field).value}"
 end
 
 Then('the checkbox {string} should be checked') do |string|
@@ -566,9 +576,9 @@ def parse_string(string)
   # below returns the string if not found as stored value
   string = lookup_result(string)
 
-  string = string.sub 'NOW_DATE', DateFormatting.to_display_date_format(Date.today) if string.include?('NOW_DATE')
+  string = string.sub 'NOW_DATE', DateFormatting.to_display_date_format(Time.zone.today) if string.include?('NOW_DATE')
   if string.include?('TOMORROW_DATE')
-    string = string.sub 'TOMORROW_DATE', DateFormatting.to_display_date_format(Date.today + 1)
+    string = string.sub 'TOMORROW_DATE', DateFormatting.to_display_date_format(Time.zone.today + 1)
   end
   string_or_regexp(string)
 end

@@ -1,13 +1,13 @@
-<%= content_for :hide_back_link, true %>
+<% content_for :hide_back_link, true %>
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <%= form_for @message, url:dashboard_messages_confirmation_path, html: { multipart: true }, method: :post, local: true do |f| %>
       <%= form_errors_for [@message, @resource_items_hash] %>
-      <h2 class="govuk-heading-m"><%= t('.paragraph_heading') %></h2>
+      <%= sub_heading %>
       <p class="govuk-body">
-        <%= UtilityHelper.swap_texts(t('.paragraph2').html_safe,
+        <%= UtilityHelper.swap_texts(t('.paragraph2'),
                                      text_link: { t('.paragraph2_link_text') =>
                                                     link_to(t('.paragraph2_link_text'), external_link_url('HOME'), target: '_blank') }) %>
       </p>
@@ -18,7 +18,7 @@
           <%= render "/layouts/file_upload_component", multiple: true, file_upload_label: full_lazy_lookup_path('.file_upload_label'), remove_remove: cannot?(AuthorisationHelper::DELETE_ATTACHMENT) %>
         </div>
       <% end %>
-      <%= f.button 'finish', { :name => 'finish', autofocus: (@resource_items.length > 0 && !@form_error_found) , class: 'scot-rev-button file-upload-check'} %>
+      <%= f.button 'finish', { :name => 'finish', autofocus: (@resource_items.length > 0 && !content_for?(:form_error_found)) , class: 'scot-rev-button file-upload-check'} %>
     <% end %>
   </div>
 </div>

@@ -20,4 +20,6 @@ $(function () {
             return this.substring(this_len - search.length, this_len) === search;
         };
     }
+
+    window.GOVUKFrontend.initAll();
 })

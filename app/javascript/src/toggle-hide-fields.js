@@ -105,4 +105,18 @@ $(function () {
     $("#navigation").toggleClass('govuk-header__navigation--open');
     $("#menu").toggleClass('govuk-header__menu-button--open');
   });
+
+  // Only add the details feature when it exists on page load
+  if ($('.govuk-details__summary').length > 0) {
+    // If text to swap is define, swap it with the currently hidden one on click
+    $('.govuk-details__summary').on("click", function () {
+      $.fn.hideField(null, '.filter_text', 'js-hidden');
+    });
+
+    // Code to support the extra feature of details,
+    // so that the details will be kept open if any of the fields under it contains any value
+    if ($.fn.checkHiddenFieldHasValues('.govuk-details__text') > 0) {
+      $('.govuk-details__summary').trigger("click");
+    }
+  }
 })

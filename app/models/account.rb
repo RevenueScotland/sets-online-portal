@@ -57,7 +57,7 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   def initialize(attributes = {})
     super filter_attributes(attributes, Account.attribute_list)
     self.current_user = User.new(filter_attributes(attributes, User.attribute_list)) if current_user.nil?
-    return unless account_type.nil? || account_type.empty?
+    return if account_type.present?
 
     self.account_type = AccountType.new(filter_attributes(attributes, AccountType.attribute_list))
   end
@@ -172,6 +172,11 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     self.company = Company.new(company_number: response[:registration_number],
                                company_name: response[:company_name])
     company_address(company, address) unless address.nil?
+  end
+
+  # Remove any spaces from the provided nino value
+  def nino=(value)
+    @nino = value&.delete(' ')
   end
 
   # Surrogate getter to return the company address at the account level

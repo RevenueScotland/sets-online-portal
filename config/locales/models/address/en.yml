@@ -40,7 +40,7 @@ en:
   address_select : "Select an address" 
   manual_address: "Enter an address manually"
   edit_address: "Edit address"
-  change_postcode: "Change"
+  change_postcode: "Change postcode"
   address_search:
     form:
       title: "Address Search"

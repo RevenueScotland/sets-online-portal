@@ -18,7 +18,6 @@ module AccountValidation
     result &= child_valid?(contexts, Company, :company)
     result &= child_valid?(contexts, AccountType, :account_type)
     result &= child_valid?(contexts, Address, :address)
-    remove_duplicate_errors
     result
   end
 
@@ -34,22 +33,6 @@ module AccountValidation
     return true if send(attribute).nil? || filtered_context.nil? || filtered_context.empty?
 
     send(attribute).valid?(filtered_context)
-  end
-
-  # Removes duplicate errors from any model errors. This can occur as account and user
-  # has overlapping attributes.
-  def remove_duplicate_errors
-    return if errors.nil? || errors.empty?
-
-    remove_duplicate_error_part(errors.messages)
-    remove_duplicate_error_part(errors.details)
-  end
-
-  # Removes duplicate errors from any model errors. This can occur as account and user
-  # has overlapping attributes.
-  # @param collection [Hash] the collection to remove duplicates from
-  def remove_duplicate_error_part(collection)
-    collection.each { |k, m| collection[k] = m.uniq }
   end
 
   # Checks if any of the child objects have validation errors, and returns false if that do

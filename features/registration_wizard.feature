@@ -95,7 +95,7 @@ Feature: Registration Wizard
     And I should receive the message "Town can't be blank"
     # postcode is optional on manual address
     And I should not receive the message "Postcode can't be blank"
-    And I click on the "Change" button
+    And I click on the "Change postcode" button
     And I enter "LU1 1AA" in the "address_summary_postcode" field
     And I click on the "Find Address" button
     And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
@@ -188,7 +188,7 @@ Feature: Registration Wizard
     And I should receive the message "Town can't be blank"
     # postcode is optional on mannual address
     And I should not receive the message "Postcode can't be blank"
-    And I click on the "Change" button
+    And I click on the "Change postcode" button
     And I enter "LU1 1AA" in the "address_summary_postcode" field
     And I click on the "Find Address" button
     And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
@@ -258,7 +258,7 @@ Feature: Registration Wizard
     And I should receive the message "Town can't be blank"
     # postcode is optional on mannual address
     And I should not receive the message "Postcode can't be blank"
-    And I click on the "Change" button
+    And I click on the "Change postcode" button
     And I enter "LU1 1AA" in the "address_summary_postcode" field
     And I click on the "Find Address" button
     And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
@@ -474,11 +474,11 @@ Feature: Registration Wizard
     When I enter "09338960" in the "Company number" field
     And I click on the "Find Company" button
     Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED" in field "company_company_name"
-    And I should see the text "Peoplebuilding 2 Peoplebuilding Estate" in field "company_address_line1"
-    And I should see the text "Maylands Avenue" in field "company_address_line2"
+    And I should see the text "1st Floor, Imex Centre" in field "company_address_line1"
+    And I should see the text "575-599 Maxted Road" in field "company_address_line2"
     And I should see the text "Hemel Hempstead" in field "company_locality"
     And I should see the text "Hertfordshire" in field "company_county"
-    And I should see the text "HP2 4NW" in field "company_postcode"
+    And I should see the text "HP2 7DX" in field "company_postcode"
     And I click on the "Continue" button
 
     Then I should see the sub-title "Contact address"
@@ -536,11 +536,11 @@ Feature: Registration Wizard
     When I enter "09338960" in the "Company number" field
     And I click on the "Find Company" button
     Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED" in field "company_company_name"
-    And I should see the text "Peoplebuilding 2 Peoplebuilding Estate" in field "company_address_line1"
-    And I should see the text "Maylands Avenue" in field "company_address_line2"
+    And I should see the text "1st Floor, Imex Centre" in field "company_address_line1"
+    And I should see the text "575-599 Maxted Road" in field "company_address_line2"
     And I should see the text "Hemel Hempstead" in field "company_locality"
     And I should see the text "Hertfordshire" in field "company_county"
-    And I should see the text "HP2 4NW" in field "company_postcode"
+    And I should see the text "HP2 7DX" in field "company_postcode"
     And I click on the "Continue" button
 
     Then I should see the sub-title "Contact address"

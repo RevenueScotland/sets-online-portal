@@ -134,7 +134,8 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
     options[:text_link].each do |text_link|
       label.gsub!(text_link[0], text_link[1])
     end
-    label.html_safe
+    # If we have swapped texts then there is a link so mark as html safe
+    label.html_safe # rubocop:disable Rails/OutputSafety
   end
 
   # This allows us to make the given string of characters a breakable character in a string by adding
@@ -150,7 +151,7 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
 
     # Create a regexp where the list of characters in the string is searched for
     text = ERB::Util.html_escape(text)
-    text.gsub(Regexp.new("(?<c>[#{Regexp.escape(characters)}])"), '\k<c>&#8203;')&.html_safe
+    text.gsub(Regexp.new("(?<c>[#{Regexp.escape(characters)}])"), '\k<c>&#8203;')&.html_safe # rubocop:disable Rails/OutputSafety
   end
 
   # Get attribute key require to translate label,legend or hint text of a form control.
@@ -175,21 +176,6 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
     object.translation_variables(attribute, options[:translation_options])
   end
 
-  # Utility helper to give the full path for the given translation key.
-  # Effectively this returns the full path that would be used by the normal t(.<key>) Rails operation
-  # Used when passing view keys into a partial
-  # @see https://github.com/rails/rails/blob/56832e791f3ec3e586cf049c6408c7a183fdd3a1/actionview/lib/action_view/helpers/translation_helper.rb#L123
-  # @param key [String] the key to be used
-  def full_lazy_lookup_path(key)
-    if key.to_s.first == '.'
-      raise "Cannot use t(#{key.inspect}) short cut because path is not available" unless @virtual_path
-
-      @virtual_path.gsub(%r{/_?}, '.') + key.to_s
-    else
-      key
-    end
-  end
-
   # Modifies the html text to give each elements the correct standard classes
   # @param html_text [HTML block element] contains the html which the correct classes will be added to.
   # @return [HTML block element] the elements modified to have the correct classes per element.
@@ -203,7 +189,8 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
     standardize_table_elements(html_text)
     # Regex means to look for ("<a") + (zero or more characters thats not ">") + (">")
     html_text.gsub!(/<a[^>]*>/) { |link_tag| standardize_link_tag(link_tag) }
-    html_text
+    # gsub turns the SafeBuffer unsafe so we have to flag it again
+    html_text.html_safe # rubocop:disable Rails/OutputSafety
   end
 
   # Modifies the html text to give each table elements the correct standard classes
@@ -249,7 +236,8 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
     key_scope = options[:key_scope] || get_translation_scope(object, :attributes)
     label_translation_options = UtilityHelper.get_attribute_extra_translation_options(object, attribute, options)
                                              .merge(default: attribute_key.to_s.humanize, scope: key_scope)
-    I18n.t(attribute_key, **label_translation_options).html_safe
+    # As we may have html e.g. <br/> in labels we mark as html safe
+    I18n.t(attribute_key, **label_translation_options).html_safe # rubocop:disable Rails/OutputSafety
   end
 
   # Gets the translation scope depending on the passed symbol
@@ -266,9 +254,9 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
   # @param options [Hash] may contain a hash with a question key
   private_class_method def self.make_question(label, options = {})
     if options.key?(:question)
-      label += '?' if options.delete(:question) == true
+      label += '?'.html_safe if options.delete(:question) == true
     elsif label.match(QUESTION_REGEX)
-      label += '?'
+      label += '?'.html_safe
     end
     label
   end

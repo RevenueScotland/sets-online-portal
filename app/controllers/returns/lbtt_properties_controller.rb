@@ -43,12 +43,17 @@ module Returns
 
     # Delete the property entry entry specified by params[:property_id]
     def destroy
-      lbtt_return = wizard_load(Returns::LbttController)
+      lbtt_return = load_return
       look_for_property(params[:property_id], lbtt_return, delete: true)
       redirect_to returns_lbtt_summary_path
     end
 
     private
+
+    # Loads the parent return
+    def load_return
+      wizard_load_or_redirect(returns_lbtt_summary_url, nil, Returns::LbttController)
+    end
 
     # We only want to show the property_ads_applies page if return type is CONVEY.  If it's not, show the summary
     # page after calling @see #dump_property_into_lbtt_wizard
@@ -80,7 +85,7 @@ module Returns
 
     # Puts the new property data into the right place in LbttReturn
     def dump_property_into_lbtt_wizard
-      @lbtt_return = wizard_load(Returns::LbttController)
+      @lbtt_return = load_return
       @lbtt_return.properties = {} if @lbtt_return.properties.nil?
       @lbtt_return.properties[@property.property_id] = @property
 
@@ -103,7 +108,7 @@ module Returns
       # load existing or setup new property on first entering the step
       if params[:property_id]
         @property = setup_by_property_id(params[:property_id])
-        Rails.logger.debug("Loaded (and cached) property #{@property.property_id}")
+        Rails.logger.debug { "Loaded (and cached) property #{@property.property_id}" }
       end
 
       # normal load now if it didn't get setup above
@@ -117,7 +122,7 @@ module Returns
     # @raise [Error::AppError] if the property cannot be found
     # @return [Property] object
     def setup_by_property_id(property_id)
-      lbtt_return = wizard_load(Returns::LbttController)
+      lbtt_return = load_return
 
       # new property case - assign a UUID
       if property_id == 'new'

@@ -123,10 +123,12 @@ Feature: SLfT Returns
         Then I should see the text "Contribution to environmental bodies must be greater than 0"
         And I should see the text "Credit claimed in relation to the contribution must be greater than 0"
 
-        And I enter "555.12" in the "Contribution to environmental bodies" field
-        And I enter "499.62" in the "Credit claimed in relation to the contribution" field
+        And I enter " 555.12 " in the "Contribution to environmental bodies" field
+        And I enter " 499.62 " in the "Credit claimed in relation to the contribution" field
         And I click on the "Continue" button
         Then I should see the text "Credit claimed must be less than the specified percentage of the contribution to environmental bodies"
+        And I should see the text "555.12" in field "Contribution to environmental bodies"
+        And I should see the text "499.62" in field "Credit claimed in relation to the contribution"
 
         When I enter "59.3" in the "Credit claimed in relation to the contribution" field
         And I click on the "Continue" button
@@ -141,7 +143,7 @@ Feature: SLfT Returns
         And I enter "-123.44" in the "Bad debt claim amount" field
         And I click on the "Continue" button
         Then I should see the text "Bad debt claim amount must be greater than 0"
-        And I enter "7123" in the "Bad debt claim amount" field
+        And I enter " 7123 " in the "Bad debt claim amount" field
         And I click on the "Continue" button
 
         Then I should see the "Permanent removal credit" page
@@ -154,7 +156,7 @@ Feature: SLfT Returns
         And I enter "0" in the "Permanent removal claim amount" field
         And I click on the "Continue" button
         Then I should see the text "Permanent removal claim amount must be greater than 0"
-        And I enter "564.22" in the "Permanent removal claim amount" field
+        And I enter " 564.22 " in the "Permanent removal claim amount" field
         And I click on the "Continue" button
         Then I should see the "Return summary" page
         And I should see the text "Edit credit details"
@@ -258,7 +260,7 @@ Feature: SLfT Returns
         And I click on the "Continue" button
         Then I should receive the message "Water discount tonnage cannot be set when exempt tonnage is set"
 
-        When I enter "0" in the "Water discount tonnage" field
+        When I enter " 0 " in the "Water discount tonnage" field
         And I click on the "Continue" button
         Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
         And I should see the sub-title "Why is some tonnage exempt?"
@@ -284,10 +286,12 @@ Feature: SLfT Returns
 
         When I check the "returns_slft_waste_nda_ex_yes_no_n" radio button
         And I check the "returns_slft_waste_restoration_ex_yes_no_n" radio button
-        And I enter "13" in the "Other tonnage" field
+        And I enter " 12.3 " in the "Other tonnage" field
         And I click on the "Continue" button
         Then I should see the text "Description of other exemption reason can't be blank"
+        And I should see the text "The total tonnage 12.3 of these exemptions must be equal to the exempt tonnage of 13"
         When I enter "RANDOM_text,256" in the "Description of other exemption reason" field
+        And I enter "13" in the "Other tonnage" field
         And I click on the "Continue" button
         Then I should see the text "Description of other exemption reason is too long"
         And I enter "my other exemption reason" in the "Description of other exemption reason" field
@@ -318,7 +322,7 @@ Feature: SLfT Returns
 
         # Select tonnage AND water tonnage
         And I enter "18.45" in the "Lower tonnage" field
-        And I enter "8" in the "Water discount tonnage" field
+        And I enter " 8 " in the "Water discount tonnage" field
         And I click on the "Continue" button
         Then I should see the "Waste details summary" page
 
@@ -333,7 +337,7 @@ Feature: SLfT Returns
         And I check the "returns_slft_waste_pre_treated_ind_y" radio button
         And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
-        When I enter "0.78" in the "Standard tonnage" field
+        When I enter " 0.78 " in the "Standard tonnage" field
         And I click on the "Continue" button
         Then I should see the "Waste details summary" page
 
@@ -784,9 +788,8 @@ Feature: SLfT Returns
         And I enter "85-96-88-7" in the "Branch sort code" field
         And I enter "RANDOM_text,256" in the "Name of bank / building society" field
         And I click on the "Continue" button
-        Then I should see the text "Bank / building society account number is not a number"
-        And I should see the text "Bank / building society account number is the wrong length (should be 8 characters)"
-        And I should see the text "Branch sort code is invalid"
+        Then I should see the text "Bank / building society account number must be 8 digits long"
+        And I should see the text "Branch sort code must be in the format 99-99-99"
 
         When I enter "Fred Flintstone" in the "Name of the account holder" field
         And I enter "12345678" in the "Bank / building society account number" field

@@ -278,12 +278,12 @@ en:
           edit_relief: "Edit reliefs"
       public_landing:
         title: "To complete this return, you will need the following information:"
-        info_needed:
-          "<li>the lease agreement, showing information such as the start and end dates of the lease</li>
+        info_needed_html:
+          "<ul><li>the lease agreement, showing information such as the start and end dates of the lease</li>
           <li>transaction reference of the LBTT return originally submitted for the lease</li>
           <li>effective date of the LBTT return originally submitted for the lease</li>
           <li>a recalculation of the total LBTT payable on the lease</li>
-          <li>how much LBTT has already been paid on the lease</li>"
+          <li>how much LBTT has already been paid on the lease</li></ul>"
         start_warning: "Once you have started the return you must complete it. You will not be able to save a draft and go back to it later."
       public_return_type:
         title: "About the return"
@@ -328,10 +328,14 @@ en:
         relief_type: "Type of relief"
         relief_type_auto: "Type of relief"
         relief_amount: Amount of tax saved by relief
-        description:
-          "Certain reliefs amounts will be calculated as part of the return and therefore cannot be entered at this point.<br>
-          For all others, if you know the values for any relief you are claiming, enter it into the ‘Amount of tax saved by relief’ field, if you don’t know the value now enter 0.
-          <br>All Reliefs amounts can be seen later in this return and can be changed as required before submission"
+        description_html:
+          "<p>Certain reliefs amounts will be calculated as part of the return and therefore cannot be entered at
+          this point. For all others, if you know the values for any relief you are claiming, enter it into the
+          ‘Amount of tax saved by relief’ field, if you don’t know the value now then enter 0. </p><p>
+          If you are claiming an LBTT Relief which also applies to ADS, please select this relief from the
+          drop down below. The same LBTT relief should also be claimed within the ‘About the transaction’
+          relief section. If the relief is partial, the value entered in the ‘Amount of tax saved by relief’ field
+          should relate only to the relief over the ADS amount due</p>"
       ads_repay_address:
         rrep_ads_sold_address: Confirm the address of the previous main residence that has been sold or disposed of
       ads_repay_details:
@@ -351,10 +355,14 @@ en:
         relief_type: "Type of relief"
         relief_type_auto: "Type of relief"
         relief_amount: "Amount of tax saved by relief"
-        description:
-          "Certain reliefs amounts will be calculated as part of the return and therefore cannot be entered at this point.<br>
-          For all others, if you know the values for any relief you are claiming, enter it into the ‘Amount of tax saved by relief’ field, if you don’t know the value now then enter 0.<br>
-          All Reliefs amounts can be seen later in this return and can be changed as required before submission"
+        description_html:
+          "<p>Certain reliefs amounts will be calculated as part of the return and therefore cannot be entered at
+          this point. For all others, if you know the values for any relief you are claiming, enter it into the
+          ‘Amount of tax saved by relief’ field, if you don’t know the value now enter 0.</p><p>
+          If you are claiming an LBTT relief which also applies to ADS, please ensure the relief selected in
+          the drop down below is the same as the relief selected in the ‘Reliefs on ADS consideration’. If
+          the relief is partial, the value entered in the ‘Amount of tax saved by relief’ field should relate only
+          to the relief over the LBTT amount due</p>"
         non_ads_reliefclaim_option_ind: "Tax Reliefs (opens in a new window)"
       conveyance_values:
         title: "About the conveyance or transfer"

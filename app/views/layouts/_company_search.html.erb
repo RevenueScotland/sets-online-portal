@@ -1,7 +1,7 @@
 <%= fields_for @company do |cs| %>
   <%= cs.text_field :company_number %>
   <div class="govuk-form-group">
-    <%= cs.submit '.search', { :name => 'company_search', autofocus: (@on_company_search && !@form_error_found) } %>
+    <%= cs.submit '.search', { :name => 'company_search', autofocus: (@on_company_search && !content_for?(:form_error_found)) } %>
   </div>
   <% unless @company.company_name.nil? %>
     <div class="govuk-form-group">

@@ -42,7 +42,7 @@ module Returns
     # overrides in the steps)  @see #setup_step where @tax is found inside @lbtt_return
     def wizard_save(_master_object, _cache_index = self.class.name)
       key = wizard_cache_key(LbttController)
-      Rails.logger.debug "Saving tax in wizard params for #{key}"
+      Rails.logger.debug { "Saving tax in wizard params for #{key}" }
       Rails.cache.write(key, @lbtt_return, expires_in: wizard_cache_expiry_time)
     end
 
@@ -50,7 +50,7 @@ module Returns
     # @return [Tax] the model for wizard saving
     def load_step(_sub_object_attribute = nil)
       @post_path = wizard_post_path
-      @lbtt_return = wizard_load(Returns::LbttController)
+      @lbtt_return = wizard_load_or_redirect(returns_lbtt_summary_url, nil, Returns::LbttController)
       Lbtt::Tax.setup_tax(@lbtt_return)
       @tax = @lbtt_return.tax
     end

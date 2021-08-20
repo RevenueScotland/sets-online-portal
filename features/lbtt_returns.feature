@@ -251,7 +251,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should receive the message "Property must be in Scotland for LBTT"
 
-        And I click on the "Change" button
+        And I click on the "Change postcode" button
         And I enter "EH1 1HU" in the "address_summary_postcode" field
         And I click on the "Find Address" button
         And I select "31b/2 Chambers Street, EDINBURGH, EH1 1HU" from the "search_results"
@@ -314,7 +314,7 @@ Feature: LBTT Returns
         Then I should see the text "Amount of ADS liability from new main residence must be a number to 2 decimal places"
 
         When I enter "40503" in the "Amount of ADS liability from new main residence" field
-        And I enter "40750" in the "Total consideration liable to ADS" field
+        And I enter " 40750" in the "Total consideration liable to ADS" field
         And I click on the "Continue" button
 
         Then I should see the text "Does the buyer intend to sell their main residence within 18 months?"
@@ -664,9 +664,8 @@ Feature: LBTT Returns
         And I enter "RANDOM_text,256" in the "Name of bank / building society" field
         And I click on the "Continue" button
 
-        Then I should receive the message "Bank / building society account number is not a number"
-        And I should receive the message "Bank / building society account number is the wrong length (should be 8 characters)"
-        And I should receive the message "Branch sort code is invalid"
+        Then I should receive the message "Bank / building society account number must be 8 digits long"
+        And I should receive the message "Branch sort code must be in the format 99-99-99"
 
         When I enter "Fred Flintstone" in the "Name of the account holder" field
         And I enter "12345678" in the "Bank / building society account number" field
@@ -804,9 +803,8 @@ Feature: LBTT Returns
         And I enter "RANDOM_text,256" in the "Name of bank / building society" field
         And I click on the "Continue" button
 
-        Then I should receive the message "Bank / building society account number is not a number"
-        And I should receive the message "Bank / building society account number is the wrong length (should be 8 characters)"
-        And I should receive the message "Branch sort code is invalid"
+        Then I should receive the message "Bank / building society account number must be 8 digits long"
+        And I should receive the message "Branch sort code must be in the format 99-99-99"
 
         When I enter "Fred Flintstone" in the "Name of the account holder" field
         And I enter "12345678" in the "Bank / building society account number" field
@@ -864,6 +862,9 @@ Feature: LBTT Returns
 
         When I enter the stored value "ret_ref_val" in field "Return reference"
         And I click on the "Find" button
+
+        When I click on the 1 st "Download PDF" link to download a file
+        Then I should see the downloaded "PDF" content of "LBTT" by looking up "ret_ref_val"
 
         And I should see a link with text "Continue"
 
@@ -1028,11 +1029,11 @@ Feature: LBTT Returns
         And I click on the "Find Company" button
 
         Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED" in field "company_company_name"
-        And I should see the text "Peoplebuilding 2 Peoplebuilding Estate" in field "company_address_line1"
-        And I should see the text "Maylands Avenue" in field "company_address_line2"
+        And I should see the text "1st Floor, Imex Centre" in field "company_address_line1"
+        And I should see the text "575-599 Maxted Road" in field "company_address_line2"
         And I should see the text "Hemel Hempstead" in field "company_locality"
         And I should see the text "Hertfordshire" in field "company_county"
-        And I should see the text "HP2 4NW" in field "company_postcode"
+        And I should see the text "HP2 7DX" in field "company_postcode"
         When I click on the "Continue" button
 
         Then I should see the "Return Summary" page
@@ -1150,7 +1151,7 @@ Feature: LBTT Returns
         Then I should see the text "Return consideration can't be blank"
         When I enter "-1000" in the "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount" field
         And I click on the "Continue" button
-        Then I should see the text "Return consideration must be a number to 2 decimal places"
+        Then I should see the text "Return consideration must be greater than or equal to 0"
         When I enter "1000" in the "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount" field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
@@ -1180,7 +1181,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should receive the message "Amount of tax saved by relief must be less than 1000000000000000000"
 
-        When I enter "2087" in the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount" field
+        When I enter " 2087 " in the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount" field
         And I click on the "Add row" button
         # MAX amount relief
         And I select "First-Time Buyer Relief" from the "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_type_auto"
@@ -1728,7 +1729,7 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should receive the message "Rent can't be blank"
 
-        When I enter "750000" in the "returns_lbtt_lbtt_return_yearly_rents_0_rent" field
+        When I enter " 750000" in the "returns_lbtt_lbtt_return_yearly_rents_0_rent" field
         When I enter "Hello" in the "returns_lbtt_lbtt_return_yearly_rents_1_rent" field
         When I enter "0" in the "returns_lbtt_lbtt_return_yearly_rents_2_rent" field
         When I clear the "returns_lbtt_lbtt_return_yearly_rents_3_rent" field
@@ -2426,7 +2427,7 @@ Feature: LBTT Returns
         And I select "Mr" from the "Title"
         And I enter "0123456789" in the "Telephone number" field
         And I enter "noreply@northgateps.com" in the "Email" field
-        And I enter "AB323455C" in the "National Insurance Number (NINO)" field
+        And I enter "AB 32 34 55 C" in the "National Insurance Number (NINO)" field
         And I click on the "Continue" button
         And I should receive the message "National Insurance Number (NINO) is a duplicate of that for Mr TenantFirstname TenantSurname"
         When I click on the "Back" link
@@ -2565,7 +2566,7 @@ Feature: LBTT Returns
 
         When I click on the "Edit calculation" link
         Then I should see the "Calculated tax" page
-        And I enter "100" in the "Amount already paid" field
+        And I enter " 100 " in the "Amount already paid" field
         And I click on the "Continue" button
         Then I should see the "Calculated tax" page
         And I click on the "Continue" button
@@ -2691,10 +2692,14 @@ Feature: LBTT Returns
         # Allow spanish phone number
         And I enter "+34629629629" in the "Telephone number" field
         And I enter "noreply@northgateps.com" in the "Email" field
+        And I enter "AB323455C" in the "National Insurance Number (NINO)" field
         And I open the "Tenant does not have NINO" summary item
         And I select "ID Card" from the "Type of ID"
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
+        And I click on the "Continue" button
+        Then I should receive the message "Don't provide the alternate reference if you provide a NINO"
+        When I clear the "National Insurance Number (NINO)" field
         And I click on the "Continue" button
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
@@ -2965,11 +2970,11 @@ Feature: LBTT Returns
         When I enter "09338960" in the "Company number" field
         And I click on the "Find Company" button
         Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED" in field "company_company_name"
-        And I should see the text "Peoplebuilding 2 Peoplebuilding Estate" in field "company_address_line1"
-        And I should see the text "Maylands Avenue" in field "company_address_line2"
+        And I should see the text "1st Floor, Imex Centre" in field "company_address_line1"
+        And I should see the text "575-599 Maxted Road" in field "company_address_line2"
         And I should see the text "Hemel Hempstead" in field "company_locality"
         And I should see the text "Hertfordshire" in field "company_county"
-        And I should see the text "HP2 4NW" in field "company_postcode"
+        And I should see the text "HP2 7DX" in field "company_postcode"
         When I click on the "Continue" button
 
         Then I should see the "Return Summary" page
@@ -3285,7 +3290,7 @@ Feature: LBTT Returns
         And I enter "Dilbert" in the "First name" field
         And I enter "0123456789" in the "Telephone number" field
         And I enter "noreply@northgateps.com" in the "Email" field
-        And I enter "AB123456C" in the "National Insurance Number (NINO)" field
+        And I enter "AB 12 34 56 C" in the "National Insurance Number (NINO)" field
         And I click on the "Continue" button
 
         Then I should see the "Buyer address" page

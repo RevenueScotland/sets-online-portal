@@ -27,7 +27,7 @@ module NumberFormatting
   # @param value [Integer] number to check
   # @return the value if it's not blank or else return 0
   def or_zero(value)
-    value.blank? ? 0 : value
+    value.presence || 0
   end
 
   # convert a string in money format to pence for to allow integer arithmetic

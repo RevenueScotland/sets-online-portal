@@ -1,5 +1,5 @@
-<%= content_for :hide_back_link, true %>
-<%= content_for :page_title, t('.title') %>
+<% content_for :hide_back_link, true %>
+<% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <% if can? AuthorisationHelper::CREATE_MESSAGE %>
   <%= form_for @message, url: new_dashboard_message_path, method: :get, local: true do |f| %>
@@ -68,7 +68,7 @@
   </table>
 </div>
 <% end %>
-<h2><%= t('.heading') %> </h2>
+<%= sub_heading %>
 <%= display_table(@messages,
                   [:created_date, :full_name, :title, :reference, :subject_description,  :has_attachment,:read_indicator],
                   [

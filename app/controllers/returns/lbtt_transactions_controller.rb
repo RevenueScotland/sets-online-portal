@@ -212,7 +212,7 @@ module Returns
       model = load_step
 
       # initialise row data if not already present
-      unless @lbtt_return.non_ads_relief_claims.present?
+      if @lbtt_return.non_ads_relief_claims.blank?
         @lbtt_return.non_ads_relief_claims = Array.new(1) { Lbtt::ReliefClaim.new }
       end
 

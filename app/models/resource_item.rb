@@ -16,14 +16,14 @@ class ResourceItem
 
   # check if resource_item is valid
   # @param max_file_size [Integer] @see file_upload_expected_max_size_mb to find where this is being set.
-  # @param content_type_whitelist [Array] contains strings of MIME types which will be used to match against
+  # @param content_type_allowlist [Array] contains strings of MIME types which will be used to match against
   #   the content_type of the file being validated.
-  # @param file_extension_whitelist [Array] contains strings which is the conversion of the content_type_whitelist
+  # @param file_extension_allowlist [Array] contains strings which is the conversion of the content_type_allowlist
   #   to the suffix equivalent, for example ".csv" and ".docx"
-  def valid?(max_file_size, content_type_whitelist, file_extension_whitelist)
+  def valid?(max_file_size, content_type_allowlist, file_extension_allowlist)
     @max_file_size = max_file_size
-    @content_type_whitelist = content_type_whitelist
-    @file_extension_whitelist = file_extension_whitelist
+    @content_type_allowlist = content_type_allowlist
+    @file_extension_allowlist = file_extension_allowlist
     super()
   end
 
@@ -37,7 +37,7 @@ class ResourceItem
     resource_item.upload_datetime = DateTime.current
     resource_item.description = description
     resource_item.type = type
-    Rails.logger.debug("Creating Resource Item #{type} for file #{file_data&.original_filename}")
+    Rails.logger.debug { "Creating Resource Item #{type} for file #{file_data&.original_filename}" }
     resource_item
   end
 
@@ -49,6 +49,22 @@ class ResourceItem
     resource_item.content_type = file_data.content_type
     resource_item.file_data = file_data.read
     resource_item.size = file_data.size
+  end
+
+  # Generates a temporary directory for storing a file, if necessary the directory is created
+  # @param type [Symbol]  type of the file used to create a subdirectory
+  # @param sub_directory [string]  a subdirectory to create, normally the username
+  # @param file_name [String]  name of the file
+  # @return [String] file storage path
+  def self.file_temp_storage_path(type, sub_directory, file_name)
+    dir_name = Rails.configuration.x.temp_folder
+    if dir_name.blank?
+      Rails.logger.error("Temp folder '#{dir_name}' is missing")
+      raise Error::AppError.new('Path', 'Temp folder is missing')
+    end
+    dir_name = File.join(dir_name, type.to_s, sub_directory)
+    FileUtils.mkdir_p(dir_name) unless File.directory?(dir_name)
+    File.join(dir_name, file_name)
   end
 
   private
@@ -64,8 +80,8 @@ class ResourceItem
 
   # Validate the content type
   def content_type?
-    return true if !defined?(@content_type_whitelist) || @content_type_whitelist.nil? || @content_type.nil?
-    return true if Array(@content_type_whitelist).any? { |item| @content_type =~ /#{item}/ }
+    return true if !defined?(@content_type_allowlist) || @content_type_allowlist.nil? || @content_type.nil?
+    return true if Array(@content_type_allowlist).any? { |item| @content_type =~ /#{item}/ }
 
     return true if valid_file_extension?
 
@@ -74,10 +90,14 @@ class ResourceItem
 
   # Add an invalid file type error, with some additional logging
   def add_invalid_file_type_error
-    Rails.logger.debug("File upload content type incorrect - actual type was #{@content_type}" \
-                       " expected one of #{@content_type_whitelist}")
-    Rails.logger.debug('or file content unknown and file extension did not match - actual extension was' \
-                       " #{File.extname(@original_filename)} expected one of #{@file_extension_whitelist}")
+    Rails.logger.debug do
+      "File upload content type incorrect - actual type was #{@content_type}" \
+        " expected one of #{@content_type_allowlist}"
+    end
+    Rails.logger.debug do
+      'or file content unknown and file extension did not match - actual extension was' \
+        " #{File.extname(@original_filename)} expected one of #{@file_extension_allowlist}"
+    end
     errors.add(:file_data, :invalid_file_type)
     false
   end
@@ -86,6 +106,6 @@ class ResourceItem
   def valid_file_extension?
     return false if @content_type != Rails.configuration.x.file_upload_unknown_content_type
 
-    @file_extension_whitelist.include? File.extname(@original_filename).downcase
+    @file_extension_allowlist.include? File.extname(@original_filename).downcase
   end
 end

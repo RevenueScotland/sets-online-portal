@@ -47,7 +47,7 @@ module BackHelper
   # @return [String] empty space to hide back link.
   def clear_previous_stack
     # Always sets the session of visited links to the current page
-    session[:link_visited] = [current_page_path(nil)]
+    set_link_stack(nil, clear_stack: true)
     # @see last_link_custom_path? method for details of it's use.
     session[:is_last_link_custom_path] = nil
     ''
@@ -65,14 +65,14 @@ module BackHelper
   # @see application.html.erb content_for [false] option.
   # @return [HTML block element] link to previous page with the correct class.
   def previous_page_link
-    session[:link_visited] = Array(link_stack).unshift(current_page_path(yield))
+    set_link_stack(yield)
 
     remove_repeated_links
 
     # Refreshes the indicator to know if the last visited link was to be modified.
     last_link_custom_path?(yield)
     # Hides the back link while keeping the stack.
-    return if yield == 'hide_link_keep_stack'
+    return if yield == 'hide_link_keep_stack' || link_stack.size < 2
 
     # return link to the previous page in the stack
     # Applies the CSS class 'external-link' to the back button, will show confirm warning message
@@ -102,7 +102,7 @@ module BackHelper
   end
 
   # Used for removing the params of the link.
-  # Mainly used in methods which are called from methods passed in yield in the {#current_page_path} method.
+  # Mainly used in methods which are called from methods passed in yield in the {#set_link_stack} method.
   # @example removing the params id of a url
   #   remove_params(link_path, %w[id])
   # @param link_path [String] is the full path of the link.
@@ -112,7 +112,7 @@ module BackHelper
   #   of a query is 'id=25', so the param is just the attribute and the query is the full attribute with value.
   #   In addition, removing the params also removes its values.
   def remove_params(link_path, link_params)
-    return link_path if link_params.blank? || !link_path.include?('?')
+    return link_path if link_params.blank? || link_path.exclude?('?')
 
     link_queries = URI(link_path).query.split('&')
     # Looking at each of the link params - the params to be removed
@@ -125,7 +125,7 @@ module BackHelper
 
   # Used for changing the params of the path, the parameter values passed will overwrite anything that is
   # currently in the path.
-  # Mainly used in methods which are called from methods passed in yield in the {#current_page_path} method.
+  # Mainly used in methods which are called from methods passed in yield in the {#set_link_stack} method.
   # @param link_path [String] is the full path of the link.
   # @param link_queries [Array] an array of string that consists of queries to overwrite its path query.
   # @return [String] the string value of the full path of the link with the changed query/params
@@ -169,15 +169,25 @@ module BackHelper
     true
   end
 
-  # Returns the link/path of the current page optionally modifying/replacing it based on the url_string_method.
+  # Sets the initial link stack by adding the current page to it
+  #
+  # Optionally modifying/replacing the current page based on the url_string_method.
+  #
   # @param url_string_method [Symbol || String] Either a pointer to a method to modify the URL
   #                                               or a String value to replace it
-  # @return [String] link to the current page.
-  def current_page_path(url_string_method)
+  # @param clear_stack [Boolean] clear the existing stack before adding the current page to it
+  # @return [Array<String>] Array of links
+  def set_link_stack(url_string_method, clear_stack: false)
     link_path = request.env['ORIGINAL_FULLPATH']
-    return link_path if url_string_method.blank? || url_string_method == 'hide_link_keep_stack'
+    if url_string_method.present? && url_string_method != 'hide_link_keep_stack'
+      link_path = (respond_to?(url_string_method) ? send(url_string_method, link_path) : url_string_method)
+    end
 
-    respond_to?(url_string_method) ? send(url_string_method, link_path) : url_string_method
+    session[:link_visited] = if clear_stack
+                               [link_path]
+                             else
+                               Array(session[:link_visited]).unshift(link_path)
+                             end
   end
 
   # Grabs the path of the url
@@ -217,6 +227,8 @@ module BackHelper
 
   # Removes the reloaded page from the stack of links.
   def remove_reloaded_page
+    return unless link_stack.size > 1
+
     link_stack.shift if uri_parse_path(link_stack[0]) == uri_parse_path(link_stack[1])
   end
 

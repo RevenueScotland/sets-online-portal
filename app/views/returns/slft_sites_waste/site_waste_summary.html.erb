@@ -5,12 +5,11 @@
 <%# See also export_waste_csv_data as the sorts need to be the same %>
 <%= display_table(
   @site.wastes&.values.sort,
-  [:ewc_code_and_description, :lower_tonnage, :standard_tonnage, :exempt_tonnage, :water_tonnage, :total_tonnage],  
+  [:ewc_code_and_description, :lower_tonnage_display, :standard_tonnage_display, :exempt_tonnage_display, :water_tonnage_display, :total_tonnage],  
   [ { label: t('.edit_row'), path: :returns_slft_waste_description_path },
     # For the contents of the data: { confirm: [<...>] } see table_helper's action_options method
     { label: t('.delete_row'), path: :returns_waste_path, action: :destroy, options: { data: { confirm: ['.delete', :ewc_code_and_description] } } } ],
-  { ewc_code_and_description: { label: t('.description'), cell_class: 'govuk-!-width-one-third' },
-    water_tonnage: { label: t('.water_tonnage') } }
+  { ewc_code_and_description: { label: t('.description'), cell_class: 'govuk-!-width-one-third' } }
 ) %>
 <%= navigational_links [{ link: '.add_new_waste_type', path: returns_slft_waste_description_path(waste: 'new') },
                         { link: '.delete_all_waste_types', path: returns_slft_site_waste_summary_path(site: @site, delete_all: true), link_html_options: { data: { confirm: t('.delete_all') } } }] %>
@@ -25,7 +24,6 @@
   <br>
   <%= form_with url: returns_slft_site_waste_summary_path(site: @site, save_draft: true), method: :post, local: true do |f| %>
     <%= form_errors_for @slft_return %>
-    <%= f.hidden_field :save_draft, {}, { :value => 'save_draft' } %>
     <%= f.button 'save_draft', { :name => 'continue' } %>
     <% if @site_summary_save_reference.present? %>
       <%= t('returns.slft.save_draft.return_html') %>

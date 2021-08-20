@@ -61,7 +61,7 @@ module WizardCompanyHelper
     if company.valid?(%i[company_number company_selected]) && object_valid
       wizard_save_company(wizard_cached_object, wizard_page_object, company, overrides)
     else
-      Rails.logger.debug "Validation on company failed object_valid: #{object_valid}"
+      Rails.logger.debug { "Validation on company failed object_valid: #{object_valid}" }
       # @see company_helper
       initialize_company_variables(company)
       false
@@ -104,7 +104,7 @@ module WizardCompanyHelper
   def wizard_save_company(wizard_cached_object, wizard_page_object, company, overrides)
     company_attribute = overrides[:company_attribute] || :company
 
-    Rails.logger.debug "Storing company in object at #{wizard_page_object.class.name}##{company_attribute}"
+    Rails.logger.debug { "Storing company in object at #{wizard_page_object.class.name}##{company_attribute}" }
     wizard_page_object.send("#{company_attribute}=".to_sym, company)
 
     wizard_save(wizard_cached_object, overrides[:cache_index])

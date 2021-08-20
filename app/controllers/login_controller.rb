@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Handles login and log out via the Warden security gem.
-class LoginController < ApplicationController
+class LoginController < ApplicationController # rubocop:disable Metrics/ClassLength
   # Allow specific pages to be unauthenticated
   skip_before_action :require_user, only: %I[new create unauthenticated destroy session_expired]
   # Don't stop these pages running because of session expiry
@@ -57,7 +57,7 @@ class LoginController < ApplicationController
     if reason == :token_required
       render 'token'
     else
-      Rails.logger.debug("User #{@user.username} was unauthenticated and the message was : #{reason}")
+      Rails.logger.debug { "User #{@user.username} was unauthenticated and the message was : #{reason}" }
       @user.errors.add(error_attribute(reason), reason)
       render reason == :invalid_token ? 'token' : 'new'
     end
@@ -66,10 +66,19 @@ class LoginController < ApplicationController
 
   private
 
+  # Make sure we have a status of 401 in the logging payload
+  # This is required as when the login fails the warden middleware interrupts the normal rails processing
+  # so a status is not set and the logging then fails with
+  # Could not log "process_action.action_controller" event. NoMethodError: undefined method `first'
+  def append_info_to_payload(payload)
+    payload[:status] ||= 401 unless payload[:exception]
+    super
+  end
+
   # handle what happens when a user enters their username/password
   # @param login_form [Object] user information from the login form
   def handle_password_login(login_form)
-    Rails.logger.debug("Checking credentials for #{login_form.username}")
+    Rails.logger.debug { "Checking credentials for #{login_form.username}" }
     authenticate! if login_form.valid?(:login)
 
     # clear the password to prevent any possible information leakage
@@ -81,7 +90,7 @@ class LoginController < ApplicationController
   # handle what happens when a user enters their username/token
   # @param login_form [Object] user information from the login form
   def handle_token_login(login_form)
-    Rails.logger.debug("Checking 2 factor authentication for #{login_form.username}")
+    Rails.logger.debug { "Checking 2 factor authentication for #{login_form.username}" }
     authenticate! if login_form.valid? :two_factor
 
     login_form.token = nil

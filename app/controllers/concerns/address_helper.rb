@@ -34,7 +34,7 @@ module AddressHelper
     @address_summary = AddressSummary.new
     @address_summary.postcode = search_postcode
     @address_read_only = true
-    @show_manual_address = true unless address_detail.blank?
+    @show_manual_address = true if address_detail.present?
     @address_detail = address_detail || Address.new(default_country: default_country)
 
     move_postcode_search_errors(address_detail) unless params[:show_manual_address] == 'true'

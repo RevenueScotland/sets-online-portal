@@ -15,6 +15,9 @@ module Returns
       end
       attribute_list.each { |attr| attr_accessor attr }
 
+      # For each of the numeric fields create a setter, don't do this if there is already a setter
+      strip_attributes :rent
+
       validates :year, presence: true
       validates :rent, numericality: { greater_than_or_equal_to: 0, less_than: 1_000_000_000_000_000_000,
                                        allow_blank: true },
@@ -42,7 +45,7 @@ module Returns
       # @return a hash suitable for use in a save request to the back office
       def request_save
         output = {}
-        output['ins1:Year'] = @year unless @year.blank?
+        output['ins1:Year'] = @year if @year.present?
         output['ins1:RentAmount'] = @rent
         output
       end
@@ -50,7 +53,7 @@ module Returns
       # Create a new instance based on a back office style hash (@see LbttReturn.convert_back_office_hash).
       # Sort of like the opposite of @see #request_save
       def self.convert_back_office_hash(output)
-        output[:rent] = output.delete(:rent_amount) unless output[:rent_amount].blank?
+        output[:rent] = output.delete(:rent_amount) if output[:rent_amount].present?
 
         # Create new instance
         YearlyRent.new_from_fl(output)
@@ -59,7 +62,7 @@ module Returns
       # @return a hash suitable for use in a save request to the back office
       def request_save_for_calc
         output = {}
-        output['ins1:RentYear'] = @year unless @year.blank?
+        output['ins1:RentYear'] = @year if @year.present?
         output['ins1:RentAmount'] = or_zero(@rent)
         output
       end

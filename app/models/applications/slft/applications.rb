@@ -24,6 +24,9 @@ module Applications
 
       attribute_list.each { |attr| attr_accessor attr }
 
+      # For each of the numeric fields create a setter, don't do this if there is already a setter
+      strip_attributes :waste_percentage, :added_water_percentage, :naturally_occurring_percentage
+
       # applicant_type
       #   WP : waste producer
       #   LO : landfill operator
@@ -189,13 +192,13 @@ module Applications
       # Does the treatment need to be validated.
       # @return [Boolean] true if reason_for_no_treatment or treatment is filled
       def treatment_required?
-        (!treatment.blank? || reason_for_no_treatment.blank?) && waste_producer_water_discount?
+        (treatment.present? || reason_for_no_treatment.blank?) && waste_producer_water_discount?
       end
 
       # Does the reason_for_no_treatment need to be validated
       # @return [Boolean] true if reason_for_no_treatment or treatment is filled
       def reason_for_no_treatment_required?
-        (treatment.blank? || !reason_for_no_treatment.blank?) && waste_producer_water_discount?
+        (treatment.blank? || reason_for_no_treatment.present?) && waste_producer_water_discount?
       end
 
       # @return [Array] list of application types excluding 'WP-WD' for landfill operator variant

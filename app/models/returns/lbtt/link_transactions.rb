@@ -17,12 +17,15 @@ module Returns
 
       attr_accessor :convey
 
+      # For each of the numeric fields create a setter, don't do this if there is already a setter
+      strip_attributes :consideration_amount, :npv_inc, :premium_inc
+
       # amount validations
       validates :consideration_amount, numericality: {
-        greater_than_or_equal_to_zero: 0, less_than: 1_000_000_000_000_000_000, allow_blank: true
+        greater_than_or_equal_to: 0, less_than: 1_000_000_000_000_000_000, allow_blank: true
       }, presence: true, two_dp_pattern: true, if: :convey
       validates :npv_inc, :premium_inc, numericality: {
-        greater_than_or_equal_to_zero: 0, less_than: 1_000_000_000_000_000_000, allow_blank: true
+        greater_than_or_equal_to: 0, less_than: 1_000_000_000_000_000_000, allow_blank: true
       }, presence: true, two_dp_pattern: true, unless: :convey
       validates :return_reference, reference_number: true
 

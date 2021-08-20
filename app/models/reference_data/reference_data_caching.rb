@@ -58,7 +58,7 @@ module ReferenceData
     # @param [Array] composite_keys - list of composite keys made from calling @see composite_key.
     # @return [Hash] output[composite_key] = <result>
     def self.lookup_multiple(composite_keys, safe_lookup: false)
-      Rails.logger.debug("Looking up multiple keys #{composite_keys}")
+      Rails.logger.debug { "Looking up multiple keys #{composite_keys}" }
       output = cached_values.slice(*composite_keys)
       log_or_raise_lookup_error(output, composite_keys, safe_lookup, :multiple)
 
@@ -78,7 +78,7 @@ module ReferenceData
     #   - :list is used for list method
     private_class_method def self.log_or_raise_lookup_error(output, comp_key, safe_lookup, lookup_type = :default)
       # If we have an output then we don't need to log any error
-      return unless output.blank?
+      return if output.present?
 
       type = { default: 'lookup', multiple: 'lookup multiple', list: 'list' }[lookup_type]
       return Rails.logger.error("No #{name} #{type} data found for #{comp_key}") if safe_lookup
@@ -126,9 +126,9 @@ module ReferenceData
     # so the complete in cache structure is : cache[cache_key][composite_key][code] = object
     # @return [Hash] the cached version/entire hash of the values for this object's cache_key.
     def self.cached_values
-      Rails.logger.debug("Getting cache data for #{cache_key}")
+      Rails.logger.debug { "Getting cache data for #{cache_key}" }
       Rails.cache.fetch(cache_key) do
-        Rails.logger.debug("Cache miss for #{cache_key}")
+        Rails.logger.debug { "Cache miss for #{cache_key}" }
         back_office_data
       end
     end

@@ -19,10 +19,10 @@ class AddressSummary
 
   attr_accessor :postcode, :address_identifier, :formatted_address
 
-  validates :postcode, presence: true, length: { minimum: 6, maximum: 8 }, on: %i[search]
-  validates_format_of :postcode,
-                      with: /\A([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})\z/i,
-                      on: %i[search]
+  validates :postcode,
+            presence: true, length: { minimum: 6, maximum: 8 },
+            format: /\A([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})\z/i,
+            on: %i[search]
 
   # Performs an address search
   def search

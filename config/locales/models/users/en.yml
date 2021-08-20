@@ -94,6 +94,9 @@ en:
         new_user: "Create a new user for your account"
         hint:
           new_user: "You can create other users for your account and control the actions that they can take"
+      pagination:
+          context:
+            page: "account users"
     new:
       title: "New User"
       user_details: "User details"

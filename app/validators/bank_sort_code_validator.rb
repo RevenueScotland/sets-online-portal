@@ -3,7 +3,7 @@
 # Class for validating bank sort code number
 class BankSortCodeValidator < ActiveModel::EachValidator
   # Regex for Sort Code validation
-  SORT_CODE = /\A(?!(?:0{6}))(?:\d\d-\d\d-\d\d)\z/i.freeze
+  SORT_CODE = /\A(?:\d\d-\d\d-\d\d)\z/i.freeze
 
   # Validation for Sort code
   #
@@ -19,6 +19,6 @@ class BankSortCodeValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     return if value.blank? || value&.match?(SORT_CODE)
 
-    record.errors.add(attribute, :is_invalid)
+    record.errors.add(attribute, :sort_code_is_invalid)
   end
 end

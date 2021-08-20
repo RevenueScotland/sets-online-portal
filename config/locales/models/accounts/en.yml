@@ -45,7 +45,7 @@ en:
       title: "Sign up details"
       description: "This is where you update your account information and manage the access that you give other people to your account."
       change_company_registered_address: "Contact Revenue Scotland if you want to change your company number or company name"
-      your_user_details: "Your user details"
+      heading: "Your user details"
       link:
         change_password: "Change your password"
         about_registration: "Terms & Conditions"

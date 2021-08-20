@@ -85,3 +85,6 @@ en:
         not_amendable: "This return is no longer amendable, use the claim option"
         amendable_period: "You have until %{value} to complete this draft"
         receipt: "Receipt"
+        pagination:
+          context:
+            page: "all submitted returns"

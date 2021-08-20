@@ -120,13 +120,13 @@ module ReferenceData
     def self.eligibility_checkers
       {
         '0' => ReferenceValue.new(code: '0', value: 'ADS was paid on the new property purchase.', sequence: '10'),
-        '1' => ReferenceValue.new(code: '1', value: 'The previous property was sold within 18 months
-                                              of buying the new one.', sequence: '20'),
-        '2' => ReferenceValue.new(code: '2', value: 'The new property is, or has been,
-                                              the only or main residence of all buyers.', sequence: '30'),
-        '3' => ReferenceValue.new(code: '3', value: 'The previous property was the only or main residence of
-                                                     all buyers of the new property at some time in the 18 month period
-                                                     before the new property was purchased.', sequence: '40')
+        '1' => ReferenceValue.new(code: '1', value: 'The previous property was sold within 18 months ' \
+                                                    'of buying the new one.', sequence: '20'),
+        '2' => ReferenceValue.new(code: '2', value: 'The new property is, or has been, ' \
+                                                    'the only or main residence of all buyers.', sequence: '30'),
+        '3' => ReferenceValue.new(code: '3', value: 'The previous property was the only or main residence of all ' \
+                                                    'buyers of the new property at some time in the 18 month ' \
+                                                    'period before the new property was purchased.', sequence: '40')
       }
     end
 

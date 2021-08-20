@@ -43,6 +43,6 @@ module CommonFormatting
     # replaces all of \n with a break line, but make sure it is escaped before marking as safe
     text = ERB::Util.html_escape(text)
     text.gsub!("\n", '<br>')
-    text.html_safe
+    text.html_safe # rubocop:disable Rails/OutputSafety
   end
 end

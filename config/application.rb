@@ -25,7 +25,7 @@ module RevScot
   # Main application class
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.0
+    config.load_defaults 6.1
 
     # override Rails default behaviour of adding <div class=\"field_with_errors\"> in html tag when there is
     # validation failure
@@ -40,7 +40,7 @@ module RevScot
 
     # Load the local environment file if it exists
     config.before_configuration do
-      env_file = File.join(Rails.root, 'config', 'local_env.yml')
+      env_file = Rails.root.join('config/local_env.yml')
       if File.exist?(env_file)
         YAML.safe_load(File.open(env_file)).each do |key, value|
           ENV[key.to_s] = value
@@ -86,17 +86,17 @@ module RevScot
     FileUtils.mkdir_p(config.x.temp_folder) unless File.directory?(config.x.temp_folder)
 
     # Secure message limit type of file upload
-    config.x.file_upload_content_type_whitelist =
+    config.x.file_upload_content_type_allowlist =
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, ' \
       'application/vnd.ms-excel, image/tiff, application/pdf, image/png, image/gif, image/jpeg, image/jpg, ' \
       'application/rtf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
     # CSV file upload content type limit type (CSV)
-    config.x.slft_waste_file_upload_content_type_whitelist = 'text/csv'
+    config.x.slft_waste_file_upload_content_type_allowlist = 'text/csv'
 
     # alias as CSV files are seen as Excel files if excel is installed on the users device
     # not combined with the above so that this is not shown to the users as a valid file type to upload.
-    config.x.slft_waste_file_upload_alias_content_type_whitelist = 'application/vnd.ms-excel'
+    config.x.slft_waste_file_upload_alias_content_type_allowlist = 'application/vnd.ms-excel'
 
     # When a file is uploaded but the client doesn't know it's content/mime type, it sends it with the following
     # content type

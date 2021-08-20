@@ -3,7 +3,7 @@
   <%= f.text_field :contact_firstname %>
   <%= f.text_field :contact_surname %>
   <%= f.text_field :job_title %>
-  <h3> <%= t('.address') %> </h3>
+  <%= sub_heading(text: t('.address')) %>
   <%= render "/layouts/address" %>
   <%= f.text_field :contact_email %>
   <%= f.text_field :contact_tel_no %>

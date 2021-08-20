@@ -1,3 +1,7 @@
+/**
+ * Stylesheet that handles the pagination related code
+ */
+
 .page-numbers-container {
     margin-top: 0px;
     overflow: hidden;
@@ -76,65 +80,18 @@
     margin-bottom: 30px;
 }
 
-.pagination {
+.pagination-item-range {
     margin: 0 auto;
     text-align: center;
 }
 
-.pagination ul {
+.pagination-item-range p {
+    margin: 0;
     display: inline-block;
-    margin: 0 10px;
 }
 
 @media (max-width: 370px) {
-    .pagination ul {
+    .pagination-item-range {
         margin-top: 15px;
     }
-}
-
-.pagination ul > li {
-    padding-left: 0;
-}
-
-.pagination ul > li:first-child > a {
-    border-left-width: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-.pagination ul > li:last-child > a {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
-.pagination ul > .active span,
-.pagination ul > .active a {
-    color: #999;
-    cursor: default;
-    background: transparent;
-}
-
-.pagination ul > .active a:hover,
-.pagination ul > .active a:focus {
-    text-decoration: none;
-}
-
-ul.list-inline {
-    list-style: none;
-    padding-left: 0;
-}
-
-ul.list-inline li {
-    display: inline-block;
-}
-
-.visuallyhidden {
-    border: 0;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    width: 1px;
 }

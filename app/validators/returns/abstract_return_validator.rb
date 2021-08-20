@@ -20,7 +20,9 @@ module Returns
       # add the general reason for the error to the list
       error_list << field_to_blame
 
-      model.errors.each { |key, message| Rails.logger.info "  #{key} - #{message}" unless key == :base }
+      model.errors.each do |error|
+        Rails.logger.info "  #{error.attribute} - #{error.message}" unless error.attribute == :base
+      end
     end
 
     # Clears out existing errors on the model and creates new errors in the :base context with a suitable message.

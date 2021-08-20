@@ -20,7 +20,7 @@
     <%= form.select :direction_code, @message_filter.list_ref_data(:direction_code), { include_blank: true }, {} %>
     <%= form.select :subject_code, @message_filter.subject_description_list(current_user), { selected: @message_filter.subject_code, :code => :full_key_code, :value => :value, include_blank: true }, {} %>
   <% end %>
-  <%= form.button t('.find'), autofocus: (@on_filter_find && !@form_error_found) %>
+  <%= form.button t('.find'), autofocus: (@on_filter_find && !content_for?(:form_error_found)) %>
 <% end %>
 <br>
 <%= display_table(@messages,
@@ -30,7 +30,7 @@
                   ],
                   {created_date: {format: :datetime}}) %>
 <% if @messages.nil? %>
-  <p> <%= t('.no_data_found') %> </p>
+  <%= display_paragraph_components(body: t('.no_data_found')) %>
 <% end %>
 <%= paginate @pagination_collection %>
 <% link = [

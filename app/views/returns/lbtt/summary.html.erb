@@ -2,7 +2,7 @@
 <% content_for :page_subtitle, t('.subtitle') %>
 <% content_for :page_description, t('.description') %>
 <!-- Applies the CSS class 'external-link' to the navigation bar options, see return-form-dirty.js for details -->
-<% content_for :nav_bar_html_options, { class: 'external-link' } %>
+<% content_for :nav_bar_html_options, '{ class: "govuk-link external-link" }'.html_safe %>
 <% if @lbtt_return.show_repayment? %>
   <div class='govuk-body'>
     <%= t('.repayment_description') %>

@@ -38,9 +38,9 @@ Feature: Account
         And I should see the text "09338960"
         And I should see the text "NORTHGATE PUBLIC SERVICES LIMITED"
         And I should see the text "Registered address"
-        And I should see the text "Peoplebuilding 2 Peoplebuilding Estate, Maylands Avenue, Hemel Hempstead, Hertfordshire, HP2 4NW"
+        And I should see the text "1st Floor, Imex Centre, 575-599 Maxted Road, Hemel Hempstead, Hertfordshire, HP2 7DX"
         And I should see the text "Address"
-        And I should see the text "Peoplebuilding 2 Peoplebuilding Estate, Maylands Avenue, Hemel Hempstead, Hertfordshire, HP2 4NW"
+        And I should see the text "1st Floor, Imex Centre, 575-599 Maxted Road, Hemel Hempstead, Hertfordshire, HP2 7DX"
         And I should see the text "Contact Revenue Scotland if you want to change your company number or company name"
         And I should see the text "Username"
         And I should see the text "PORTAL.NORTHGATE"
@@ -115,7 +115,7 @@ Feature: Account
         And I flip "Email address" field between "noreply@northgateps.com" and "noreply2@northgateps.com" using marker "account_email_address"
         And I flip "Confirm email address" field between "noreply@northgateps.com" and "noreply2@northgateps.com" using marker "account_email_address_confirmation"
         And I flip "Contact phone number" field between "07700900123" and "07700900321" using marker "account_contact_number"
-        And I flip "National insurance number (NINO)" field between "AB123456A" and "AB123455A" using marker "account_nino"
+        And I flip "National insurance number (NINO)" field between "AB 12 34 56 A" and "AB 12 34 55 A" using marker "account_nino"
         And I click on the "Confirm" button
 
         Then I should see the "Sign up details" page

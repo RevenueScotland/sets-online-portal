@@ -97,9 +97,7 @@ module Returns
       end
 
       # provide full address of property
-      def full_address
-        address.full_address
-      end
+      delegate :full_address, to: :address
 
       # @return a hash suitable for use in a save request to the back office
       def request_save

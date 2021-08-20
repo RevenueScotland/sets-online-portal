@@ -247,6 +247,8 @@ BEGIN
   DELETE FROM case_party_links WHERE cpli_par_refno IN (SELECT par_refno FROM parties WHERE UPPER(par_com_company_name) like 'NORTHGATE PUBLIC SERVICES LIMITED%%');
   DELETE FROM lbtt_return_party_links WHERE lpli_par_refno IN (SELECT par_refno FROM parties WHERE UPPER(par_com_company_name) like 'NORTHGATE PUBLIC SERVICES LIMITED%%');
   DELETE FROM alternate_references WHERE alre_alrt_object_type = 'PAR' AND alre_object_reference in (SELECT par_refno FROM parties WHERE UPPER(par_com_company_name) like 'NORTHGATE PUBLIC SERVICES LIMITED%');
+  DELETE FROM fiac_party_links WHERE fpli_par_refno IN 
+        (SELECT par_refno FROM parties WHERE UPPER(par_com_company_name) like 'NORTHGATE PUBLIC SERVICES LIMITED%' );
   DELETE FROM parties WHERE UPPER(par_com_company_name) like 'NORTHGATE PUBLIC SERVICES LIMITED%';
   
   DELETE FROM document_notes WHERE dno_created_by IN (SELECT usr_refno from users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%'));
@@ -270,6 +272,28 @@ BEGIN
   DELETE FROM alternate_references WHERE alre_alrt_object_type = 'PAR' AND alre_object_reference in (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%');
   DELETE FROM parties WHERE par_per_surname like 'Port%-Test%';
  
+  -- Tidy up cases and any uploaded documents create by e.g. claims
+  DELETE FROM transactions WHERE tra_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
+  DELETE FROM potential_transactions WHERE ptra_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
+  DELETE FROM secure_messages WHERE smsg_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
+  DELETE FROM case_links WHERE cali_to_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
+  DELETE FROM case_links WHERE cali_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
+  DELETE FROM case_status_histories WHERE cash_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
+  DELETE FROM case_return_links WHERE crli_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
+  DELETE FROM case_party_links WHERE cpli_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
+  DELETE FROM cases WHERE case_created_by LIKE 'PORTAL.%';
+
+  DELETE FROM document_pages WHERE dpa_doc_refno IN (SELECT ere_doc_refno FROM external_references WHERE ere_est_code = 'CASE' 
+    AND NOT EXISTS (SELECT null FROM cases where case_reference = ere_value));
+  DELETE FROM external_references WHERE ere_est_code != 'CASE' AND ere_doc_refno IN (SELECT ere_doc_refno FROM external_references WHERE ere_est_code = 'CASE' 
+    AND NOT EXISTS (SELECT null FROM cases where case_reference = ere_value));
+  DELETE FROM document_activity_audit WHERE daa_doc_refno IN (SELECT ere_doc_refno FROM external_references WHERE ere_est_code = 'CASE' 
+    AND NOT EXISTS (SELECT null FROM cases where case_reference = ere_value));
+  DELETE FROM fwf_allocations WHERE fal_doc_refno IN (SELECT ere_doc_refno FROM external_references WHERE ere_est_code = 'CASE' 
+    AND NOT EXISTS (SELECT null FROM cases where case_reference = ere_value));
+  DELETE FROM external_references WHERE ere_est_code = 'CASE' 
+    AND NOT EXISTS (SELECT null FROM cases where case_reference = ere_value);
+  DELETE FROM documents WHERE NOT EXISTS (SELECT NULL FROM external_references WHERE ere_doc_refno = doc_refno);
  
   -- Create the Main account
   INSERT INTO parties
@@ -284,12 +308,7 @@ BEGIN
   create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
   create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
        
-  -- Needed for FOPS will not be needed for revs scot
---  INSERT INTO fops_account
---     (fac_wrk_refno,fac_par_refno,fac_current_ind)
---  VALUES
---     (3,l_par_refno,'Y');
-        
+      
   -- Note password is created by hashing the username and the password
   INSERT INTO users
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
@@ -430,7 +449,7 @@ BEGIN
   ) returning pro_refno INTO l_pro_refno;
   
    create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'1 Peabody Avenue',
-     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW',p_adr_type=>'PHYSICAL');
+     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'PHYSICAL');
  
    history_tables_api.snapshot_property( p_pro_refno=>l_pro_refno,p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
                              
@@ -446,7 +465,7 @@ BEGIN
   ) returning pro_refno INTO l_pro_refno;
   
    create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'2 Peabody Avenue',
-     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW',p_adr_type=>'PHYSICAL');
+     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'PHYSICAL');
  
    history_tables_api.snapshot_property( p_pro_refno=>l_pro_refno,p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
  
@@ -563,7 +582,7 @@ BEGIN
   ) returning pro_refno INTO l_pro_refno;
   
    create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'1 Peabody Avenue',
-     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW',p_adr_type=>'PHYSICAL');
+     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'PHYSICAL');
  
    history_tables_api.snapshot_property( p_pro_refno=>l_pro_refno,p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
                              
@@ -579,7 +598,7 @@ BEGIN
   ) returning pro_refno INTO l_pro_refno;
   
    create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'2 Peabody Avenue',
-     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW',p_adr_type=>'PHYSICAL');
+     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'PHYSICAL');
  
    history_tables_api.snapshot_property( p_pro_refno=>l_pro_refno,p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
  
@@ -710,7 +729,7 @@ BEGIN
   ) returning pro_refno INTO l_pro_refno;
   
    create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'10 Peabody Avenue',
-     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW',p_adr_type=>'PHYSICAL');
+     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'PHYSICAL');
  
    history_tables_api.snapshot_property( p_pro_refno=>l_pro_refno,p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
                              
@@ -820,7 +839,7 @@ BEGIN
   ) returning pro_refno INTO l_pro_refno;
   
    create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'14 Cucumber Avenue',
-     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW',p_adr_type=>'PHYSICAL');
+     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'PHYSICAL');
  
    history_tables_api.snapshot_property( p_pro_refno=>l_pro_refno,p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
                              
@@ -1010,7 +1029,7 @@ BEGIN
   ) returning pro_refno INTO l_pro_refno;
   
    create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'30 Peabody Avenue',
-     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW',p_adr_type=>'PHYSICAL');
+     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'PHYSICAL');
  
    history_tables_api.snapshot_property( p_pro_refno=>l_pro_refno,p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
                              
@@ -1233,7 +1252,7 @@ BEGIN
   ) returning pro_refno INTO l_pro_refno;
   
    create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'34 Cucumber Avenue',
-     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW',p_adr_type=>'PHYSICAL');
+     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'PHYSICAL');
  
    history_tables_api.snapshot_property( p_pro_refno=>l_pro_refno,p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
                              
@@ -1368,7 +1387,7 @@ BEGIN
   ) returning pro_refno INTO l_pro_refno;
   
    create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'11 Acacia Avenue',
-     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW',p_adr_type=>'PHYSICAL');
+     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'PHYSICAL');
  
    history_tables_api.snapshot_property( p_pro_refno=>l_pro_refno,p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
                              
@@ -1471,7 +1490,7 @@ BEGIN
   ) returning pro_refno INTO l_pro_refno;
   
    create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'31 Thorn Avenue',
-     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW',p_adr_type=>'PHYSICAL');
+     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'PHYSICAL');
  
    history_tables_api.snapshot_property( p_pro_refno=>l_pro_refno,p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
                              
@@ -1819,8 +1838,8 @@ BEGIN
     (par_refno_seq.nextval,'ORG','NORTHGATE PUBLIC SERVICES LIMITED','NORTHGATE PUBLIC SERVICES LIMITED','09338960','N','TAXPAYER','PARTY_ACT_TYPES','SYS',1)
   RETURNING par_refno INTO l_par_refno;
   
-  create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'Peoplebuilding 2 Peoplebuilding Estate',p_adr_address_line_2=>'Maylands Avenue',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW');
-  create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'Peoplebuilding 2 Peoplebuilding Estate',p_adr_address_line_2=>'Maylands Avenue',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 4NW',p_adr_type=>'REGISTERED');
+  create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1st Floor, Imex Centre',p_adr_address_line_2=>'575-599 Maxted Road',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX');
+  create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1st Floor, Imex Centre',p_adr_address_line_2=>'575-599 Maxted Road',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'REGISTERED');
 
   -- Needed for FOPS will not be needed for revs scot
 --  INSERT INTO fops_account

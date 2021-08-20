@@ -6,24 +6,36 @@
 # For further information see the following documentation
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
 Rails.application.config.content_security_policy do |policy|
-  policy.default_src :self, :https
-  policy.font_src    :self, :https, :data
-  policy.img_src     :self, :https, :data
+  policy.default_src :none
+  policy.font_src    :self, 'https://fonts.gstatic.com/'
+  policy.img_src     :self, 'https://www.google-analytics.com/'
   policy.object_src  :none
-  policy.script_src  :self, :https
-  # hash for whitelisting turbolinks progress bar
-  # link for more details
-  # https://github.com/ualbertalib/jupiter/pull/700/files/a9e0517dfb875dc5747fb69a0d5fc76e590c6e07#diff-f9478788f0659efb94cf87ef033f1792
-  policy.style_src   :self, :https, "'sha256-voXja0NHK+kj/CO6kVFGewEz+qyDFbxR+WW6e9vfN3o='"
-  # If you are using webpack-dev-server then specify webpack-dev-server host
-  policy.connect_src :self, :https, 'http://localhost:3035', 'ws://localhost:3035' if Rails.env.development?
+  policy.script_src  :self, 'https://www.googletagmanager.com/', 'https://www.google-analytics.com/'
+  if Rails.env.development?
+    policy.style_src   :self, 'https://fonts.googleapis.com/',
+                       # hash to allow turbolinks progress bar
+                       "'sha256-voXja0NHK+kj/CO6kVFGewEz+qyDFbxR+WW6e9vfN3o='",
+                       # For development only allow the hashes for the performance button
+                       "'unsafe-hashes'", "'sha256-XzJlZKVo+ff9ozww9Sr2p/2TbJXITZuaWMZ9p53zN1U='",
+                       "'sha256-De7agAeYqm6ANIVvRRW6HFWi52AJW8inhFE0gSdgXnI='"
+  else
+    policy.style_src   :self, 'https://fonts.googleapis.com/',
+                       # hash to allow turbolinks progress bar
+                       "'sha256-voXja0NHK+kj/CO6kVFGewEz+qyDFbxR+WW6e9vfN3o='"
+  end
+  if Rails.env.development?
+    policy.connect_src :self, 'https://www.google-analytics.com/'
+  else
+    # If you are using webpack-dev-server then specify webpack-dev-server host
+    policy.connect_src :self, 'https://www.google-analytics.com/', 'http://localhost:3035', 'ws://localhost:3035'
+  end
 
   # Specify URI for violation reports
   # policy.report_uri '/csp-violation-report-endpoint'
 end
 
 # If you are using UJS then enable automatic nonce generation
-# Rails.application.config.content_security_policy_nonce_generator = -> request { SecureRandom.base64(16) }
+Rails.application.config.content_security_policy_nonce_generator = ->(_request) { SecureRandom.base64(16) }
 
 # Set the nonce only to specific directives
 # Rails.application.config.content_security_policy_nonce_directives = %w(script-src)

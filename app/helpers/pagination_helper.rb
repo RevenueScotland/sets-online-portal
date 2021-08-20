@@ -4,12 +4,16 @@
 module PaginationHelper
   # building standard pagination link for given collection.
   # @param paginate_collection [PaginationCollection] a collection require for build pagination link
+  # @param page_name [String|Symbol] in order for multiple paginated displayed tables to work in one page,
+  #   this is required to be defined uniquely for each.
+  #   This is also used to determine the aria-label of the next & previous links and page items range
+  #   for accessibility purposes.
   # @return [HTML block element] The HTML for pagination link
   def paginate(paginate_collection, page_name = 'page')
     return if paginate_collection.nil? || !paginate_collection.is_a?(Pagination::PaginationCollection)
 
     content = render_pagination_link(paginate_collection, page_name)
-    navigation(content.html_safe)
+    navigation(content)
   end
 
   private
@@ -22,14 +26,14 @@ module PaginationHelper
   def render_pagination_link(paginate_collection, page_name)
     previous_tag(page_name, paginate_collection.start_row, paginate_collection.current_page) +
       next_tag(paginate_collection.more_rows_exists, paginate_collection.current_page, page_name) +
-      pages_tag(paginate_collection.start_row, get_last_rows_collection(paginate_collection))
+      pages_tag(paginate_collection.start_row, get_last_rows_collection(paginate_collection), page_name)
   end
 
   # Create navigation tag
   # @param contents [HTML block element] the block of element(s) to be wrapped in the standard navigation tag
   # @return [HTML block element] returns the standard navigation tag with the appropriate classes
   def navigation(contents)
-    content_tag(:nav, contents, class: 'page-numbers-container pagination-container')
+    tag.nav(contents, class: 'page-numbers-container pagination-container')
   end
 
   # Create previous tag
@@ -39,9 +43,10 @@ module PaginationHelper
   def previous_tag(page_name, start_row = 1, page = 1)
     # hide previous link if current page is a first page
     if start_row > 1 && page > 1
-      content_tag(:div, link_to(t('previous'), link_to_page(page - 1, page_name)), class: 'previous')
+      html_options = { 'aria-label' => get_hidden_label_text('previous', page_name) }
+      tag.div(link_to(t('previous'), link_to_page(page - 1, page_name), html_options), class: 'previous')
     else
-      ''
+      ''.html_safe
     end
   end
 
@@ -52,9 +57,10 @@ module PaginationHelper
   def next_tag(more_row_exists, current_page, page_name)
     # hide next link if current page is a last page
     if more_row_exists
-      content_tag(:div, link_to(t('next'), link_to_page(current_page + 1, page_name)), class: 'next')
+      html_options = { 'aria-label' => get_hidden_label_text('next', page_name) }
+      tag.div(link_to(t('next'), link_to_page(current_page + 1, page_name), html_options), class: 'next')
     else
-      ''
+      ''.html_safe
     end
   end
 
@@ -78,11 +84,19 @@ module PaginationHelper
   # @param start_row [Integer] the start row of the pagination
   # @param last_row [Integer] the last row of the pagination
   # @return [HTML block element] the standard link to pages element with the appropriate classes
-  def pages_tag(start_row, last_row)
-    link_content = link_to("#{start_row}-#{last_row}", '', class: 'active govuk-link')
-    li_content = content_tag(:li, link_content)
-    page_contents = content_tag(:ul, li_content.html_safe, class: 'list-inline')
-    content_tag(:div, page_contents, class: 'pagination')
+  def pages_tag(start_row, last_row, page_name)
+    hidden_label = get_hidden_label_text('items', page_name)
+    content = ''.html_safe +
+              "#{start_row}-#{last_row}" +
+              tag.span(hidden_label, class: 'govuk-visually-hidden')
+    tag.div(tag.p(content, class: 'govuk-body'), class: 'pagination-item-range')
+  end
+
+  # Translates the type and page_name to get the text used as the hidden label for any of the three:
+  # page items range, next button and previous button.
+  # @param type [String] can either be 'previous', 'next' or 'items' depending on where it is used
+  def get_hidden_label_text(type, page_name)
+    t("pagination.hidden-label.#{type}", context: t(".pagination.context.#{page_name}"))
   end
 
   # to get last rows number in current page

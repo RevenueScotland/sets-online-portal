@@ -8,10 +8,10 @@
     <%= form.text_field :new_username %>
   <% end %>
   <%= form.collection_radio_buttons_fields(:user_is_current, @user.list_ref_data(:user_is_current)) %>
-  <h1><%= t('.user_details') %></h1>
+  <%= sub_heading(text: t('.user_details')) %>
   <%= form.text_field :forename %>
   <%= form.text_field :surname %>
-  <h1><%= t('.contact_details') %></h1>
+  <%= sub_heading(text: t('.contact_details')) %>
   <%= form.text_field :email_address %>
   <%= form.text_field :email_address_confirmation %>
   <%= form.text_field :phone_number, { optional:true } %>

@@ -11,7 +11,7 @@ module SessionCacheHandler
   #        If you do provide a name it will get that controller's wizard data instead.
   def session_cache_data_load(session_key, cache_index = self.class.name)
     key = session_cache_key(cache_index, session_key)
-    Rails.logger.debug "Loading data for #{key}"
+    Rails.logger.debug { "Loading data for #{key}" }
     Rails.cache.read(key)
   end
 
@@ -22,8 +22,10 @@ module SessionCacheHandler
   def session_cache_data_save(master_object, session_key, cache_index = self.class.name)
     master_object.initialize_ref_data if master_object.respond_to?(:initialize_ref_data)
     key = session_cache_key(cache_index, session_key)
-    Rails.logger.debug "Saving wizard params for:#{key} master_object: #{master_object.class.name}"\
-                       " expiring:#{session_cache_data_expiry_time}"
+    Rails.logger.debug do
+      "Saving wizard params for:#{key} master_object: #{master_object.class.name}"\
+        " expiring:#{session_cache_data_expiry_time}"
+    end
     Rails.cache.write(key, master_object, expires_in: session_cache_data_expiry_time)
   end
 
@@ -33,7 +35,7 @@ module SessionCacheHandler
   # @param cache_index [String] the identifier for the cache index, defaults to the class name (the controller)
   def clear_session_cache(session_key, cache_index = self.class.name)
     cache_key = session_cache_key(cache_index, session_key)
-    Rails.logger.debug "Ending wizard #{cache_key}"
+    Rails.logger.debug { "Ending wizard #{cache_key}" }
     Rails.cache.delete(cache_key)
     session.delete(session_key) { |key| Rails.logger.warn "session #{key} not deleted, not found" }
   rescue StandardError => e
@@ -72,7 +74,7 @@ module SessionCacheHandler
   def session_cache_data_expiry_time
     begin
       max = ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU')['MAX_SESS_MINS']&.value&.to_i
-      return max.minutes unless max.blank?
+      return max.minutes if max.present?
     rescue StandardError
       Rails.logger.warn('System parameter PWS.SYS.RSTU did not include MAX_SESS_MINS, returning arbitrary expiry')
       return 10.hours

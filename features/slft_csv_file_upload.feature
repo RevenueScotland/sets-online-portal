@@ -94,10 +94,10 @@ Feature: SLfT CSV File Upload
 
     When I click on the "Continue" button
     Then I should see the sub-title "Provide tonnage details for this waste type"
-    And I should see the text "0" in field "Standard tonnage"
-    And I should see the text "0" in field "Lower tonnage"
+    And I should see the empty field "Standard tonnage"
+    And I should see the empty field "Lower tonnage"
     And I should see the text "40" in field "Exempt tonnage"
-    And I should see the text "0" in field "Water discount tonnage"
+    And I should see the empty field "Water discount tonnage"
 
     When I click on the "Continue" button
     Then I should see the sub-title "Why is some tonnage exempt?"
@@ -122,10 +122,10 @@ Feature: SLfT CSV File Upload
 
     When I click on the "Continue" button
     Then I should see the sub-title "Provide tonnage details for this waste type"
-    And I should see the text "0" in field "Standard tonnage"
-    And I should see the text "0" in field "Lower tonnage"
+    And I should see the empty field "Standard tonnage"
+    And I should see the empty field "Lower tonnage"
     And I should see the text "40" in field "Exempt tonnage"
-    And I should see the text "0" in field "Water discount tonnage"
+    And I should see the empty field "Water discount tonnage"
 
     When I click on the "Continue" button
     Then I should see the sub-title "Why is some tonnage exempt?"

@@ -108,7 +108,7 @@ module WizardAddressHelper
       success = wizard_save_address_in_object(wizard_cached_object, wizard_page_object, address, overrides)
     end
 
-    Rails.logger.debug("Validation on address: #{success}, required: #{required}, object_valid: #{object_valid}")
+    Rails.logger.debug { "Validation on address: #{success}, required: #{required}, object_valid: #{object_valid}" }
 
     # if the above didn't work then initialise the page address variables for the next iteration
     initialize_address_variables(address, search_postcode) unless success
@@ -155,7 +155,7 @@ module WizardAddressHelper
     check = (address_required.nil? ? 'Y' : 'N')
 
     required = save_address_if_not_required(wizard_cached_object, value, check, overrides)
-    Rails.logger.debug("Address required: #{required}")
+    Rails.logger.debug { "Address required: #{required}" }
     required
   end
 
@@ -193,7 +193,7 @@ module WizardAddressHelper
   def wizard_save_address_in_object(wizard_cached_object, wizard_page_object, address, overrides)
     address_attribute = overrides[:address_attribute] || :address
 
-    Rails.logger.debug "Storing address in object #{wizard_page_object.class.name}##{address_attribute}"
+    Rails.logger.debug { "Storing address in object #{wizard_page_object.class.name}##{address_attribute}" }
 
     wizard_page_object.send("#{address_attribute}=".to_sym, address)
     # revalidate the parent object to allow for any cross address validation
@@ -209,7 +209,7 @@ module WizardAddressHelper
     return true unless after_merge
 
     success = send(after_merge)
-    Rails.logger.debug "After merge call failed: #{after_merge}" unless success
+    Rails.logger.debug { "After merge call failed: #{after_merge}" } unless success
     success
   end
 

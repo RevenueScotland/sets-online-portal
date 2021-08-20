@@ -114,15 +114,9 @@ module Applications
       wizard_step(LO_STEPS) { { validates: :declaration, after_merge: :save_data_in_back_office } }
     end
 
-    # calls back office service to save data on back office
-    def save_data_in_back_office
-      @slft_application.save
-      wizard_save(@slft_application)
-    end
-
     # which file types are allowed to be uploaded
-    def content_type_whitelist
-      Rails.configuration.x.file_upload_content_type_whitelist.split(/\s*,\s*/)
+    def content_type_allowlist
+      Rails.configuration.x.file_upload_content_type_allowlist.split(/\s*,\s*/)
     end
 
     # last wizard page for public slft application
@@ -135,7 +129,7 @@ module Applications
       handle_file_upload('confirmation_and_document_upload',
                          before_add: :add_supporting_document,
                          before_delete: :delete_supporting_document,
-                         clear_cache: request.get? ? true : false)
+                         clear_cache: request.get?)
     end
 
     # Send document to back office
@@ -155,7 +149,7 @@ module Applications
     # Overwrites the user method to pass unique id for unauthenticated user to create folder on server
     # folder will hold the file uploaded by user
     def sub_directory
-      @slft_application ||= wizard_load
+      @slft_application ||= load_step
       @slft_application.case_references[0]
     end
 
@@ -163,7 +157,7 @@ module Applications
     # The "target: '_blank'" page used to download the pdf file of the return according
     # to its details.
     def download_pdf
-      @slft_application ||= wizard_load
+      @slft_application ||= load_step
       success, application_pdf = @slft_application.back_office_pdf_data
       return unless success
 
@@ -175,10 +169,19 @@ module Applications
       redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
+    private
+
+    # calls back office service to save data on back office
+    def save_data_in_back_office
+      @slft_application.save
+      wizard_save(@slft_application)
+    end
+
     # Sets up wizard model if it doesn't already exist in the cache or applicant_type changes
     # @return [Object] the slft_application wizard cache object for wizard saving
     def applicant_type_setup
       @post_path = wizard_post_path
+      # Do not use load and redirect as this is the first page
       @slft_application = wizard_load
       applicant_type = filter_params[:applicant_type] unless filter_params.nil?
       # The application_type is only set for the "Waste Producer" path as it doesn't go through application-type page
@@ -194,7 +197,7 @@ module Applications
       # We're comparing the applicant_type with the previously selected applicant_type to determine
       # whether if we need to clean the pages or not.
       # @slft_application.applicant_type is a previously selected applicant_type.
-      if @slft_application.nil? || (!applicant_type.blank? && (applicant_type != @slft_application.applicant_type))
+      if @slft_application.nil? || (applicant_type.present? && (applicant_type != @slft_application.applicant_type))
         initialise_slft_application(applicant_type, application_type)
       end
       @slft_application
@@ -204,7 +207,7 @@ module Applications
     # @return [Object] the slft_application wizard cache object for wizard saving
     def application_type_setup
       @post_path = wizard_post_path
-      @slft_application = wizard_load
+      @slft_application = load_step
       applicant_type = @slft_application.applicant_type
       application_type = filter_params[:application_type] unless filter_params.nil?
       return_model_on_application_type(applicant_type, application_type)
@@ -220,7 +223,7 @@ module Applications
       # @slft_application.application_type is a previously selected application_type.
       previous_application_type = @slft_application.application_type
       if previous_application_type.nil? || ((application_type != previous_application_type) &&
-                                             !application_type.blank? && !previous_application_type.nil?)
+                                             application_type.present? && !previous_application_type.nil?)
         initialise_slft_application(applicant_type, application_type)
       end
 
@@ -263,12 +266,18 @@ module Applications
 
       case sub_object_attribute
       when :landfill_operator
-        @slft_application, @landfill_operator = wizard_load_or_redirect(dashboard_url, sub_object_attribute)
+        @slft_application, @landfill_operator = wizard_load_or_redirect(fallback_url, sub_object_attribute)
       when :waste_producer
-        @slft_application, @waste_producer = wizard_load_or_redirect(dashboard_url, sub_object_attribute)
+        @slft_application, @waste_producer = wizard_load_or_redirect(fallback_url, sub_object_attribute)
       else
-        @slft_application = wizard_load_or_redirect(dashboard_url)
+        @slft_application = wizard_load_or_redirect(fallback_url)
       end
+    end
+
+    # Holds the fallback url for when the wizard load fails
+    def fallback_url
+      # This function can't be a constant as the method is only available when the controller is instantiated
+      public_landing_applications_slft_url
     end
 
     # Return the parameter list filtered for the attributes of the slft_applications model

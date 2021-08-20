@@ -27,6 +27,11 @@ module Returns
 
       attribute_list.each { |attr| attr_accessor attr }
 
+      # For each of the numeric fields create a setter, don't do this if there is already a setter
+      # linked_consideration, linked_lease_premium have setters
+      strip_attributes :total_consideration, :total_vat, :non_chargeable, :remaining_chargeable,
+                       :annual_rent, :relevant_rent, :repayment_amount_claimed, :account_number
+
       # The attribute is_public is used to determine if the return was made as a public, in other words, a
       # user who is not logged in. This needs to be populated on a new instance of a lbtt_return object.
       # LBTT tax calculations object to manage and store tax calculation results.
@@ -115,9 +120,7 @@ module Returns
                                                            allow_blank: true },
                                            two_dp_pattern: true, presence: true, on: :repayment_amount_claimed
       validates :account_holder_name, :bank_name, presence: true, length: { maximum: 255 }, on: :account_holder_name
-      validates :account_number, presence: true,
-                                 numericality: { only_integer: true, allow_blank: true }, length: { is: 8 },
-                                 on: :account_holder_name
+      validates :account_number, presence: true, account_number: true, on: :account_holder_name
       validates :branch_code, presence: true, bank_sort_code: true, on: :account_holder_name
       validates :repayment_declaration, acceptance: { accept: ['Y'] }, on: :repayment_declaration
       validates :repayment_agent_declaration, acceptance: { accept: ['Y'] }, on: :repayment_declaration,
@@ -134,7 +137,7 @@ module Returns
       # as we don't ask the question
       # @return [String] The current value of the property type
       def property_type
-        return '3' if lease_review? && !@effective_date.blank?
+        return '3' if lease_review? && @effective_date.present?
 
         @property_type
       end
@@ -178,7 +181,8 @@ module Returns
       # setter for the linked consideration
       # This sets the linked consideration from the passed value and also makes sure that the original copy is set
       def linked_consideration=(value)
-        @linked_consideration = value
+        # Strips out leading spaces as this is a numeric field
+        @linked_consideration = value.try(:strip) || value
         return unless (@orig_linked_consideration || 0).zero?
 
         @orig_linked_consideration = sum_from_values(@link_transactions, :consideration_amount)
@@ -203,7 +207,8 @@ module Returns
       # setter for the linked lease premium
       # This sets the linked consideration from the passed value and also makes sure that the original copy is set
       def linked_lease_premium=(value)
-        @linked_lease_premium = value
+        # Strips out leading spaces as this is a numeric field
+        @linked_lease_premium = value.try(:strip) || value
         return unless (@orig_linked_lease_premium || 0).zero?
 
         @orig_linked_lease_premium = sum_from_values(@link_transactions, :premium_inc)
@@ -388,7 +393,7 @@ module Returns
            type: :object }, # key for the title translation
          # if the repayment ind is nil/blank they never got asked the question i.e. not an amend
          # we can't use the version as that is set to 1 by the time this is called
-         unless repayment_ind.blank?
+         if repayment_ind.present?
            { code: :repayment, # section code
              key: :title, # key for the title translation
              key_scope: %i[returns lbtt_claim repayment_claim], # scope for the title translation
@@ -536,7 +541,7 @@ module Returns
       # The relief claim should only show if user has entered ADS and transaction details
       # and we have calculated the amounts, which we can determine by checking the override amount
       def show_relief_calc?
-        !relief_claims.blank? && relief_claims[0].relief_override_amount.present?
+        relief_claims.present? && relief_claims[0].relief_override_amount.present?
       end
 
       # For a repayment then for lbtt the return needs to be an amendment
@@ -591,8 +596,8 @@ module Returns
         output[:new_tenants] = split_by_party_type(hash_parties, 'NEWTENANT')
         output[:agent] = split_by_party_type(hash_parties, 'AGENT')
 
-        output[:link_transactions] = convert_to_link_transactions(output) unless output[:linked_transactions].blank?
-        output[:yearly_rents] = convert_to_yearly_rents(output) unless output[:rent].blank?
+        output[:link_transactions] = convert_to_link_transactions(output) if output[:linked_transactions].present?
+        output[:yearly_rents] = convert_to_yearly_rents(output) if output[:rent].present?
 
         output[:properties] = convert_properties(output)
 
@@ -608,16 +613,14 @@ module Returns
         end
 
         # tax and reliefs
-        output.merge!(convert_to_relief_claims(output[:reliefs])) unless output[:reliefs].blank?
+        output.merge!(convert_to_relief_claims(output[:reliefs])) if output[:reliefs].present?
 
         # convert back office yes/no to Y/N
         yes_nos_to_yns(output, %i[previous_option_ind exchange_ind uk_ind contingents_event_ind])
 
         # derive yes no for transaction pages radio button based on the data now that we've finished moving it around
-        # Use relevant rent or total consideration as a marker they have entered the transaction wizard
-        unless output[:relevant_rent].blank? && output[:total_consideration].blank?
-          derive_transactions_yes_nos_in(output)
-        end
+        # Use annual rent or total consideration as a marker they have entered the transaction wizard
+        derive_transactions_yes_nos_in(output)
 
         # must be called after the above to make sure that linked ind is populated
         output[:tax] = Tax.convert_tax_calculations(output)
@@ -634,19 +637,43 @@ module Returns
         output
       end
 
-      # handle transaction pages yes_no type which are depend on some other attribute value, so here we are setting them
+      # Set the derived yes or nos for the transaction wizard
       private_class_method def self.derive_transactions_yes_nos_in(lbtt)
-        to_derive = {
-          non_ads_reliefclaim_option_ind: :non_ads_relief_claims,
-          business_ind: :sale_include_option,
-          linked_ind: :link_transactions,
-          premium_paid: :lease_premium,
-          deferral_agreed_ind: :deferral_reference
-        }
-        derive_yes_nos(lbtt, to_derive, true)
+        # Note the below in the reverse order they are asked as we
+        # start from the end of the wizard and work back to find out how far through they were
+        # Conveyance only
+        lbtt[:deferral_agreed_ind] = derive_yes_no(value: lbtt[:deferral_reference],
+                                                   default_n: lbtt[:total_consideration].present?)
+        # lease only
+        lbtt[:premium_paid] = derive_yes_no(value: lbtt[:lease_premium],
+                                            default_n: lbtt[:relevant_rent].present?)
 
-        # custom ones
-        lbtt[:rent_for_all_years] = (lbtt.delete(:same_rent_each_year_ind) == 'yes' ? 'Y' : 'N')
+        # below are common to lease and conveyance
+        derive_common_yes_nos_in(lbtt)
+
+        # special case for rent for all years
+        derive_rent_for_all_years(lbtt)
+      end
+
+      # Set the derived yes or nos for the transaction wizard that are common to lease and conveyance
+      # note must still be in the correct order with the other indicators
+      private_class_method def self.derive_common_yes_nos_in(lbtt)
+        # Note the below in the order they are asked
+        non_ads_reliefclaim_option_ind = derive_yes_no(value: lbtt[:non_ads_relief_claims],
+                                                       default_n: lbtt[:deferral_agreed_ind].present? ||
+                                                                  lbtt[:annual_rent].present?)
+        business_ind = derive_yes_no(value: lbtt[:sale_include_option],
+                                     default_n: non_ads_reliefclaim_option_ind.present?)
+        lbtt[:linked_ind] = derive_yes_no(value: lbtt[:link_transactions],
+                                          default_n: business_ind.present? || non_ads_reliefclaim_option_ind.present?)
+        lbtt[:non_ads_reliefclaim_option_ind] = non_ads_reliefclaim_option_ind
+        lbtt[:business_ind] = business_ind
+      end
+
+      # Rename the rent for all years flag and derive Y/N
+      private_class_method def self.derive_rent_for_all_years(lbtt)
+        lbtt[:rent_for_all_years] = lbtt.delete(:same_rent_each_year_ind)
+        yes_nos_to_yns(lbtt, %i[rent_for_all_years])
       end
 
       # Returns a translation attribute where a given attribute may have more than one name based on e.g. a type
@@ -727,7 +754,7 @@ module Returns
       # @param raw_hash [Hash] data loaded from the back office about a relief
       private_class_method def self.convert_and_organise_relief(raw_hash, output)
         relief = ReliefClaim.convert_back_office_hash(raw_hash)
-        output[:non_ads_relief_claims] << relief unless /ADS.*/.match?(relief.relief_type)
+        output[:non_ads_relief_claims] << relief unless relief.ads?
       end
 
       # Check to run before attempting a minimal Lbtt::Tax calculation request (ie anything the back office
@@ -808,9 +835,9 @@ module Returns
                       :lbtt_update
                     end
 
-        Rails.logger.debug(
+        Rails.logger.debug do
           "Tare Refno is #{@tare_refno} Version number is #{@version}, using the #{operation} operation"
-        )
+        end
         operation
       end
 
@@ -842,7 +869,7 @@ module Returns
           linked_array << @link_transactions.map(&:request_save)
 
           # flatten and compact to ensure we create the right format output for the request without any empty entries
-          unless linked_array.blank?
+          if linked_array.present?
             output['ins1:LinkedTransactions'] = { 'ins1:LinkedTransaction': linked_array.flatten&.compact }
           end
         end
@@ -891,7 +918,7 @@ module Returns
         output['ins1:ContingentsEventInd'] = convert_to_backoffice_yes_no_value(@contingents_event_ind)
         if @contingents_event_ind == 'Y'
           xml_element_if_present(output, 'ins1:DeferralReference', @deferral_reference)
-          output['ins1:DeferralReference'] = @deferral_reference unless @deferral_reference.blank?
+          output['ins1:DeferralReference'] = @deferral_reference if @deferral_reference.present?
           output['ins1:DeferralAgreedInd'] = convert_to_backoffice_yes_no_value(@deferral_agreed_ind)
         end
 

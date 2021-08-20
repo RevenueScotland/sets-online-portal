@@ -35,7 +35,7 @@ Warden::Strategies.add(:fl_users_strategy) do
     return false if user.key?(:password) && user[:password].blank?
     return false if user.key?(:token) && user[:token].blank?
 
-    !user[:username].blank?
+    user[:username].present?
   end
 
   # Check if a request contains authentic credentials (ie can they log in).

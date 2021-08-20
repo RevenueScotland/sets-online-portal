@@ -3,7 +3,7 @@
 # Controller for the main home page
 class HomeController < ApplicationController
   # No authentication for these pages
-  skip_before_action :require_user, only: %I[index error demo forbidden new_page_error]
+  skip_before_action :require_user, only: %I[index error forbidden new_page_error]
 
   # Index page
   def index; end

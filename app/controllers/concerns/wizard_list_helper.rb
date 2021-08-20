@@ -107,7 +107,7 @@ module WizardListHelper
                       wizard_page_object.send(required || not_required) == (required.nil? ? 'N' : 'Y')
                     end
 
-    Rails.logger.debug "  List required: #{list_required} "
+    Rails.logger.debug { "  List required: #{list_required} " }
     list_required
   end
 
@@ -177,7 +177,7 @@ module WizardListHelper
     return true unless after_merge
 
     success = send(after_merge)
-    Rails.logger.debug "After merge call failed: #{after_merge}" unless success
+    Rails.logger.debug { "After merge call failed: #{after_merge}" } unless success
     success
   end
 
@@ -240,7 +240,7 @@ module WizardListHelper
     local_list = list_contents.dup
     local_list.delete_at(exclude_index.to_i) unless exclude_index.nil?
     errors_in_list = local_list.any? { |obj| obj.errors.any? }
-    Rails.logger.debug "  Errors in list : #{errors_in_list}"
+    Rails.logger.debug { "  Errors in list : #{errors_in_list}" }
     errors_in_list
   end
 end

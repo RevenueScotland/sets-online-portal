@@ -7,6 +7,7 @@ class BaseFilter
   include ActiveModel::Translation
   include ReferenceDataLookup
   include DateFormatting
+  include StripAttributes
 
   # Matches the values of the data from the object in the list of data and the filter values
   # by comparing those two string values matches to see if it either includes parts of it or

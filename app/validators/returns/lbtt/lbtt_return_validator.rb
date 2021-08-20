@@ -19,7 +19,7 @@ module Returns
         # validate if required object is present or not
         save_validation(lbtt_return)
         # return if there is validation failed for required object
-        return unless lbtt_return.errors.blank?
+        return if lbtt_return.errors.present?
 
         # list to store error messages to be added to the model at the end (so it doesn't get cleared
         # by calls to model.valid?)
@@ -103,7 +103,7 @@ module Returns
       # (ie they're allowed to submit without setting it at the moment)
       def validate_tax_model(lbtt_return, errors)
         attribute_contexts = Tax.attribute_list - [:amount_already_paid]
-        Rails.logger.debug "Validating #{attribute_contexts}"
+        Rails.logger.debug { "Validating #{attribute_contexts}" }
         return if lbtt_return.tax.valid? attribute_contexts
 
         add_error(errors, (I18n.t '.returns.lbtt.summary.edit_calculation'), lbtt_return.tax)
@@ -136,7 +136,7 @@ module Returns
 
       # validation specific to transaction
       def transaction_validation(model)
-        return unless model.effective_date.blank?
+        return if model.effective_date.present?
 
         model.errors.add(:base, :missing_about_the_transaction, link_id: 'add_transaction')
       end

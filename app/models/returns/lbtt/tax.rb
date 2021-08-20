@@ -20,6 +20,10 @@ module Returns
 
       attribute_list.each { |attr| attr_accessor attr }
 
+      # For each of the numeric fields create a setter, don't do this if there is already a setter
+      strip_attributes :amount_already_paid, :calculated, :ads_due, :total_reliefs, :total_ads_reliefs, :npv_tax_due,
+                       :premium_tax_due, :total_reliefs, :npv, :linked_npv
+
       # Not including in the attribute_list so it can't be changed by the user
       attr_accessor :orig_calculated, :orig_ads_due, :orig_total_reliefs, :orig_npv,
                     :orig_npv_tax_due, :orig_premium_tax_due, :orig_total_due, :orig_total_ads_reliefs,

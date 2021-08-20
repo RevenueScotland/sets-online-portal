@@ -22,7 +22,13 @@ $(function () {
 
   // No need to execute the methods if there's no date_field that needs a datepicker
   if ($('.datepicker').length > 0) {
-    $('.ui-datepicker-trigger').attr('aria-label', 'Date picker');
+    // Adds the date field's label name to the aria-label of their datepicker buttons on the page
+    $.each($('.datepicker'), function (dateFieldIndex, dateFieldObject) {
+      var dateFieldLabel = $("label[for='" + $(dateFieldObject).attr("id") + "']").text();
+      var datepickerButtonText = "Show " + dateFieldLabel + " datepicker";
+      $('.ui-datepicker-trigger')[dateFieldIndex].setAttribute("aria-label", datepickerButtonText);
+    });
+
     dayTripper();
   }
 });

@@ -77,6 +77,7 @@ en:
             nino:
               duplicate_nino: "%{attribute} is a duplicate of that for %{party_name}"
               no_nino_or_alternate: "Provide a NINO or an alternate reference"
+              both_nino_and_alternate: "Don't provide the alternate reference if you provide a NINO"
   returns:
     lbtt_parties:
       about_the_party:
@@ -85,6 +86,8 @@ en:
         LANDLORD_title: "About the landlord"
         TENANT_title: "About the tenant"
         NEWTENANT_title: "About the new tenant"
+      form:
+        address: "Address"
       party_details:
         BUYER_title: "Buyer details"
         SELLER_title: "Seller details"
@@ -144,6 +147,7 @@ en:
         COMPANYOTH_subtitle: "Company details"
         OTHER_title: "Organisation details"
         OTHER_subtitle: ""
+        address: "Address"
       organisation_type_details:
         title: "Organisation details"
       representative_contact_details:
