@@ -5,12 +5,12 @@
   <%= form_errors_for [@party, @address_summary, @address_detail] %>
   <%= f.text_field :org_name %>
   <% if @party.type == 'REG_COM' %>
-    <%= sub_sub_heading(text: t('.registered_address')) %>
+    <%= sub_sub_heading(t('.registered_address')) %>
   <% elsif @party.org_type == 'OTHER' %>
     <%# This has to be h2 because this path doesn't have a h2 %>
-    <%= sub_heading(text: t('.address')) %>
+    <%= sub_heading(t('.address')) %>
   <% else %>
-    <%= sub_sub_heading(text: t('.address')) %>
+    <%= sub_sub_heading(t('.address')) %>
   <% end %>
   <%= render "/layouts/address" %>
   <% if @party.org_type == 'CHARITY' %>

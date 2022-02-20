@@ -113,14 +113,17 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
     # GetSystemParameters refresh job
     RefreshSystemParametersJob.schedule_next_run(10.seconds)
 
+    # getListSystemNotices refresh job
+    RefreshSystemNoticeJob.schedule_next_run(20.seconds)
+
     # GetSystemParameters refresh job
-    RefreshPwsTextJob.schedule_next_run(20.seconds)
+    RefreshPwsTextJob.schedule_next_run(30.seconds)
 
     # Tax Relief Type refresh job
-    TaxReliefTypeJob.schedule_next_run(30.seconds)
+    RefreshTaxReliefTypeJob.schedule_next_run(40.seconds)
 
     # Delete the temporary files job
-    DeleteTempFilesJob.schedule_next_run(40.seconds)
+    DeleteTempFilesJob.schedule_next_run(50.seconds)
   end
 
   # Inserts middleware to perform automatic connection switching.

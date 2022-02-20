@@ -76,7 +76,7 @@
         "new_record": false,
         "firstname": "Portal User",
         "surname": "New Users",
-        "email_address": "noreply@northgateps.com",
+        "email_address": "noreply@necsws.com",
         "telephone": "07700900321",
         "address": {
             "json_class": "Address",
@@ -183,6 +183,7 @@
             "is_acting_as_trustee": "Y",
             "party_refno": "1500",
             "buyer_seller_linked_ind": "Y",
+            "buyer_seller_linked_desc": "Test reason",
             "job_title": "Manager",
             "contact_surname": "Scott",
             "contact_firstname": "Michael",

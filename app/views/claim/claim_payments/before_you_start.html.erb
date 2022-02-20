@@ -6,7 +6,7 @@
   <%# = display_paragraph_components(heading: t('.form_completion_heading'), body: t('.form_completion_description_html', ref_link: link_to(t('.ref_message'), login_path))) %>
   <%= display_paragraph_components(heading: t('.form_completion_heading'), 
                                    body:  UtilityHelper.swap_texts(t('.form_completion_description_html'), 
-                                            text_link: { t('.form_completion_description_link') => 
+                                            text_links: { t('.form_completion_description_link') => 
                                               link_to(t('.form_completion_description_link'), login_path) } )) %>
   <%= f.button 'start_now', { :name => 'continue' }  %>
 <% end %>

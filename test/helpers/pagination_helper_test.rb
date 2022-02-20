@@ -9,12 +9,12 @@ class PaginationHelperTest < ActionView::TestCase
   include PaginationHelper
 
   # Overriding translate method to test displaying some of the common translations
-  def t(attribute, scope = {})
+  def t(attribute, **args)
     # The content of :context in some parts of the paginate_helper translates an attribute specific to a certain page,
     # but since this test environment doesn't have a page, it will look for the default which is not defined.
     # As this is only a test, it isn't really needed to define the context in the en.yml that is used in production.
-    scope[:context] = 'test context' unless scope[:context].nil?
-    I18n.t(attribute, scope)
+    args[:context] = 'test context' unless args[:context].nil?
+    I18n.t(attribute, **args)
   end
 
   test 'pagination display next previouslink' do

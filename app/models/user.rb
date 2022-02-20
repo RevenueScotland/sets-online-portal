@@ -210,7 +210,7 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     { Requestor: requested_by.username, Username: username, Action: action, Forename: forename, Surname: surname,
       EmailAddress: email_address, UserIsCurrent: user_is_current, WorkplaceCode: requested_by.work_place_refno,
       PartyReference: requested_by.party_refno, Password: new_password, ServiceCode: 'SYS',
-      UserPhoneNumber: phone_number, UserRolesType: { 'ins2:UserRole' => user_roles.reject(&:empty?) } }
+      UserPhoneNumber: phone_number, UserRolesType: { 'ins2:UserRole' => user_roles.compact_blank } }
   end
 
   # @return [Hash] request to update the password of this user using the authority of this user

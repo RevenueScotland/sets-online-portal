@@ -2,7 +2,7 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
-  <%= f.collection_radio_buttons_fields(:previous_option_ind, @lbtt_return.list_ref_data(:previous_option_ind), text_link: { t('.previous_option_ind') =>
+  <%= f.collection_radio_buttons_fields(:previous_option_ind, @lbtt_return.list_ref_data(:previous_option_ind), text_links: { t('.previous_option_ind') =>
                                                     link_to(t('.previous_option_ind'), external_link_url('PRE_EXEMPTION'), target: '_blank')}) %>
   <%= f.collection_radio_buttons_fields(:exchange_ind, @lbtt_return.list_ref_data(:exchange_ind)) %>
   <%= f.collection_radio_buttons_fields(:uk_ind, @lbtt_return.list_ref_data(:uk_ind)) %>

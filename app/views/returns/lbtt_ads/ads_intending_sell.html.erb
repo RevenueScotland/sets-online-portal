@@ -4,7 +4,7 @@
   <%= form_errors_for [@ads, @address_summary, @address_detail] %>
   <%= f.collection_radio_buttons_fields(:ads_sell_residence_ind, @ads.list_ref_data(:ads_sell_residence_ind)) %>
   <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden' >
-    <%= sub_heading({ text: t('.address') }, { class: 'govuk-fieldset__heading' }) %>
+    <%= sub_heading(t('.address'), class: 'govuk-fieldset__heading' ) %>
     <br>
     <%= render "/layouts/address" %>
   </div>

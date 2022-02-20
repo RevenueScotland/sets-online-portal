@@ -12,7 +12,7 @@ Feature: Account
 
         Then I should see the "Sign up details" page
         And I should see the text "Email address"
-        And I should see the text "noreply@northgateps.com"
+        And I should see the text "noreply@necsws.com"
         And I should see the text "Address"
         And I should see the text "Park Lane, Garden Village, NORTHTOWN, Northshire, RG1 1PB"
         And I should see the text "Contact phone number"
@@ -32,7 +32,7 @@ Feature: Account
 
         Then I should see the "Sign up details" page
         And I should see the text "Email address"
-        And I should see the text "noreply@northgateps.com"
+        And I should see the text "noreply@necsws.com"
         And I should see the text "Contact phone number"
         And I should see the text "Company number"
         And I should see the text "09338960"
@@ -51,7 +51,7 @@ Feature: Account
 
         Then I should see the "Sign up details" page
         And I should see the text "Email address"
-        And I should see the text "noreply@northgateps.com"
+        And I should see the text "noreply@necsws.com"
         And I should see the text "Contact phone number"
         And I should see the text "Test Portal Company"
         And I should see the text "Address"
@@ -74,8 +74,8 @@ Feature: Account
         Then I should see the "Update account" page
         When I clear the "First name" field
         And I clear the "Last name" field
-        And I enter "noreply@northgateps@com" in the "Email address" field
-        And I enter "noreply@northgateps@com" in the "Confirm email address" field
+        And I enter "noreply@necsws@com" in the "Email address" field
+        And I enter "noreply@necsws@com" in the "Confirm email address" field
         And I clear the "Contact phone number" field
         And I enter "AB123456E" in the "National insurance number (NINO)" field
         And I click on the "Confirm" button
@@ -88,7 +88,7 @@ Feature: Account
         And I should receive the message "National insurance number (NINO) is invalid"
         And I should not receive the message "Name can't be blank"
         And I should not receive the message "Address can't be blank"
-        When I enter "noreply@northgateps.com" in the "Confirm email address" field
+        When I enter "noreply@necsws.com" in the "Confirm email address" field
         And I click on the "Confirm" button
 
         Then I should see the "Update account" page
@@ -112,8 +112,8 @@ Feature: Account
         Then I should see the "Update account" page
         And I flip "First name" field between "Adam" and "Dave" using marker "account_user_forename"
         And I flip "Last name" field between "Portal-Test" and "Porthole-Test" using marker "account_user_surname"
-        And I flip "Email address" field between "noreply@northgateps.com" and "noreply2@northgateps.com" using marker "account_email_address"
-        And I flip "Confirm email address" field between "noreply@northgateps.com" and "noreply2@northgateps.com" using marker "account_email_address_confirmation"
+        And I flip "Email address" field between "noreply@necsws.com" and "noreply2@necsws.com" using marker "account_email_address"
+        And I flip "Confirm email address" field between "noreply@necsws.com" and "noreply2@necsws.com" using marker "account_email_address_confirmation"
         And I flip "Contact phone number" field between "07700900123" and "07700900321" using marker "account_contact_number"
         And I flip "National insurance number (NINO)" field between "AB 12 34 56 A" and "AB 12 34 55 A" using marker "account_nino"
         And I click on the "Confirm" button
@@ -134,8 +134,8 @@ Feature: Account
         And I click on the 1 st "Update" link
 
         Then I should see the "Update account" page
-        And I enter "noreply@northgateps@com" in the "Email address" field
-        And I enter "noreply@northgateps@com" in the "Confirm email address" field
+        And I enter "noreply@necsws@com" in the "Email address" field
+        And I enter "noreply@necsws@com" in the "Confirm email address" field
         And I enter "sfdfdsfd" in the "Contact phone number" field
         And I click on the "Confirm" button
 
@@ -158,8 +158,8 @@ Feature: Account
         And I click on the 1 st "Update" link
 
         Then I should see the "Update account" page
-        And I flip "Email address" field between "noreply@northgateps.com" and "noreply2@northgateps.com" using marker "account_email_address"
-        And I flip "Confirm email address" field between "noreply@northgateps.com" and "noreply2@northgateps.com" using marker "account_email_address_confirmation"
+        And I flip "Email address" field between "noreply@necsws.com" and "noreply2@necsws.com" using marker "account_email_address"
+        And I flip "Confirm email address" field between "noreply@necsws.com" and "noreply2@necsws.com" using marker "account_email_address_confirmation"
         And I flip "Contact phone number" field between "07700900123" and "07700900321" using marker "account_contact_number"
         And I click on the "Confirm" button
 
@@ -178,8 +178,8 @@ Feature: Account
 
         Then I should see the "Update account" page
         When I clear the "account_company_company_name" field
-        And I enter "noreply@northgateps@com" in the "Email address" field
-        And I enter "noreply@northgateps@com" in the "Confirm email address" field
+        And I enter "noreply@necsws@com" in the "Email address" field
+        And I enter "noreply@necsws@com" in the "Confirm email address" field
         And I clear the "Contact phone number" field
         And I enter "AB123456E" in the "account_nino" field
         And I click on the "Confirm" button
@@ -204,8 +204,8 @@ Feature: Account
 
         Then I should see the "Update account" page
         And I flip "account_company_company_name" field between "Test Portal Company" and "Updated Test Portal Company" using marker "account_company_company_name"
-        And I flip "Email address" field between "noreply@northgateps.com" and "noreply2@northgateps.com" using marker "account_email_address"
-        And I flip "Confirm email address" field between "noreply@northgateps.com" and "noreply2@northgateps.com" using marker "account_email_address_confirmation"
+        And I flip "Email address" field between "noreply@necsws.com" and "noreply2@necsws.com" using marker "account_email_address"
+        And I flip "Confirm email address" field between "noreply@necsws.com" and "noreply2@necsws.com" using marker "account_email_address_confirmation"
         And I flip "Contact phone number" field between "07700900123" and "07700900321" using marker "account_contact_number"
         And I flip "account_nino" field between "AB123456C" and "AB123456D" using marker "account_nino"
         And I click on the "Confirm" button
@@ -264,7 +264,6 @@ Feature: Account
         Then I should not receive the message "Postcode can't be blank"
 
         Then I should see the "Update address" page
-        And I click on the "Edit address" button
         And I enter "16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegdfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwy" in the "address_address_line1" field
         And I enter "16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegdfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwy" in the "address_address_line2" field
         And I enter "16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegdfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwy" in the "address_address_line3" field
@@ -289,16 +288,19 @@ Feature: Account
         And I should see the text "Username"
         And I should see the text "ADAM.PORTAL-TEST"
         And I should see the text "NORTHTOWN"
-        And I click on the 2 nd "Update" link
 
+        When I click on the 2 nd "Update" link
         Then I should see the "Update address" page
+
         When I click on the "Edit address" button
-        And I enter "SOUTHTOWN" in the "address_town" field
-        And I click on the "Back" link
+        Then I should not see the button with text "Edit address"
 
+        When I enter "SOUTHTOWN" in the "address_town" field
+        And I click on the "Back" link
         Then I should see the "Update address" page
-        And I click on the "Back" link
+        And I should see the button with text "Edit address"
 
+        When I click on the "Back" link
         Then I should see the "Sign up details" page
         And I should see the text "NORTHTOWN"
         When I click on the 2 nd "Update" link

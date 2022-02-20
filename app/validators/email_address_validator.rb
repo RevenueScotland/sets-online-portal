@@ -3,7 +3,7 @@
 # Class for validating email address
 class EmailAddressValidator < ActiveModel::EachValidator
   # Regex for email address validation
-  EMAIL_ADDRESS_REGEX = /\A[a-zA-Z0-9_!#$%&’*+=?`{|}~^.-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}\z/i.freeze
+  EMAIL_ADDRESS_REGEX = /\A[a-zA-Z0-9_!#$%&’'*+=?`{|}~^.-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\z/i
   # The backoffice's email length validation can be different for each attribute, and the lowest
   # max-length of an email address is 100, so that is what we'll be using for all email address attributes.
   EMAIL_ADDRESS_LENGTH = 100

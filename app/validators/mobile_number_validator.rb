@@ -3,7 +3,7 @@
 # Class for validating mobile number
 class MobileNumberValidator < ActiveModel::EachValidator
   # Regex for UK mobile number validation
-  MOBILE_REGEX = /\A(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}\z/i.freeze
+  MOBILE_REGEX = /\A(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}\z/i
 
   # Validation for mobile number
   #

@@ -4,7 +4,7 @@
 <% $convey_type = 'CONVEY'%>
 <%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
-  <%= f.collection_radio_buttons_fields(:linked_ind, @lbtt_return.list_ref_data(:linked_ind), text_link: { t('.linked_ind') =>
+  <%= f.collection_radio_buttons_fields(:linked_ind, @lbtt_return.list_ref_data(:linked_ind), text_links: { t('.linked_ind') =>
                                                     link_to(t('.linked_ind'), external_link_url('LINKED_TRANS'), target: '_blank')}) %>
   <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden' >
     <%= f.table_fields(@lbtt_return, :link_transactions) do |table_form| %>

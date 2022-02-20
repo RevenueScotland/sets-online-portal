@@ -62,7 +62,7 @@ module AccountValidation
 
   # Validation for taxes, user must have selected only one non-blank service
   def taxes_valid?
-    errors.add(:taxes, :one_must_be_chosen) if taxes.reject(&:empty?).size != 1
+    errors.add(:taxes, :one_must_be_chosen) if taxes.compact_blank.size != 1
   end
 
   # Validation for names, if it's not a company

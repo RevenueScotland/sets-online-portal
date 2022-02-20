@@ -272,10 +272,8 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   def save_attachment(resource_item)
     return if resource_item.nil? || resource_item.file_data.nil? || resource_item.file_name.nil?
 
-    File.open(ResourceItem.file_temp_storage_path(:upload, sub_directory, resource_item.file_name),
-              'wb') do |file|
-      file.write(resource_item.file_data)
-    end
+    File.binwrite(ResourceItem.file_temp_storage_path(:upload, sub_directory, resource_item.file_name),
+                  resource_item.file_data)
   end
 
   # Delete file from server, if file not found then continue

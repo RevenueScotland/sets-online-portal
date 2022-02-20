@@ -12,7 +12,7 @@
   # Note, ()_organisation can be override by the caller, rather than relying on @account.account_type
 %>
 <%= form_for @account, url: @post_path, html:{autocomplete: "on"} , local: true do |f| %>
-  <%= form_errors_for @account, translation_options: { company_name: @account.account_type } %>
+  <%= form_errors_for @account %>
   <% if local_assigns[:inc_reg_type] %>
     <%= f.fields_for @account.account_type do |at| %>
       <%= at.hidden_field :registration_type %>

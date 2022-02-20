@@ -8,7 +8,7 @@ class Company # rubocop:disable Metrics/ClassLength
   include PrintData
 
   # Company number validation regex, either 8 numbers, or SC and 6 numbers
-  COMPANY_NUMBER_REGEX = /\A\d{8}|[A-Z]{2}\d{6}\z/i.freeze
+  COMPANY_NUMBER_REGEX = /\A\d{8}|[A-Z]{2}\d{6}\z/i
 
   # Attributes for this class, in list so can re-use as permitted params list in the controller. Note: attributes
   # names need to be unique between company and account, as that the "magic" account does on delegating validation
@@ -70,12 +70,12 @@ class Company # rubocop:disable Metrics/ClassLength
 
   # @return [String] The formatted full address
   def full_address
-    [address_line1, address_line2, locality, county, postcode].reject(&:blank?).join(', ')
+    [address_line1, address_line2, locality, county, postcode].compact_blank.join(', ')
   end
 
   # @return [String] line 1, county and postcode only
   def short_address
-    [address_line1, locality, postcode].reject(&:blank?).join(', ')
+    [address_line1, locality, postcode].compact_blank.join(', ')
   end
 
   # @return [Boolean] if company_number and company_name are both empty or nil

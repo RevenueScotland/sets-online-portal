@@ -14,9 +14,13 @@
             <button role="button" class="govuk-header__menu-button js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation" id="menu" >Menu</button>
             <nav>
               <ul id="navigation" class="govuk-header__navigation " aria-label="Top Level Navigation">
-                <% if yield(:hide_nav_bar) != 'true'  %>
-                  <% # using eval to convert the string from content for into the hash expected   %>
-                  <%= account_links eval(yield(:nav_bar_options)), eval(yield(:nav_bar_html_options)) %>
+                <% if yield(:hide_navigation_bar) != 'true'  %>
+                  <% # using eval to convert the string from content for into the object expected   %>
+                  <% if yield(:nav_bar_html_options).blank? %>
+                    <%= account_links eval(yield(:hide_navigation_links)) %>
+                  <% else %>
+                    <%= account_links eval(yield(:hide_navigation_links)), **eval(yield(:nav_bar_html_options)) %>
+                  <% end %>
                 <% end %>
               </ul>
             </nav>

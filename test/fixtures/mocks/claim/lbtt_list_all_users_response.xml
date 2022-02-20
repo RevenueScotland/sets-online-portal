@@ -13,7 +13,7 @@
           <UserIsCurrent>Yes</UserIsCurrent>
           <Forename>Portal User</Forename>
           <Surname>One</Surname>
-          <EmailAddress>noreply@northgateps.com</EmailAddress>
+          <EmailAddress>noreply@necsws.com</EmailAddress>
           <PreferredLanguage>ENG</PreferredLanguage>
           <UserRoles>
             <UserRole>ACCADMN</UserRole>
@@ -32,7 +32,7 @@
           <UserIsCurrent>Yes</UserIsCurrent>
           <Forename>Portal User</Forename>
           <Surname>Two</Surname>
-          <EmailAddress>noreply@northgateps.com</EmailAddress>
+          <EmailAddress>noreply@necsws.com</EmailAddress>
           <PreferredLanguage>ENG</PreferredLanguage>
           <UserRoles>
             <UserRole>ACCADMN</UserRole>
@@ -51,7 +51,7 @@
           <UserIsCurrent>No</UserIsCurrent>
           <Forename>Portal User</Forename>
           <Surname>Non Current</Surname>
-          <EmailAddress>noreply@northgateps.com</EmailAddress>
+          <EmailAddress>noreply@necsws.com</EmailAddress>
           <PreferredLanguage>ENG</PreferredLanguage>
           <UserRoles>
             <UserRole>ACCADMN</UserRole>
@@ -70,7 +70,7 @@
           <UserIsCurrent>No</UserIsCurrent>
           <Forename>Portal User</Forename>
           <Surname>Change Details</Surname>
-          <EmailAddress>noreply@northgateps.com</EmailAddress>
+          <EmailAddress>noreply@necsws.com</EmailAddress>
           <UserRoles>
             <UserRole>PWSAMEND</UserRole>
             <UserRole>PWSCLAIM</UserRole>
@@ -86,7 +86,7 @@
           <UserIsCurrent>Yes</UserIsCurrent>
           <Forename>Portal User</Forename>
           <Surname>No Access</Surname>
-          <EmailAddress>noreply@northgateps.com</EmailAddress>
+          <EmailAddress>noreply@necsws.com</EmailAddress>
           <PreferredLanguage>ENG</PreferredLanguage>
           <UserRoles>
             <UserRole>PWSDASH</UserRole>

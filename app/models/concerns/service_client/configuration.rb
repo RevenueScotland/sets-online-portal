@@ -1,24 +1,8 @@
 # frozen_string_literal: true
 
-require 'service_client'
-
-# Be sure to restart your server when you modify this file.
-# Filename starts with "_" so that this file is run first.
-module RevScot
-  # Service Clients configuration and pre-loader class
-  class ServiceClientConfiguration # rubocop:disable Metrics/ClassLength
-    # This ties all the configuration on any web service client calls together
-
-    @configuration = nil
-
-    class << self
-      attr_reader :configuration
-    end
-
-    def initialize(configuration)
-      @configuration = configuration
-    end
-
+module ServiceClient
+  # Service Clients configuration for the back office and pre-loader method used as part of initialisation
+  class Configuration # rubocop:disable Metrics/ClassLength
     # Firstly, service endpoint details
     fl_endpoint = { root: Rails.configuration.x.fl_endpoint.root, username: Rails.configuration.x.fl_endpoint.uid,
                     password: Rails.configuration.x.fl_endpoint.pwd, wsdl_root: 'fl',
@@ -89,6 +73,9 @@ module RevScot
     list_secure_messages = { service: fl_endpoint, wsdl: 'ListSecureMessages.wsdl',
                              endpoint: '/getListSecureMessages', operation: :list_secure_messages_wsdl,
                              response: :list_secure_messages_response }
+    list_system_notices = { service: fl_endpoint, wsdl: 'ListSystemNotices.wsdl',
+                            endpoint: '/getSystemNotices', operation: :list_system_notices_wsdl,
+                            response: :list_system_notices_response, savon_log: false }
     log_off_user = { service: fl_endpoint, wsdl: 'FLLogOffUser.wsdl', endpoint: '/LogOffUser',
                      operation: :log_off_user_wsdl, response: :log_off_user_response }
     maintain_party_details = { service: fl_endpoint, wsdl: 'FLMaintainPartyDetails.wsdl',
@@ -143,9 +130,9 @@ module RevScot
                        get_transactions: get_transactions,
                        lbtt_calc: lbtt_calc, lbtt_tax_return: lbtt_tax_return,
                        lbtt_tax_return_details: lbtt_tax_return_details, lbtt_update: lbtt_update,
-                       list_secure_messages: list_secure_messages, log_off_user: log_off_user,
-                       maintain_party_details: maintain_party_details, maintain_user: maintain_user,
-                       maintain_user_registration: maintain_user_registration,
+                       list_secure_messages: list_secure_messages, list_system_notices: list_system_notices,
+                       log_off_user: log_off_user, maintain_party_details: maintain_party_details,
+                       maintain_user: maintain_user, maintain_user_registration: maintain_user_registration,
                        secure_message_create: secure_message_create, slft_application: slft_application,
                        slft_calc: slft_calc, slft_tax_return: slft_tax_return,
                        slft_tax_return_details: slft_tax_return_details, slft_update: slft_update,
@@ -154,8 +141,14 @@ module RevScot
                        view_claim_pdf: view_claim_pdf, view_document: view_document,
                        view_return_pdf: view_return_pdf }
 
-    # Preload all the clients
-    @configuration.reject { |_, v| v[:service][:root].nil? }
-                  .each { |_, v| ServiceClient.get_client(v[:wsdl], v[:endpoint], v[:service], v[:savon_log]) }
+    class << self
+      attr_reader :configuration
+
+      # Preload all the currently configured clients in the ServiceClient class
+      def preload
+        @configuration.reject { |_, v| v[:service][:root].nil? }
+                      .each { |_, v| ServiceClient.get_client(v[:wsdl], v[:endpoint], v[:service], v[:savon_log]) }
+      end
+    end
   end
 end

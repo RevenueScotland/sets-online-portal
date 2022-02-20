@@ -4,6 +4,7 @@ en:
     attributes:
       returns/slft/slft_return:
         tare_reference: "Return reference" # translation for print format
+        receipt_date: "Receipt date" # translation for print format
         version: "Version" # translation for print format
         form_type: "Status" # translation for print format
         payment_date: "Payment due date" # translation for print format
@@ -170,6 +171,7 @@ en:
       declaration:
         title: "Payment and submission"
         SLFT_additional_Warning: "Your credit claimed cannot be more than 90% of your qualifying contribution for the accounting period and must not exceed 5.6% of your SLFT liability in the contribution year"
+        dd_not_available: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
         warning: "If you give false information, you may face penalties and/or prosecution"
       declaration_submitted:
         title: ""

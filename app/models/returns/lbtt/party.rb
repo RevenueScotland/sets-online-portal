@@ -16,7 +16,7 @@ module Returns
         %i[
           party_id title surname firstname telephone email_address nino alrt_type ref_country return_reference
           charity_number party_type type address is_contact_address_different contact_address
-          alrt_reference buyer_seller_linked_ind
+          alrt_reference buyer_seller_linked_ind buyer_seller_linked_desc
           company_number country_registered_company_outside_uk address_outside_uk contact_par_ref_no
           org_name job_title company org_type other_type_description
           contact_surname contact_firstname org_contact_address is_acting_as_trustee agent_dx_number
@@ -33,17 +33,23 @@ module Returns
       validates :agent_dx_number, length: { maximum: 100 }, on: %i[title]
       validates :agent_reference, length: { maximum: 30 }, on: %i[title]
 
-      # Normally we have a title on an lbtt party and the email_address and telephone are required to be
-      # present on a normal lbtt party's specific condition.
-      validates :email_address, presence: true, on: %i[title], if: :individual_but_not_seller_landlord_newtenant?
-      validates :telephone, presence: true, on: %i[title], if: :individual_but_not_seller_landlord_newtenant?
-      # Then as for the claim party (taxpayer/agent) email_address and telephone, they're optional.
+      # For a party not on a claim both e-mail address and telephone number are mandatory for individuals
+      # Unless they are the seller type
+      validates :email_address, presence: true, on: :email_address,
+                                if: :individual_but_not_claim_seller_landlord_newtenant?
+      validates :telephone, presence: true, on: :telephone,
+                            if: :individual_but_not_claim_seller_landlord_newtenant?
+      # For a claim one must be provided
+      validate :no_contact_details?, on: :email_address, if: :claim?
+      # format must always be correct
       validates :email_address, email_address: true, on: :email_address,
                                 if: :individual_but_not_seller_landlord_newtenant?
       validates :telephone, phone_number: true, on: :telephone, if: :individual_but_not_seller_landlord_newtenant?
 
       validates :buyer_seller_linked_ind, presence: true, on: :buyer_seller_linked_ind,
                                           if: proc { |p| %w[SELLER LANDLORD].exclude?(p.party_type) }
+      validates :buyer_seller_linked_desc, presence: true, length: { maximum: 255 }, on: :buyer_seller_linked_ind,
+                                           if: :buyer_seller_linked_desc_required?
       validates :is_contact_address_different, presence: true, on: :is_contact_address_different,
                                                if: :individual_but_not_seller_landlord?
       validates :org_type, presence: true, on: :org_type, if: proc { |p| p.type == 'OTHERORG' }
@@ -92,7 +98,7 @@ module Returns
                                       if: proc { |p|
                                         p.lplt_type != 'PRIVATE' && %w[LANDLORD SELLER].exclude?(p.party_type)
                                       }
-      validate :validation_for_duplicate_nino?, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
+      validate :validation_for_duplicate_nino, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
       validates :same_address, presence: true, on: :same_address, if: :claim?
 
       # Define the ref data codes associated with the attributes to be cached in this model
@@ -249,6 +255,7 @@ module Returns
            display_title: false, # Is the title to be displayed
            type: :list,
            list_items: [{ code: :buyer_seller_linked_ind, lookup: true },
+                        { code: :buyer_seller_linked_desc, when: :buyer_seller_linked_desc_required?, is: [true] },
                         { code: :is_acting_as_trustee, lookup: true }] }]
       end
 
@@ -323,12 +330,19 @@ module Returns
       end
 
       # Validation for NINO if same NINO used more than once.
-      def validation_for_duplicate_nino?
-        return true if nino.blank? || hash_for_nino.blank?
+      def validation_for_duplicate_nino
+        return if nino.blank? || hash_for_nino.blank?
 
         nino_items = hash_for_nino.select { |u| u == nino }
         # we get the party_name at the index[1] & get the party_id at the index[0]
         errors.add(:nino, :duplicate_nino, party_name: nino_items.values[0][1]) if nino_items.present?
+      end
+
+      # Validate that at least one of the contact details is supplied.
+      def no_contact_details?
+        return if email_address.present? || telephone.present?
+
+        errors.add(:telephone, :no_contact_details)
       end
 
       # If the key alternate data has been started but not completed.
@@ -354,6 +368,13 @@ module Returns
         individual? && %w[SELLER LANDLORD NEWTENANT].exclude?(party_type)
       end
 
+      # return true if party type is agent or type is private individual and not seller or landlord or NEWTENANT
+      def individual_but_not_claim_seller_landlord_newtenant?
+        return false if claim?
+
+        individual_but_not_seller_landlord_newtenant?
+      end
+
       # validation method
       def not_private_and_not_seller_landlord?
         type != 'PRIVATE' && %w[SELLER LANDLORD].exclude?(party_type)
@@ -367,6 +388,11 @@ module Returns
       # return true if party added while filling Claim
       def claim?
         party_type == 'CLAIMANT'
+      end
+
+      # validate the buyer_seller_linked_desc
+      def buyer_seller_linked_desc_required?
+        @buyer_seller_linked_ind == 'Y'
       end
 
       # Retrieve agent details from account to prepoulate on summary page
@@ -520,7 +546,7 @@ module Returns
           end
         end
         output['ins1:BuyerSellerLinkedInd'] = convert_to_backoffice_yes_no_value(@buyer_seller_linked_ind)
-        output['ins1:BuyerSellerLinkedDesc'] = ''
+        output['ins1:BuyerSellerLinkedDesc'] = @buyer_seller_linked_desc if @buyer_seller_linked_ind == 'Y'
         output['ins1:ActingAsTrusteeInd'] = convert_to_backoffice_yes_no_value(@is_acting_as_trustee)
         output
       end

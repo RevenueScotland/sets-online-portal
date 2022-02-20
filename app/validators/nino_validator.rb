@@ -3,7 +3,7 @@
 # Class for validating national insurance number
 class NinoValidator < ActiveModel::EachValidator
   # Regex for National Insurance Number validation
-  NINO_REGEX = /\A(?!BG|GB|NK|KN|TN|NT|ZZ)[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z](?:\s*\d{2}){3}\s*[A-D]\z/i.freeze
+  NINO_REGEX = /\A(?!BG|GB|NK|KN|TN|NT|ZZ)[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z](?:\s*\d{2}){3}\s*[A-D]\z/i
 
   # Validation for NINO - checks if the format is valid
   #

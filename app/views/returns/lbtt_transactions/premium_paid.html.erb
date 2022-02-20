@@ -4,7 +4,7 @@
   <%= form_errors_for @lbtt_return %>
   <%= f.collection_radio_buttons_fields(:premium_paid, @lbtt_return.list_ref_data(:premium_paid)) %>
   <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden' >
-    <%= f.currency_field :lease_premium, text_link: { t('.lease_premium') =>
+    <%= f.currency_field :lease_premium, text_links: { t('.lease_premium') =>
                                                     link_to(t('.lease_premium'), external_link_url('OTHER_CONS'), target: '_blank')} %>
   </div>
   <% if @lbtt_return.linked_ind == 'Y' %>

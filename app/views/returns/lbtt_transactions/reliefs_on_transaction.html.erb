@@ -3,7 +3,7 @@
 <% content_for :page_description, t('.description_html') %>
 <%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f|  %>
   <%= form_errors_for @lbtt_return %>
-  <%= f.collection_radio_buttons_fields(:non_ads_reliefclaim_option_ind, @lbtt_return.list_ref_data(:non_ads_reliefclaim_option_ind), text_link: { t('.non_ads_reliefclaim_option_ind') =>
+  <%= f.collection_radio_buttons_fields(:non_ads_reliefclaim_option_ind, @lbtt_return.list_ref_data(:non_ads_reliefclaim_option_ind), text_links: { t('.non_ads_reliefclaim_option_ind') =>
                                                     link_to(t('.non_ads_reliefclaim_option_ind'), external_link_url('TAX_RELIEFS'), target: '_blank')}) %>
   <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden'>
     <%= f.table_fields(@lbtt_return, :non_ads_relief_claims) do |table_form | %>

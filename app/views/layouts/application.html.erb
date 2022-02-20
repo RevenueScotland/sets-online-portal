@@ -20,13 +20,14 @@
     <link rel="shortcut icon" href="<%= image_path("favicon.ico") %>" type="image/vnd.microsoft.icon" >
   </head>
   <body class="home">
-    <%= link_to("Skip to main content", "#main-content", { class: "govuk-skip-link", "data-turbolinks" => "false" }) %>
+    <%= link_to("Skip to main content", "#main-content", class: "govuk-skip-link", "data-turbolinks" => "false") %>
     <%= render "/layouts/header" %>
     <div class="govuk-width-container">
       <main class="govuk-main-wrapper" id="main-content" role="main">
         <% # @see BackHelper.rb for more information %>
         <%= yield(:hide_back_link) == 'true' ? clear_previous_stack : previous_page_link{ yield(:hide_back_link) } %>
         <%= content_for?(:public_landing_return_link) ? link_to(yield(:public_landing_return_link), external_link_url('CANCEL_HOME'), class: 'govuk-back-link') : '' %>
+        <%= yield :notifications %>
         <%= yield :form_errors %>
         <%# The tabindex='-1' property is needed for the <h1> so that the screen reader can read the heading 1 of
             the page, by putting the focus on it %>

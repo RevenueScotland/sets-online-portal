@@ -76,12 +76,12 @@ class Address < FLApplicationRecord
 
   # @return [String] The formatted full address
   def full_address
-    [address_line1, address_line2, address_line3, address_line4, town, county, postcode].reject(&:blank?).join(', ')
+    [address_line1, address_line2, address_line3, address_line4, town, county, postcode].compact_blank.join(', ')
   end
 
   # @return [String] line 1, town and postcode only
   def short_address
-    [address_line1, town, postcode].reject(&:blank?).join(', ')
+    [address_line1, town, postcode].compact_blank.join(', ')
   end
 
   # Specify own blank? method

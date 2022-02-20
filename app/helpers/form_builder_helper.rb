@@ -104,7 +104,7 @@ module FormBuilderHelper
     # @param html_options [Hash] options (element attributes/properties) to be passed into the creation of the element.
     # @return [HTML block element] the standard password field with hint and error texts.
     def password_field(attribute, options = {}, html_options = {})
-      html_options = UtilityHelper.field_html_options(options, html_options)
+      html_options = UtilityHelper.field_html_options(html_options, width: options[:width])
       field_wrapper(attribute, options, html_options) do
         super(attribute, html_options)
       end
@@ -160,42 +160,30 @@ module FormBuilderHelper
       field_wrapper(attribute, options, html_options, 'govuk-select') { super }
     end
 
-    # Create a button field with the correct class
-    # Default button will be  disabled when the button is click.it can be override with
-    # 'not_disable' option
-    # Example to override this:
-    # <%= f.button 'signin', {not_disable:''}%>
-    # @param id [Object] id of button, and used to get the value from the translations
-    # @param html_options [Hash] options (element attributes/properties) to be passed into the creation of the element.
+    # Create a button field with the correct class, defers to standard rails buttons
+    # @param value [Object] id of button, and used to get the value from the translations
+    # @param options [Hash] options (element attributes/properties) to be passed into the creation of the element.
     # @return [HTML block element] the standard button field with the correct class
-    def button(id = 'continue', html_options = {})
-      html_options[:class] ||= 'scot-rev-button'
+    def button(value = 'continue', options = {})
+      options[:class] ||= 'scot-rev-button'
       # if not id provided assume this is a continue button and set if and name accordingly
-      id ||= 'continue'
-      html_options[:name] ||= 'continue' if id == 'continue'
-      html_options = UtilityHelper.submit_html_options(id, options, html_options)
-      if id.nil?
-        super
-      else
-        super @template.t(id, **html_options), html_options
-      end
+      value ||= 'continue'
+      options[:name] ||= 'continue' if value == 'continue'
+      options = UtilityHelper.submit_html_options(options, id: value)
+      super @template.t(value, **options), options
     end
 
-    # Create a submit field with the correct class
-    # Default button will be disabled when the form is submitted. It can be overridden with
-    # 'not_disable' option
-    # Example to override this:
-    # <%= f.submit 'submit', {not_disable:''}%>
-    # @param id [Object] id of button, and used to get the value from the translations
-    # @param html_options [Hash] options (element attributes/properties) to be passed into the creation of the element.
+    # Create a submit field with the correct class, defers to standard rails submit
+    # @param value [Object] id of button, and used to get the value from the translations
+    # @param options [Hash] options (element attributes/properties) to be passed into the creation of the element.
     # @return [HTML block element] the standard submit field with the correct class
-    def submit(id = nil, html_options = {})
+    def submit(value = nil, options = {})
       span = @template.tag.span('', class: 'scot-rev-submit-image')
-      html_options = UtilityHelper.submit_html_options(id, options, html_options)
-      submit = if id.nil?
-                 super
+      options = UtilityHelper.submit_html_options(options, id: value)
+      submit = if value.nil?
+                 super value, options
                else
-                 super @template.translate(id, **html_options), html_options
+                 super @template.translate(value, **options), options
                end
       @template.tag.div(submit + span, class: 'scot-rev-submit')
     end
@@ -296,10 +284,10 @@ module FormBuilderHelper
     # @return [HTML block element] the standard text field with hint and error texts.
     def file_field(attribute, options = {}, html_options = {})
       options = form_options(:options, options)
-      input_class = 'govuk-file-upload'
       html_options =
-        UtilityHelper.field_html_options(options, form_options(:html_options, html_options), input_class)
-      field_wrapper(attribute, options, html_options, input_class) do
+        UtilityHelper.field_html_options(form_options(:html_options, html_options), width: options[:width],
+                                                                                    field_class: 'govuk-file-upload')
+      field_wrapper(attribute, options, html_options, 'govuk-file-upload') do
         super(attribute, html_options)
       end
     end
@@ -426,11 +414,11 @@ module FormBuilderHelper
     # @return [HTML block element] the standard hint text; consists of span (with the translated text)
     def hint_text(attribute, options = {}, html_options = {})
       hint_html_options = { class: 'govuk-hint', id: "#{field_id(attribute, options, html_options)}-hint" }
-      hint = UtilityHelper.attribute_text(@object, attribute, :hint, options)
+      hint = UtilityHelper.attribute_text(@object, attribute, :hint, **options)
       return '' if hint == ''
 
       set_aria_describedby(hint_html_options[:id], html_options)
-      @template.tag.span(hint, hint_html_options)
+      @template.tag.span(hint, **hint_html_options)
     end
 
     # Creates the standard GDS value for the hint's "id" property.
@@ -454,7 +442,8 @@ module FormBuilderHelper
     # @param attribute [Object] the symbol to be translated to a string
     # @return [HTML block element] the standard hint text; consists of span (with the translated text)
     def visually_hidden_label(attribute, options, html_options)
-      hidden_label = @template.t(UtilityHelper.get_attribute_key(@object, attribute, options),
+      hidden_label = @template.t(UtilityHelper.get_attribute_key(@object, attribute,
+                                                                 translation_options: options[:translation_options]),
                                  default: '', scope: [@object.i18n_scope, :hidden_label, @object.model_name.i18n_key])
       return if hidden_label == ''
 
@@ -476,7 +465,7 @@ module FormBuilderHelper
       error_html_options = { id: "#{field_id(attribute, options, html_options)}-error", class: 'govuk-error-message' }
       set_aria_describedby(error_html_options[:id], html_options)
 
-      @template.tag.span(error_content(attribute), error_html_options)
+      @template.tag.span(error_content(attribute), **error_html_options)
     end
 
     # Wrapper for generic label, hint text, error text structure for collection field.
@@ -534,7 +523,7 @@ module FormBuilderHelper
     #   this doesn't accept the :value and :class as those are more specific to the field this is associated with.
     # @return [HTML block element] generic field label tag consisting of label contents and specific classes
     def field_label_wrapper(attribute, options = {}, html_options = {})
-      label = UtilityHelper.label_text(@object, attribute, options)
+      label = UtilityHelper.label_text(@object, attribute, **options)
 
       label_options = field_label_html_options(options, html_options)
       hidden_label = visually_hidden_label(attribute, options, label_options)
@@ -605,7 +594,7 @@ module FormBuilderHelper
         @template.tag.div(b.radio_button(class: 'govuk-radios__input') +
                               b.label(class: 'govuk-label govuk-radios__label'), class: 'govuk-radios__item')
       end
-      @template.tag.div(radio_buttons, html_options)
+      @template.tag.div(radio_buttons, **html_options)
     end
 
     # Creates the standard wrapper for a collection of checkboxes.
@@ -616,7 +605,7 @@ module FormBuilderHelper
         @template.tag.div(b.check_box(class: 'govuk-checkboxes__input') +
                               b.label(class: 'govuk-label govuk-checkboxes__label'), class: 'govuk-checkboxes__item')
       end
-      @template.tag.div(checkbox, html_options)
+      @template.tag.div(checkbox, **html_options)
     end
 
     # set default class and div to legend used in {FormBuilderHelper.LabellingFormBuilder#collection_check_boxes_fields}
@@ -624,7 +613,7 @@ module FormBuilderHelper
     # @param attribute [Object] the symbol to be translated to a string
     # @return [HTML block element] the standard legend wrapper; consists of the headings of the content.
     def collection_legend_wrapper(attribute, options)
-      legend = UtilityHelper.label_text(@object, attribute, options)
+      legend = UtilityHelper.label_text(@object, attribute, **options)
       legend += visually_hidden_label(attribute, options, {}) || ''
       h1_tag = @template.tag.h1(legend, class: 'govuk-fieldset__heading')
       @template.tag.legend(h1_tag, class: 'govuk-fieldset__legend govuk-fieldset__legend',
@@ -697,7 +686,7 @@ module FormBuilderHelper
       html_options['aria-describedby'] = describedby.nil? ? id : "#{describedby} #{id}"
     end
 
-    # The date field html options if we're using a browser that's incompatble with the standard date field.
+    # The date field html options if we're using a browser that's incompatible with the standard date field.
     def ie_date_field_html_options(html_options)
       html_options[:placeholder] = 'dd/mm/yyyy'
       html_options[:class] = 'datepicker '
@@ -715,11 +704,12 @@ module FormBuilderHelper
 
       # The width of the field with symbol cannot have a full width as there won't be enough space for the symbol and
       # it will place the symbol somewhere else. So to ensure that there's enough space for the symbol, the width will
-      # be overriden.
+      # be overridden.
       options[:width] = 'three-quarters' if %w[CURRENCY
                                                PERCENTAGE].include?(options[:type]) && options[:width] == 'full'
 
-      html_options = UtilityHelper.field_html_options(options, form_options(:html_options, html_options), input_class)
+      html_options = UtilityHelper.field_html_options(form_options(:html_options, html_options),
+                                                      width: options[:width], field_class: input_class)
       [options, html_options]
     end
 
@@ -734,7 +724,7 @@ module FormBuilderHelper
     # Creates the html options of select.
     def select_html_options(options, html_options)
       html_options = form_options(:html_options, html_options)
-      html_options = UtilityHelper.field_html_options(options, html_options, 'govuk-select')
+      html_options = UtilityHelper.field_html_options(html_options, width: options[:width], field_class: 'govuk-select')
       html_options[:class] = "#{html_options[:class]} combobox" if options[:text_auto_complete]
       # The :index can only be filled after calling the form_options.
       # Also the :index for a normal select should be in the html_options.

@@ -33,8 +33,6 @@ module ReferenceData
     # @return a list for the given domain, service and workplace codes.
     def self.list(domain_code, service_code, workplace_code, safe_lookup: false)
       output = lookup(domain_code, service_code, workplace_code, safe_lookup: safe_lookup)&.values&.sort_by(&:sort_key)
-      comp_key = format_composite_key(domain_code, service_code, workplace_code)
-      log_or_raise_lookup_error(output, comp_key, safe_lookup, :list)
 
       output || []
     end
@@ -48,8 +46,7 @@ module ReferenceData
     # @return [Hash] the hash for the given domain, service and workplace codes.
     def self.lookup(domain_code, service_code, workplace_code, safe_lookup: false)
       comp_key = format_composite_key(domain_code, service_code, workplace_code)
-      output = lookup_multiple([comp_key], safe_lookup: true)[comp_key]
-      log_or_raise_lookup_error(output, comp_key, safe_lookup)
+      output = lookup_multiple([comp_key], safe_lookup: safe_lookup)[comp_key]
 
       output || {}
     end
@@ -60,7 +57,7 @@ module ReferenceData
     def self.lookup_multiple(composite_keys, safe_lookup: false)
       Rails.logger.debug { "Looking up multiple keys #{composite_keys}" }
       output = cached_values.slice(*composite_keys)
-      log_or_raise_lookup_error(output, composite_keys, safe_lookup, :multiple)
+      log_or_raise_lookup_error(output, composite_keys, safe_lookup)
 
       output || {}
     end
@@ -72,16 +69,11 @@ module ReferenceData
     # @param comp_key [Array|String] the single or multiple composite key(s)
     # @param safe_lookup [Boolean] if true this will do a safe look up which means that we will only log the error
     #   and not raise one if it meets the certain condition.
-    # @param lookup_type [Symbol] is used to get the appropriate message when logging or throwing an error.
-    #   - :default is used for lookup method
-    #   - :multiple is used for lookup_multiple method
-    #   - :list is used for list method
-    private_class_method def self.log_or_raise_lookup_error(output, comp_key, safe_lookup, lookup_type = :default)
+    private_class_method def self.log_or_raise_lookup_error(output, comp_key, safe_lookup)
       # If we have an output then we don't need to log any error
       return if output.present?
 
-      type = { default: 'lookup', multiple: 'lookup multiple', list: 'list' }[lookup_type]
-      return Rails.logger.error("No #{name} #{type} data found for #{comp_key}") if safe_lookup
+      return Rails.logger.info("No #{name} data found for #{comp_key}") if safe_lookup
 
       raise Error::AppError.new(500, "No #{name} #{type} data found for #{comp_key}")
     end
@@ -144,11 +136,13 @@ module ReferenceData
     # Calls application_values to add extra data into the output.
     # The hash values will be Arrays of objects (ie can be more than one object per cache key).
     # @param back_office_service [Symbol] the service to call
+    # @param request [Hash] submitted to the back office to retrieve the data
+    # normally nil as all data is retrieved
     # @param index [Symbol] where in the message body to find the results (eg :reference_values)
-    private_class_method def self.lookup_back_office_data(back_office_service, index)
+    private_class_method def self.lookup_back_office_data(back_office_service, request = nil, index)
       output = {}
-      Rails.logger.info('Fetching system parameters from the back office for caching')
-      success = call_ok?(back_office_service, nil) do |body|
+      Rails.logger.info('Fetching cacheable data from the back office for caching')
+      success = call_ok?(back_office_service, request) do |body|
         output = organise_results(body[index])
         output.merge!(application_values(output))
       end

@@ -2,7 +2,7 @@
 
 # Common code for handling setup and calls to the Foundation Layer back office
 # and associated error handling.
-# @see ServiceClientConfiguration initializer for the configuration of calls to the back office.
+# @see ServiceClient::Configuration for the configuration of calls to the back office.
 module ServiceClient # rubocop:disable Metrics/ModuleLength
   extend ActiveSupport::Concern
 
@@ -66,7 +66,7 @@ module ServiceClient # rubocop:disable Metrics/ModuleLength
   # Errors are added to the current model.
   # @note: See also {#class_methods.call_ok?} at the class level
   def call_ok?(config_key, request)
-    config = RevScot::ServiceClientConfiguration.configuration[config_key]
+    config = Configuration.configuration[config_key]
     Rails.logger.debug { "Calling (instance) #{config[:endpoint]}" }
     success, response_body = ServiceClient.call(config, request)
     Rails.logger.debug { 'Call Failed' } unless success
@@ -103,7 +103,7 @@ module ServiceClient # rubocop:disable Metrics/ModuleLength
     # to copy the errors into the current model as there isn't one
     # NOTE: See also {#call_ok?} at the instance level
     def call_ok?(config_key, request)
-      config = RevScot::ServiceClientConfiguration.configuration[config_key]
+      config = Configuration.configuration[config_key]
       Rails.logger.debug { "Calling (class) #{config[:endpoint]}" }
       success, response_body = ServiceClient.call(config, request)
       Rails.logger.debug { 'Call Failed' } unless success

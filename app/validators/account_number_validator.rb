@@ -3,7 +3,7 @@
 # Class for validating bank account number
 class AccountNumberValidator < ActiveModel::EachValidator
   # Regex for account number 99999999
-  ACCOUNT_NUMBER = /\A\d{8}\z/i.freeze
+  ACCOUNT_NUMBER = /\A\d{8}\z/i
 
   # Validation for Sort code
   #

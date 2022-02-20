@@ -8,7 +8,8 @@ module Returns
     # tare_reference is the string the user is shown to identify this return eg RS1000847NRSD
     # tare_refno is the number the back office uses to identify this return (probably the primary key)
     # form_type is the status of the return 'D' for draft, 'C' for calculate, 'F' for final
-    attr_accessor :tare_reference, :tare_refno, :form_type, :version
+    # previous_pay_method is the payment method used on the previous version of a return (nil for the first return)
+    attr_accessor :tare_reference, :tare_refno, :form_type, :version, :previous_fpay_method
 
     # @return [Boolean] whether or not this return is an amendment based on the version number and form type
     def amendment?
@@ -70,7 +71,9 @@ module Returns
     # Calls #save_operation to get the right type of save (ie new or update) and set any required fields appropriately.
     # @param requested_by [User] the user saving the return (ie current_user, public requests will pass nil)
     def save(requested_by) # rubocop:disable Metrics/AbcSize
-      call_ok?(save_operation, additional_save_parameters(requested_by).merge!(request_save(requested_by))) do |body|
+      call_ok?(save_operation,
+               additional_save_parameters(requested_by).merge!(request_save(requested_by,
+                                                                            form_type: @form_type))) do |body|
         @tare_reference = body[:return_reference]
         @tare_refno = body[:return_refno]
         @payment_date = DateFormatting.to_display_date_format(body[:payment_date]) unless body[:payment_date].nil?
@@ -101,15 +104,27 @@ module Returns
     end
 
     # returns the payment types list valid for this return removing DD if this account does not have
-    # a valid dd instruction
+    # a valid dd instruction, or the previous method exists and was not DD
+    # @see dd_not_available
     # @param account_has_dd_instruction [Boolean] does the account have a dd instruction
     # @return [Array] the array of valid payment types
     def list_payment_types(account_has_dd_instruction: false)
-      if account_has_dd_instruction
+      # Remove DD if the parameter says the account doesn't have DD instruction or there
+      # was a previous return and it wasn't paid by DD
+      if account_has_dd_instruction && (@previous_fpay_method.blank? || @previous_fpay_method == 'DDEBIT')
         lookup_ref_data(:fpay_method).values.sort_by(&:sort_key)
       else
         lookup_ref_data(:fpay_method).delete_if { |k, _v| k == 'DDEBIT' }.values.sort_by(&:sort_key)
       end
+    end
+
+    # returns if DD is not available because the previous payment method was not DD
+    # @see list_payment_types
+    # @param account_has_dd_instruction [Boolean] does the account have a dd instruction
+    # @return [true] If dd was removed from the list of payment methods
+    def dd_not_available(account_has_dd_instruction: false)
+      # return true if the parameter says account has DD instruction and previous payment method was not DD
+      account_has_dd_instruction && @previous_fpay_method.present? && @previous_fpay_method != 'DDEBIT'
     end
 
     # returns [hash] which contains return reference number and version of the return

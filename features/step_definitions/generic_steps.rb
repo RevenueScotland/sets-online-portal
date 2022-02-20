@@ -524,6 +524,17 @@ Then('the radio button {string} should not be selected') do |string|
   assert_not page.has_checked_field?(string, visible: false)
 end
 
+Then('the radio button labelled {string} should exist') do |string|
+  find(:xpath, ".//input[@type='radio']", id: find('label', text: string)['for'], visible: false)
+end
+
+Then('the radio button labelled {string} should not exist') do |string|
+  find(:xpath, ".//input[@type='radio']", id: find('label', text: string)['for'], visible: false)
+  assert false, "Button labelled #{string} was found"
+rescue Capybara::ElementNotFound
+  assert true, "Button labelled #{string} was not found"
+end
+
 # Clicks the JS alert dialog if one is found.  It will only exist if test is run in JS mode/in a browser,
 # which Jenkins does, meaning there's a difference between developer machines and the test server.
 Then('if available, click the confirmation dialog') do

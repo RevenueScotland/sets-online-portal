@@ -3,18 +3,18 @@
 <% content_for :page_description, t('.description') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @account, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @account, translation_options: { new_password: :new_user, new_password_confirmation: :new_user} %>
+  <%= form_errors_for @account %>
   <%= f.fields_for :current_user, @account.current_user do |u| %>
     <%= u.text_field :new_username %>
     <%= u.password_field :new_password, translation_options: :new_user %>
     <%= u.password_field :new_password_confirmation, translation_options: :new_user %>
   <% end %>
   <%= f.check_box_field :terms_and_conditions,
-                          text_link: { t('term_and_cons') => link_to(t('term_and_cons'), website_text_path('REGTSANDCS'), 
+                          text_links: { t('term_and_cons') => link_to(t('term_and_cons'), website_text_path('REGTSANDCS'), 
                           target: '_blank') } %>
   <br>
   <%= f.collection_radio_buttons_fields(:email_data_ind, @account.list_ref_data(:email_data_ind),
-      text_link: { t('sec_doc') => link_to(t('sec_doc'), website_text_path('EMAILAGREE'), target: '_blank') }) %>
+      text_links: { t('sec_doc') => link_to(t('sec_doc'), website_text_path('EMAILAGREE'), target: '_blank') }) %>
   <br>
   <%= f.button 'confirm', {:name => 'continue'}  %>
 <% end %>

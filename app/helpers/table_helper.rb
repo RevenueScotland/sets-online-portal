@@ -56,8 +56,9 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
     return if object.nil?
 
     cols = attributes.collect do |attribute|
-      label = UtilityHelper.label_text(object, attribute, options[attribute])
-      table_header_tag_cell(attribute, options[attribute], label)
+      attr_options = options[attribute] || {}
+      label = UtilityHelper.label_text(object, attribute, **attr_options)
+      table_header_tag_cell(attribute, attr_options, label)
     end
 
     table_row_tag(safe_join(cols))
@@ -301,8 +302,8 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
       value = object.send(action[:value_method])
       label = format(label, value: value)
     end
-    options[:class] = action_class_option(options, :text)
-    tag.span(label, options)
+    options[:class] = add_action_class_option(options[:class], :text)
+    tag.span(label, **options)
   end
 
   # Create action tag like edit, show more details available at url
@@ -373,7 +374,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
     # Creates the param or query value depending on the contents of the action. Normally when this is being generated
     # only one of the two is needed.
     param_or_query = action[:parameter].nil? ? object : object.send(action[:parameter]).to_s
-    param_or_query = action[:query].nil? ? param_or_query : query_string_hash(action, object)
+    param_or_query = query_string_hash(action, object) unless action[:query].nil?
     param_or_query = param_or_query_index(param_or_query, action)
 
     # @note send(<method>, <param>) is equals to <method>(<param>)
@@ -429,7 +430,7 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
     options = action[:options] || {}
     options[:id] = "#{action[:id_prefix]}_#{action[:object_index].to_i + 1}" if action[:id_prefix]
     options[:method] = 'delete' if action[:action] == :destroy
-    options[:class] = action_class_option(options)
+    options[:class] = add_action_class_option(options[:class])
     set_action_aria_label_option(object, attributes, action, options)
     set_action_data_option(object, options)
     options
@@ -466,13 +467,14 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   end
 
   # Generates the class of the action link, which a custom class can be added from the view.
+  # @param existing_class [String] The existing class for the option
   # @param type [Symbol] As this is used for the action, which can be a text or a link, then the two possible
   #   values of this are :link and :text.
   # @return [String] the action link's class option
-  def action_class_option(html_options, type = :link)
-    action_class = 'table_action_item'
-    action_class += " #{UtilityHelper.link_class(html_options)}" if type == :link
-    action_class
+  def add_action_class_option(existing_class, type = :link)
+    classes = ['table_action_item', existing_class]
+    classes << 'govuk-link' if type == :link
+    classes.compact.join(' ')
   end
 
   # Builds an array of cells for a body row
@@ -520,12 +522,14 @@ module TableHelper # rubocop:disable Metrics/ModuleLength
   def display_table_footer_row_cells(type, type_hash, attributes, table_summary, options)
     cols = []
     attributes.each do |attribute|
-      attr_options = options[attribute] || {}
+      attr_opts = options[attribute] || {}
       value = table_footer_label_value(attribute, type_hash[:label])
 
       # work out what the summary value is, currently only total is supported
       value = table_footer_summary_value(table_summary[attribute], type) if type_hash[:attributes].include?(attribute)
-      cols << table_footer_tag_cell(CommonFormatting.format_text(value, attr_options), attr_options)
+      cols << table_footer_tag_cell(CommonFormatting.format_text(
+                                      value, format: attr_opts[:format], break_characters: attr_opts[:break_characters]
+                                    ), attr_opts)
     end
     cols
   end

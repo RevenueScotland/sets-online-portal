@@ -3,7 +3,7 @@
 <%= form_for @lbtt_return, url: returns_lbtt_property_type_path, :method => 'post', local: true do |f| %>
   <%= form_errors_for @lbtt_return %>
   <%= f.collection_radio_buttons_fields(:property_type, @lbtt_return.list_ref_data(:property_type),
-                                         text_link: { t('.property_type_residential') =>
+                                         text_links: { t('.property_type_residential') =>
                                                     link_to(t('.property_type_residential'), external_link_url('RESIDENTIAL'), target: '_blank'),
                                                      t('.property_type_non_residential') =>
                                                     link_to(t('.property_type_non_residential'), external_link_url('NON_RESIDENTIAL'), target: '_blank')}) %>

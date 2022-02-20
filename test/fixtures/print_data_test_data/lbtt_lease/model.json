@@ -31,7 +31,7 @@
         "new_record": true,
         "firstname": "Portal User",
         "surname": "New Users",
-        "email_address": "noreply@northgateps.com",
+        "email_address": "noreply@necsws.com",
         "telephone": "07700900321",
         "address": {
             "json_class": "Address",
@@ -144,6 +144,7 @@
             "party_id": "efd02e78-4bc3-4585-b109-bd9ce90ca1db",
             "type": "OTHERORG",
             "buyer_seller_linked_ind": "Y",
+            "buyer_seller_linked_desc": "Test reason",
             "is_acting_as_trustee": "N",
             "org_type": "CHARITY",
             "charity_number": "872",

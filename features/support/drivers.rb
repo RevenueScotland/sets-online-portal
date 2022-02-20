@@ -6,8 +6,8 @@ Capybara.register_driver :selenium_chrome do |app|
   opts = Selenium::WebDriver::Chrome::Options.new
   opts.add_option('useAutomationExtension', false)
 
-  chrome_add_preference(opts)
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: opts)
+  chrome_common(opts)
+  Capybara::Selenium::Driver.new(app, browser: :chrome, capabilities: opts)
 end
 
 # register a remote selenium chrome base driver. The URL for the remote driver selenium hub must be
@@ -17,30 +17,31 @@ Capybara.register_driver :selenium_remote_chrome do |app|
   capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(takes_screenshots: true,
                                                                   'chromeOptions' =>
                                                                   { 'args' => ['--ignore-certificate-errors'] })
-  chrome_add_preference(opts)
+  chrome_common(opts)
   Capybara::Selenium::Driver.new(app,
                                  browser: :remote,
                                  url: ENV['CAPYBARA_REMOTE_URL'],
-                                 desired_capabilities: capabilities,
-                                 options: opts)
+                                 capabilities: [capabilities, opts])
 end
 
 # register a local selenium firefox based driver, which ignores insecure certificates, and
 # has a screen size of 800x800
 Capybara.register_driver :selenium_firefox do |app|
-  opts = Selenium::WebDriver::Firefox::Options.new(screen_size: [1920, 1024], profile: customized_firefox_profile)
+  opts = Selenium::WebDriver::Firefox::Options.new(args: ['--window-size=1920,1024'],
+                                                   profile: customized_firefox_profile)
   capabilities = Selenium::WebDriver::Remote::Capabilities.firefox(accept_insecure_certs: true)
-  Capybara::Selenium::Driver.new(app, browser: :firefox, options: opts, desired_capabilities: capabilities)
+  Capybara::Selenium::Driver.new(app, browser: :firefox, capabilities: [capabilities, opts])
 end
 
 # register a remote selenium firefox based driver, which ignores insecure certs
 Capybara.register_driver :selenium_remote_firefox do |app|
-  capabilities = Selenium::WebDriver::Remote::Capabilities.firefox(accept_insecure_certs: true,
-                                                                   firefox_profile: customized_firefox_profile)
+  opts = Selenium::WebDriver::Firefox::Options.new(args: ['--window-size=1920,1024'],
+                                                   profile: customized_firefox_profile)
+  capabilities = Selenium::WebDriver::Remote::Capabilities.firefox(accept_insecure_certs: true)
   Capybara::Selenium::Driver.new(app,
                                  browser: :remote,
                                  url: ENV['CAPYBARA_REMOTE_URL'],
-                                 desired_capabilities: capabilities)
+                                 capabilities: [capabilities, opts])
 end
 # enable screen shots for our various drivers
 Capybara::Screenshot.register_driver(:selenium_chrome) do |driver, path|
@@ -77,13 +78,11 @@ unless ENV['CAPYBARA_APP_HOST'].nil?
   end
 end
 
-private
-
 # Sets up the profile for a selenium_firefox driver.
 # Currently used to set up the downloading parts of the firefox.
 def customized_firefox_profile
   profile = Selenium::WebDriver::Firefox::Profile.new
-  profile.assume_untrusted_certificate_issuer = ENV['SKIP_CERT_ISSUER'].present?
+  profile['untrusted_issuer'] = ENV['SKIP_CERT_ISSUER'].present?
   # See https://www.toolsqa.com/selenium-webdriver/how-to-download-files-using-selenium/ for
   # some explanation about profile.
   #
@@ -103,17 +102,28 @@ def customized_firefox_profile_standard_options(profile)
   profile['browser.helperApps.neverAsk.saveToDisk'] =
     ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip',
      'application/pdf', 'application/octet-stream', 'application/msword', 'image/png'].join(',')
-  profile['pdfjs.disabled'] = profile.native_events = profile['browser.download.useDownloadDir'] = true
+  profile['pdfjs.disabled'] = profile['native_events'] = profile['browser.download.useDownloadDir'] = true
   profile
 end
 
-# Adds preference to Chrome options.
+# Adds standard settings to Chrome options.
 # Currently used to set up the default directory for downloads.
 # @see https://src.chromium.org/viewvc/chrome/trunk/src/chrome/common/pref_names.cc?view=markup to learn more about
 # the Chrome preferences that can be added and what each of them mean.
-def chrome_add_preference(options)
+def chrome_common(options)
+  options.add_argument('window-size=1920,1024')
   options.add_preference(:download, directory_upgrade: true,
                                     prompt_for_download: false,
                                     default_directory: ENV['TEST_FILE_DOWNLOAD_PATH'])
   options.add_preference(:browser, set_download_behavior: { behavior: 'allow' })
+end
+
+# Override the standard file detector so it only picks up those in our directory
+# Needs to be after the above config as this instantiates the driver
+# This is only used by the remote driver
+if ENV['CAPYBARA_DRIVER']&.include?('remote')
+  Capybara.current_session.driver.browser.file_detector = lambda do |args|
+    str = args.first.to_s
+    str if str.start_with?(ENV['TEST_FILE_UPLOAD_PATH']) && File.exist?(str)
+  end
 end

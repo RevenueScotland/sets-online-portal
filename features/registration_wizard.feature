@@ -34,23 +34,23 @@ Feature: Registration Wizard
     And I should receive the message "National insurance number (NINO) can't be blank"
     And I should receive the message "Last name can't be blank"
     And I should receive the message "First name can't be blank"
-    When I enter "noreply@northgateps@com" in the "Email address" field
-    And I enter "noreply@northgateps@com" in the "Confirm email address" field
+    When I enter "noreply@necsws@com" in the "Email address" field
+    And I enter "noreply@necsws@com" in the "Confirm email address" field
     And I enter "AB123456E" in the "National insurance number (NINO)" field
     When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I should receive the message "Email address is invalid"
     And I should receive the message "National insurance number (NINO) is invalid"
-    When I enter "noreply@northgateps.com" in the "Email address" field
+    When I enter "noreply@necsws.com" in the "Email address" field
     When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
     And I should receive the message "Email address does not match"
     And I enter "forename" in the "First name" field
     And I enter "surname" in the "Last name" field
-    When I enter "noreply@northgateps.com" in the "Email address" field
-    And I enter "noreply@northgateps.com" in the "Confirm email address" field
+    When I enter "noreply@necsws.properties" in the "Email address" field
+    And I enter "noreply@necsws.properties" in the "Confirm email address" field
     And I enter "07700 900123" in the "Contact phone number" field
     And I enter "AB123456D" in the "National insurance number (NINO)" field
     When I click on the "Continue" button
@@ -204,7 +204,7 @@ Feature: Registration Wizard
     And I should receive the message "Organisation main representative name can't be blank"
     And I should receive the message "National insurance number (NINO) can't be blank"
     When I enter "Mr Wobble" in the "Organisation main representative name" field
-    And I enter "noreply@northgateps@com" in the "Organisation email address" field
+    And I enter "noreply@necsws@com" in the "Organisation email address" field
     And I enter "1234" in the "Organisation phone number" field
     And I enter "1234" in the "account_nino" field
     And I click on the "Continue" button
@@ -213,7 +213,7 @@ Feature: Registration Wizard
     And I should receive the message "Organisation phone number is invalid"
     And I should receive the message "Organisation email address is invalid"
     And I should receive the message "National insurance number (NINO) is invalid"
-    And I enter "noreply@northgateps.com" in the "Organisation email address" field
+    And I enter "noreply@necsws.com" in the "Organisation email address" field
     And I enter "01234567891" in the "Organisation phone number" field
     And I enter "AB123456D" in the "account_nino" field
     And I click on the "Continue" button
@@ -337,14 +337,14 @@ Feature: Registration Wizard
     And I should receive the message "Organisation main representative name can't be blank"
 
     When I enter "Mr Wobble" in the "Organisation main representative name" field
-    And I enter "noreply@northgateps@com" in the "Organisation email address" field
+    And I enter "noreply@necsws@com" in the "Organisation email address" field
     And I enter "1234" in the "Organisation phone number" field
     And I click on the "Continue" button
     Then I should see the sub-title "Organisation contact details"
     And I should receive the message "Organisation phone number is invalid"
     And I should receive the message "Organisation email address is invalid"
 
-    When I enter "noreply@northgateps.com" in the "Organisation email address" field
+    When I enter "noreply@necsws.com" in the "Organisation email address" field
     And I enter "01234567891" in the "Organisation phone number" field
     And I click on the "Continue" button
     Then I should see the text "Sign up to file tax returns"
@@ -421,7 +421,7 @@ Feature: Registration Wizard
 
     Then I should see the sub-title "Organisation contact details"
     When I enter "Mr Wobble" in the "Organisation main representative name" field
-    And I enter "noreply@northgateps.com" in the "Organisation email address" field
+    And I enter "noreply@necsws.com" in the "Organisation email address" field
     And I enter "01234567891" in the "Organisation phone number" field
     And I enter "AB123456D" in the "account_nino" field
     And I click on the "Continue" button
@@ -496,7 +496,7 @@ Feature: Registration Wizard
 
     Then I should see the sub-title "Organisation contact details"
     When I enter "Mr Wobble" in the "Organisation main representative name" field
-    And I enter "noreply@northgateps.com" in the "Organisation email address" field
+    And I enter "noreply@necsws.com" in the "Organisation email address" field
     And I enter "01234567891" in the "Organisation phone number" field
     And I click on the "Continue" button
 
@@ -549,7 +549,7 @@ Feature: Registration Wizard
 
     Then I should see the sub-title "Organisation contact details"
     When I enter "Mr Wobble" in the "Organisation main representative name" field
-    And I enter "noreply@northgateps.com" in the "Organisation email address" field
+    And I enter "noreply@necsws.com" in the "Organisation email address" field
     And I enter "01234567891" in the "Organisation phone number" field
     And I click on the "Continue" button
 

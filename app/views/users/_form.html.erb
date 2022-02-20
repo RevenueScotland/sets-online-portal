@@ -1,17 +1,17 @@
 <%= form_for @user do |form| %>
   <% new_user =  (%w(edit update).include?(params[:action]) ? false : true ) %>
   <% translation_options_value = (new_user ? :new_user : nil )%>
-  <%= form_errors_for @user, translation_options: { new_password: translation_options_value, new_password_confirmation: translation_options_value } %>
+  <%= form_errors_for @user %>
   <% if !new_user %>
     <%= display_field @user,:username %>
   <% else %>
     <%= form.text_field :new_username %>
   <% end %>
   <%= form.collection_radio_buttons_fields(:user_is_current, @user.list_ref_data(:user_is_current)) %>
-  <%= sub_heading(text: t('.user_details')) %>
+  <%= sub_heading(t('.user_details')) %>
   <%= form.text_field :forename %>
   <%= form.text_field :surname %>
-  <%= sub_heading(text: t('.contact_details')) %>
+  <%= sub_heading(t('.contact_details')) %>
   <%= form.text_field :email_address %>
   <%= form.text_field :email_address_confirmation %>
   <%= form.text_field :phone_number, { optional:true } %>

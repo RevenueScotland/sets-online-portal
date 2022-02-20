@@ -3,7 +3,7 @@
 <% content_for :page_description, t('.description') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @account, url: @post_path, method: :post, html:{autocomplete: "on"} , local: true do |f| %>
-  <%= form_errors_for [@account, @company], translation_options: { company_name: @account.account_type } %>
+  <%= form_errors_for [@account, @company] %>
   <%= render "/layouts/company_search" %>
   <%= f.button %>
 <% end %>

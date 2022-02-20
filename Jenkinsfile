@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="2.7.3"
+def RUBY_VERSION="3.0.2"
 
 /*
 	* Back office names
@@ -251,9 +251,9 @@ def envGitCheckout () {
  */
 def prepareBuildEnvironment() {
 	stage ('Prepare Build Environment') {
-		sh 'gem install bundler rake yard rubocop brakeman bundle-audit gemsurance licensed' 
+		sh 'gem install bundler rake yard rubocop brakeman bundle-audit licensed' 
 		sh 'bundle install'
-        sh 'yarn install --frozen-lockfile'
+                sh 'yarn install --frozen-lockfile'
 		milestone(1)
 	}
 }
@@ -284,10 +284,10 @@ The log files from the test target can be found attached to this email.
 				compressLog: true, 
 				subject: "Unit test of the ${this.getAppName()} application, on the ${env.BRANCH_NAME} branch, has failed",
 				to: "${REVSCOT_DEVELOPERS}",
-                attachmentsPattern: "log/test.log"
+                        attachmentsPattern: "log/test.log"
 
             throw err
-        }
+                }
 	}
 }
 
@@ -322,26 +322,18 @@ def lintCode() {
 def checkCVEs() {
 	stage ('Gem/Yarn CVE Check') {
 		try {
-            // ignore errors from gemsurance - but catch those from bundle-audit and yarn -audit, so that we can stash the
-            // results from gemsurance, and put the html page up on the documentation server later
-			sh 'set +e ; gemsurance --output tmp/gemsurance_report.html ; echo'
-            stash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-report", includes: 'tmp/gemsurance_report.html'
-            sh '''
-               set +e
-               touch tmp/yarn-audit.txt tmp/bunde-audit.txt
-               bundle-audit update && bundle-audit check > tmp/bunde-audit.txt && bundle_failed=$?
-               yarn audit --no-progress --level info > tmp/yarn-audit.txt && yarn_failed=$?
-               exit $((yarn_failed+bundle_failed))
-               '''
+                        sh '''
+                                set +e
+                                touch tmp/yarn-audit.txt tmp/bunde-audit.txt
+                                bundle-audit update && bundle-audit check > tmp/bunde-audit.txt && bundle_failed=$?
+                                yarn audit --no-progress --level info > tmp/yarn-audit.txt && yarn_failed=$?
+                                exit $((yarn_failed+bundle_failed))
+                        '''
 		} catch (err) {
 			emailext attachmentsPattern: "tmp/*-audit.txt", 
 				subject: "Gem/Yarn CVE check in ${this.getAppName()}", 
 				body: "Some GEMs and/or Yarn packages have CVEs in ${this.getAppName()}. Please see attached for more information.", 
 				to: "${REVSCOT_DEVELOPERS}"
-/* Don't fail the build for now
-			currentBuild.result = "FAILURE"
-            throw err
-*/
 		}
 	}
 
@@ -642,9 +634,9 @@ def runAutotest(String host, String port, String seleniumPort, String environmen
 				sh '''
 					#!/bin/bash
 					export DOCKER_HOST=tcp://$(hostname -f):2376
-                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk add --no-cache --virtual .bundle-deps build-base gmp-dev
-                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle install --deployment --with="development test"
-                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk del .bundle-deps
+                                        docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk add --no-cache --virtual .bundle-deps build-base gmp-dev
+                                        docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle install --deployment --with="development test"
+                                        docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk del .bundle-deps
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} mkdir -p /var/tmp/share/upload /var/tmp/share/download
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} chmod 777 -R /var/tmp/share/
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
@@ -680,7 +672,6 @@ def postAutotestSuccess(String environment = "autotest") {
 	stopEnvironment(environment)
 	deleteEnvironment(environment)
 	dir ('code') {
-        unstash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-report"
         unstash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-licenses"
 		withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 			sh '''
@@ -690,14 +681,8 @@ def postAutotestSuccess(String environment = "autotest") {
 				ssh rsdocs@vm-rstp-bld01.global.internal "unlink /var/www/html/${APPLICATION}/coverage ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/coverage /var/www/html/${APPLICATION}/coverage"
 				popd
 
-                                if [[ -f tmp/gemsurance_report.html ]] ; then
-                                        scp tmp/gemsurance_report.html rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
-				        ssh rsdocs@vm-rstp-bld01.global.internal "[ -L "/var/www/html/${APPLICATION}/gemsurance_report.html" ] && unlink /var/www/html/${APPLICATION}/gemsurance_report.html ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/gemsurance_report.html /var/www/html/${APPLICATION}/gemsurance_report.html"
-                                fi
-
                                 scp tmp/licensed.txt rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
 				ssh rsdocs@vm-rstp-bld01.global.internal "[ -L "/var/www/html/${APPLICATION}/licensed.txt" ] && unlink /var/www/html/${APPLICATION}/licensed.txt ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/licensed.txt /var/www/html/${APPLICATION}/licensed.txt"
-
 			'''
 		}
 	}
@@ -716,7 +701,7 @@ def postAutotestFailure(String host, String environment = "autotest") {
 			sh '''
 				ssh rsdocs@vm-rstp-bld01.global.internal "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
 				pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}/app/
-				sudo chmod a+w -R tmp
+				sudo mkdir -p tmp ; sudo chmod a+w -R tmp
 				echo \'<html><head><title>\'Test Results for ${ENVIRONMENT} of ${APPLICATION} version ${FULL_BUILD_VERSION}\'</title></head>\' > tmp/index.html
 				echo \'<body><h2>\'Test Results for ${ENVIRONMENT} of ${APPLICATION} version ${FULL_BUILD_VERSION}\'</h2><p>The following tests failed:</p>\' >> tmp/index.html
 				ls tmp/screenshots/ | sed \'s/\\(.*\\)/\\<p\\>\\<a href="\\1"\\>\\1\\<\\/a\\><\\/p\\>/\' >> tmp/index.html
@@ -724,6 +709,9 @@ def postAutotestFailure(String host, String environment = "autotest") {
 				mv tmp/index.html tmp/screenshots/index.html
 				scp tmp/screenshots/*.{html,png} rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
 				rm -rf tmp/screenshots/*
+                                cd ../video
+                                sudo /usr/local/bin/ffmpeg -i record.flv  -c:v libx264 -crf 19 -strict experimental record.mp4
+                                sudo rm -rf record.flv
 				popd
 			'''
 			def RELEASE_TEXT = this.isReleaseBuild() ? "Release " : ""

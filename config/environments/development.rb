@@ -81,17 +81,21 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
       # GetReferenceData/ReferenceValues refresh job
       RefreshRefDataJob.schedule_next_run(1.second)
 
-      # GetSystemParameters refresh job
-      RefreshSystemParametersJob.schedule_next_run(3.seconds)
+      # getListSystemNotices refresh job
+      RefreshSystemNoticeJob.schedule_next_run(3.seconds)
 
       # GetSystemParameters refresh job
-      RefreshPwsTextJob.schedule_next_run(5.seconds)
+      RefreshSystemParametersJob.schedule_next_run(5.seconds)
+
+      # GetSystemParameters refresh job
+      RefreshPwsTextJob.schedule_next_run(7.seconds)
 
       # Tax Relief Type refresh job
-      TaxReliefTypeJob.schedule_next_run(7.seconds)
+      RefreshTaxReliefTypeJob.schedule_next_run(9.seconds)
 
       # Delete the temporary files job
-      DeleteTempFilesJob.schedule_next_run(9.seconds)
+      DeleteTempFilesJob.schedule_next_run(11.seconds)
+
     end
   end
 end

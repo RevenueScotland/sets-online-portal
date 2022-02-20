@@ -126,17 +126,21 @@ Feature: Claim payment
         And I click on the "Continue" button
         # ads amount is 100 so it should be less than 100
         Then I should receive the message "Claim amount cannot be greater than the amount of ADS paid"
+
         When I enter "60" in the "I am eligible for partial repayment of ADS and wish to reclaim the following amount" field
         And I click on the "Continue" button
-
         # Since RS3000002AAAA has number of buyer is 5
         Then I should see the "Your details (buyer 1 of 5)" page
         And I should not see the text "Organisation name (optional)"
 
+        When I click on the "Continue" button
+        Then I should receive the message "Last name can't be blank"
+        And I should receive the message "First name can't be blank"
+        And I should receive the message "Provide a telephone number or an email address"
+
         When I enter "First name" in the "First name" field
         And I enter "Last tname" in the "Last name" field
         And I enter "0111456789" in the "Telephone number" field
-        And I enter "noreply5@northgateps.com" in the "Email" field
         And I click on the "Continue" button
         Then I should see the "Your address (buyer 1 of 5)" page
 
@@ -152,6 +156,7 @@ Feature: Claim payment
 
         When I enter "Buyer 2 First name" in the "First name" field
         And I enter "Buyer 2 Last tname" in the "Last name" field
+        And I enter "noreply5@necsws.com" in the "Email" field
         And I click on the "Continue" button
         Then I should see the "Buyer address (buyer 2 of 5)" page
         When I check the "Yes" radio button
@@ -161,6 +166,8 @@ Feature: Claim payment
 
         When I enter "Buyer 3 First name" in the "First name" field
         And I enter "Buyer 3 Last tname" in the "Last name" field
+        And I enter "0111456789" in the "Telephone number" field
+        And I enter "noreply5@necsws.com" in the "Email" field
         And I click on the "Continue" button
         Then I should see the "Buyer address (buyer 3 of 5)" page
         When I check the "No" radio button
@@ -175,6 +182,7 @@ Feature: Claim payment
 
         When I enter "Buyer 4 First name" in the "First name" field
         And I enter "Buyer 4 Last tname" in the "Last name" field
+        And I enter "noreply5@necsws.com" in the "Email" field
         And I click on the "Continue" button
         Then I should see the "Buyer address (buyer 4 of 5)" page
         When I check the "No" radio button
@@ -190,6 +198,8 @@ Feature: Claim payment
 
         When I enter "Additional Buyer First name" in the "First name" field
         And I enter "Additional Buyer Last tname" in the "Last name" field
+        And I enter "0111456789" in the "Telephone number" field
+        And I enter "noreply5@necsws.com" in the "Email" field
         And I click on the "Continue" button
         Then I should see the "Buyer address (buyer 5 of 5)" page
         When I check the "No" radio button
@@ -206,6 +216,16 @@ Feature: Claim payment
         And I should see the text "Bank / building society account number can't be blank"
         And I should see the text "Branch sort code can't be blank"
         And I should see the text "Name of bank / building society can't be blank"
+
+        When I enter "RANDOM_text,153" in the "Name of the account holder" field
+        And I enter "RANDOM_text,11" in the "Bank / building society account number" field
+        And I enter "85-96-88-7" in the "Branch sort code" field
+        And I enter "RANDOM_text,256" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+        Then I should see the text "Name of the account holder is too long (maximum is 152 characters)"
+        And I should see the text "Name of bank / building society is too long (maximum is 255 characters)"
+        And I should see the text "Bank / building society account number must be 8 digits long"
+        And I should see the text "Branch sort code must be in the format 99-99-99"
 
         When I enter "Fred Flintstone" in the "Name of the account holder" field
         And I enter "12345678" in the "Bank / building society account number" field
@@ -296,7 +316,7 @@ Feature: Claim payment
         When I enter "First name" in the "First name" field
         And I enter "Last tname" in the "Last name" field
         And I enter "0111456789" in the "Telephone number" field
-        And I enter "noreply5@northgateps.com" in the "Email" field
+        And I enter "noreply5@necsws.com" in the "Email" field
         And I click on the "Continue" button
         Then I should see the "Taxpayer address" page
 
@@ -306,6 +326,24 @@ Feature: Claim payment
         And if available, click the "Select" button
 
         When I click on the "Continue" button
+        Then I should see the "Bank details" page
+
+        When I click on the "Continue" button
+        Then I should see the text "Name of the account holder can't be blank"
+        And I should see the text "Bank / building society account number can't be blank"
+        And I should see the text "Branch sort code can't be blank"
+        And I should see the text "Name of bank / building society can't be blank"
+
+        When I enter "RANDOM_text,153" in the "Name of the account holder" field
+        And I enter "RANDOM_text,11" in the "Bank / building society account number" field
+        And I enter "85-96-88-7" in the "Branch sort code" field
+        And I enter "RANDOM_text,256" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+        Then I should see the text "Name of the account holder is too long (maximum is 152 characters)"
+        And I should see the text "Name of bank / building society is too long (maximum is 255 characters)"
+        And I should see the text "Bank / building society account number must be 8 digits long"
+        And I should see the text "Branch sort code must be in the format 99-99-99"
+
         When I enter "Fred Flintstone" in the "Name of the account holder" field
         And I enter "12345678" in the "Bank / building society account number" field
         And I enter "10-11-12" in the "Branch sort code" field
@@ -368,8 +406,7 @@ Feature: Claim payment
         When I enter "My organisation" in the "Organisation name (optional)" field
         When I enter "First name" in the "First name" field
         And I enter "Last tname" in the "Last name" field
-        And I enter "0111456789" in the "Telephone number" field
-        And I enter "noreply5@northgateps.com" in the "Email" field
+        And I enter "noreply5@necsws.com" in the "Email" field
         And I click on the "Continue" button
         Then I should see the "Taxpayer address" page
 
@@ -429,7 +466,6 @@ Feature: Claim payment
         When I enter "First name" in the "First name" field
         And I enter "Last tname" in the "Last name" field
         And I enter "0111456789" in the "Telephone number" field
-        And I enter "noreply5@northgateps.com" in the "Email" field
         And I click on the "Continue" button
         Then I should see the "Taxpayer address" page
 
@@ -439,13 +475,16 @@ Feature: Claim payment
         And if available, click the "Select" button
 
         When I click on the "Continue" button
-        And I enter "RANDOM_text,256" in the "Name of the account holder" field
+        And I enter "RANDOM_text,153" in the "Name of the account holder" field
         And I enter "RANDOM_text,11" in the "Bank / building society account number" field
         And I enter "RANDOM_text,9" in the "Branch sort code" field
         And I enter "RANDOM_text,256" in the "Name of bank / building society" field
         And I click on the "Continue" button
-        Then I should receive the message "Bank / building society account number must be 8 digits long"
-        And I should receive the message "Branch sort code must be in the format 99-99-99"
+
+        Then I should see the text "Name of the account holder is too long (maximum is 152 characters)"
+        And I should see the text "Name of bank / building society is too long (maximum is 255 characters)"
+        And I should see the text "Bank / building society account number must be 8 digits long"
+        And I should see the text "Branch sort code must be in the format 99-99-99"
 
         When I enter "Fred Flintstone" in the "Name of the account holder" field
         And I enter "12345678" in the "Bank / building society account number" field
