@@ -104,7 +104,7 @@ Before('@mock_new_other_company_registration') do
                                    'ins1:AddressCountyOrRegion' => '',
                                    'ins1:AddressPostcodeOrZip' => 'LU1 1AA',
                                    'ins1:AddressCountryCode' => 'EN' },
-              PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@northgateps.com',
+              PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@necsws.com',
               PartyPhoneNumber: '01234567891' }
 
   fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/register_user.xml")
@@ -131,7 +131,7 @@ Before('@mock_new_company_no_address_registration') do
                                    'ins1:AddressCountyOrRegion' => 'Hertfordshire',
                                    'ins1:AddressPostcodeOrZip' => 'HP2 7DX',
                                    'ins1:AddressCountryCode' => 'GB' },
-              PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@northgateps.com',
+              PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@necsws.com',
               PartyPhoneNumber: '01234567891' }
 
   fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/register_user.xml")
@@ -161,7 +161,7 @@ Before('@mock_new_company_registration') do
                                    'ins1:AddressCountyOrRegion' => 'Hertfordshire',
                                    'ins1:AddressPostcodeOrZip' => 'HP2 7DX',
                                    'ins1:AddressCountryCode' => 'GB' },
-              PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@northgateps.com',
+              PartyContactName: 'Mr Wobble', PartyEmailAddress: 'noreply@necsws.com',
               PartyPhoneNumber: '01234567891' }
 
   fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/register_user.xml")

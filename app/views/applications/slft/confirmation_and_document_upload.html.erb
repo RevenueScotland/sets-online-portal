@@ -7,7 +7,7 @@
                                                                       count: @slft_application.case_references.length)) %>
   <%= display_paragraph_components(body: t('.submitted_date', system_date: DateFormatting.to_display_date_format(Date.today))) %>
   <%= display_paragraph_components(body: UtilityHelper.swap_texts(t('.contact_us'),
-                                                                  text_link: { t('.contact_us_link_text') => link_to(t('.contact_us_link_text'), 
+                                                                  text_links: { t('.contact_us_link_text') => link_to(t('.contact_us_link_text'), 
                                                                                                                        external_link_url('CONTACT_US'),
                                                                                                                        target: '_blank') })) %>
   <%= navigational_links( [{link: ('.print'), path: nil, link_html_options: {class:'print govuk-link'} },

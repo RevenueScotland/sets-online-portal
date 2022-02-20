@@ -1241,7 +1241,7 @@
                     <ServiceCode>SYS</ServiceCode>
                     <WorkplaceCode>RSTU</WorkplaceCode>
                     <Code>EMAIL_FROM_ADRS</Code>
-                    <StringValue>donotreply@northgateps.com</StringValue>
+                    <StringValue>donotreply@necsws.com</StringValue>
                 </SystemParameter>
                 <SystemParameter>
                     <DomainCode>SYSTEM</DomainCode>

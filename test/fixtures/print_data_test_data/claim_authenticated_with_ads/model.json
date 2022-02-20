@@ -16,7 +16,7 @@
       "surname": "Last tname",
       "firstname": "First name",
       "telephone": "0111456789",
-      "email_address": "noreply5@northgateps.com",
+      "email_address": "noreply5@necsws.com",
       "address": {
         "json_class": "Address",
         "address_line1": "Royal Mail",

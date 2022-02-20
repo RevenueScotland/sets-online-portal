@@ -15,6 +15,12 @@
                     "itemdata": "\u003c%TARE_REFERENCE%\u003e"
                 },
                 {
+                    "itemcode": "receipt_date",
+                    "itemformat": null,
+                    "itemlabel": "Receipt date",
+                    "itemdata": "\u003c%RECEIPT_DATE%\u003e"
+                },
+                {
                     "itemcode": "version",
                     "itemformat": null,
                     "itemlabel": "Version",
@@ -51,7 +57,7 @@
                     "itemdata": "No"
                 }
             ],
-            "itemcount": 7
+            "itemcount": 8
         },
         {
             "sectioncode": "site",

@@ -10,7 +10,7 @@
 <%= fields_for @address_summary do |asf| %>
   <% if @show_label_postcode %>
     <div class="govuk-form-group">
-      <%= display_field @address_summary, :postcode, {}, { wrapper: { class: "display-inline-text" }, text: { class: "govuk-label" } } %>
+      <%= display_field @address_summary, :postcode, wrapper: { class: "display-inline-text" }, text: { class: "govuk-label" } %>
       <%= asf.hidden_field :postcode %>
       <%= asf.button 'change_postcode', { :class => 'scot-rev-button_link govuk-link', :name => 'change_postcode' } %>
     </div>
@@ -37,7 +37,7 @@
   <div class="govuk-form-group">
     <% focus_on_line_1 = false %>
     <% if @show_manual_address && @show_manual_address != '' %>
-      <%= asf.button 'edit_address', { :class => 'scot-rev-button_link govuk-link', :name => 'manual_address' } %>
+      <%= asf.button 'edit_address', { :class => 'scot-rev-button_link govuk-link', :name => 'manual_address' } if @address_read_only %>
     <% else %>
       <%= asf.button 'manual_address', { :class => 'scot-rev-button_link govuk-link', :name => 'manual_address' } %>
     <% end %>

@@ -661,6 +661,10 @@ Feature: SLfT Returns
         # Verify the fpay_method information has been cleared
         And the radio button "BACS" should not be selected
         And the radio button "Cheque" should not be selected
+        # Check we can't submit without picking a payment method
+        When I click on the "Submit return" button
+        Then I should receive the message "How are you paying can't be blank"
+        And I should receive the message "The declaration must be accepted"
 
         When I check the "BACS" radio button
         And I check the "returns_slft_slft_return_declaration" checkbox
@@ -687,6 +691,7 @@ Feature: SLfT Returns
         Then I should see the "Return summary" page
 
         When I click on the 1 st "Add waste details" link
+        Then I should see the "Waste details summary" page
         When I click on the 2 nd "Edit" link
         Then I should see the "Details of the 03 02 02 waste for Waste Site 1" page
         And I should see the sub-title "Provide the following waste details"
@@ -783,15 +788,16 @@ Feature: SLfT Returns
         And I should see the text "Branch sort code can't be blank"
         And I should see the text "Name of bank / building society can't be blank"
 
-        When I enter "RANDOM_text,256" in the "Name of the account holder" field
+        When I enter "RANDOM_text,153" in the "Name of the account holder" field
         And I enter "RANDOM_text,11" in the "Bank / building society account number" field
         And I enter "85-96-88-7" in the "Branch sort code" field
         And I enter "RANDOM_text,256" in the "Name of bank / building society" field
         And I click on the "Continue" button
-        Then I should see the text "Bank / building society account number must be 8 digits long"
+        Then I should see the text "Name of the account holder is too long (maximum is 152 characters)"
+        And I should see the text "Bank / building society account number must be 8 digits long"
         And I should see the text "Branch sort code must be in the format 99-99-99"
 
-        When I enter "Fred Flintstone" in the "Name of the account holder" field
+        When I enter "Fred Flintstone with a long name" in the "Name of the account holder" field
         And I enter "12345678" in the "Bank / building society account number" field
         And I enter "10-11-12" in the "Branch sort code" field
         And I enter "Natwest" in the "Name of bank / building society" field
@@ -808,11 +814,6 @@ Feature: SLfT Returns
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
         And I should see the text "I, the taxpayer, confirm that this return is, to the best of my knowledge, correct and complete"
-
-        # Actual declaration page
-        When I click on the "Submit return" button
-        Then I should receive the message "How are you paying can't be blank"
-        And I should receive the message "The declaration must be accepted"
 
         # go back and check we can choose to not do a repayment and instead go straight to the normal payment/submit page
         When I click on the "Back" link
@@ -931,8 +932,8 @@ Feature: SLfT Returns
 
         When I click on the "Continue" button
         Then I should see the "Payment and submission" page
-        # Verify the fpay_method information has been cleared
-        And the radio button "BACS" should not be selected
+        # Verify the fpay_method has been stored
+        And the radio button "BACS" should be selected
         And the radio button "Cheque" should not be selected
 
         When I check the "BACS" radio button

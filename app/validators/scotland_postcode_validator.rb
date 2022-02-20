@@ -14,7 +14,7 @@
 #   refer(https://guides.rubyonrails.org/active_record_validations.html#performing-custom-validations)
 class ScotlandPostcodeValidator < ActiveModel::Validator
   # Regex for Scotland Postcode Validation
-  SCOTLAND_POSTCODE_REGEX = /\A((BT|ZE|KW|IV|HS|PH|AB|DD|PA|FK|G|KY|KA|EH|ML|TD|DG)[0-9])/i.freeze
+  SCOTLAND_POSTCODE_REGEX = /\A((BT|ZE|KW|IV|HS|PH|AB|DD|PA|FK|G|KY|KA|EH|ML|TD|DG)[0-9])/i
 
   # Validation check for valid Scotland Address.
   # @param address [Object] an object to be checked for validation

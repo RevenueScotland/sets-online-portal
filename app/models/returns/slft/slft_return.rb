@@ -96,7 +96,8 @@ module Returns
       validates :amount_claimed, numericality: { greater_than: 0, less_than: 1_000_000_000_000_000_000,
                                                  allow_blank: true }, presence: true,
                                  two_dp_pattern: true, on: :repayment_yes_no, if: :repayment_details_needed?
-      validates :account_holder, :bank_name, presence: true, length: { maximum: 255 }, on: :account_holder
+      validates :account_holder, presence: true, length: { maximum: 152 }, on: :account_holder
+      validates :bank_name, presence: true, length: { maximum: 255 }, on: :account_holder
       validates :bank_account_no, account_number: true, presence: true, on: :account_holder
       validates :bank_sort_code, presence: true, bank_sort_code: true, on: :account_holder
 
@@ -270,20 +271,22 @@ module Returns
         # copy some items over to the output
         %i[form_type tare_reference tare_refno version].each { |key| output[key] = slft[key] }
 
-        # move the whole return to the outout
+        # move the whole return to the output
         output.merge!(slft[:slft_return_details])
 
         # move some items to the root
         %i[nda credit_claim tax_payable].each { |key| move_to_root(output, key) }
+
+        # Copy the payment method to the previous payment method
+        output[:previous_fpay_method] = output[:fpay_method]
 
         derive_yes_nos_in(output)
 
         output[:sites] = convert_sites(output)
 
         # don't want to load the repayment details, throw this lot away
-        # also clear any FPAYMethod data as user must re-enter that
         %i[amount_claimed account_holder bank_account_no bank_sort_code bank_name
-           rrep_bank_auth_ind fpay_method].each { |key| output.delete(key) }
+           rrep_bank_auth_ind].each { |key| output.delete(key) }
 
         output
       end
@@ -465,8 +468,9 @@ module Returns
 
       # Called by @see Returns::AbstractReturn#save
       # @param _requested_by [Object] details for the current user
+      # @param form_type [string] D(raft) or L(atest)
       # @return a hash suitable for use in a save request to the back office
-      def request_save(_requested_by) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      def request_save(_requested_by, form_type:) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         # NB the order is thought to be important to the back office
         # have to have '' around symbols as they need to contain ':' characters for output to be correct
         output = { SLFTReturnDetails: {
@@ -476,7 +480,7 @@ module Returns
           'ins1:CreditClaim': save_credit_claimed_hash
         } }
 
-        output[:SLFTReturnDetails]['ins1:TaxPayable'] = save_tax_payable_hash unless @tax_payable.nil?
+        output[:SLFTReturnDetails]['ins1:TaxPayable'] = save_tax_payable_hash(form_type) unless @tax_payable.nil?
 
         # add optional repayment details
         output[:ClaimDetails] = save_repayment_hash if repayment_yes_no == 'Y'
@@ -530,13 +534,15 @@ module Returns
       end
 
       # returns the bundle tax payable hash for sending to the back office
-      def save_tax_payable_hash
+      # @param form_type [string] D(raft) or L(atest)
+      def save_tax_payable_hash(form_type)
         {
           'ins1:TotalTaxDue': total_tax_due,
           'ins1:TotalCredit': total_credit,
           'ins1:TaxPayable': tax_payable,
           'ins1:Declaration': declaration,
-          'ins1:FPAYMethod': fpay_method
+          # Make sure previous payment method is saved to back office for a draft so we don't lose track of it
+          'ins1:FPAYMethod': (form_type == 'D' ? previous_fpay_method : fpay_method)
         }
       end
 
@@ -555,10 +561,11 @@ module Returns
       end
 
       # Print data for the transaction
-      def print_layout_transaction
+      def print_layout_transaction # rubocop:disable Metrics/MethodLength
         { code: :about_transaction, key: :transaction_subtitle, key_scope: %i[returns slft summary],
           divider: true, display_title: true, type: :list,
           list_items: [{ code: :tare_reference, placeholder: '<%TARE_REFERENCE%>' },
+                       { code: :receipt_date, placeholder: '<%RECEIPT_DATE%>' },
                        { code: :version, placeholder: '<%VERSION%>' },
                        { code: :form_type, lookup: true }, { code: :year, lookup: true },
                        { code: :fape_period, lookup: true },

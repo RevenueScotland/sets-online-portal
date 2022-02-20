@@ -12,8 +12,8 @@ Feature: User Maintenance
         Then I should see the "Account users" page
         When I filter on "Portal User One"
         And the table of data is displayed
-            | Username   | Current | Name            | Email address           | Phone number |
-            | PORTAL.ONE | Y       | Portal User One | noreply@northgateps.com |              |
+            | Username   | Current | Name            | Email address      | Phone number |
+            | PORTAL.ONE | Y       | Portal User One | noreply@necsws.com |              |
         When I click on the "Create a new user for your account" link
         Then I should see the "New User" page
 
@@ -44,11 +44,13 @@ Feature: User Maintenance
         When I enter "test123" in the "Password" field
         And I click on the "Create User" button
         # entering different email address and confirm email address
-        When I enter "a@a.com" in the "Email address" field
+        # Use complex email to check it passes that check
+        When I enter "a.o'dowd@a.com" in the "Email address" field
         And I enter "b@b.com" in the "Confirm email address" field
         And I click on the "Create User" button
         Then I should receive the message "Email address does not match"
-        # entering different email address and confirm email address
+        And I should not receive the message "Email address is invalid"
+        # entering different password and confirm password address
         When I enter "Password001" in the "Password" field
         And I enter "Password002" in the "Confirm password" field
         And I click on the "Create User" button
@@ -64,8 +66,8 @@ Feature: User Maintenance
         And I check the "Current" radio button
         And I enter "New User" in the "First name" field
         And I enter "RANDOM_SURNAME,10,UPCASE" in the "Last name" field
-        And I enter "noreply@northgateps.com" in the "Email address" field
-        And I enter "noreply@northgateps.com" in the "Confirm email address" field
+        And I enter "noreply@necsws.com" in the "Email address" field
+        And I enter "noreply@necsws.com" in the "Confirm email address" field
         And I enter "0123456789" in the "Phone number" field
         And I enter "Testuser123!" in the "Password" field
         And I enter "Testuser123!" in the "Confirm password" field
@@ -73,8 +75,8 @@ Feature: User Maintenance
         Then I should see the "Account users" page
         When I filter on "RANDOM_SURNAME"
         And the table of data is displayed
-            | Username        | Current | Name           | Email address           | Phone number |
-            | RANDOM_USERNAME | Y       | RANDOM_SURNAME | noreply@northgateps.com | 0123456789   |
+            | Username        | Current | Name           | Email address      | Phone number |
+            | RANDOM_USERNAME | Y       | RANDOM_SURNAME | noreply@necsws.com | 0123456789   |
 
     Scenario: Filtering user based on full name and user is current user or not
         Given I have signed in
@@ -82,10 +84,10 @@ Feature: User Maintenance
         And I click on the "Create or update users" link
         Then I should see the "Account users" page
         And the table of data is displayed
-            | Username           | Current | Name                    | Email address           | Phone number |
-            | PORTAL.ONE         | Y       | Portal User One         | noreply@northgateps.com |              |
-            | PORTAL.TWO         | Y       | Portal User Two         | noreply@northgateps.com |              |
-            | PORTAL.NON.CURRENT | N       | Portal User Non Current | noreply@northgateps.com |              |
+            | Username           | Current | Name                    | Email address      | Phone number |
+            | PORTAL.ONE         | Y       | Portal User One         | noreply@necsws.com |              |
+            | PORTAL.TWO         | Y       | Portal User Two         | noreply@necsws.com |              |
+            | PORTAL.NON.CURRENT | N       | Portal User Non Current | noreply@necsws.com |              |
 
         # incorrect name
         When I enter "Invalid user" in the "Name" field
@@ -98,24 +100,24 @@ Feature: User Maintenance
         When I enter "Portal User Two" in the "Name" field
         And I click on the "Find" button
         Then the table of data is displayed
-            | Username   | Current | Name            | Email address           | Phone number |
-            | PORTAL.TWO | Y       | Portal User Two | noreply@northgateps.com |              |
+            | Username   | Current | Name            | Email address      | Phone number |
+            | PORTAL.TWO | Y       | Portal User Two | noreply@necsws.com |              |
 
         # select user is current or not from dropdown without entering full name
         When I select "No" from the "Current"
         And I enter " " in the "Name" field
         And I click on the "Find" button
         Then the table of data is displayed
-            | Username           | Current | Name                    | Email address           | Phone number |
-            | PORTAL.NON.CURRENT | N       | Portal User Non Current | noreply@northgateps.com |              |
+            | Username           | Current | Name                    | Email address      | Phone number |
+            | PORTAL.NON.CURRENT | N       | Portal User Non Current | noreply@necsws.com |              |
 
         # select both filter name and current dropdown
         When I enter "Portal User One" in the "Name" field
         And I select "Yes" from the "Current"
         And I click on the "Find" button
         Then the table of data is displayed
-            | Username   | Current | Name            | Email address           | Phone number |
-            | PORTAL.ONE | Y       | Portal User One | noreply@northgateps.com |              |
+            | Username   | Current | Name            | Email address      | Phone number |
+            | PORTAL.ONE | Y       | Portal User One | noreply@necsws.com |              |
 
     Scenario: Updating a user without password
         Given I have signed in
@@ -131,14 +133,14 @@ Feature: User Maintenance
         # enter valid data and update the user details
         When I enter "Portal User1" in the "First name" field
         When I enter "Change Details1" in the "Last name" field
-        When I enter "noreply@northgateps.com" in the "Confirm email address" field
+        When I enter "noreply@necsws.com" in the "Confirm email address" field
         #again filter to check updated details
         When I click on the "Update User" button
         Then I should see the "Account users" page
         And I filter on "Portal User1 Change Details1"
         Then the table of data is displayed
-            | Username              | Current | Name                         | Email address           | Phone number |
-            | PORTAL.CHANGE@DETAILS | N       | Portal User1 Change Details1 | noreply@northgateps.com |              |
+            | Username              | Current | Name                         | Email address      | Phone number |
+            | PORTAL.CHANGE@DETAILS | N       | Portal User1 Change Details1 | noreply@necsws.com |              |
 
         #update details back to orginal
         And I filter on "Portal User1 Change Details1"
@@ -146,7 +148,7 @@ Feature: User Maintenance
         Then I should see the "Update User" page
         When I enter "Portal User" in the "First name" field
         When I enter "Change Details" in the "Last name" field
-        When I enter "noreply@northgateps.com" in the "Confirm email address" field
+        When I enter "noreply@necsws.com" in the "Confirm email address" field
         When I click on the "Update User" button
         Then I should see the "Account users" page
 
@@ -160,7 +162,7 @@ Feature: User Maintenance
         # enter valid data and update the user details
         When I enter "Portal User1" in the "First name" field
         When I enter "Change Details1" in the "Last name" field
-        When I enter "noreply@northgateps.com" in the "Confirm email address" field
+        When I enter "noreply@necsws.com" in the "Confirm email address" field
         # Generates a random password, 9 characters long
         And I enter "PASSWORD,9" in the "New password" and "Confirm new password" field
         #again filter to check updated details
@@ -168,8 +170,8 @@ Feature: User Maintenance
         Then I should see the "Account users" page
         And I filter on "Portal User1 Change Details1"
         Then the table of data is displayed
-            | Username              | Current | Name                         | Email address           | Phone number |
-            | PORTAL.CHANGE@DETAILS | N       | Portal User1 Change Details1 | noreply@northgateps.com |              |
+            | Username              | Current | Name                         | Email address      | Phone number |
+            | PORTAL.CHANGE@DETAILS | N       | Portal User1 Change Details1 | noreply@necsws.com |              |
 
         #update details back to orginal
         And I filter on "Portal User1 Change Details1"
@@ -177,7 +179,7 @@ Feature: User Maintenance
         Then I should see the "Update User" page
         When I enter "Portal User" in the "First name" field
         When I enter "Change Details" in the "Last name" field
-        When I enter "noreply@northgateps.com" in the "Confirm email address" field
+        When I enter "noreply@necsws.com" in the "Confirm email address" field
         When I click on the "Update User" button
         Then I should see the "Account users" page
 

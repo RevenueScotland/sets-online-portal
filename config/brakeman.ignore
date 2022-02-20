@@ -193,7 +193,7 @@
       "check_name": "FileAccess",
       "message": "Model attribute used in file name",
       "file": "app/controllers/concerns/file_upload_handler.rb",
-      "line": 286,
+      "line": 284,
       "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
       "code": "File.delete(ResourceItem.file_temp_storage_path(:upload, sub_directory, file_name))",
       "render_path": null,
@@ -303,7 +303,7 @@
           "type": "controller",
           "class": "Returns::LbttPartiesController",
           "method": "acting_as_trustee",
-          "line": 70,
+          "line": 67,
           "file": "app/controllers/returns/lbtt_parties_controller.rb",
           "rendered": {
             "name": "returns/lbtt_parties/acting_as_trustee",
@@ -365,7 +365,7 @@
           "type": "controller",
           "class": "Applications::SlftController",
           "method": "confirmation_and_document_upload",
-          "line": 136,
+          "line": 130,
           "file": "app/controllers/applications/slft_controller.rb",
           "rendered": {
             "name": "applications/slft/confirmation_and_document_upload",
@@ -427,7 +427,7 @@
           "type": "controller",
           "class": "Returns::LbttPartiesController",
           "method": "acting_as_trustee",
-          "line": 70,
+          "line": 67,
           "file": "app/controllers/returns/lbtt_parties_controller.rb",
           "rendered": {
             "name": "returns/lbtt_parties/acting_as_trustee",
@@ -568,26 +568,6 @@
       "note": ""
     },
     {
-      "warning_type": "File Access",
-      "warning_code": 16,
-      "fingerprint": "b202887ba5711aa01a0c810503bdf91390153757f46cef65e74729fa1d9b14a5",
-      "check_name": "FileAccess",
-      "message": "Model attribute used in file name",
-      "file": "app/controllers/concerns/file_upload_handler.rb",
-      "line": 275,
-      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
-      "code": "File.open(ResourceItem.file_temp_storage_path(:upload, sub_directory, resource_item.file_name), \"wb\")",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "FileUploadHandler",
-        "method": "save_attachment"
-      },
-      "user_input": "ResourceItem.file_temp_storage_path(:upload, sub_directory, resource_item.file_name)",
-      "confidence": "Medium",
-      "note": ""
-    },
-    {
       "warning_type": "Reverse Tabnabbing",
       "warning_code": 111,
       "fingerprint": "c423ba089d3866abff06fe4cc478a9825e4c154df76cf220e94e02466cc79c64",
@@ -714,6 +694,37 @@
     {
       "warning_type": "Reverse Tabnabbing",
       "warning_code": 111,
+      "fingerprint": "e1318b135dbf7a3ed369ffa87380e55703f83761d8a8ddd22ee0cbf67018bc39",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_parties/parties_relation.html.erb",
+      "line": 8,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".BUYER_buyer_seller_linked_ind\"), external_link_url(\"BUYER_SELLER\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttPartiesController",
+          "method": "parties_relation",
+          "line": 61,
+          "file": "app/controllers/returns/lbtt_parties_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_parties/parties_relation",
+            "file": "app/views/returns/lbtt_parties/parties_relation.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_parties/parties_relation"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": ""
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
       "fingerprint": "e1392b3b2922e9a969f53bebd28bde3910c0a796864b83bb8b3abc54f0ece0ed",
       "check_name": "ReverseTabnabbing",
       "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
@@ -743,41 +754,21 @@
       "note": ""
     },
     {
-      "warning_type": "File Access",
-      "warning_code": 16,
-      "fingerprint": "e55fdd745f9c1dcaeaa49754546ded26730e273659f8a3eeb237032b41c1bb11",
-      "check_name": "FileAccess",
-      "message": "Model attribute used in file name",
-      "file": "app/controllers/concerns/download_helper.rb",
-      "line": 39,
-      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
-      "code": "File.open(ResourceItem.file_temp_storage_path(:scanning, sub_directory, SecureRandom.uuid), \"wb\")",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "DownloadHelper",
-        "method": "check_for_virus_in_attachment"
-      },
-      "user_input": "ResourceItem.file_temp_storage_path(:scanning, sub_directory, SecureRandom.uuid)",
-      "confidence": "Medium",
-      "note": ""
-    },
-    {
       "warning_type": "Reverse Tabnabbing",
       "warning_code": 111,
-      "fingerprint": "ff80be07fadd6ab5bfa09f3cf576ab03f44bfd28af28381b2a5ea77a00b448ad",
+      "fingerprint": "f9fd7bf8afc438f28e831da782b35adb816027ffd661cc836f25a9298d77f1fa",
       "check_name": "ReverseTabnabbing",
       "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
       "file": "app/views/returns/lbtt_parties/parties_relation.html.erb",
-      "line": 7,
+      "line": 10,
       "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
-      "code": "link_to(t(\".buyer_seller_linked_ind\"), external_link_url(\"BUYER_SELLER\"), :target => \"_blank\")",
+      "code": "link_to(t(\".TENANT_buyer_seller_linked_ind\"), external_link_url(\"BUYER_SELLER\"), :target => \"_blank\")",
       "render_path": [
         {
           "type": "controller",
           "class": "Returns::LbttPartiesController",
           "method": "parties_relation",
-          "line": 64,
+          "line": 61,
           "file": "app/controllers/returns/lbtt_parties_controller.rb",
           "rendered": {
             "name": "returns/lbtt_parties/parties_relation",
@@ -794,6 +785,6 @@
       "note": ""
     }
   ],
-  "updated": "2021-01-19 21:20:02 +0000",
-  "brakeman_version": "4.10.1"
+  "updated": "2021-12-23 16:40:59 +0000",
+  "brakeman_version": "5.2.0"
 }

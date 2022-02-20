@@ -126,6 +126,8 @@ en:
   include_transaction_ref_html: "The transaction ID must be included with any payment submitted or in any correspondence regarding this transaction. This acknowledgment should <b>not</b> be sent to Registers of Scotland as part of the land registration process."
   invalid_csv: "File is invalid CSV file: %{message}"
   csv_too_many_errors: "File is invalid, greater than %{failure}% of rows had the wrong number of columns"
+  more_info: "More information"
+  important: "Important"
 
   import_row_error:
     one: "%{description} has the following error: %{messages}"

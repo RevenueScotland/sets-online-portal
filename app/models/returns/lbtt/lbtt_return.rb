@@ -32,6 +32,7 @@ module Returns
       strip_attributes :total_consideration, :total_vat, :non_chargeable, :remaining_chargeable,
                        :annual_rent, :relevant_rent, :repayment_amount_claimed, :account_number
 
+      # Holds items that are internal and not set by the user
       # The attribute is_public is used to determine if the return was made as a public, in other words, a
       # user who is not logged in. This needs to be populated on a new instance of a lbtt_return object.
       # LBTT tax calculations object to manage and store tax calculation results.
@@ -119,7 +120,8 @@ module Returns
                                                            less_than: 1_000_000_000_000_000_000,
                                                            allow_blank: true },
                                            two_dp_pattern: true, presence: true, on: :repayment_amount_claimed
-      validates :account_holder_name, :bank_name, presence: true, length: { maximum: 255 }, on: :account_holder_name
+      validates :account_holder_name, presence: true, length: { maximum: 152 }, on: :account_holder_name
+      validates :bank_name, presence: true, length: { maximum: 255 }, on: :account_holder_name
       validates :account_number, presence: true, account_number: true, on: :account_holder_name
       validates :branch_code, presence: true, bank_sort_code: true, on: :account_holder_name
       validates :repayment_declaration, acceptance: { accept: ['Y'] }, on: :repayment_declaration
@@ -260,6 +262,7 @@ module Returns
            display_title: true, # Is the title to be displayed
            type: :list, # type list = the list of attributes to follow
            list_items: [{ code: :tare_reference, placeholder: '<%TARE_REFERENCE%>' },
+                        { code: :receipt_date, placeholder: '<%RECEIPT_DATE%>' },
                         { code: :version, placeholder: '<%VERSION%>' },
                         { code: :form_type, lookup: true },
                         { code: :flbt_type, lookup: true },
@@ -497,7 +500,7 @@ module Returns
       def sale_include_option_valid?
         return unless business_ind?
 
-        errors.add(:sale_include_option, :one_must_be_chosen) if sale_include_option.reject(&:empty?).empty?
+        errors.add(:sale_include_option, :one_must_be_chosen) if sale_include_option.compact_blank.empty?
       end
 
       # Combine list of parties together
@@ -587,6 +590,9 @@ module Returns
         output[:tare_refno] = lbtt[:tare_refno]
         output[:version] = lbtt[:version]
         output.merge!(lbtt[:lbtt_return_details])
+
+        # Copy the payment method to the previous payment method
+        output[:previous_fpay_method] = output[:fpay_method]
 
         hash_parties = convert_parties(output)
         output[:buyers] = split_by_party_type(hash_parties, 'BUYER')
@@ -843,8 +849,9 @@ module Returns
 
       # Called by @see Returns::AbstractReturn#save
       # @param requested_by [Object] details for the current user
+      # @param form_type [string] D(raft) or L(atest)
       # @return a hash suitable for use in a save request to the back office
-      def request_save(requested_by) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      def request_save(requested_by, form_type:) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         output = {
           'ins1:FlbtType': @flbt_type, 'ins1:PropertyType': property_type
         }
@@ -922,7 +929,8 @@ module Returns
           output['ins1:DeferralAgreedInd'] = convert_to_backoffice_yes_no_value(@deferral_agreed_ind)
         end
 
-        xml_element_if_present(output, 'ins1:FPAYMethod', @fpay_method)
+        # Make sure previous payment method is saved to back office for a draft so we don't lose track of it
+        xml_element_if_present(output, 'ins1:FPAYMethod', (form_type == 'D' ? @previous_fpay_method : @fpay_method))
 
         # repayments
         if @repayment_ind == 'Y'

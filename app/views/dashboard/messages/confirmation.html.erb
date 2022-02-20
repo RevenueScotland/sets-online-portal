@@ -8,7 +8,7 @@
       <%= sub_heading %>
       <p class="govuk-body">
         <%= UtilityHelper.swap_texts(t('.paragraph2'),
-                                     text_link: { t('.paragraph2_link_text') =>
+                                     text_links: { t('.paragraph2_link_text') =>
                                                     link_to(t('.paragraph2_link_text'), external_link_url('HOME'), target: '_blank') }) %>
       </p>
       <% if can? AuthorisationHelper::CREATE_ATTACHMENT %>

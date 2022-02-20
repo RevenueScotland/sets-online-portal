@@ -5,7 +5,7 @@
 <core:Success>true</core:Success>
 <Forename>Valid</Forename>
 <Surname>User</Surname>
-<EmailAddress>valid.user@northgateps.com</EmailAddress>
+<EmailAddress>valid.user@necsws.com</EmailAddress>
 <UserServices>
     <UserService>LBTT</UserService>
 </UserServices>

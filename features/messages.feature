@@ -112,6 +112,8 @@ Feature: Secure Communication
     # Index page tests
     Scenario: View list of all messages
         Given I have signed in
+        Then I should see the "Dashboard" page
+        And I should see the sub-title "Unread messages"
         When I click on the "All messages" link
         Then I should see the "Messages" page
         When I enter "RS2000001AAAA" in the "Reference" field

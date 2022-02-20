@@ -363,7 +363,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     end
     options[:key_scope] = i18n_item_scope(key_scope)
 
-    label = UtilityHelper.label_text(self, code, options)
+    label = UtilityHelper.label_text(self, code, **options)
     # Make sure breaks turn into returns for printing
     label = label.gsub('<br>', "\n")
     # strip any other HTML out of the labels

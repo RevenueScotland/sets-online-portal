@@ -171,7 +171,7 @@ module AccountPersistence
   # @param taxes [hash of strings] the taxes to map onto the request to the back office
   # @return hash map
   def register_account_request_other(taxes)
-    { UserServices: { 'ins2:UserService' => taxes.reject(&:empty?) } }
+    { UserServices: { 'ins2:UserService' => taxes.compact_blank } }
   end
 
   # Return the contact address. If it's a registered company without a specific contact address

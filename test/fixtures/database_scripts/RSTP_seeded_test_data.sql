@@ -45,10 +45,11 @@ DECLARE
 
   -- The amendable and non amendable date need to be updated once a year at the beginning of august
   -- Then update the same dates in the dashboard_returns.feature
-  AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2020';
-  NON_AMENDABLE_DATE VARCHAR2(12) := '01-JUN-2018';
+  AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2021';
+  NON_AMENDABLE_DATE VARCHAR2(12) := '01-JUN-2019';
   -- This is set to a few days before the amendable date for older versions
-  SLFT_SUBMITTED_DATE VARCHAR2(12) := '19-JUN-2020';
+  SLFT_SUBMITTED_DATE VARCHAR2(12) := '19-JUN-2021';
+  SLFT_AMENDABLE_YEAR VARCHAR2(4) := '2021';
   
       PROCEDURE create_or_maintain_cde(p_par_refno parties.par_refno%TYPE,
          p_cde_cme_code contact_details.cde_cme_code%TYPE,
@@ -145,6 +146,10 @@ BEGIN
   fl_variables.set_g_username('EXTPWSUSER');
   
   -- Some of the below isn't production but it does the trick!
+  -- Delete any PWS system notices
+  DELETE FROM system_notices WHERE syno_system = 'PWS';
+
+  -- Delete the test portal company
   DELETE FROM document_notes WHERE dno_created_by IN (SELECT usr_refno from users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%'));
   DELETE FROM user_services WHERE use_username IN (SELECT usr_username from users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%'));
   DELETE FROM audit_logs WHERE alg_usr_usr_username IN (SELECT usr_username from users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%'));
@@ -220,8 +225,6 @@ BEGIN
   DELETE FROM financial_accounts WHERE fiac_reference LIKE 'PORTAL%';
 
   -- Delete the rest of the party data
---  DELETE FROM landfill_site_owners WHERE laso_lasi_refno IN (99,100);
---  DELETE FROM landfill_site_owners WHERE laso_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM landfill_sites WHERE lasi_controller_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM landfill_sites WHERE lasi_refno IN (99,100);
   DELETE FROM case_party_links WHERE cpli_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
@@ -295,6 +298,77 @@ BEGIN
     AND NOT EXISTS (SELECT null FROM cases where case_reference = ere_value);
   DELETE FROM documents WHERE NOT EXISTS (SELECT NULL FROM external_references WHERE ere_doc_refno = doc_refno);
  
+  -- Insert the system notices test cases
+  INSERT INTO system_notices
+   ( syno_title, syno_system,
+     syno_start_date, syno_start_time, syno_end_date, syno_end_time, 
+     syno_completed_ind, syno_frv_sat_code, syno_wrk_refno, 
+     syno_more_information_url)
+  VALUES
+   ('Portal- This is a test notice', 'PWS',
+     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', TO_DATE('10-OCT-3021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '00:00',
+     'N', 'PORTAL', 1, 'https://www.google.com/');
+										
+  INSERT INTO system_notices
+   ( syno_title, syno_system,
+     syno_start_date, syno_start_time, syno_end_date, syno_end_time, 
+     syno_completed_ind, syno_frv_sat_code, syno_wrk_refno, 
+     syno_more_information_url)
+  VALUES
+   ('LBTT Lease Review - This is a test notice with a full stop and a space. ', 'PWS',
+     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
+     'N', 'LBTTREVIEW', 1, 'https://www.google.com/');
+
+  INSERT INTO system_notices
+   ( syno_title, syno_system,
+     syno_start_date, syno_start_time, syno_end_date, syno_end_time, 
+     syno_completed_ind, syno_frv_sat_code, syno_wrk_refno, 
+     syno_more_information_url)
+  VALUES
+   ('SLFT application - This is a test notice with a full stop.', 'PWS',
+     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
+     'N', 'SLFTFORMS', 1, 'https://www.google.com/');
+
+  INSERT INTO system_notices
+   ( syno_title, syno_system,
+     syno_start_date, syno_start_time, syno_end_date, syno_end_time, 
+     syno_completed_ind, syno_frv_sat_code, syno_wrk_refno, 
+     syno_more_information_url)
+  VALUES
+   ('Repayment Request - This is a test notice without a URL', 'PWS',
+     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
+     'N', 'REPAYMENT', 1, NULL);
+
+  INSERT INTO system_notices
+   ( syno_title, syno_system,
+     syno_start_date, syno_start_time, syno_end_date, syno_end_time, 
+     syno_completed_ind, syno_frv_sat_code, syno_wrk_refno, 
+     syno_more_information_url)
+  VALUES
+   ('All - This is a test notice', 'PWS',
+     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
+     'N', 'ALL', 1, 'https://www.google.com/');
+
+  INSERT INTO system_notices
+   ( syno_title, syno_system,
+     syno_start_date, syno_start_time, syno_end_date, syno_end_time, 
+     syno_completed_ind, syno_frv_sat_code, syno_wrk_refno, 
+     syno_more_information_url)
+  VALUES
+   ('All - This is a test notice with complete indicator is Y', 'PWS',
+     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
+     'Y', 'ALL', 1, 'https://www.google.com/');
+
+  INSERT INTO system_notices
+   ( syno_title, syno_system,
+     syno_start_date, syno_start_time, syno_end_date, syno_end_time, 
+     syno_completed_ind, syno_frv_sat_code, syno_wrk_refno, 
+     syno_more_information_url)
+  VALUES
+   ('All - This is a test notice with expired date', 'PWS',
+     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', TO_DATE('12-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '23:59',
+     'Y', 'ALL', 1, 'https://www.google.com/');
+     
   -- Create the Main account
   INSERT INTO parties
     (par_refno,par_type,par_com_company_name,par_org_name,par_marketing_ind,par_fact_type,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
@@ -304,7 +378,7 @@ BEGIN
 
 -- contact details are recorded against the user not the party on registration
 --  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'USERNAME',p_value=>p_username);     
-  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@northgateps.com');
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
   create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
   create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
        
@@ -314,7 +388,7 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_title, usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('PORTAL.ONE',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.ONE'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal User One','noreply@northgateps.com',3,
+     ('PORTAL.ONE',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.ONE'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal User One','noreply@necsws.com',3,
       'N',l_par_Refno,'MR','Portal User','One','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
@@ -332,7 +406,7 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('PORTAL.TWO',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.TWO'||'Password2!'))),TRUNC(SYSDATE),'N','Y','User One','noreply@northgateps.com',3,
+     ('PORTAL.TWO',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.TWO'||'Password2!'))),TRUNC(SYSDATE),'N','Y','User One','noreply@necsws.com',3,
       'N',l_par_Refno,'Portal User','Two','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
@@ -350,7 +424,7 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('PORTAL.NON.CURRENT',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.NON.CURRENT'||'Password3!'))),TRUNC(SYSDATE),'N','N','Portal Non Current','noreply@northgateps.com',3,
+     ('PORTAL.NON.CURRENT',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.NON.CURRENT'||'Password3!'))),TRUNC(SYSDATE),'N','N','Portal Non Current','noreply@necsws.com',3,
       'N',l_par_Refno,'Portal User','Non Current','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
@@ -368,7 +442,7 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('PORTAL.CHANGE@DETAILS',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.CHANGE@DETAILS'||'Password3!'))),TRUNC(SYSDATE),'N','N','Portal Change Details','noreply@northgateps.com',3,
+     ('PORTAL.CHANGE@DETAILS',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.CHANGE@DETAILS'||'Password3!'))),TRUNC(SYSDATE),'N','N','Portal Change Details','noreply@necsws.com',3,
       'N',l_par_Refno,'Portal User','Change Details','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
@@ -387,7 +461,7 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('PORTAL.NO.ACCESS',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.NO.ACCESS'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal No Access','noreply@northgateps.com',3,
+     ('PORTAL.NO.ACCESS',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.NO.ACCESS'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal No Access','noreply@necsws.com',3,
       'N',l_par_Refno,'Portal User','No Access','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
@@ -1753,7 +1827,7 @@ BEGIN
     (par_refno_seq.nextval,'ORG','Test Portal Company New Users','Test Portal Company New Users','N','AGENT','PARTY_ACT_TYPES','SYS',1)
   RETURNING par_refno INTO l_par_refno;
   
-  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@northgateps.com');
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
   create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
   create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'2 Park Lane',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
 
@@ -1768,7 +1842,7 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('PORTAL.NEW.USERS',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.NEW.USERS'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal New Users','noreply@northgateps.com',3,
+     ('PORTAL.NEW.USERS',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.NEW.USERS'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal New Users','noreply@necsws.com',3,
       'N',l_par_Refno,'Portal User','New Users','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
@@ -1801,7 +1875,7 @@ BEGIN
     (par_refno_seq.nextval,'PER','Portal-Test','Adam','N','TAXPAYER','PARTY_ACT_TYPES','SYS',1)
   RETURNING par_refno INTO l_par_refno;
   
-  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@northgateps.com');
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
   create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
   create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'3 Park Lane',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
 
@@ -1816,7 +1890,7 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('ADAM.PORTAL-TEST',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('ADAM.PORTAL-TEST'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Adam Portal-Test','noreply@northgateps.com',3,
+     ('ADAM.PORTAL-TEST',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('ADAM.PORTAL-TEST'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Adam Portal-Test','noreply@necsws.com',3,
       'N',l_par_Refno,'Adam','Portal-Test','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
@@ -1852,7 +1926,7 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('PORTAL.NORTHGATE',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.NORTHGATE'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal Northgate','noreply@northgateps.com',3,
+     ('PORTAL.NORTHGATE',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.NORTHGATE'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal Northgate','noreply@necsws.com',3,
       'N',l_par_Refno,'Portal','Northgate','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
@@ -1874,7 +1948,7 @@ BEGIN
     (par_refno_seq.nextval,'ORG','Test Portal Company No Services','Test Portal Company No Services','N','AGENT','PARTY_ACT_TYPES','SYS',1)
   RETURNING par_refno INTO l_par_refno;
   
-  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@northgateps.com');
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
   create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07800800321');
   create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'2 Green Lane',p_adr_address_line_2=>'Wood Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG7 1FG');
 
@@ -1883,7 +1957,7 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('PORTAL.NO.SERVICES',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.NO.SERVICES'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal No Services','noreply@northgateps.com',3,
+     ('PORTAL.NO.SERVICES',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.NO.SERVICES'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal No Services','noreply@necsws.com',3,
       'N',l_par_Refno,'Portal','Northgate','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
@@ -1932,7 +2006,7 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('PORTAL.WASTE',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.WASTE'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal Waste','noreply@northgateps.com',3,
+     ('PORTAL.WASTE',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.WASTE'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal Waste','noreply@necsws.com',3,
       'N',l_par_Refno,'Portal','Waste','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users
@@ -1997,7 +2071,7 @@ BEGIN
      slft_non_disposal_add_ind, slft_non_disposal_add_text,  slft_non_disposal_delete_ind, slft_non_disposal_delete_text, 
      slft_tax_payable, slft_fpay_method,slft_fpay_frd_domain,slft_fpay_srv_code,slft_fpay_wrk_refno,slft_source, slft_submitted_date)
   VALUES
-    (l_tare_refno,2,l_par_refno,l_h_version,'L',2020,'Q1','PERIOD','SYS',1,
+    (l_tare_refno,2,l_par_refno,l_h_version,'L',SLFT_AMENDABLE_YEAR,'Q1','PERIOD','SYS',1,
      10000,8000, 234000, 200, 500, 8700,
      'N', '',  'N','', 
      225300, 'BACS','PAYMENT TYPE','SLFT',1,'P', AMENDABLE_DATE);
@@ -2015,7 +2089,7 @@ BEGIN
      slft_non_disposal_add_ind, slft_non_disposal_add_text,  slft_non_disposal_delete_ind, slft_non_disposal_delete_text, 
      slft_tax_payable, slft_fpay_method,slft_fpay_frd_domain,slft_fpay_srv_code,slft_fpay_wrk_refno,slft_source, slft_submitted_date)
   VALUES
-    (l_tare_refno,1,l_par_refno,l_h_version,'D',2020,'Q2','PERIOD','SYS',1,
+    (l_tare_refno,1,l_par_refno,l_h_version,'D',SLFT_AMENDABLE_YEAR,'Q2','PERIOD','SYS',1,
      0,0, 255000, 0, 0, 0,
      'N', '',  'N','', 
      255000,'BACS','PAYMENT TYPE','SLFT',1,'P', NULL);
@@ -2198,7 +2272,7 @@ BEGIN
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
   VALUES
-     ('PORTAL.WASTE.NEW',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.WASTE.NEW'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal Waste New','noreply@northgateps.com',3,
+     ('PORTAL.WASTE.NEW',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.WASTE.NEW'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal Waste New','noreply@necsws.com',3,
       'N',l_par_Refno,'Portal','Waste New','ENG',TRUNC(SYSDATE));
       
   INSERT INTO role_users

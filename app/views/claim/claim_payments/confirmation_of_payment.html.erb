@@ -16,7 +16,7 @@
                            { link: :download_claim_details, path: claim_download_claim_path, link_html_options: { target: '_blank' } } ] )%>
   <%= display_paragraph_components(heading: t('.what_next'),
                                    body: UtilityHelper.swap_texts(t('.contact_us'),
-                                                                  text_link: { t('.contact_us_link_text') => link_to(t('.contact_us_link_text'), 
+                                                                  text_links: { t('.contact_us_link_text') => link_to(t('.contact_us_link_text'), 
                                                                                                                        external_link_url('CONTACT_US'),
                                                                                                                        target: '_blank') })) %>
   <%= display_paragraph_components(heading: t('.additional_documents'), body: t('.' + @claim_payment.translation_prefix + '_upload_note')) %>

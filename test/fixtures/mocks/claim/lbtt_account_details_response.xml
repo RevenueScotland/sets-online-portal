@@ -9,7 +9,7 @@
       xmlns:core="http://northgate-is.com/FL/Core">
       <core:Success>true</core:Success>
       <CompanyName>Test Portal Company</CompanyName>
-      <EmailAddress>noreply@northgateps.com</EmailAddress>
+      <EmailAddress>noreply@necsws.com</EmailAddress>
       <PhoneNumber>07700900321</PhoneNumber>
       <Address>
         <core:AddressLine1>1 Acacia Avenue</core:AddressLine1>

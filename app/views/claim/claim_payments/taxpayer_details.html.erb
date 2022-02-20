@@ -8,7 +8,7 @@
   <%= f.text_field :org_name, {optional: true} if @claim_payment.reason != 'ADS'%>
   <%= f.text_field :firstname %>
   <%= f.text_field :surname %>
-  <%= f.text_field :telephone, { translation_options: @claim_payment.translation_prefix, optional: true } %>
-  <%= f.text_field :email_address, { translation_options: @claim_payment.translation_prefix,  optional: true } %>
+  <%= f.text_field :telephone, { translation_options: @claim_payment.translation_prefix } %>
+  <%= f.text_field :email_address, { translation_options: @claim_payment.translation_prefix } %>
   <%= f.button %>
 <% end %>

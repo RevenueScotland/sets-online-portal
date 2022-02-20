@@ -82,10 +82,10 @@ def mock_party1
                         'ins0:AddressLine3' => 'Dunstable Road', 'ins0:AddressTownOrCity' => 'LUTON',
                         'ins0:AddressPostcodeOrZip' => 'LU1 1AA', 'ins0:AddressCountryCode' => 'EN',
                         'ins0:QASMoniker' => '14174279' },
-    'ins1:AuthorityInd' => 'no', 'ins1:TelNo' => '0123456789', 'ins1:EmailAddress' => 'noreply@northgateps.com',
+    'ins1:AuthorityInd' => 'no', 'ins1:TelNo' => '0123456789', 'ins1:EmailAddress' => 'noreply@necsws.com',
     'ins1:ParPerNiNo' => 'AB123456C', 'ins1:AlternateReference' => { 'ins1:AlrtType': '',
                                                                      'ins1:RefCountry': '', 'ins1:Reference': '' },
-    'ins1:BuyerSellerLinkedInd' => 'no', 'ins1:BuyerSellerLinkedDesc' => '', 'ins1:ActingAsTrusteeInd' => 'no' }
+    'ins1:BuyerSellerLinkedInd' => 'no', 'ins1:ActingAsTrusteeInd' => 'no' }
 end
 
 # party 1 for the mock_address_identifier_details
@@ -95,16 +95,16 @@ def mock_party2
     'ins1:Address' => { :'ins0:AddressLine1' => 'Royal Mail', 'ins0:AddressLine2' => 'Luton Delivery Office 9-11',
                         'ins0:AddressLine3' => 'Dunstable Road', 'ins0:AddressTownOrCity' => 'LUTON',
                         'ins0:AddressPostcodeOrZip' => 'LU1 1AA', 'ins0:AddressCountryCode' => 'EN' },
-    'ins1:AuthorityInd' => 'no', 'ins1:TelNo' => '0123456780', 'ins1:EmailAddress' => 'noreply2@northgateps.com',
+    'ins1:AuthorityInd' => 'no', 'ins1:TelNo' => '0123456780', 'ins1:EmailAddress' => 'noreply2@necsws.com',
     'ins1:ParPerNiNo' => 'NP123456D', 'ins1:AlternateReference' => { 'ins1:AlrtType': '',
                                                                      'ins1:RefCountry': '', 'ins1:Reference': '' },
-    'ins1:BuyerSellerLinkedInd' => 'no', 'ins1:BuyerSellerLinkedDesc' => '', 'ins1:ActingAsTrusteeInd' => 'no' }
+    'ins1:BuyerSellerLinkedInd' => 'no', 'ins1:ActingAsTrusteeInd' => 'no' }
 end
 
 # Agent for the mock_address_identifier_details
 def mock_agent
   { :'ins1:PartyType' => 'PER', 'ins1:LpltType' => 'PRIVATE', 'ins1:FlptType' => 'AGENT',
     'ins1:PersonName' => { 'ins1:Title': nil, 'ins1:Forename': 'Valid', 'ins1:Surname': 'User' },
-    'ins1:AuthorityInd' => 'no', 'ins1:EmailAddress' => 'valid.user@northgateps.com',
-    'ins1:BuyerSellerLinkedInd' => nil, 'ins1:BuyerSellerLinkedDesc' => '', 'ins1:ActingAsTrusteeInd' => nil }
+    'ins1:AuthorityInd' => 'no', 'ins1:EmailAddress' => 'valid.user@necsws.com',
+    'ins1:BuyerSellerLinkedInd' => nil, 'ins1:ActingAsTrusteeInd' => nil }
 end

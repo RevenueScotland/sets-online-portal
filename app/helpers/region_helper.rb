@@ -449,7 +449,7 @@ module RegionHelper # rubocop:disable Metrics/ModuleLength
 
     # We do not have a table summary in a display region so pass in nil
     data_text_value = table_display_value_text(object, attribute, nil, options)
-    data_text_heading = UtilityHelper.label_text(object, attribute, options)
+    data_text_heading = UtilityHelper.label_text(object, attribute, **options)
 
     table_row_tag(
       table_heading_tag(data_text_heading, options[:heading_html_options]) +

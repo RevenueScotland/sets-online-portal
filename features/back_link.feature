@@ -41,7 +41,7 @@ Feature: Back Link
         And I enter "North" in the "First name" field
         And I enter "Gate" in the "Last name" field
         And I enter "01344 407703" in the "Telephone number" field
-        And I enter "north.gate@nps.co.uk" in the "Email" field
+        And I enter "nec.sws@noone.co.uk" in the "Email" field
         And I enter "AB 12 34 56 C" in the "National Insurance Number (NINO)" field
         And I click on the "Continue" button
         Then I should see the "Tenant address" page
@@ -138,8 +138,9 @@ Feature: Back Link
 
         # back to page B
         When I click on the "Back" link
+        Then I should see the "What accounting period is this return for?" page
         # back to page A
-        And I click on the "Back" link
+        When I click on the "Back" link
         # details updated
         Then I should see the "Return summary" page
         And I should see the text "SLfT year"

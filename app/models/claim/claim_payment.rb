@@ -32,7 +32,8 @@ module Claim
     validates :claiming_amount, numericality: { greater_than: 0, less_than: 1_000_000_000_000_000_000,
                                                 allow_blank: true }, presence: true,
                                 two_dp_pattern: true, on: :claiming_amount, if: :claim_amount_required?
-    validates :account_holder_name, :bank_name, presence: true, length: { maximum: 255 }, on: :account_holder_name
+    validates :account_holder_name, presence: true, length: { maximum: 152 }, on: :account_holder_name
+    validates :bank_name, presence: true, length: { maximum: 255 }, on: :account_holder_name
     validates :account_number, account_number: true, presence: true, on: :account_holder_name
     validates :branch_code, presence: true, bank_sort_code: true, on: :account_holder_name
     # Note validation context @see ClaimPaymentsController#authenticated_declaration2

@@ -198,7 +198,7 @@ module BackHelper
 
   # Removes any linked we don't want e.g. loops or reloaded pages
   def remove_repeated_links
-    remove_not_last_link(last_link_custom_path?)
+    remove_not_last_link(last_link_custom_path?) if link_stack.size > 1
     remove_reloaded_page
     remove_loop
   end

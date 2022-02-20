@@ -1,8 +1,11 @@
 <% content_for :page_title, t('.title') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @lbtt_return, translation_options: { declaration: User.account_type(current_user) } %>
+  <%= form_errors_for @lbtt_return %>
   <%= f.collection_radio_buttons_fields(:fpay_method, @lbtt_return.list_payment_types(account_has_dd_instruction: account_has_dd_instruction?), alignment: 'vertical') %>
+  <% if @lbtt_return.dd_not_available(account_has_dd_instruction: account_has_dd_instruction?) %>
+    <%= display_paragraph_components( body: t('.dd_not_available') ) %>
+  <% end %>
   <%= govuk_warning( t('.warning') ) %>
   <%= f.collection_radio_buttons_fields(:authority_ind, @lbtt_return.list_ref_data(:authority_ind)) if User.account_type(current_user) == 'AGENT' %>
   <%= f.check_box_field(:declaration, { translation_options: User.account_type(current_user) } ) %>

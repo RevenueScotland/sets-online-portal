@@ -3,7 +3,7 @@
 # Class for validating bank sort code number
 class BankSortCodeValidator < ActiveModel::EachValidator
   # Regex for Sort Code validation
-  SORT_CODE = /\A(?:\d\d-\d\d-\d\d)\z/i.freeze
+  SORT_CODE = /\A(?:\d\d-\d\d-\d\d)\z/i
 
   # Validation for Sort code
   #

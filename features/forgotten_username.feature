@@ -21,6 +21,6 @@ Feature: Forgotten Username
 
     Scenario: User provides the correct details
         When I go to the "Forgotten-username" page
-        And I enter "noreply@northgateps.com" in the "Email address" field
+        And I enter "noreply@necsws.com" in the "Email address" field
         And I click on the "Confirm" button
         Then I should see the "Forgotten username confirmation" page

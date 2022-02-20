@@ -64,39 +64,46 @@ Feature: Slft applications
         When I click on the "Continue" button
         Then I should receive the message "Please fill in at least one site"
         And I should see a link with text "Add site"
+
         When I click on the "Add site" link
+        Then I should see the "Landfill site details" page
 
-        And I click on the "Back" link
-        And I click on the "Continue" button
+        When I click on the "Back" link
+        Then I should see the "Landfill sites" page
+
+        When I click on the "Continue" button
         Then I should receive the message "Please fill in at least one site"
-
         And I should not see a link with text "Edit"
         And I should not see a link with text "Remove"
         And I should see a link with text "Add site"
 
         When I click on the "Add site" link
-
         Then I should see the "Landfill site details" page
+
         When I click on the "Continue" button
         Then I should receive the message "SEPA licence number can't be blank"
         And I should receive the message "Site name can't be blank"
+
         When I enter "12345678" in the "SEPA licence number" field
         And I enter "First site" in the "Site name" field
         And I click on the "Continue" button
-
         Then I should see the "Site address" page
 
         When I click on the "Back" link
-        And I click on the "Back" link
+        Then I should see the "Landfill site details" page
 
-        And I click on the "Continue" button
+        When I click on the "Back" link
+        Then I should see the "Landfill sites" page
+
+        When I click on the "Continue" button
         Then I should receive the message "Site First site has errors that need to be corrected, edit it"
         And I should see a link with text "Edit"
         And I should see a link with text "Remove"
 
         When I click on the "Edit" link
+        Then I should see the "Landfill site details" page
 
-        And I click on the "Continue" button
+        When I click on the "Continue" button
         Then I should see the "Site address" page
         When I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find Address" button
@@ -154,16 +161,14 @@ Feature: Slft applications
         When I click on the "Edit" link
         Then I should see the "Landfill site details" page
         When I enter "123456789" in the "SEPA licence number" field
-
         And I click on the "Continue" button
         Then I should see the "Site address" page
 
         When I click on the "Back" link
+        Then I should see the "Landfill site details" page
 
-        And I click on the "Back" link
-
+        When I click on the "Back" link
         Then I should see the "Landfill sites" page
-
         And the table of data is displayed
             | SEPA licence number | Site name  |
             | 123456789           | First site |

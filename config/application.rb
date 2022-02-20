@@ -122,8 +122,10 @@ module RevScot
     config.x.scheduled_jobs.refresh_ref_data_every = 15.minutes
     config.x.scheduled_jobs.refresh_sys_params_every = 60.minutes
     config.x.scheduled_jobs.refresh_pws_text_every = 60.minutes
-    config.x.scheduled_jobs.refresh_tax_relief_type = 60.minutes
+    config.x.scheduled_jobs.refresh_tax_relief_type_every = 60.minutes
     config.x.scheduled_jobs.delete_temp_files_job_run_every = 2.hours
+
+    config.x.scheduled_jobs.refresh_system_notice_every = 60.minutes
 
     # Cache expiry times
     config.x.accounts.cache_expiry = 10.minutes
@@ -133,7 +135,7 @@ module RevScot
     config.x.authorisation.cache_expiry = 15.minutes
 
     # Existing application reference validation regular expression
-    pattern = ENV['APPLICATION_REF_REGEX'] || /(\ARS\d{7,10}\w{4}\z)|(\ARS\d{7}\z)|(\ARSL\d{6}\z)/.freeze
+    pattern = ENV['APPLICATION_REF_REGEX'] || /(\ARS\d{7,10}\w{4}\z)|(\ARS\d{7}\z)|(\ARSL\d{6}\z)/
     config.x.app_ref.validation_pattern = Regexp.new pattern
 
     # Constant for allowed Country Code

@@ -15,6 +15,11 @@ $(function () {
     "Y",
     "deferral_reference_details"
   );
+  $.fn.hideRadioFields(
+    "returns_lbtt_party[buyer_seller_linked_ind]",
+    "Y",
+    "buyer_seller_linked_desc_details"
+  );
   // linked_transactions
   $.fn.hideRadioFields("returns_lbtt_lbtt_return[linked_ind]");
   // premium_paid

@@ -15,6 +15,12 @@
                     "itemdata": "\u003c%TARE_REFERENCE%\u003e"
                 },
                 {
+                    "itemcode": "receipt_date",
+                    "itemformat": null,
+                    "itemlabel": "Receipt date",
+                    "itemdata": "\u003c%RECEIPT_DATE%\u003e"
+                },
+                {
                     "itemcode": "version",
                     "itemformat": null,
                     "itemlabel": "Version",
@@ -33,7 +39,7 @@
                     "itemdata": "Conveyance or transfer"
                 }
             ],
-            "itemcount": 4
+            "itemcount": 5
         },
         {
             "sectioncode": "agent_details",
@@ -83,7 +89,7 @@
                     "itemcode": "email_address",
                     "itemformat": null,
                     "itemlabel": "Email",
-                    "itemdata": "noreply@northgateps.com"
+                    "itemdata": "noreply@necsws.com"
                 }
             ],
             "itemcount": 7
@@ -304,13 +310,19 @@
                     "itemdata": "Yes"
                 },
                 {
+                    "itemcode": "buyer_seller_linked_desc",
+                    "itemformat": null,
+                    "itemlabel": "How are they connected?",
+                    "itemdata": "Test reason"
+                },
+                {
                     "itemcode": "is_acting_as_trustee",
                     "itemformat": null,
                     "itemlabel": "Is the buyer acting as a trustee or representative partner for tax purposes?",
                     "itemdata": "Yes"
                 }
             ],
-            "itemcount": 2
+            "itemcount": 3
         },
         {
             "sectioncode": "organisation_type_details",

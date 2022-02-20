@@ -44,5 +44,18 @@ module Returns
 
       false
     end
+
+    # Does the account have a dd instruction
+    # @return [String] returns true if the account has the service otherwise false
+    def account_has_dd_instruction?
+      return false if current_user.nil?
+
+      @account ||= Account.find(current_user)
+      @account.dd_instruction_available
+    end
+
+    included do
+      helper_method :account_has_dd_instruction?
+    end
   end
 end

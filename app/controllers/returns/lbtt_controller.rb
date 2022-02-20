@@ -43,16 +43,6 @@ module Returns
     # this can't be defined in authorise.rb, otherwise rails throws an error
     helper_method :public
 
-    # Does the account have a dd instruction
-    # @return [String] returns true if the account has the service otherwise false
-    def account_has_dd_instruction?
-      return false if current_user.nil?
-
-      @account ||= Account.find(current_user)
-      @account.dd_instruction_available
-    end
-    helper_method :account_has_dd_instruction?
-
     # reliefs calculation
     def reliefs_calculation
       wizard_list_step(returns_lbtt_summary_url,
@@ -107,12 +97,6 @@ module Returns
     # lease review, assignation and termination step
     def return_reference_number
       wizard_step(nil) { { next_step: :return_type_next_steps } }
-    end
-
-    # returns/lbtt/calculation Allows editing the tax calculation.
-    # A 1 step wizard, always goes to summary after successful editing
-    def calculation
-      wizard_step(returns_lbtt_summary_path) { { params: :filter_calculate_params } }
     end
 
     # returns/lbtt/declaration - step in declaration wizard
@@ -312,13 +296,6 @@ module Returns
       return unless params[:returns_lbtt_lbtt_return] && params[:returns_lbtt_lbtt_return][list_attribute]
 
       params.require(:returns_lbtt_lbtt_return).permit(list_attribute => {})[list_attribute].values
-    end
-
-    # Return the parameter list filtered for the attributes of the Calculate model
-    def filter_calculate_params
-      required = :returns_lbtt_calculate
-      attribute_list = Lbtt::Calculate.attribute_list
-      params.require(required).permit(attribute_list) if params[required]
     end
   end
 end

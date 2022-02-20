@@ -5,7 +5,7 @@
   <%= form_errors_for @claim_payment %>
   <%= f.collection_check_boxes_fields(:eligibility_checkers, ReferenceData::ReferenceValue.list('ELIGIBILITY_LIST', 'SYS', 'RSTU')) %>
   <%= display_paragraph_components( body: UtilityHelper.swap_texts(t('.unsure_description'), 
-                                      text_link: { t('.unsure_description_link') => 
+                                      text_links: { t('.unsure_description_link') => 
                                         link_to(t('.unsure_description_link'), external_link_url('CLAIM_EXAMPLES'), target: '_blank') } )) %>
   <%= f.button %>
 <% end %>

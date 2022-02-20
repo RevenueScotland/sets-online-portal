@@ -12,7 +12,7 @@ class PhoneNumberValidator < ActiveModel::EachValidator
 
   # Regex for international telephone number
   # Also allow Spanish telephone number (0034629629629 or +34629629629)
-  INT_TELEPHONE_REGEX = /\A(?:00|\+)(?:[0-9] ?){6,14}[0-9]\z/i.freeze
+  INT_TELEPHONE_REGEX = /\A(?:00|\+)(?:[0-9] ?){6,14}[0-9]\z/i
 
   # Validation for telephone number
   #

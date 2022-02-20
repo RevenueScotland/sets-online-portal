@@ -1,5 +1,5 @@
 <% content_for :hide_back_link, true %>
-<% content_for :nav_bar_options, '{ hide_nav_elements: %i[dashboard account_details] }' %>
+<% content_for :hide_navigation_links, '%i[dashboard account_details]' %>
 <% content_for :page_title, t('.title') %>
 <% content_for :page_description, t('.description') %>
 <% content_for :page_view, render_page_view(__FILE__) %>
@@ -7,7 +7,7 @@
   <%= form_errors_for @user %>
   <%= f.hidden_field :username %>
   <%= f.check_box_field :user_is_signed_ta_cs,
-                          text_link: { t('term_and_cons') => link_to(t('term_and_cons'), website_text_path('REGTSANDCS'), target: '_blank') } %>
+                          text_links: { t('term_and_cons') => link_to(t('term_and_cons'), website_text_path('REGTSANDCS'), target: '_blank') } %>
   <br>
   <br>
   <%= f.button 'confirm', {:name => 'continue'}  %>

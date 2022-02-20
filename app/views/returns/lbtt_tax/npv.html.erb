@@ -2,7 +2,7 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @tax, url: @post_path, :method => 'post', local: true do |f| %>
   <%= form_errors_for @tax %>
-  <%= f.currency_field :npv, text_link: { t('.npv') => link_to(t('.npv'), external_link_url('TAX_ON_RENT'), target: '_blank')} %>
+  <%= f.currency_field :npv, text_links: { t('.npv') => link_to(t('.npv'), external_link_url('TAX_ON_RENT'), target: '_blank')} %>
   <% if @lbtt_return.linked_ind == 'Y' %>
     <%= f.currency_field :linked_npv %>
   <% end %>
