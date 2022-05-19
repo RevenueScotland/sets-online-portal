@@ -37,7 +37,7 @@ module Returns
       validates :amount_already_paid, numericality: { greater_than_or_equal_to: 0,
                                                       less_than: 1_000_000_000_000_000_000,
                                                       allow_blank: true }, presence: true,
-                                      two_dp_pattern: true, on: :amount_already_paid, if: :lease_review?
+                                      two_dp_pattern: true, on: :amount_already_paid, if: :any_lease_review?
 
       # calculation page - the rules on that page are defined here so that whole model validation also works correctly
       validates :calculated, numericality: { greater_than_or_equal_to: 0,
@@ -126,7 +126,7 @@ module Returns
       end
 
       # Validation method to check model flbt_type
-      def lease_review?
+      def any_lease_review?
         %w[LEASEREV ASSIGN TERMINATE].include?(@flbt_type)
       end
 
@@ -505,13 +505,17 @@ module Returns
       # @param calc_type [Symbol] is this doing the :npv or :main calculation
       # @return [Hash] the TransactionDetails hash
       def request_calc_lease_tr_details(lbtt, calc_type)
-        {
-          'ins1:SumofLinkedNPV': lbtt.tax.linked_npv,
-          'ins1:SumofLinkedPremium': lbtt.linked_lease_premium,
-          'ins1:Premium': or_zero(lbtt.lease_premium),
-          'ins1:RelevantRentalFigure': lbtt.relevant_rent
-          # Merge NPV value the user has seen/agreed/updated but not if calculating npv
-        }.merge!(calc_type == :npv ? {} : { 'ins1:OverriddenNPV': lbtt.tax.npv })
+        output = { 'ins1:SumofLinkedNPV': lbtt.tax.linked_npv,
+                   'ins1:SumofLinkedPremium': lbtt.linked_lease_premium }.merge!(
+                     if lbtt.premium_paid?
+                       { 'ins1:Premium': lbtt.lease_premium, 'ins1:RelevantRentalFigure': lbtt.relevant_rent }
+                     else
+                       { 'ins1:Premium': 0, 'ins1:RelevantRentalFigure': 0 }
+                     end
+                   )
+        # Merge NPV value the user has seen/agreed/updated but not if calculating npv
+        output.merge!(calc_type == :npv ? {} : { 'ins1:OverriddenNPV': lbtt.tax.npv })
+        output
       end
     end
   end

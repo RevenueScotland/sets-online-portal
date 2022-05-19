@@ -153,6 +153,7 @@
     "repayment_ind": "Y",
     "fpay_method": "BACS",
     "form_type": "L",
+    "previous_form_type": "F",
     "tare_reference": "RS1000480NTWR",
     "tare_refno": "628",
     "version": "2",
@@ -331,6 +332,7 @@
         "MOVEABLES"
     ],
     "linked_consideration": 1370,
+    "change_reason": "This is the entered change reason",
     "repayment_amount_claimed": "1250",
     "bank_name": "NatEast",
     "account_number": "80706050",

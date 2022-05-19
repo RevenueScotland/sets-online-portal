@@ -68,7 +68,7 @@ module UtilityHelper # rubocop:disable Metrics/ModuleLength
                                                translation_options: options[:translation_options])
     label = make_question(label, question: options[:question])
     UtilityHelper.swap_texts(append_optional_keyword(label, optional: options[:optional]),
-                             text_links: options[:text_link])
+                             text_links: options[:text_links])
   end
 
   # Generate the standard text of an object's attribute

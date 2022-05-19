@@ -2,7 +2,7 @@
 
 # Concerns for returns
 module Returns
-  # Helpful methods common to LBTTT controllers.
+  # Helpful methods common to LBTT controllers.
   module LbttControllerHelper
     extend ActiveSupport::Concern
 

@@ -1,9 +1,10 @@
 {
     "json_class": "Returns::Slft::SlftReturn",
     "form_type": "L",
+    "previous_form_type": "F",
     "tare_reference": "RS1000074CRMW",
     "tare_refno": "183",
-    "version": "2",
+    "version": "1",
     "year": "2016",
     "fape_period": "Q4",
     "sites": {

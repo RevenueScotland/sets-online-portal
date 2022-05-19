@@ -7,13 +7,13 @@ module Returns
     # Not included in the list allowed from forms so it can't be posted and changed, ie to prevent data injection.
     # tare_reference is the string the user is shown to identify this return eg RS1000847NRSD
     # tare_refno is the number the back office uses to identify this return (probably the primary key)
-    # form_type is the status of the return 'D' for draft, 'C' for calculate, 'F' for final
+    # form_type is the status of the return 'D' for draft, 'L'/'F' for Latest/Filed
     # previous_pay_method is the payment method used on the previous version of a return (nil for the first return)
-    attr_accessor :tare_reference, :tare_refno, :form_type, :version, :previous_fpay_method
+    attr_accessor :tare_reference, :tare_refno, :form_type, :previous_form_type, :version, :previous_fpay_method
 
     # @return [Boolean] whether or not this return is an amendment based on the version number and form type
     def amendment?
-      @version.to_i > 1 || (@version.to_i == 1 && @form_type != 'D')
+      @version.to_i > 1 || (@version.to_i == 1 && @previous_form_type != 'D')
     end
 
     # Sets form type to draft and calls #save
@@ -42,8 +42,12 @@ module Returns
       success = save(requested_by)
       # if errors have been added then save failed
       success = false if errors.any?
-      # only clear the saving flag if the save failed
-      @already_submitted = false unless success
+      if success
+        @previous_form_type = 'F' # Use filed, not latest
+      else
+        # only clear the saving flag if the save failed
+        @already_submitted = false
+      end
       success
     end
 
@@ -61,7 +65,7 @@ module Returns
       call_ok?(operation, load_request) do |body|
         refined_hash = convert_back_office_hash(body[response_element])
         output = yield(refined_hash)
-        return output if output.present? && output.is_a?(AbstractReturn)
+        return copy_to_previous(output) if output.present? && output.is_a?(AbstractReturn)
 
         raise Error::AppError.new(' Load', "Loading #{ref_no} failed")
       end
@@ -80,7 +84,7 @@ module Returns
         @version = body[:version] unless body[:version].nil?
         raise Error::AppError.new('Save', 'Return reference missing') if @tare_reference.blank?
 
-        Rails.logger.info("Saved return reference : #{@tare_reference} (#{tare_refno})")
+        Rails.logger.info("Saved return reference : #{@tare_reference} (#{tare_refno}) as version #{version}")
       end
     end
 
@@ -134,6 +138,14 @@ module Returns
       hash[:version] = @version
 
       hash
+    end
+
+    # copies the current values to the previous values
+    # these are used to store the previous values where we need to know what they were
+    private_class_method def self.copy_to_previous(tax_return)
+      tax_return.previous_form_type = tax_return.form_type
+      tax_return.previous_fpay_method = tax_return.fpay_method
+      tax_return
     end
   end
 end

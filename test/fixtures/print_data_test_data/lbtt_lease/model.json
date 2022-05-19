@@ -120,10 +120,11 @@
     "fpay_method": "DDEBIT",
     "authority_ind": "Y",
     "form_type": "L",
+    "previous_form_type": "F",
     "tare_reference": "RS1000038WBMS",
     "tare_refno": "147",
     "payment_date": "15/11/2019",
-    "version": "1",
+    "version": "",
     "account_type": "AGENT",
     "tenants": {
         "efd02e78-4bc3-4585-b109-bd9ce90ca1db": {

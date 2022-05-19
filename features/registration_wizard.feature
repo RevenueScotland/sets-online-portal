@@ -103,6 +103,8 @@ Feature: Registration Wizard
 
     When I click on the "Continue" button
     Then I should see the sub-title "Your individual account details"
+    And I should see a link with text "terms & conditions (opens in a new window)"
+    And I should see a link with text "email communication policy (opens in a new window)"
 
     When I click on the "Confirm" button
     Then I should see the sub-title "Your individual account details"

@@ -4,10 +4,10 @@
 
 require_relative 'config/environment'
 
-use Rack::RubyProf, path: 'log/profile' if ENV['PROFILE'].present? || File.exist?('tmp/run_with_profile')
+use Rack::RubyProf, path: 'log/profile' if ENV.key?('PROFILE') || File.exist?('tmp/run_with_profile')
 
-if ENV['APPLICATION_DOCROOT'].present?
-  map "/#{ENV['APPLICATION_DOCROOT']}" do
+if ENV.key?('APPLICATION_DOCROOT')
+  map "/#{ENV.fetch('APPLICATION_DOCROOT', nil)}" do
     run Rails.application
   end
 else

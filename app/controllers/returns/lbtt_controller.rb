@@ -11,6 +11,7 @@ module Returns
     include WizardListHelper
     include ControllerHelper
     include LbttControllerHelper
+    include LbttControllerDateWarningHelper
     include LbttTaxHelper
     include DownloadHelper
 
@@ -33,9 +34,6 @@ module Returns
 
     # navigation steps in the lbtt lease review, assignation and termination wizard
     LEASE_REV_ASSIGN_TERMINATE_STEPS = %w[return_type return_reference_number summary].freeze
-
-    # declaration steps
-    DECLARATION_STEPS = %w[declaration declaration_submitted].freeze
 
     # publicly available steps (feeds into the steps above)
     PUBLIC_STEPS = %w[landing_public public_return_type return_reference_number summary].freeze
@@ -97,22 +95,6 @@ module Returns
     # lease review, assignation and termination step
     def return_reference_number
       wizard_step(nil) { { next_step: :return_type_next_steps } }
-    end
-
-    # returns/lbtt/declaration - step in declaration wizard
-    # Triggers validation context :declaration since un-checked checkboxes produce empty params (so wouldn't trigger
-    # the normal validation context detection).
-    # Ensures the correct validation context is checked on clicking Next (ie so won't submit until declaration ticked).
-    def declaration
-      wizard_step(DECLARATION_STEPS) do
-        { after_merge: :submit_return, validates: :declaration }
-      end
-    end
-
-    # returns/<type>/declaration_submitted - custom final step in declaration wizard
-    # (can't go in ControllerHelper as doesn't get picked up)
-    def declaration_submitted
-      load_step # ie just load the return
     end
 
     # The method used to retrieve the pdf summary of the return
@@ -233,25 +215,14 @@ module Returns
 
     # Redirect after a valid submit
     def redirect_submit
-      # for amendments, check if they want to request a repayment
-      if @lbtt_return.show_repayment?
+      # for amendments, provide the amendment reason and check if they want to request a repayment
+      if @lbtt_return.amendment?
+        redirect_to returns_lbtt_amendment_reason_path
+      elsif @lbtt_return.any_lease_review?
         redirect_to returns_lbtt_repayment_claim_path
       else
-        redirect_to action: :declaration
+        redirect_to returns_lbtt_declaration_path
       end
-    end
-
-    # Send the return to the back office (and wizard_save unless there were errors returned.)
-    # @return [Boolean] true if successful
-    def submit_return
-      return false unless @lbtt_return.prepare_to_save_latest
-
-      # Save the prepared return in the cache in case the user navigates back and re-tries
-      wizard_save(@lbtt_return)
-      success = @lbtt_return.save_latest(current_user)
-      # need to save even if not successful so the saved flag is cleared
-      wizard_save(@lbtt_return)
-      success
     end
 
     # Sets up wizard model if it doesn't already exist in the cache

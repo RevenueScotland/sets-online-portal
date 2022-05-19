@@ -1,6 +1,7 @@
 {
     "json_class": "Returns::Slft::SlftReturn",
     "form_type": "L",
+    "previous_form_type": "",
     "tare_reference": "RS1000074CRMW",
     "tare_refno": "183",
     "version": "1",

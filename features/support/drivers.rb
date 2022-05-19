@@ -20,7 +20,7 @@ Capybara.register_driver :selenium_remote_chrome do |app|
   chrome_common(opts)
   Capybara::Selenium::Driver.new(app,
                                  browser: :remote,
-                                 url: ENV['CAPYBARA_REMOTE_URL'],
+                                 url: ENV.fetch('CAPYBARA_REMOTE_URL', nil),
                                  capabilities: [capabilities, opts])
 end
 
@@ -40,7 +40,7 @@ Capybara.register_driver :selenium_remote_firefox do |app|
   capabilities = Selenium::WebDriver::Remote::Capabilities.firefox(accept_insecure_certs: true)
   Capybara::Selenium::Driver.new(app,
                                  browser: :remote,
-                                 url: ENV['CAPYBARA_REMOTE_URL'],
+                                 url: ENV.fetch('CAPYBARA_REMOTE_URL', nil),
                                  capabilities: [capabilities, opts])
 end
 # enable screen shots for our various drivers
@@ -68,8 +68,8 @@ Capybara.default_max_wait_time = 30
 # or local instance of the application, on a local instance, fix the host and port
 unless ENV['CAPYBARA_APP_HOST'].nil?
   Capybara.configure do |config|
-    config.app_host = ENV['CAPYBARA_APP_HOST']
-    config.run_server = ENV['CAPYBARA_RUN_SERVER'] || true
+    config.app_host = ENV.fetch('CAPYBARA_APP_HOST', nil)
+    config.run_server = ENV.fetch('CAPYBARA_RUN_SERVER', true)
     if config.run_server
       config.server_host = '0.0.0.0'
       config.server_port = 2099
@@ -87,7 +87,7 @@ def customized_firefox_profile
   # some explanation about profile.
   #
   # The download directory destination
-  profile['browser.download.dir'] = ENV['TEST_FILE_DOWNLOAD_PATH']
+  profile['browser.download.dir'] = ENV.fetch('TEST_FILE_DOWNLOAD_PATH', nil)
   customized_firefox_profile_standard_options(profile)
 end
 
@@ -114,16 +114,16 @@ def chrome_common(options)
   options.add_argument('window-size=1920,1024')
   options.add_preference(:download, directory_upgrade: true,
                                     prompt_for_download: false,
-                                    default_directory: ENV['TEST_FILE_DOWNLOAD_PATH'])
+                                    default_directory: ENV.fetch('TEST_FILE_DOWNLOAD_PATH', nil))
   options.add_preference(:browser, set_download_behavior: { behavior: 'allow' })
 end
 
 # Override the standard file detector so it only picks up those in our directory
 # Needs to be after the above config as this instantiates the driver
 # This is only used by the remote driver
-if ENV['CAPYBARA_DRIVER']&.include?('remote')
+if ENV.fetch('CAPYBARA_DRIVER', nil)&.include?('remote')
   Capybara.current_session.driver.browser.file_detector = lambda do |args|
     str = args.first.to_s
-    str if str.start_with?(ENV['TEST_FILE_UPLOAD_PATH']) && File.exist?(str)
+    str if str.start_with?(ENV.fetch('TEST_FILE_UPLOAD_PATH', nil)) && File.exist?(str)
   end
 end

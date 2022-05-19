@@ -417,8 +417,8 @@ Feature: Claim payment
 
         When I click on the "Continue" button
         When I enter "Fred Flintstone" in the "Name of the account holder" field
-        And I enter "12345678" in the "Bank / building society account number" field
-        And I enter "10-11-12" in the "Branch sort code" field
+        And I enter "00345678" in the "Bank / building society account number" field
+        And I enter "01-11-12" in the "Branch sort code" field
         And I enter "Natwest" in the "Name of bank / building society" field
         And I click on the "Continue" button
 

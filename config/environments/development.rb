@@ -17,7 +17,7 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   config.consider_all_requests_local = true
 
   # Use the relative URL root if one is defined
-  config.relative_url_root = "/#{ENV['APPLICATION_DOCROOT']}" if ENV['APPLICATION_DOCROOT'].present?
+  config.relative_url_root = "/#{ENV.fetch('APPLICATION_DOCROOT', nil)}" if ENV.key?('APPLICATION_DOCROOT')
 
   # Enable/disable caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.
@@ -73,9 +73,9 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
 
   # Start ActiveJobs
   config.after_initialize do
-    if ENV['PREVENT_JOBS_STARTING'] == 'Y'
+    if ENV.fetch('PREVENT_JOBS_STARTING', nil) == 'Y'
       Rails.logger.info do
-        "Jobs not started PREVENT_JOBS_STARTING=#{ENV['PREVENT_JOBS_STARTING']}"
+        "Jobs not started PREVENT_JOBS_STARTING=#{ENV.fetch('PREVENT_JOBS_STARTING', nil)}"
       end
     else
       # GetReferenceData/ReferenceValues refresh job

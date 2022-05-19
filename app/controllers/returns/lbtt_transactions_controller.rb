@@ -83,15 +83,8 @@ module Returns
                             new_list_item_instance: :new_list_item_yearly_rents)
     end
 
-    # wizard step
-    def premium_paid
-      wizard_step(nil) do
-        { next_step: :calculate_next_step, cache_index: LbttController }
-      end
-    end
-
     # Wizard step which always goes to the Tax.npv action afterwards
-    def relevant_rent
+    def premium_paid
       wizard_step(returns_lbtt_tax_npv_url) { { after_merge: :update_npv_calculation, cache_index: LbttController } }
     end
 

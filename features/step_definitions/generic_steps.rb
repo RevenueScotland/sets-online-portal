@@ -116,8 +116,9 @@ When('I enter {string} in the {string} field') do |string, string2|
     # If the string value starts with random then generate a value
     # the format is RANDOM_xxxxx,length,UPCASE
     # UPCASE if you want the variable to be uppercase
+    # If no length retrieve the existing value
     list = string.split(',')
-    store_result(list[0], random_string(list[1].to_i, list[2]))
+    store_result(list[0], random_string(list[1].to_i, list[2])) unless list[1].nil?
     string = lookup_result(list[0])
   end
   fill_in(string2, with: string)
@@ -131,6 +132,12 @@ end
 
 When('I enter {int} days ago in the {string} date field') do |days, field|
   date = Time.zone.today - days
+
+  fill_in(field, with: formatted_date_string(date))
+end
+
+When('I enter {int} days in the future in the {string} date field') do |days, field|
+  date = Time.zone.today + days
 
   fill_in(field, with: formatted_date_string(date))
 end
@@ -235,7 +242,7 @@ end
 
 # Upload a file onto the field.
 When('I upload {string} to {string}') do |filename, field|
-  page.attach_file(field, File.join(ENV['TEST_FILE_UPLOAD_PATH'], filename))
+  page.attach_file(field, File.join(ENV.fetch('TEST_FILE_UPLOAD_PATH', nil), filename))
 end
 
 # For a test which changes values, flip flop between two values.
@@ -312,7 +319,7 @@ end
 # @return [Array] downloaded files from the download directory.
 def downloaded_files_list
   Rails.logger.info("  Download path is : #{ENV['TEST_FILE_DOWNLOAD_PATH'].inspect}")
-  downloaded_files = Dir[File.join(ENV['TEST_FILE_DOWNLOAD_PATH'], '*.*').tr('\\', '/')]
+  downloaded_files = Dir[File.join(ENV.fetch('TEST_FILE_DOWNLOAD_PATH', nil), '*.*').tr('\\', '/')]
   Rails.logger.info("  Download directory contains : #{downloaded_files.inspect}")
   downloaded_files
 end
@@ -555,18 +562,19 @@ end
 # @param value [Object] the data to store
 def store_result(marker, value)
   # initialize storage if not already available
-  @stored_values = { ENV['APPLICATION_VERSION'] => {} } if @stored_values.nil?
+  @stored_values = { ENV.fetch('APPLICATION_VERSION', nil) => {} } if @stored_values.nil?
+  assert value.present?, "value for #{marker} was not present"
   log("...Storing #{value} at #{marker}")
-  @stored_values[ENV['APPLICATION_VERSION']][marker] = value
+  @stored_values[ENV.fetch('APPLICATION_VERSION', nil)][marker] = value
 end
 
 # Retrieve a result from a Stored value @see #store_result
 # @param marker [String] the key used to store/lookup the value
 # @return [String] the stored value or the marker
 def lookup_result(marker)
-  return marker if @stored_values.nil? || !@stored_values[ENV['APPLICATION_VERSION']].key?(marker)
+  return marker if @stored_values.nil? || !@stored_values[ENV.fetch('APPLICATION_VERSION', nil)].key?(marker)
 
-  value = @stored_values[ENV['APPLICATION_VERSION']][marker]
+  value = @stored_values[ENV.fetch('APPLICATION_VERSION', nil)][marker]
   log("...Retrieving #{value} at #{marker}")
   value
 end

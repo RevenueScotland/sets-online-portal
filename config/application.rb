@@ -51,24 +51,24 @@ module RevScot
     # REVSCOT Specific config below this line
 
     # back office config
-    config.x.fl_endpoint.root = ENV['FL_ENDPOINT_ROOT'] || ''
-    config.x.fl_endpoint.uid = ENV['FL_USERNAME']
-    config.x.fl_endpoint.pwd = ENV['FL_PASSWORD']
-    config.x.fl_endpoint.timeout = (ENV['FL_TIMEOUT'] || '60').to_i
+    config.x.fl_endpoint.root = ENV.fetch('FL_ENDPOINT_ROOT', '')
+    config.x.fl_endpoint.uid = ENV.fetch('FL_USERNAME', nil)
+    config.x.fl_endpoint.pwd = ENV.fetch('FL_PASSWORD', nil)
+    config.x.fl_endpoint.timeout = ENV.fetch('FL_TIMEOUT', '60').to_i
 
-    config.x.nadr_endpoint.root = ENV['ADDRESS_SEARCH_ENDPOINT'] || ''
-    config.x.nadr_endpoint.uid = ENV['ADDRESS_SEARCH_UID']
-    config.x.nadr_endpoint.pwd = ENV['ADDRESS_SEARCH_PWD']
-    config.x.nadr_endpoint.proxy = ENV['ADDRESS_SEARCH_PROXY']
-    config.x.nadr_endpoint.timeout = (ENV['ADDRESS_SEARCH_TIMEOUT'] || '60').to_i
+    config.x.nadr_endpoint.root = ENV.fetch('ADDRESS_SEARCH_ENDPOINT', '')
+    config.x.nadr_endpoint.uid = ENV.fetch('ADDRESS_SEARCH_UID', nil)
+    config.x.nadr_endpoint.pwd = ENV.fetch('ADDRESS_SEARCH_PWD', nil)
+    config.x.nadr_endpoint.proxy = ENV.fetch('ADDRESS_SEARCH_PROXY', nil)
+    config.x.nadr_endpoint.timeout = ENV.fetch('ADDRESS_SEARCH_TIMEOUT', '60').to_i
 
-    config.x.ch_endpoint.root = ENV['COMPANY_SEARCH_ENDPOINT'] || ''
-    config.x.ch_endpoint.uid = ENV['COMPANY_SEARCH_UID']
-    config.x.ch_endpoint.pwd = ENV['COMPANY_SEARCH_PWD']
-    config.x.ch_endpoint.proxy = ENV['COMPANY_SEARCH_PROXY']
+    config.x.ch_endpoint.root = ENV.fetch('COMPANY_SEARCH_ENDPOINT', '')
+    config.x.ch_endpoint.uid = ENV.fetch('COMPANY_SEARCH_UID', nil)
+    config.x.ch_endpoint.pwd = ENV.fetch('COMPANY_SEARCH_PWD', nil)
+    config.x.ch_endpoint.proxy = ENV.fetch('COMPANY_SEARCH_PROXY', nil)
 
     # Version number for displaying on the page
-    config.x.version = ENV['APPLICATION_VERSION']
+    config.x.version = ENV.fetch('APPLICATION_VERSION', nil)
 
     # Earliest start date for return
     config.x.earliest_start_date = '01/04/2015'
@@ -135,7 +135,7 @@ module RevScot
     config.x.authorisation.cache_expiry = 15.minutes
 
     # Existing application reference validation regular expression
-    pattern = ENV['APPLICATION_REF_REGEX'] || /(\ARS\d{7,10}\w{4}\z)|(\ARS\d{7}\z)|(\ARSL\d{6}\z)/
+    pattern = ENV.fetch('APPLICATION_REF_REGEX', nil) || /(\ARS\d{7,10}\w{4}\z)|(\ARS\d{7}\z)|(\ARSL\d{6}\z)/
     config.x.app_ref.validation_pattern = Regexp.new pattern
 
     # Constant for allowed Country Code

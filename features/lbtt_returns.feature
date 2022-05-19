@@ -664,6 +664,18 @@ Feature: LBTT Returns
         And I click on the "Amend" link
         Then I should see the "Return Summary" page
         When I click on the "Submit return" button
+        Then I should see the "Amendment reason" page
+
+        When I click on the "Continue" button
+        Then I should receive the message "Tell us why you are amending this return can't be blank"
+
+        When I enter "RANDOM_text,4001" in the "Tell us why you are amending this return" field
+        And I click on the "Continue" button
+        Then I should receive the message "Tell us why you are amending this return is too long (maximum is 4000 characters)"
+
+        When I enter "Test" in the "Tell us why you are amending this return" field
+        And I click on the "Continue" button
+
         Then I should see the "Repayment details" page
 
         When I click on the "Continue" button
@@ -702,8 +714,8 @@ Feature: LBTT Returns
         And I should receive the message "Branch sort code must be in the format 99-99-99"
 
         When I enter "Fred Flintstone" in the "Name of the account holder" field
-        And I enter "12345678" in the "Bank / building society account number" field
-        And I enter "10-11-12" in the "Branch sort code" field
+        And I enter "00345678" in the "Bank / building society account number" field
+        And I enter "01-11-12" in the "Branch sort code" field
         And I enter "Natwest" in the "Name of bank / building society" field
         And I click on the "Continue" button
 
@@ -803,6 +815,11 @@ Feature: LBTT Returns
 
         # request repayment and check amount is preset
         When I click on the "Submit return" button
+        Then I should see the "Amendment reason" page
+
+        When I enter "Test" in the "Tell us why you are amending this return" field
+        And I click on the "Continue" button
+
         Then I should see the "Repayment details" page
         When I check the "Yes" radio button
         And I click on the "Continue" button
@@ -886,10 +903,12 @@ Feature: LBTT Returns
         Add transaction details including linked transactions (checking table functionality) and non ads reliefs
         Edit the reliefs
         Check the calculation of the first time buyer relief before and after the 15th July 2021
+        Check the date warning(s) and link
         Submit the return (DD)
         Check you can't submit again
 
         Amend the return
+        Check the date warning(s) are not shown
         Check DD is shown as payment method and change to BACS
         Save draft
         Retrieve the draft
@@ -1508,6 +1527,105 @@ Feature: LBTT Returns
         And I should see the text "1234560" in field "Total consideration remaining"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
+        # Check the date warning(s) and link
+        # Start by setting the dates to today and checking that no message is shown
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+        When I enter 0 days ago in the "Effective date of transaction" date field
+        And I enter 0 days ago in the "Relevant date" date field
+        And I enter 0 days ago in the "Date of contract or conclusion of missives" date field
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should not see the text "This is usually more recent than this."
+        And I should not see the text "This has typically already happened"
+        And I should not see a link with text "You can edit the transaction details if you need to"
+        # Set one date in the past and one date in the future and check two messages are shown
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+        When I enter 30 days ago in the "Effective date of transaction" date field
+        And I enter 1 days in the future in the "Relevant date" date field
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should see the text "Effective date of transaction is 30 days in the past. This is usually more recent than this."
+        And I should see the text "Relevant date is 1 day in the future. This has typically already happened"
+        And I should see a link with text "You can edit the transaction details if you need to"
+        # Reset both dates within the window and no messages are shown
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+        When I enter 0 days in the future in the "Effective date of transaction" date field
+        And I enter 5 days ago in the "Relevant date" date field
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should not see the text "This is usually more recent than this."
+        And I should not see the text "This has typically already happened"
+        And I should not see a link with text "You can edit the transaction details if you need to"
+        # Reset one date to be within the window and the other outside and only one message is shown
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+        When I enter 1 days ago in the "Effective date of transaction" date field
+        And I enter 3 days in the future in the "Relevant date" date field
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should see the text "Relevant date is 3 days in the future. This has typically already happened."
+        And I should not see the text "This is usually more recent than this"
+        And I should see a link with text "You can edit the transaction details if you need to"
+
         # Submit the return
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
@@ -1533,7 +1651,7 @@ Feature: LBTT Returns
             | Property address           | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
             | Buyer                      | Partnership name                          |
             | Description of transaction | Conveyance or transfer                    |
-            | Effective date             | 15/07/2021                                |
+            | Effective date             | NOW_DATE                                  |
         # Check you can't submit again
         When I go to the "returns/lbtt/declaration" page
         Then I should see the "Payment and submission" page
@@ -1550,7 +1668,15 @@ Feature: LBTT Returns
         And I click on the "Find" button
         And I click on the "Amend" link
         Then I should see the "Return Summary" page
+        # Check no warning messages are shown on amend
+        And I should not see the text "This is usually more recent than this."
+        And I should not see the text "This has typically already happened"
+        And I should not see a link with text "You can edit the transaction details if you need to"
         When I click on the "Submit return" button
+        Then I should see the "Amendment reason" page
+        When I enter "Test" in the "Tell us why you are amending this return" field
+        And I click on the "Continue" button
+
         Then I should see the "Repayment details" page
         When I check the "No" radio button
         And I click on the "Continue" button
@@ -1563,6 +1689,8 @@ Feature: LBTT Returns
         And I check the "Cheque" radio button
         And I click on the "Back" link
         Then I should see the "Repayment details" page
+        When I click on the "Back" link
+        Then I should see the "Amendment reason" page
         When I click on the "Back" link
         Then I should see the "Return Summary" page
 
@@ -1585,6 +1713,9 @@ Feature: LBTT Returns
         When I click on the "Continue" link
         Then I should see the "Return Summary" page
         When I click on the "Submit return" button
+        Then I should see the "Amendment reason" page
+        When I enter "Test" in the "Tell us why you are amending this return" field
+        And I click on the "Continue" button
         Then I should see the "Repayment details" page
         When I check the "No" radio button
         And I click on the "Continue" button
@@ -1610,6 +1741,9 @@ Feature: LBTT Returns
         And I click on the "Amend" link
         Then I should see the "Return Summary" page
         When I click on the "Submit return" button
+        Then I should see the "Amendment reason" page
+        When I enter "Test" in the "Tell us why you are amending this return" field
+        And I click on the "Continue" button
         Then I should see the "Repayment details" page
         When I check the "No" radio button
         And I click on the "Continue" button
@@ -1633,8 +1767,11 @@ Feature: LBTT Returns
         Edit the transaction details checking the NPV value can be changed
         Edit the transaction details checking the overriden NPV value is not changed
         Change a linked transaction value and check the overriden NPV value is changed
+        Check date warnings are given
         Save the draft
-        Retrieve the draft and submit
+        Retrieve the draft
+        Check date warnings are still given
+        and submit
 
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
 
@@ -1967,40 +2104,50 @@ Feature: LBTT Returns
         When I check the "Yes" radio button
         And I click on the "Continue" button
         Then I should receive the message "Premium amount (inc VAT) can't be blank"
-        When I enter "invalid" in the "Premium amount (inc VAT)" field
-        And I click on the "Continue" button
-        Then I should receive the message "Premium amount (inc VAT) is not a number"
-        When I enter "-1300" in the "Premium amount (inc VAT)" field
-        And I click on the "Continue" button
-        Then I should receive the message "Premium amount (inc VAT) must be greater than or equal to 0"
-        When I enter "1300.123456" in the "Premium amount (inc VAT)" field
-        And I click on the "Continue" button
-        Then I should receive the message "Premium amount (inc VAT) must be a number to 2 decimal places"
-        When I enter "1000000000000000000" in the "Premium amount (inc VAT)" field
-        And I click on the "Continue" button
-        Then I should receive the message "Premium amount (inc VAT) must be less than 1000000000000000000"
-        When I enter "352000" in the "Premium amount (inc VAT)" field
-        And I enter "654" in the "Premium for linked transactions" field
-        And I click on the "Continue" button
-        Then I should see the "About the lease values" page
+        And I should receive the message "What is the relevant rent amount for this transaction can't be blank"
 
-        # relevant_rent
+        When I enter "123" in the "Premium amount (inc VAT)" field
         And I click on the "Continue" button
         Then I should receive the message "What is the relevant rent amount for this transaction can't be blank"
-        When I enter "invalid" in the "What is the relevant rent amount for this transaction?" field
+
+        When I check the "No" radio button
         And I click on the "Continue" button
-        Then I should receive the message "What is the relevant rent amount for this transaction is not a number"
-        When I enter "-12300" in the "What is the relevant rent amount for this transaction?" field
+        Then I should see the "Calculated Net Present Value (NPV)" page
+
+        When I click on the "Back" link
+        Then I should see the "About the lease values" page
+
+        When I check the "Yes" radio button
+
+        When I enter "invalid" in the "Premium amount (inc VAT)" field
+        And I enter "invalid" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
-        Then I should receive the message "What is the relevant rent amount for this transaction must be greater than or equal to 0"
-        When I enter "123.5600" in the "What is the relevant rent amount for this transaction?" field
+        Then I should receive the message "Premium amount (inc VAT) is not a number"
+        And I should receive the message "What is the relevant rent amount for this transaction is not a number"
+
+        When I enter "-1300" in the "Premium amount (inc VAT)" field
+        And I enter "-12300" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
-        Then I should receive the message "What is the relevant rent amount for this transaction must be a number to 2 decimal places"
-        When I enter "1000000000000000000" in the "What is the relevant rent amount for this transaction?" field
+        Then I should receive the message "Premium amount (inc VAT) must be greater than or equal to 0"
+        And I should receive the message "What is the relevant rent amount for this transaction must be greater than or equal to 0"
+
+        When I enter "1300.123456" in the "Premium amount (inc VAT)" field
+        And I enter "123.5600" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
-        Then I should receive the message "What is the relevant rent amount for this transaction must be less than 1000000000000000000"
-        When I enter "351000" in the "What is the relevant rent amount for this transaction?" field
+        Then I should receive the message "Premium amount (inc VAT) must be a number to 2 decimal places"
+        And I should receive the message "What is the relevant rent amount for this transaction must be a number to 2 decimal places"
+
+        When I enter "1000000000000000000" in the "Premium amount (inc VAT)" field
+        And I enter "1000000000000000000" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
+        Then I should receive the message "Premium amount (inc VAT) must be less than 1000000000000000000"
+        And I should receive the message "What is the relevant rent amount for this transaction must be less than 1000000000000000000"
+
+        When I enter "352000" in the "Premium amount (inc VAT)" field
+        And I enter "351000" in the "What is the relevant rent amount for this transaction?" field
+        And I enter "654" in the "Premium for linked transactions" field
+        And I click on the "Continue" button
+
         Then I should see the "Calculated Net Present Value (NPV)" page
 
         # NPV calculated tax
@@ -2057,8 +2204,6 @@ Feature: LBTT Returns
         Then I should see the "About the lease values" page
         And I should see the text "654" in field "Premium for linked transactions"
         When I click on the "Continue" button
-        Then I should see the "About the lease values" page
-        When I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
         And I should see the text "353000" in field "Net Present Value (NPV)"
         And I should see the text "4321" in field "Net Present Value (NPV) for linked transactions"
@@ -2100,8 +2245,6 @@ Feature: LBTT Returns
         Then I should see the "About the lease values" page
         And I should see the text "654" in field "Premium for linked transactions"
         When I click on the "Continue" button
-        Then I should see the "About the lease values" page
-        When I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
         And I should see the text "353000" in field "Net Present Value (NPV)"
         And I should see the text "4521" in field "Net Present Value (NPV) for linked transactions"
@@ -2132,8 +2275,6 @@ Feature: LBTT Returns
         Then I should see the "About the lease values" page
         And I should see the text "500" in field "Premium for linked transactions"
         When I click on the "Continue" button
-        Then I should see the "About the lease values" page
-        And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
 
         # NPV calculated tax
@@ -2154,6 +2295,11 @@ Feature: LBTT Returns
             | Premium amount (inc VAT)                               | £352000.00      |
             | What is the relevant rent amount for this transaction? | £351000.00      |
             | Net Present Value (NPV)                                | £1726016.41     |
+        # Check the date warnings are given for a lease return, not checking full text
+        And I should see the text "in the past. This is usually more recent than this."
+        And I should see a link with text "You can edit the transaction details if you need to"
+
+        # Save the draft
         When I click on the "Save draft" button
 
         Then I should see the "Return saved" page
@@ -2171,7 +2317,11 @@ Feature: LBTT Returns
         And I click on the "Find" button
         And I should see a link with text "Continue"
 
-        And I click on the "Continue" link
+        When I click on the "Continue" link
+        Then I should see the "Return Summary" page
+        # Check the date warnings are still shown
+        And I should see the text "in the past. This is usually more recent than this."
+        And I should see a link with text "You can edit the transaction details if you need to"
 
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
@@ -2193,6 +2343,7 @@ Feature: LBTT Returns
         Add another private individual new tenant
         Delete the second new tenant
         Add the transaction details, with no linked transactions and with yearly rents
+        Check the date warnings are not shown
         Submit the return entering repayment details
 
         Amend the return
@@ -2525,11 +2676,7 @@ Feature: LBTT Returns
         Then I should see the "About the lease values" page
         When I check the "Yes" radio button
         When I enter "352000" in the "Premium amount" field
-        And I click on the "Continue" button
-
-        Then I should see the "About the lease values" page
-        # relevant_rent
-        When I enter "351000" in the "What is the relevant rent amount for this transaction?" field
+        And I enter "351000" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
 
         Then I should see the "Calculated Net Present Value (NPV)" page
@@ -2560,6 +2707,11 @@ Feature: LBTT Returns
             | Total tax payable              | £19130.00 |
             | Amount already paid            | £0.00     |
             | Amount payable for this return | £19130.00 |
+
+        # Check the date warnings are not given for a lease assignation
+        And I should not see the text "This is usually more recent than this."
+        And I should not see the text "This has typically already happened"
+        And I should not see a link with text "You can edit the transaction details if you need to"
 
         When I click on the "Submit return" button
         Then I should see the "Repayment details" page
@@ -2625,6 +2777,9 @@ Feature: LBTT Returns
         Then I should see the "About the tenant" page
         And I click on the "Back" link
         And I click on the "Submit return" button
+        Then I should see the "Amendment reason" page
+        When I enter "Test" in the "Tell us why you are amending this return" field
+        And I click on the "Continue" button
         Then I should see the "Repayment details" page
         When I check the "No" radio button
         And I click on the "Continue" button
@@ -2648,11 +2803,13 @@ Feature: LBTT Returns
 
         Check a public user cannot go to the authenticated pages
         Create a 3 year lease review return
+        Validate that the triennial date validation works
         Check you cannot save a draft
         Add a private individual tenant
         Add a property
         Add transaction details, with no rent years
         Edit the calculation
+        Check date warnings are not shown
         Submit the return with no repayment checking DD payment method not available
         Check the secure message and dashboard links are not shown/allowed
 
@@ -2732,14 +2889,50 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
+        # Check triennial dates validation
+        # First check failure
+        # Then none leap year
+        # Then leap year for 28th and 1st
         When I click on the "Add transaction details" link
         Then I should see the "About the dates" page
-        When I enter "02-08-2019" in the "Effective date of transaction" date field
+        Then I should see the "About the dates" page
+        When I enter "01-01-2019" in the "Effective date of transaction" date field
+        And I enter "01-01-2019" in the "Relevant date" date field
+        And I enter "01-01-2019" in the "Lease start date" date field
+        And I enter "01-01-2025" in the "Lease end date" date field
+        And I click on the "Continue" button
+        Then I should receive the message "Relevant date must be a triennial anniversary of the effective date"
+
+        When I enter "01-01-2019" in the "Effective date of transaction" date field
         And I enter "03-08-2019" in the "Relevant date" date field
-        And I enter "03-08-2019" in the "Lease start date" date field
-        And I enter "03-08-2019" in the "Lease end date" date field
+        And I enter "01-01-2019" in the "Lease start date" date field
+        And I enter "01-01-2025" in the "Lease end date" date field
+        And I click on the "Continue" button
+        Then I should receive the message "Relevant date must be a triennial anniversary of the effective date"
+
+        When I enter "01-01-2019" in the "Effective date of transaction" date field
+        And I enter "01-01-2022" in the "Relevant date" date field
+        And I enter "01-01-2019" in the "Lease start date" date field
+        And I enter "01-01-2025" in the "Lease end date" date field
         And I click on the "Continue" button
         Then I should see the "Linked Transactions" page
+
+        When I click on the "Back" link
+        And I enter "29-02-2020" in the "Effective date of transaction" date field
+        And I enter "28-02-2023" in the "Relevant date" date field
+        And I enter "01-03-2020" in the "Lease start date" date field
+        And I enter "01-03-2030" in the "Lease end date" date field
+        And I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+
+        When I click on the "Back" link
+        And I enter "29-02-2020" in the "Effective date of transaction" date field
+        And I enter "01-03-2023" in the "Relevant date" date field
+        And I enter "01-03-2020" in the "Lease start date" date field
+        And I enter "01-03-2030" in the "Lease end date" date field
+        And I click on the "Continue" button
+        Then I should see the "Linked Transactions" page
+
         When I check the "No" radio button
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
@@ -2758,9 +2951,6 @@ Feature: LBTT Returns
         Then I should see the "About the lease values" page
         When I check the "No" radio button
         And I click on the "Continue" button
-        Then I should see the "About the lease values" page
-        When I enter "123" in the "What is the relevant rent amount for this transaction?" field
-        And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
         When I enter "100" in the "Net Present Value (NPV)" field
         And I click on the "Continue" button
@@ -2773,6 +2963,10 @@ Feature: LBTT Returns
         Then I should see the "Calculated tax" page
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
+        # Check the date warnings are not given for a lease review
+        And I should not see the text "This is usually more recent than this."
+        And I should not see the text "This has typically already happened"
+        And I should not see a link with text "You can edit the transaction details if you need to"
 
         # submit
         When I click on the "Submit return" button
@@ -2801,6 +2995,7 @@ Feature: LBTT Returns
         Add the propery checking ADS not allowed
         Add a private individual tenant, including international details
         Add the transaction details, including yearly rents
+        Check the date warnings are not shown
         Save the draft
         Save the draft again
         Go to dashboard and download PDF
@@ -2958,15 +3153,18 @@ Feature: LBTT Returns
 
         # Transaction
         When I click on the "Add transaction details" link
-
         Then I should see the "About the dates" page
+
         When I enter "02-08-2019" in the "Effective date of transaction" date field
-        And I enter "03-08-2019" in the "Relevant date" date field
+        And I enter "08-10-2023" in the "Relevant date" date field
         And I enter "03-08-2019" in the "Date of contract or conclusion of missives" date field
         And I enter "10-10-2019" in the "Lease start date" date field
-        And I enter "08-10-2023" in the "Lease end date" date field
+        And I enter "07-08-2023" in the "Lease end date" date field
         And I click on the "Continue" button
+        Then I should receive the message "Lease end date must be the same as the relevant date"
 
+        When I enter "08-10-2023" in the "Lease end date" date field
+        And I click on the "Continue" button
         Then I should see the "Linked Transactions" page
         # linked-transactions - select no to get positive calculation results
         When I check the "No" radio button
@@ -2990,11 +3188,7 @@ Feature: LBTT Returns
         Then I should see the "About the lease values" page
         When I check the "Yes" radio button
         When I enter "352000" in the "Premium amount" field
-        And I click on the "Continue" button
-
-        Then I should see the "About the lease values" page
-        # relevant_rent
-        When I enter "351000" in the "What is the relevant rent amount for this transaction?" field
+        And I enter "351000" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
 
         Then I should see the "Calculated Net Present Value (NPV)" page
@@ -3007,7 +3201,7 @@ Feature: LBTT Returns
         And the table of data is displayed
             | About the transaction                                  | Edit            |
             | Effective date of transaction                          | 02 August 2019  |
-            | Relevant date                                          | 03 August 2019  |
+            | Relevant date                                          | 08 October 2023 |
             | Are there any linked transactions?                     | No              |
             | Lease start date                                       | 10 October 2019 |
             | Lease end date                                         | 08 October 2023 |
@@ -3023,6 +3217,11 @@ Feature: LBTT Returns
             | Total tax payable              | £19130.00 |
             | Amount already paid            | £0.00     |
             | Amount payable for this return | £19130.00 |
+
+        # Check the date warnings are not given for a lease review
+        And I should not see the text "This is usually more recent than this."
+        And I should not see the text "This has typically already happened"
+        And I should not see a link with text "You can edit the transaction details if you need to"
 
         And I click on the "Save draft" button
         Then I should see the "Return saved" page
@@ -3062,7 +3261,8 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the transaction                                  | Edit            |
-            | Effective date of transaction                          | 03 August 2019  |
+            | Effective date of transaction                          | 02 August 2019  |
+            | Relevant date                                          | 08 October 2023 |
             | Lease start date                                       | 10 October 2019 |
             | Lease end date                                         | 08 October 2023 |
             | Premium amount (inc VAT)                               | £352000.00      |
@@ -3274,10 +3474,6 @@ Feature: LBTT Returns
         Then I should see the "About the lease values" page
         When I check the "No" radio button
         And I click on the "Continue" button
-        Then I should see the "About the lease values" page
-
-        When I enter "351000" in the "What is the relevant rent amount for this transaction?" field
-        And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
 
         And I should see the text "1285577.72" in field "Net Present Value (NPV)"
@@ -3396,6 +3592,9 @@ Feature: LBTT Returns
 
         # try again
         When I click on the "Submit return" button
+        Then I should see the "Amendment reason" page
+        When I enter "This is a test amendment reason" in the "Tell us why you are amending this return" field
+        And I click on the "Continue" button
         Then I should see the "Repayment details" page
         When I check the "No" radio button
         And I click on the "Continue" button

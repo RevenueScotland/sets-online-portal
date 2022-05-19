@@ -9,9 +9,7 @@
   <%= link_to(t('.slft_return'), returns_slft_summary_path(new: true), class: 'scot-rev-button') %>
 <% end %>
 <% if account_has_no_service? %>
-  <p>
-    <%= t('.no_services') %>
-  </p>
+  <%= display_paragraph_components(body: t('.no_services')) %>
 <% end %>
 <%= link_to(t('.new_message'), new_dashboard_message_path, class: 'scot-rev-button', requires_action: AuthorisationHelper::CREATE_MESSAGE) %>
 <% if can? AuthorisationHelper::VIEW_MESSAGES %>

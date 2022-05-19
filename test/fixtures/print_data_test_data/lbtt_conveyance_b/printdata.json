@@ -27,6 +27,12 @@
                     "itemdata": "\u003c%VERSION%\u003e"
                 },
                 {
+                    "itemcode": "change_reason",
+                    "itemformat": null,
+                    "itemlabel": "Tell us why you are amending this return",
+                    "itemdata": "This is the entered change reason"
+                },
+                {
                     "itemcode": "form_type",
                     "itemformat": null,
                     "itemlabel": "Status",
@@ -39,7 +45,7 @@
                     "itemdata": "Conveyance or transfer"
                 }
             ],
-            "itemcount": 5
+            "itemcount": 6
         },
         {
             "sectioncode": "agent_details",

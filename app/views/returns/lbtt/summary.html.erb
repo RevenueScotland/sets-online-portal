@@ -8,7 +8,7 @@
     <%= t('.repayment_description') %>
   </div>
 <% end %>
-<%= govuk_warning( t('.warning') ) if current_user %>
+<%= govuk_warning( t('.save_changes_warning') ) if current_user %>
 <% content_for :page_view, render_page_view(__FILE__) %>
 <% if User.account_type(current_user) != 'PUBLIC' %>
   <%= display_table_region( {
@@ -92,7 +92,7 @@
             path: %w[CONVEY LEASERET].include?(@lbtt_return.flbt_type) ? returns_lbtt_property_type_path : returns_lbtt_transaction_dates_path,
             link_options: { id: 'add_transaction' } },
 	data: [ { model: @lbtt_return, 
-            attributes: [ { attribute: :property_type, format: :lookup_ref, skip: @lbtt_return.lease_review? || @lbtt_return.property_type.blank?},
+            attributes: [ { attribute: :property_type, format: :lookup_ref, skip: @lbtt_return.any_lease_review? || @lbtt_return.property_type.blank?},
                           { attribute: :effective_date, format: :full_month_date, skip: :if_blank },
                           { attribute: :relevant_date, format: :full_month_date, skip: :if_blank } ] },
           { model: @lbtt_return,
@@ -157,6 +157,10 @@
   { header: { link_cell_class: 'text_align_right' },
     data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
 %>
+<% if show_dates_warning?(@lbtt_return) %>
+  <%= govuk_warning( dates_warning_text(@lbtt_return)) %>
+  <%= display_paragraph_components(body: navigational_links([{link: :change_the_transaction, path: returns_lbtt_property_type_path}])) %>
+<% end %>
 <!-- See return-form-dirty.js for details of the application of form-dirty-warning-message values of data property -->
 <%= form_for @lbtt_return, url: returns_lbtt_summary_path, method: :post, :data => { 'form-dirty-warning-message' => t('.form_dirty_warning_message') } , local: true do |f| %>
   <%= form_errors_for @lbtt_return %>

@@ -37,6 +37,7 @@ module Returns
       end
 
       # Tests the Conveyance return with the following data:
+      # - Return is version 1 being saved from a draft
       # - New Conveyance
       # - Buyer is an Other organisation: Trust
       # - Seller is Organisation registered with Companies House
@@ -60,6 +61,7 @@ module Returns
       end
 
       # Tests the amended Conveyance return with the following data:
+      # - Return is third version being submitted
       # - Added a Buyer that is an Other organisation: Club
       # - Added a Seller that is an Other organisation: Other
       # - Edit ADS -> amending the return: yes
@@ -77,6 +79,7 @@ module Returns
       end
 
       # Test Conveyance return without ADS and with minimal data
+      # - Return is second version being submitted with no draft
       # - New Conveyance
       # - Buyer and Seller are both Private Individuals
       # - Property has no ADS
@@ -99,6 +102,7 @@ module Returns
       end
 
       # Test Lease return
+      # - Return is first version being submitted
       # - Tenant is an Other organisation: Charity
       # - Landlord is a Private Individual
       # - Transaction details are:
@@ -120,8 +124,9 @@ module Returns
       end
 
       # Test Assignation return
+      # - Return is a draft of version 1
       # - Tenant is an Other organisation: Partnership
-      # - New tenant is an Other organisation: Company (not registreded with UK companies house)
+      # - New tenant is an Other organisation: Company (not registered with UK companies house)
       # - Transaction details are:
       #   - Linked transactions: no
       #   - Rental years the same: yes
