@@ -22,7 +22,7 @@ module Returns
            bank_name account_number branch_code account_holder_name fpay_method
            authority_ind declaration lease_declaration parties payment_date filing_date current_flbt_type
            repayment_ind repayment_amount_claimed repayment_declaration repayment_agent_declaration account_type
-           ads]
+           ads change_reason]
       end
 
       attribute_list.each { |attr| attr_accessor attr }
@@ -51,9 +51,13 @@ module Returns
       validates :lease_start_date, :lease_end_date, custom_date: true, presence: true, compare_date: true,
                                                     on: :effective_date, unless: :convey?
       validates :lease_start_date, compare_date: { end_date_attr: :lease_end_date }, on: :lease_start_date
+      validates :lease_end_date, compare_date: { equal_date_attr: :relevant_date }, on: :lease_end_date,
+                                 if: :terminate?
+      validates :relevant_date, compare_date: { triennial_date_attr: :effective_date }, on: :relevant_date,
+                                if: :lease_review?
       validates :previous_option_ind, :exchange_ind,
                 :uk_ind, presence: true, on: :previous_option_ind,
-                         unless: :lease_review?
+                         unless: :any_lease_review?
       validates :business_ind, presence: true, on: :business_ind, if: :convey?
       validate  :sale_include_option_valid?, on: :business_ind, if: :convey?
       validates :contingents_event_ind, presence: true, on: :contingents_event_ind,
@@ -93,7 +97,7 @@ module Returns
 
       # reliefs validation
       validates :non_ads_reliefclaim_option_ind, presence: true, on: :non_ads_reliefclaim_option_ind,
-                                                 unless: :lease_review?
+                                                 unless: :any_lease_review?
       validates :non_ads_relief_claims, relief_type_unique: true, on: :non_ads_reliefclaim_option_ind
 
       # other than conveyance type calculations
@@ -112,21 +116,28 @@ module Returns
                                        if: :linked_lease_premium_needed?
       validates :relevant_rent, numericality: { greater_than_or_equal_to: 0, less_than: 1_000_000_000_000_000_000,
                                                 allow_blank: true },
-                                two_dp_pattern: true, presence: true, on: :relevant_rent,
+                                two_dp_pattern: true, presence: true, on: :premium_paid, if: :premium_paid?,
                                 unless: :convey?
+      validates :change_reason, presence: true, length: { maximum: 4000 }, on: :change_reason, if: :amendment?
       # claim repayment validation
-      validates :repayment_ind, presence: true, on: :repayment_ind
+      validates :repayment_ind, presence: true, on: :repayment_ind, if: :show_repayment?
       validates :repayment_amount_claimed, numericality: { greater_than_or_equal_to: 0,
                                                            less_than: 1_000_000_000_000_000_000,
                                                            allow_blank: true },
-                                           two_dp_pattern: true, presence: true, on: :repayment_amount_claimed
-      validates :account_holder_name, presence: true, length: { maximum: 152 }, on: :account_holder_name
-      validates :bank_name, presence: true, length: { maximum: 255 }, on: :account_holder_name
-      validates :account_number, presence: true, account_number: true, on: :account_holder_name
-      validates :branch_code, presence: true, bank_sort_code: true, on: :account_holder_name
-      validates :repayment_declaration, acceptance: { accept: ['Y'] }, on: :repayment_declaration
+                                           two_dp_pattern: true, presence: true, on: :repayment_amount_claimed,
+                                           if: :repayment_ind?
+      validates :account_holder_name, presence: true, length: { maximum: 152 }, on: :account_holder_name,
+                                      if: :repayment_ind?
+      validates :bank_name, presence: true, length: { maximum: 255 }, on: :account_holder_name,
+                            if: :repayment_ind?
+      validates :account_number, presence: true, account_number: true, on: :account_holder_name,
+                                 if: :repayment_ind?
+      validates :branch_code, presence: true, bank_sort_code: true, on: :account_holder_name,
+                              if: :repayment_ind?
+      validates :repayment_declaration, acceptance: { accept: ['Y'] }, on: :repayment_declaration,
+                                        if: :repayment_ind?
       validates :repayment_agent_declaration, acceptance: { accept: ['Y'] }, on: :repayment_declaration,
-                                              if: proc { |s| s.account_type == 'AGENT' }
+                                              if: proc { |s| s.account_type == 'AGENT' } && :repayment_ind?
 
       # declaration validation
       validates :fpay_method, presence: true, on: :fpay_method
@@ -139,7 +150,7 @@ module Returns
       # as we don't ask the question
       # @return [String] The current value of the property type
       def property_type
-        return '3' if lease_review? && @effective_date.present?
+        return '3' if any_lease_review? && @effective_date.present?
 
         @property_type
       end
@@ -264,9 +275,10 @@ module Returns
            list_items: [{ code: :tare_reference, placeholder: '<%TARE_REFERENCE%>' },
                         { code: :receipt_date, placeholder: '<%RECEIPT_DATE%>' },
                         { code: :version, placeholder: '<%VERSION%>' },
+                        { code: :change_reason, when: :amendment?, is: [true] },
                         { code: :form_type, lookup: true },
                         { code: :flbt_type, lookup: true },
-                        { code: :orig_return_reference, when: :lease_review?, is: [true] }] },
+                        { code: :orig_return_reference, when: :any_lease_review?, is: [true] }] },
          { code: :agent,
            when: :is_public,
            is_not: [true],
@@ -293,15 +305,15 @@ module Returns
            divider: true, # should we have a section divider
            display_title: true, # Is the title to be displayed
            type: :list, # type list = the list of attributes to follow
-           list_items: [{ code: :property_type, lookup: true, when: :lease_review?, is_not: [true] },
+           list_items: [{ code: :property_type, lookup: true, when: :any_lease_review?, is_not: [true] },
                         { code: :effective_date, format: :date },
                         { code: :relevant_date, format: :date },
                         { code: :contract_date, format: :date },
                         { code: :lease_start_date, format: :date, when: :convey?, is: [false] },
                         { code: :lease_end_date, format: :date, when: :convey?, is: [false] },
-                        { code: :previous_option_ind, lookup: true, when: :lease_review?, is_not: [true] },
-                        { code: :exchange_ind, lookup: true, when: :lease_review?, is_not: [true] },
-                        { code: :uk_ind, lookup: true, when: :lease_review?, is_not: [true] }] },
+                        { code: :previous_option_ind, lookup: true, when: :any_lease_review?, is_not: [true] },
+                        { code: :exchange_ind, lookup: true, when: :any_lease_review?, is_not: [true] },
+                        { code: :uk_ind, lookup: true, when: :any_lease_review?, is_not: [true] }] },
          { code: :linked_transactions_ind, # section code
            key: :title, # key for the title translation
            key_scope: %i[returns lbtt_transactions linked_transactions], # scope for the title translation
@@ -330,7 +342,7 @@ module Returns
            key_scope: %i[returns lbtt_transactions reliefs_on_transaction], # scope for the title translation
            divider: false, # should we have a section divider
            display_title: true, # Is the title to be displayed
-           when: :lease_review?,
+           when: :any_lease_review?,
            is: [false],
            type: :list, # type list = the list of attributes to follow
            list_items: [{ code: :non_ads_reliefclaim_option_ind, lookup: true }] },
@@ -399,7 +411,7 @@ module Returns
          if repayment_ind.present?
            { code: :repayment, # section code
              key: :title, # key for the title translation
-             key_scope: %i[returns lbtt_claim repayment_claim], # scope for the title translation
+             key_scope: %i[returns lbtt_submit repayment_claim], # scope for the title translation
              divider: false, # should we have a section divider
              display_title: true, # Is the title to be displayed
              type: :list, # type list = the list of attributes to follow
@@ -416,14 +428,14 @@ module Returns
          end,
          { code: :declaration, # section code
            key: :title, # key for the title translation
-           key_scope: %i[returns lbtt declaration], # scope for the title translation
+           key_scope: %i[returns lbtt_submit declaration], # scope for the title translation
            divider: true, # should we have a section divider
            display_title: true, # Is the title to be displayed
            type: :list, # type list = the list of attributes to follow
            list_items: [{ code: :fpay_method, lookup: true }] },
          { code: :declaration, # section code
            key: :title, # key for the title translation
-           key_scope: %i[returns lbtt declaration], # scope for the title translation
+           key_scope: %i[returns lbtt_submit declaration], # scope for the title translation
            divider: true, # should we have a section divider
            display_title: true, # Is the title to be displayed
            type: :list, # type list = the list of attributes to follow
@@ -449,6 +461,7 @@ module Returns
         @deferral_reference = nil unless deferral_reference_required?
         @deferral_agreed_ind = nil unless contingent_events?
         @lease_premium = nil unless premium_paid?
+        @relevant_rent = nil unless premium_paid?
       end
 
       # transaction validation method
@@ -481,9 +494,19 @@ module Returns
         @flbt_type == 'LEASERET'
       end
 
-      # is this a lease review type, see also tax.rb
-      def lease_review?
+      # is this any lease review type, see also tax.rb
+      def any_lease_review?
         %w[LEASEREV ASSIGN TERMINATE].include?(@flbt_type)
+      end
+
+      # is this any lease review type, see also tax.rb
+      def lease_review?
+        @flbt_type == 'LEASEREV'
+      end
+
+      # is this a termination type
+      def terminate?
+        @flbt_type == 'TERMINATE'
       end
 
       # Is a linked consideration amount needed
@@ -501,6 +524,11 @@ module Returns
         return unless business_ind?
 
         errors.add(:sale_include_option, :one_must_be_chosen) if sale_include_option.compact_blank.empty?
+      end
+
+      # condition to check repayment_ind is set to Yes
+      def repayment_ind?
+        @repayment_ind == 'Y'
       end
 
       # Combine list of parties together
@@ -552,7 +580,7 @@ module Returns
       # @see LbttPropertiesController
       # @return [Boolean] whether or not to show repayment details
       def show_repayment?
-        return true if lease_review?
+        return true if any_lease_review?
         return true if amendment?
 
         false
@@ -590,9 +618,6 @@ module Returns
         output[:tare_refno] = lbtt[:tare_refno]
         output[:version] = lbtt[:version]
         output.merge!(lbtt[:lbtt_return_details])
-
-        # Copy the payment method to the previous payment method
-        output[:previous_fpay_method] = output[:fpay_method]
 
         hash_parties = convert_parties(output)
         output[:buyers] = split_by_party_type(hash_parties, 'BUYER')
@@ -633,8 +658,9 @@ module Returns
 
         # don't want to load the repayment details, throw this lot away
         # also the ads due ind as we get this at the property level
+
         delete = %i[repayment_bank_name repay_account_holder repay_bank_account_no repay_bank_sort_code repayment_ind
-                    repayment_agent_auth_ind repayment_amount_claimed ads_due_ind]
+                    repayment_agent_auth_ind repayment_amount_claimed ads_due_ind change_reason]
 
         # clean up leftover indexes that we've converted/renamed/moved but not used the delete method to do so
         # ie this is not a list of data we're throwing away
@@ -651,8 +677,7 @@ module Returns
         lbtt[:deferral_agreed_ind] = derive_yes_no(value: lbtt[:deferral_reference],
                                                    default_n: lbtt[:total_consideration].present?)
         # lease only
-        lbtt[:premium_paid] = derive_yes_no(value: lbtt[:lease_premium],
-                                            default_n: lbtt[:relevant_rent].present?)
+        lbtt[:premium_paid] = derive_yes_no(value: lbtt[:lease_premium], default_n: lbtt[:net_present_value])
 
         # below are common to lease and conveyance
         derive_common_yes_nos_in(lbtt)
@@ -828,7 +853,7 @@ module Returns
       # check the correct amounts are present for the tax calc
       # note we don't check all the amounts but if these are present which should have the others as well
       def amounts_for_tax_calc?
-        ((convey? && @total_consideration.present?) || (!convey? && @relevant_rent.present?))
+        ((convey? && @total_consideration.present?) || (!convey? && @premium_paid.present?))
       end
 
       # Called by @see Returns::AbstractReturn#save
@@ -855,7 +880,8 @@ module Returns
         output = {
           'ins1:FlbtType': @flbt_type, 'ins1:PropertyType': property_type
         }
-        output['ins1:OrigReturnReference'] = @orig_return_reference if lease_review?
+        output['ins1:ChangeReason'] = @change_reason if amendment?
+        output['ins1:OrigReturnReference'] = @orig_return_reference if any_lease_review?
         output.merge!('ins1:EffectiveDate': DateFormatting.to_xml_date_format(@effective_date),
                       'ins1:RelevantDate': DateFormatting.to_xml_date_format(@relevant_date),
                       'ins1:ContractDate': DateFormatting.to_xml_date_format(@contract_date))

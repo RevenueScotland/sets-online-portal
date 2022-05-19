@@ -107,6 +107,7 @@ en:
         lease_declaration_AGENT: "I, the agent of the tenant(s), confirm that I have made my client(s) aware of their obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date"
         lease_declaration_TAXPAYER: "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date"
         lease_declaration_PUBLIC: "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date"
+        change_reason: "Tell us why you are amending this return"
       returns/lbtt/tax:
         calculated: "LBTT calculated"
         ads_due: "ADS calculated"
@@ -154,7 +155,7 @@ en:
         total_vat: "See guidance on what is chargeable consideration (opens in a new window) for further details"
         non_chargeable: "This is the amount that LBTT does not apply to"
         premium_paid: "This is paid by the tenant to the owner, in addition to the rent"
-        relevant_rent: This is your annual rent, including VAT. If you have linked transactions, it will be the total of all rents
+        relevant_rent: This is your annual rent, including VAT. If you have linked transactions, it will be the total of all rents and must be entered when a premium is being paid
         account_number: "This should be 8 digits"
         branch_code: "The sort code should be entered in the format 99-99-99"
         effective_date_CONVEY: "This is usually the date the land transaction is completed (e.g. the date of settlement). See guidance on the effective date (opens in a new window) for further details"
@@ -196,6 +197,7 @@ en:
               past_date_error: "%{attribute} must be on or after %{start_date}"
             relevant_date:
               past_date_error: "%{attribute} must be on or after %{start_date}"
+              triennial_date_error: "%{attribute} must be a triennial anniversary of the effective date"
             contract_date:
               past_date_error: "%{attribute} must be on or after %{start_date}"
             lease_start_date:
@@ -204,6 +206,7 @@ en:
             lease_end_date:
               past_date_error: "%{attribute} must be on or after %{start_date}"
               after_date_error: "%{attribute} must be after lease start date"
+              equal_date_error: "%{attribute} must be the same as the relevant date"
             base:
               missing_properties_entries: "Please fill in at least one property"
               missing_about_the_transaction: "Please fill in the 'About the transaction' section"
@@ -261,7 +264,13 @@ en:
         add_repayment_claim_description: Claim repayment
         edit_calculation: "About the calculation"
         edit_relief: "About the reliefs"
-        warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
+        save_changes_warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
+        date_in_past:
+          one: "%{attribute_name} is 1 day in the past. This is usually more recent than this."
+          other: "%{attribute_name} is %{count} days in the past. This is usually more recent than this."
+        date_in_future:
+          one: "%{attribute_name} is 1 day in the future. This has typically already happened."
+          other: "%{attribute_name} is %{count} days in the future. This has typically already happened."
         form_dirty_warning_message: "You are about to leave this return. If you haven't saved your changes click 'Cancel' followed by the 'Save draft' button on the return summary screen. Any unsaved changes will be lost."
         link:
           edit_agent_details: "Edit agent details"
@@ -277,6 +286,7 @@ en:
           edit_transaction: "Edit transaction details"
           edit_calculation: "Edit calculation"
           edit_relief: "Edit reliefs"
+          change_the_transaction: "You can edit the transaction details if you need to"
       public_landing:
         title: "To complete this return, you will need the following information:"
         info_needed_html:
@@ -293,17 +303,6 @@ en:
         flbt_type: "Description of transaction"
       return_reference_number:
         title: "Return reference number"
-      declaration:
-        title: "Payment and submission"
-        dd_not_available: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
-        warning: "If you give false information, you may face penalties and/or prosecution"
-      declaration_submitted:
-        title: ""
-        return_submitted: "Your return has been submitted"
-        ref: "Your reference number : "
-        pay_soon: "Please make payments within the next 5 days to avoid any penalties."
-        link:
-          public_landing_return_page: "Exit"
       save_draft:
         title: "Return saved"
         information: "Your tax return has been saved so that you can return to either complete or cancel it."
@@ -402,15 +401,28 @@ en:
         lease_premium: "consideration other than rent (opens in a new window)"
       relevant_rent:
         title: About the lease values
-    lbtt_claim:
+    lbtt_submit:
+      amendment_reason:
+        title: "Amendment reason"    
+      repayment_claim:
+        title: Repayment details
       repayment_claim_amount:
         title: Claim repayment
       repayment_claim_bank_details:
         title: Enter bank details
       repayment_claim_declaration:
         title: Declaration
-      repayment_claim:
-        title: Repayment details
+      declaration:
+        title: "Payment and submission"
+        dd_not_available: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
+        warning: "If you give false information, you may face penalties and/or prosecution"
+      declaration_submitted:
+        title: ""
+        return_submitted: "Your return has been submitted"
+        ref: "Your reference number : "
+        pay_soon: "Please make payments within the next 5 days to avoid any penalties."
+        link:
+          public_landing_return_page: "Exit"
     lbtt_tax:
       calc_already_paid:
         title: "Calculated tax"

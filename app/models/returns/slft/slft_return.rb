@@ -277,9 +277,6 @@ module Returns
         # move some items to the root
         %i[nda credit_claim tax_payable].each { |key| move_to_root(output, key) }
 
-        # Copy the payment method to the previous payment method
-        output[:previous_fpay_method] = output[:fpay_method]
-
         derive_yes_nos_in(output)
 
         output[:sites] = convert_sites(output)

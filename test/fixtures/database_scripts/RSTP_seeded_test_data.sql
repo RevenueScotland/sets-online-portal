@@ -27,6 +27,18 @@ SET frv_code = 'ACCSECADMN'
 WHERE frv_code IN ('ACCSEC','ACCSECADM')
 AND frv_frd_domain = 'PORTALROLES';
 
+UPDATE workplace_service_parameters
+SET wsp_value = 1
+WHERE wsp_srv_code = 'LBTT'
+AND wsp_wrk_refno = 1
+AND wsp_sprm_code in ('PWS_WARN_FUTURE_DAYS');
+
+UPDATE workplace_service_parameters
+SET wsp_value = 28
+WHERE wsp_srv_code = 'LBTT'
+AND wsp_wrk_refno = 1
+AND wsp_sprm_code in ('PWS_WARN_PAST_DAYS');
+
 DECLARE
 
   l_par_refno parties.par_refno%TYPE; -- used to hold the current party reference

@@ -260,6 +260,37 @@
     {
       "warning_type": "Reverse Tabnabbing",
       "warning_code": 111,
+      "fingerprint": "2fa71ee219ab4452b62ef16771ad439487f48c7b0d523fb29780d5d33182e96b",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/premium_paid.html.erb",
+      "line": 11,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".relevant_rent\"), external_link_url(\"OTHER_CONS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "premium_paid",
+          "line": 89,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/premium_paid",
+            "file": "app/views/returns/lbtt_transactions/premium_paid.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/premium_paid"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": ""
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
       "fingerprint": "350f91c997815a7c52c57d1ff2d669fded75deffa6bc65f550d08f145e73a867",
       "check_name": "ReverseTabnabbing",
       "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
@@ -396,7 +427,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "about_the_calculation",
-          "line": 101,
+          "line": 94,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/about_the_calculation",
@@ -785,6 +816,6 @@
       "note": ""
     }
   ],
-  "updated": "2021-12-23 16:40:59 +0000",
-  "brakeman_version": "5.2.0"
+  "updated": "2022-02-11 17:50:45 +0000",
+  "brakeman_version": "5.2.1"
 }

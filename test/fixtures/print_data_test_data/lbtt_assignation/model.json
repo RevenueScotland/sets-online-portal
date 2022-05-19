@@ -87,11 +87,12 @@
     "lease_declaration": "N",
     "fpay_method": "BACS",
     "authority_ind": "Y",
-    "form_type": "L",
+    "form_type": "D",
+    "previous_form_type": "",
     "tare_reference": "RS1000039QXMK",
     "tare_refno": "148",
     "payment_date": "14/11/2019",
-    "version": "1",
+    "version": "",
     "account_type": "AGENT",
     "tenants": {
         "6f9f4ccc-c562-4742-a4e2-d4aa7c74eab4": {

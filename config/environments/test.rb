@@ -78,9 +78,10 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
 
   # Start ActiveJobs
   config.after_initialize do
-    if ENV['PREVENT_JOBS_STARTING'] == 'Y' || !ENV['UNIT_TEST'].nil?
+    if ENV.fetch('PREVENT_JOBS_STARTING', nil) == 'Y' || ENV.key?('UNIT_TEST')
       Rails.logger.info do
-        "Jobs not started PREVENT_JOBS_STARTING=#{ENV['PREVENT_JOBS_STARTING']} UNIT_TEST=#{ENV['UNIT_TEST']}"
+        "Jobs not started PREVENT_JOBS_STARTING=#{ENV.fetch('PREVENT_JOBS_STARTING',
+                                                            nil)} UNIT_TEST=#{ENV.fetch('UNIT_TEST', nil)}"
       end
     else
       # GetReferenceData/ReferenceValues refresh job

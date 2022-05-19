@@ -149,6 +149,7 @@
         }
     ],
     "non_ads_reliefclaim_option_ind": "N",
+    "change_reason": "This is the entered change reason",
     "contingents_event_ind": "N",
     "total_consideration": "1500",
     "declaration": "Y",
@@ -156,6 +157,7 @@
     "fpay_method": "CHEQUE",
     "authority_ind": "Y",
     "form_type": "L",
+    "previous_form_type": "F",
     "tare_reference": "RS1000037VDQQ",
     "tare_refno": "146",
     "payment_date": "14/11/2019",

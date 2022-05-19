@@ -9,7 +9,7 @@
 <%= form_for @slft_return, url: returns_slft_summary_path, method: :post, 
             :data => { 'form-dirty-warning-message' => t('.form_dirty_warning_message') } , local: true do |f| %>
   <%= form_errors_for @slft_return %>
-  <%= govuk_warning( t('.warning') ) %>
+  <%= govuk_warning( t('.save_changes_warning') ) %>
   <% transactions_nav_link = {
     link: @slft_return.year.blank? ? :add_transaction_details : :edit_transaction_details,
     path: returns_slft_transaction_period_path,

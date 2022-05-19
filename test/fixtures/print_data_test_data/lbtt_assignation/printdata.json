@@ -30,7 +30,7 @@
                     "itemcode": "form_type",
                     "itemformat": null,
                     "itemlabel": "Status",
-                    "itemdata": "Filed"
+                    "itemdata": "Draft"
                 },
                 {
                     "itemcode": "flbt_type",

@@ -135,6 +135,7 @@
     ],
     "fpay_method": "BACS",
     "form_type": "L",
+    "previous_form_type": "D",
     "tare_reference": "RS1000480NTWR",
     "tare_refno": "628",
     "version": "1",

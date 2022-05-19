@@ -122,7 +122,7 @@ en:
         deleted_sites_description: "The sites listed are not owned by you during this period and will not be saved, if this is incorrect change the return period"
         no_sites_description_html: "No registered sites for this period"
         credits_subtitle: "Credits claimed"
-        warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
+        save_changes_warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
         form_dirty_warning_message: "You are about to leave this return. If you haven't saved your changes click 'Cancel' followed by the 'Save draft' button on the return summary screen. Any unsaved changes will be lost."
         add_waste_details: "Add waste details"
         total: "Total"

@@ -8,7 +8,7 @@ Capybara::Screenshot.register_filename_prefix_formatter(:cucumber) do |scenario|
   "screenshot_#{scenario.name.tr(' ', '-')}"
 end
 
-Capybara.save_path = ENV['CAPYBARA_SAVE_PATH'] unless ENV['CAPYBARA_SAVE_PATH'].nil?
+Capybara.save_path = ENV.fetch('CAPYBARA_SAVE_PATH', nil) if ENV.key?('CAPYBARA_SAVE_PATH')
 
 # Keep only the screenshots generated from the last failing test suite
 Capybara::Screenshot.prune_strategy = :keep_last_run
