@@ -11,6 +11,9 @@ module Dashboard
     authorise requires: AuthorisationHelper::VIEW_RETURNS
     authorise route: :load, requires: AuthorisationHelper::LBTT_LOAD
     authorise route: :load, requires: AuthorisationHelper::SLFT_LOAD
+    authorise route: :download_pdf, requires: AuthorisationHelper::DOWNLOAD_RETURN_PDF
+    authorise route: :download_receipt, requires: AuthorisationHelper::DOWNLOAD_RECEIPT
+
     # The index page which would be used for showing the data for all returns and the pagination
     def index
       @dashboard_return_filter = DashboardReturnFilter.new(DashboardReturnFilter.params(params))

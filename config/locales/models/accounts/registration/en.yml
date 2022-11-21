@@ -34,7 +34,7 @@ en:
       confirmation:
         title: "Sign up to file tax returns"
         subtitle: "Complete sign up"
-        description: "Your registration has been accepted. An email will be sent to you confirming what you need to do next to activate your account."
+        description_html: "Your registration request has been received. An email will be sent to you confirming what you need to do next to activate your account.<br/><b>Note: After you activate your account, we will confirm if your registration has been approved or declined.</b>"
       org_contact:
         title: "Sign up to file tax returns"
         subtitle: "Organisation contact details"

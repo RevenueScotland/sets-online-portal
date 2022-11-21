@@ -253,7 +253,7 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     # We don't use title so remove it
     user.delete(:title)
 
-    # Set the confirm e-mail to be the same as the original e-mail
+    # Set the confirm email to be the same as the original email
     user[:email_address_confirmation] = user[:email_address]
     # Fiddle as FL gives user roles inside a hash and to populate check box we just want the array
     user[:user_roles] = user[:user_roles][:user_role] unless user[:user_roles].nil?

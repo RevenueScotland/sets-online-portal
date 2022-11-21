@@ -44,8 +44,8 @@ Feature: SLfT CSV File Upload
     And I should see the text "01 03 99/Entry 2 has the following errors: Lower tonnage cannot be set when other tonnages are set, Exempt tonnage cannot be set when other tonnages are set, Water discount tonnage cannot be set when exempt tonnage is set"
     And I should see the text "16 01 03/Entry 3 has the following errors: Standard tonnage cannot be set when other tonnages are set, Exempt tonnage cannot be set when other tonnages are set"
     And I should see the text "10 13 12/Entry 4 has the following error: Description of other exemption reason can't be blank"
-    And I should see the text "10 99 99/Invalid has the following errors: EWC code value of 10 99 99 is not allowed, Geographical area value of 0000 is not allowed, Management method value of XX is not allowed, Has this waste been moved out of a non-disposal area (NDA) value of X is not allowed, Is it pre-treated value of A is not allowed"
-    And I should see the text "04 02 16/Incomplete has the following errors: Geographical area can't be blank, Management method can't be blank, Has this waste been moved out of a non-disposal area (NDA) can't be blank, Is it pre-treated can't be blank, Standard tonnage or the lower or exempt tonnage must be entered"
+    And I should see the text "10 99 99/Invalid has the following errors: EWC code value of 10 99 99 is not allowed, Geographical area value of 0000 is not allowed, Management method value of XX is not allowed, Has this waste been moved out of a non-disposal area (NDA) value of X is not allowed"
+    And I should see the text "04 02 16/Incomplete has the following errors: Geographical area can't be blank, Management method can't be blank, Has this waste been moved out of a non-disposal area (NDA) can't be blank, Standard tonnage or the lower or exempt tonnage must be entered"
     And I should not see the text "test-invalid-slft-waste-upload.csv"
 
   Scenario: Upload a valid file
@@ -90,7 +90,6 @@ Feature: SLfT CSV File Upload
     And I should see "Dundee" in the "Geographical area" select or text field
     And I should see "Landfill" in the "Management method" select or text field
     And the radio button "returns_slft_waste_from_non_disposal_ind_n" should be selected
-    And the radio button "returns_slft_waste_pre_treated_ind_n" should be selected
 
     When I click on the "Continue" button
     Then I should see the sub-title "Provide tonnage details for this waste type"
@@ -118,7 +117,6 @@ Feature: SLfT CSV File Upload
     And I should see "Dundee" in the "Geographical area" select or text field
     And I should see "Landfill" in the "Management method" select or text field
     And the radio button "returns_slft_waste_from_non_disposal_ind_n" should be selected
-    And the radio button "returns_slft_waste_pre_treated_ind_n" should be selected
 
     When I click on the "Continue" button
     Then I should see the sub-title "Provide tonnage details for this waste type"
@@ -155,7 +153,6 @@ Feature: SLfT CSV File Upload
     And I select "Falkirk" from the "Geographical area"
     And I select "Landfill" from the "Management method"
     And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
-    And I check the "returns_slft_waste_pre_treated_ind_y" radio button
     And I click on the "Continue" button
 
     And I enter "15" in the "Standard tonnage" field

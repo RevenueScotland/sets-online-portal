@@ -59,6 +59,8 @@ module Returns
     # returns/<type>/declaration_submitted - custom final step in declaration wizard
     # (can't go in ControllerHelper as doesn't get picked up)
     def declaration_submitted
+      # if unauthenticated then set the response header for clear site data to wild card
+      response.set_header('Clear-Site-Data', '"storage"') if current_user.blank?
       load_step # ie just load the return
     end
 

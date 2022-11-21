@@ -198,6 +198,14 @@ module Dashboard
       request.merge!(message_filter.request_list_secure_messages_filter)
     end
 
+    # This is used for converting the boolean values of true or false to 'Yes' or 'No'.
+    # @return [String] 'Yes' or 'No'
+    private_class_method def self.boolean_to_yesno(bool)
+      return 'Yes' if [true, 'true'].include?(bool)
+
+      'No'
+    end
+
     # @!method self.convert_back_office_hash
     # @return a hash where the back office values are converted to class values
     private_class_method def self.convert_back_office_hash(hash, filter = nil)

@@ -155,6 +155,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'lbtt/about-the-transaction',          to: 'lbtt_transactions#about_the_transaction',     via: %i[get post]
       match 'lbtt/linked-transactions',            to: 'lbtt_transactions#linked_transactions',       via: %i[get post]
       match 'lbtt/reliefs_on_transaction',         to: 'lbtt_transactions#reliefs_on_transaction',    via: %i[get post]
+      match 'lbtt/multiple_dwellings_relief/(:sub_object_index)',
+            to: 'lbtt_transactions#multiple_dwellings_relief', via: %i[get post]
       match 'lbtt/lease_values',                   to: 'lbtt_transactions#lease_values',              via: %i[get post]
       match 'lbtt/rental_years',                   to: 'lbtt_transactions#rental_years',              via: %i[get post]
       match 'lbtt/premium_paid',                   to: 'lbtt_transactions#premium_paid',              via: %i[get post]

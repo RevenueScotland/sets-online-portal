@@ -68,15 +68,6 @@ class FLApplicationRecord
     errs
   end
 
-  # This is used for converting the boolean values of true or false to 'yes' or 'no'.
-  # Useful for converting bool before sending requests to the back office.
-  # @return [String] 'yes' or 'no'
-  private_class_method def self.boolean_to_yesno(bool)
-    return 'yes' if [true, 'true'].include?(bool)
-
-    'no'
-  end
-
   # When data is loaded from the back office we sometimes need to derive Y/N based on if child data has been entered.
   #
   # For example where you have a yes no flag revealing another field or fields. If the other field is populated then

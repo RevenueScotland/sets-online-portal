@@ -160,10 +160,7 @@ end
 
 When('I click on the {int} st/nd/rd/th {string} link to download a file') do |integer, string|
   # @note there is a page.current_path which strips out the query strings and "http://www.example.com"
-  if Capybara.current_driver == :rack_test
-    @original_page = page.current_url
-    string.gsub!(/\s/, '+') if string.include?('.')
-  end
+  @original_page = page.current_url if Capybara.current_driver == :rack_test
   step "I click on the #{integer} th '#{string}' link"
 end
 
@@ -371,7 +368,7 @@ Then('I should see the downloaded content {string}') do |filename|
     if is_file_found && Capybara.current_driver.to_s.exclude?('remote')
       Rails.logger.info('  Attempting to remove the file from the download directory')
       # Removes the downloaded file from where we have found it.
-      FileUtils.rm_r(result) if File.exist?(result)
+      FileUtils.rm_rf(result)
     end
 
     Rails.logger.info("\n\tCurrent url : #{page.current_url.inspect}\n\tWindow_handles : #{page.windows.inspect}")
@@ -381,7 +378,6 @@ Then('I should see the downloaded content {string}') do |filename|
     Rails.logger.info("\n\tCurrent url : #{page.current_url.inspect}\n\tWindow_handles : #{page.windows.inspect}")
   else
     # On rack_test driver do below - non-selenium driver
-    filename = filename.gsub(/\s/, '[+ ]')
     assert page.response_headers['Content-Disposition'].present?
     is_file_found = Regexp.new(filename).match?(page.response_headers['Content-Disposition'])
 
@@ -436,8 +432,6 @@ Then('I should see a link with text {string}') do |string|
 end
 
 Then('I should see a link to the file {string}') do |string|
-  # has link doesn't support regexp so need to manually change the string for the file for rack_test
-  string.gsub!(/\s/, '+') if Capybara.current_driver == :rack_test && string.include?('.')
   assert has_link?(string)
 end
 
@@ -446,6 +440,10 @@ Then('I should not see a link with text {string}') do |string|
 end
 
 Then('I should see the button with text {string}') do |string|
+  assert has_button?(string, maximum: 1)
+end
+
+Then('I should see at least one button with text {string}') do |string|
   assert has_button?(string)
 end
 

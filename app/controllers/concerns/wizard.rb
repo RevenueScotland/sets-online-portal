@@ -143,6 +143,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   #                context exists on the object for that name.  This option allows us to add others, eg to provide
   #                page/step/action -based validation eg to check for un-checked check boxes on declaration pages.
   # :loop       -  this is used for wizard page(s) that needs to loop around a (set of) page(s).
+  #                If you are using the loop functionality then the route must end with /(:sub_object_index)
   #                There are three specific values it only accepts
   #                1. :start_next_step - putting this on a wizard page means that the next page it goes to is the
   #                                      start of the looping/indexing feature for the wizard pages.

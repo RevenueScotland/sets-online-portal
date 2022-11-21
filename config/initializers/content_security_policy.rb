@@ -24,10 +24,10 @@ Rails.application.config.content_security_policy do |policy|
                        "'sha256-voXja0NHK+kj/CO6kVFGewEz+qyDFbxR+WW6e9vfN3o='"
   end
   if Rails.env.development?
-    policy.connect_src :self, 'https://www.google-analytics.com/'
-  else
     # If you are using webpack-dev-server then specify webpack-dev-server host
-    policy.connect_src :self, 'https://www.google-analytics.com/', 'http://localhost:3035', 'ws://localhost:3035'
+    policy.connect_src :self, 'https://*.google-analytics.com/', 'http://localhost:3035', 'ws://localhost:3035'
+  else
+    policy.connect_src :self, 'https://*.google-analytics.com/'
   end
 
   # Specify URI for violation reports

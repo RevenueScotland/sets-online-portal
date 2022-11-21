@@ -38,6 +38,12 @@ module Returns
 
     # Party wizard - individual steps page
     def party_details
+      # if autofill is used by the user the country may get populated inadvertently
+      # remove the country from the hash if it is the only part of the three part key
+      party_details_hash = params[:returns_lbtt_party]
+      if party_details_hash && party_details_hash[:alrt_type].blank? && party_details_hash[:alrt_reference].blank?
+        party_details_hash[:ref_country] = ''
+      end
       wizard_step(INDVAL_STEPS)
     end
 
@@ -46,13 +52,14 @@ module Returns
     def party_address
       # important that :next_page_or_summary is passed as a next_step pointer so it doesn't get resolved before
       # :store_address - ie don't want to copy party data and redirect before we've saved the address into the party
-      wizard_address_step(nil, next_step: :next_page_or_summary)
+      wizard_address_step(nil, next_step: :next_page_or_summary, address_list: :used_address_list)
     end
 
     # Party wizard - individual steps last page
     def party_alternate_address
       wizard_address_step(INDVAL_STEPS, address_attribute: :contact_address,
-                                        address_required: :is_contact_address_different)
+                                        address_required: :is_contact_address_different,
+                                        address_list: :used_address_list)
     end
 
     # Party wizard - parties relationship page
@@ -74,7 +81,8 @@ module Returns
 
     # Party wizard - company steps page
     def organisation_contact_details
-      wizard_address_step(REG_COMPANY_STEPS, address_attribute: :org_contact_address)
+      wizard_address_step(REG_COMPANY_STEPS, address_attribute: :org_contact_address,
+                                             address_list: :used_address_list)
     end
 
     # Party wizard - organisation steps page
@@ -91,13 +99,13 @@ module Returns
 
     # Party wizard - organisation steps page @see #next_page_or_summary
     def organisation_details
-      wizard_address_step(nil, next_step: :next_page_or_summary)
+      wizard_address_step(nil, next_step: :next_page_or_summary, address_list: :used_address_list)
     end
 
     # Party wizard - organisation steps page
     def representative_contact_details
       # @see party_address
-      wizard_address_step(OTHER_ORG_STEPS, address_attribute: :org_contact_address)
+      wizard_address_step(OTHER_ORG_STEPS, address_attribute: :org_contact_address, address_list: :used_address_list)
     end
 
     # Delete the party entry entry specified by params[:party_id]
@@ -140,6 +148,8 @@ module Returns
 
       # restore back original party
       @party = Lbtt::Party.new(party_id: party_id, party_type: party_type, type: type)
+      # Populating back previously used addresses to Party variable.
+      populate_lists_from_return(@party, 'N')
       wizard_save(@party)
     end
 
@@ -187,11 +197,7 @@ module Returns
                  wizard_load
                end
 
-      # assign hash of used NINO'S to hash_for_nino
-      lbtt_return = wizard_load_or_redirect(returns_lbtt_summary_url, nil, LbttController)
-      @party.hash_for_nino = lbtt_return.list_of_used_ninos(@party.nino)
-
-      @party
+      populate_lists_from_return(@party)
     end
 
     # Loads existing wizard models from the wizard cache or redirects to the summary page
@@ -201,6 +207,14 @@ module Returns
     def load_step(_sub_object_attribute = nil)
       @post_path = wizard_post_path
       @party = wizard_load_or_redirect(returns_lbtt_summary_url)
+    end
+
+    # populate the lists on the party from the return
+    def populate_lists_from_return(party, pop_nino = 'Y')
+      lbtt_return = wizard_load_or_redirect(returns_lbtt_summary_url, nil, LbttController)
+      party.hash_for_nino = lbtt_return.list_of_used_ninos(party.nino) if pop_nino == 'Y'
+      party.used_address_list = lbtt_return.list_of_used_addresses(party.party_id, party.party_type)
+      party
     end
 
     # Return the parameter list filtered for the attributes of the Party model

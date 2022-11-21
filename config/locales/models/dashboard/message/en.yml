@@ -33,7 +33,7 @@ en:
   activemodel:
     # model text not associated with attributes or errors
     dashboard/message:
-      sent: sent
+      sent: Sent
     attributes:
       dashboard/message:
         created_date: "Date & time"
@@ -84,7 +84,7 @@ en:
     messages:
       index:
         title: "Messages"
-        show: "view"
+        show: "View"
         new: "New message"
         link:
           new: "New message"
@@ -97,7 +97,7 @@ en:
       show:
         title: "Message full details"
         heading: "Related messages"
-        show: "view"
+        show: "View"
         reply: "Reply"
         link:
           dashboard: "Dashboard"

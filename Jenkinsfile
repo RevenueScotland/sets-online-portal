@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="3.0.3"
+def RUBY_VERSION="3.1.2"
 
 /*
 	* Back office names

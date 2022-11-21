@@ -208,7 +208,6 @@
 																					<xs:element name="EWCCode" type="xs:string"/>
 																					<xs:element name="WasteDescription" minOccurs="0"/>
 																					<xs:element name="FMMEMethod" type="xs:string" minOccurs="0"/>
-																					<xs:element name="PreTreatedInd" type="core:YesNoType" minOccurs="0"/>
 																					<xs:element name="LAUCode" type="xs:string"/>
 																					<xs:element name="FromNonDisposalInd" type="core:YesNoType"/>
 																					<xs:element name="Exempt" minOccurs="0">

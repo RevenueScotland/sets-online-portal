@@ -9,6 +9,5 @@
   <%= f.select :lau_code, @waste.list_ref_data(:lau_code), {}, {} %>
   <%= f.select :fmme_method,  @waste.list_ref_data(:fmme_method), {}, {} %>
   <%= f.collection_radio_buttons_fields(:from_non_disposal_ind, @waste.list_ref_data(:from_non_disposal_ind)) %>
-  <%= f.collection_radio_buttons_fields(:pre_treated_ind, @waste.list_ref_data(:pre_treated_ind)) %>
   <%= f.button %>
 <% end %>

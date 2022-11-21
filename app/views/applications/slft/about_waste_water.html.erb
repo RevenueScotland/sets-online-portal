@@ -3,8 +3,5 @@
 <%= form_for @slft_application, url: @post_path, local: true do |f| %>
   <%= form_errors_for @slft_application %>
   <%= f.collection_radio_buttons_fields(:why_water_present, @slft_application.list_ref_data(:why_water_present), alignment: 'vertical') %>
-  
-  <%= f.check_box_field(:added_for_transport) %>
-  
   <%= f.button %>
 <% end %>

@@ -102,7 +102,7 @@ Feature: Login and authentication
 
     # Then I should see the "Dashboard" page
 
-    # We'll use I should see the text "This is the token in the e-mail you have been sent" as
+    # We'll use I should see the text "This is the token in the email you have been sent" as
     # an indicator that we're on the token capture page as the page has the same title as the
     # normal sign in page. This is the same for all the 2 factor tests that follow...
     @mock_two_factor_login
@@ -112,7 +112,7 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the e-mail you have been sent"
+        Then I should see the text "This is the token in the email you have been sent"
         And I enter "valid.token" in the "Token" field
         And I click on the "Sign in" button
 
@@ -124,11 +124,11 @@ Feature: Login and authentication
         And I enter "valid.user" in the "Username" field
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
-        Then I should see the text "This is the token in the e-mail you have been sent"
+        Then I should see the text "This is the token in the email you have been sent"
         And I clear the "Username" field
         When I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the e-mail you have been sent"
+        Then I should see the text "This is the token in the email you have been sent"
         And I should receive the message "Username can't be blank"
         And I should receive the message "Token can't be blank"
 
@@ -139,11 +139,11 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the e-mail you have been sent"
+        Then I should see the text "This is the token in the email you have been sent"
         And I enter "invalid.token" in the "Token" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the e-mail you have been sent"
+        Then I should see the text "This is the token in the email you have been sent"
         And I should receive the message "Enter the correct username and token"
 
     @mock_two_factor_login_expired_token
@@ -153,7 +153,7 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the e-mail you have been sent"
+        Then I should see the text "This is the token in the email you have been sent"
         And I enter "expired.token" in the "Token" field
         And I click on the "Sign in" button
 
@@ -175,7 +175,7 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the e-mail you have been sent"
+        Then I should see the text "This is the token in the email you have been sent"
         And I enter "valid.token" in the "Token" field
         And I click on the "Sign in" button
 
@@ -189,7 +189,7 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the e-mail you have been sent"
+        Then I should see the text "This is the token in the email you have been sent"
         And I enter "valid.token" in the "Token" field
         And I click on the "Sign in" button
 
@@ -202,7 +202,7 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the e-mail you have been sent"
+        Then I should see the text "This is the token in the email you have been sent"
         And I enter "valid.token" in the "Token" field
         And I click on the "Sign in" button
 
@@ -215,7 +215,7 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the e-mail you have been sent"
+        Then I should see the text "This is the token in the email you have been sent"
         And I enter "valid.token" in the "Token" field
         And I click on the "Sign in" button
 

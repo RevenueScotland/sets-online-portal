@@ -4,9 +4,10 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @forgotten_password, url: forgotten_password_path, local: true do |f| %>
   <%= form_errors_for @forgotten_password %>
+  <%= f.text_field :email_address, {}, {autocomplete: "email"} %>
+  <%# We don't use autocomplete on the username field as chromium based browsers populate it with the email when the email field is populated %>
   <%= f.text_field :username %>
-  <%= f.text_field :email_address %>
-  <%= f.password_field :new_password %>
-  <%= f.password_field :new_password_confirmation %>
+  <%= f.password_field :new_password, {}, {autocomplete: "new-password"} %>
+  <%= f.password_field :new_password_confirmation, {}, {autocomplete: "new-password"} %>
   <%= f.button '.change_password' %>
 <% end %>

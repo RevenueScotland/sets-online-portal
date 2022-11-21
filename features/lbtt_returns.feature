@@ -11,11 +11,34 @@ Feature: LBTT Returns
         Attempt to submit to check the whole model validation for conveyance
         Add an other organisation (charity) buyer
         Attempt to submit to check the whole model validation
-        Add a private buyer seller
-        Add a residential property (checking scottish property validation) with ADS
-        Amend the property
+
+        Add an other organisation (partnership) buyer with contact address
+        Add a registered company buyer with contact address
+        Add an other organisation (charity) buyer checking previous address list functionality, use a previous address,
+        check correct distinct previous addresses are displayed on contact address
+        and correct previous address is populated into address fields after selecting one of address
+
+        Add a private seller
+        Add a property (checking scottish property validation) with ADS (not defaulted as no transaction)
+        Attempt to submit the return to check no ADS error
+        Amend the property (and add ADS)
         Add ADS details (including reliefs)
-        Add transaction details
+        Check reliefs not yet calculated
+        Amend the property to remove ADS to validate MDR without ADS
+        Add transaction details as residential
+
+        Add a new property to check ADS defaulted
+        Amend the property to remove ADS
+        Attempt to submit the return to check ADS error
+        Remove the property
+
+        Amend the transaction details to be non residential
+        Amend the transaction details to be residential and validate MDR
+        Amend the property to add ADS to validate MDR with ADS
+        Amend the transaction details to add ADS related data for MDR
+        Checks reliefs are calculated
+        Attempt to submit and check ADS vs MDR relief validation
+        Amend the transaction details to correct
         Amend the reliefs
         Edit ADS relief details and check that relief amendments are cleared
         Check full model validation is now ok
@@ -31,11 +54,13 @@ Feature: LBTT Returns
         Amend the return to claim a non ADS repayment
         Sign out and back in
 
+        Amend the return to edit a Buyer to edit existing address by selecting address from previously used address list
         Amend the return to claim an ADS repayment
         Save the draft return
-        Retrieve the draft and check the ADS repayament data
+        Retrieve the draft and check the ADS repayment data
         Submit the return
 
+        # Create the return as lease
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
         When I click on the "Create LBTT return" link
         Then I should see the "About the return" page
@@ -49,12 +74,18 @@ Feature: LBTT Returns
         When I check the "Lease" radio button
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
+        # Check the dynamic text for the calculation region
+        And  I should see the text "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
         When I click on the "Back" link
         And if available, click the confirmation dialog
         Then I should see the "About the return" page
+        # Change to a conveyance
         When I check the "Conveyance or transfer" radio button
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
+        # Check the dynamic text for the calculation region
+        And I should see the text "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
+        # Attempt to submit to check the whole model validation for conveyance
         When I click on the "Submit return" button
         Then I should receive the message "Please fill in at least one property"
         And  I should receive the message "Please fill in the 'About the transaction' section"
@@ -66,7 +97,7 @@ Feature: LBTT Returns
             | Name             | Your reference |
             | Adam Portal-Test | None provided  |
 
-        # Buyer as organisation
+        # Add an other organisation (charity) buyer
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
         When I check the "An other organisation" radio button
@@ -163,8 +194,78 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "Buyer details" page
-        And I should see the text "The buyer and seller are connected if they have an existing personal or business relationship. See guidance on if the buyer and seller are linked (opens in a new window) for further details"
-        And I should see a link with text "the buyer and seller are linked (opens in a new window)"
+        And I should see the text "The buyer and seller are connected if they have an existing personal or business relationship. See guidance on if the buyer and seller are connected (opens in a new window) for further details"
+        And I should see a link with text "the buyer and seller are connected (opens in a new window)"
+        When I click on the "Continue" button
+        Then I should see the text "If they are linked can't be blank"
+        When I check the "Yes" radio button
+        And I enter "Test relation" in the "How are they connected?" field
+        And I click on the "Continue" button
+
+        Then I should see the "Buyer details" page
+        And I should see the text "See guidance on the meaning of 'representative partner' (opens in a new window) for further details"
+        And I should see a link with text "'representative partner' (opens in a new window)"
+        When I click on the "Continue" button
+        Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
+        When I check the "Yes" radio button
+        And I click on the "Continue" button
+
+        Then I should see the "Return Summary" page
+        And I should see the text "Marks & Spencer Fund"
+        And I should see the text "Charity"
+
+        # Attempt to submit to check the whole model validation
+        When I click on the "Submit return" button
+        Then I should receive the message "Please fill in at least one property"
+        And  I should receive the message "Please fill in the 'About the transaction' section"
+        And  I should not receive the message "Please fill in at least one buyer"
+        And  I should receive the message "Please fill in at least one seller"
+
+        # Add an other organisation (partnership) buyer with contact address
+        When I click on the "Add a buyer" link
+        Then I should see the "About the buyer" page
+        When I check the "An other organisation" radio button
+        And I click on the "Continue" button
+        Then I should see the "Organisation details" page
+
+        When I check the "Partnership" radio button
+        And I click on the "Continue" button
+
+        Then I should see the sub-title "Partnership details"
+        When I click on the "Continue" button
+
+        Then I should receive the message "What country's law is the organisation governed by can't be blank"
+        And I should receive the message "Name can't be blank"
+        And I should receive the message "Use the postcode search or enter the address manually"
+
+        When I enter "Partnership name" in the "Name" field
+        And I enter "ALBANIA" in the "What country's law is the organisation governed by" select or text field
+
+        And I enter "LU1 1AA" in the "address_summary_postcode" field
+        And I click on the "Find Address" button
+        And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+        And if available, click the "Select" button
+        And I should see the text "Royal Mail" in field "address_address_line1"
+        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
+        And I should see the text "Dunstable Road" in field "address_address_line3"
+        And I should see the text "LUTON" in field "address_town"
+        And I should see "ENGLAND" in the "address_country" select or text field
+        And I should see the text "LU1 1AA" in field "address_postcode"
+        And I click on the "Continue" button
+
+        Then I should see the "Contact details" page
+        When I enter "member" in the "Last name" field
+        And I enter "club" in the "First name" field
+        And I enter "Developer" in the "Job title or position" field
+        And I enter "0123456789" in the "Contact phone number" field
+        And I enter "noreply@necsws.com" in the "Email" field
+        And I enter "LU1 1AA" in the "address_summary_postcode" field
+        And I click on the "Find Address" button
+        And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+        And if available, click the "Select" button
+        And I click on the "Continue" button
+
+        Then I should see the "Buyer details" page
         When I click on the "Continue" button
         Then I should see the text "If they are linked can't be blank"
         When I check the "Yes" radio button
@@ -178,16 +279,142 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
-        And I should see the text "Marks & Spencer Fund"
-        And I should see the text "Charity"
+        And I should see the text "Partnership name"
+        And I should see the text "Partnership"
 
-        When I click on the "Submit return" button
-        Then I should receive the message "Please fill in at least one property"
-        And  I should receive the message "Please fill in the 'About the transaction' section"
-        And  I should not receive the message "Please fill in at least one buyer"
-        And  I should receive the message "Please fill in at least one seller"
+        # Add a registered company buyer with contact address
+        When I click on the "Add a buyer" link
+        Then I should see the "About the buyer" page
+        When I check the "An organisation registered with Companies House" radio button
+        And I click on the "Continue" button
 
-        # Seller with Private individual
+        Then I should see the "Registered company" page
+        When I enter "00233462" in the "Company number" field
+        And I click on the "Find Company" button
+
+        Then I should see the text "JOHN LEWIS PLC" in field "company_company_name"
+        And I should see the text "171 Victoria Street" in field "company_address_line1"
+        And I should see the empty field "company_address_line2"
+        And I should see the text "London" in field "company_locality"
+        And I should see the empty field "company_county"
+        And I should see the text "SW1E 5NN" in field "company_postcode"
+        And field "Company name" should be readonly
+        And field "Address" should be readonly
+        And field "Address line2" should be readonly
+        And field "Town" should be readonly
+        And field "County" should be readonly
+        And field "Postcode" should be readonly
+        When I click on the "Continue" button
+
+        # Test the contact details as this is a new page
+        Then I should see the "Contact details" page
+        And I click on the "Continue" button
+        Then I should receive the message "Job title or position can't be blank"
+        And I should receive the message "First name can't be blank"
+        And I should receive the message "Last name can't be blank"
+        And I should receive the message "Contact phone number can't be blank"
+        And I should receive the message "Job title or position can't be blank"
+        And I should receive the message "Email can't be blank"
+        And I should receive the message "Use the postcode search or enter the address manually"
+
+        When I enter "012" in the "Contact phone number" field
+        And I enter "noreplynecsws.com" in the "Email" field
+        And I click on the "Continue" button
+        Then I should receive the message "Contact phone number is invalid"
+        And I should receive the message "Email is invalid"
+
+        When I enter "Smith" in the "Last name" field
+        And I enter "John" in the "First name" field
+        And I enter "Developer" in the "Job title or position" field
+        And I enter "0123456789" in the "Contact phone number" field
+        And I enter "noreply@necsws.com" in the "Email" field
+        And I enter "RG30 6XT" in the "address_summary_postcode" field
+        And I click on the "Find Address" button
+        And I select "9 Rydal Avenue, Tilehurst, READING, RG30 6XT" from the "search_results"
+        And if available, click the "Select" button
+        And I should see the text "9 Rydal Avenue" in field "address_address_line1"
+        And I should see the text "Tilehurst" in field "address_address_line2"
+        And I should see the empty field "address_address_line3"
+        And I should see the text "READING" in field "address_town"
+        And I should see "ENGLAND" in the "address_country" select or text field
+        And I should see the text "RG30 6XT" in field "address_postcode"
+        And I click on the "Continue" button
+        Then I should see the "Buyer details" page
+
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Buyer details" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should see the text "JOHN LEWIS PLC"
+        And I should see the text "171 Victoria Street, London, SW1E 5NN"
+
+        # Add an other organisation (charity) buyer checking previous address list functionality, use a previous address
+        When I click on the "Add a buyer" link
+        Then I should see the "About the buyer" page
+
+        When I check the "An other organisation" radio button
+        And I click on the "Continue" button
+        Then I should see the "Organisation details" page
+        And I should see the text "Type of organisation"
+
+        When I check the "Charity" radio button
+        And I click on the "Continue" button
+        Then I should see the "Charity" page
+
+        When I enter "PrvAdrCheck" in the "Name" field
+        And  I should see the button with text "Use Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA"
+        And  I should see the button with text "Use 9 Rydal Avenue, Tilehurst, READING, RG30 6XT"
+
+        When I click on the "Use Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" button
+        Then I should see the text "Royal Mail" in field "address_address_line1"
+        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
+        And I should see the text "Dunstable Road" in field "address_address_line3"
+        And I should see the text "LUTON" in field "address_town"
+        And I should see "ENGLAND" in the "address_country" select or text field
+        And I should see the text "LU1 1AA" in field "address_postcode"
+
+        When I click on the "Edit address" button
+        And I enter "Edited Royal Mail" in the "address_address_line1" field
+        And I enter "121212" in the "Charity number" field
+        And I enter "ALBANIA" in the "What country's law is the organisation governed by" select or text field
+        And I click on the "Continue" button
+        Then I should see the "Contact details" page
+
+        When I enter "PrvAdrCheck" in the "Last name" field
+        And I enter "James" in the "First name" field
+        And I enter "0123456780" in the "Contact phone number" field
+        And I enter "noreply2@necsws.com" in the "Email" field
+        And I enter "Developer" in the "Job title or position" field
+        # Check correct distinct previous addresses are displayed on contact address
+        And  I should see the button with text "Use Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA"
+        And  I should see the button with text "Use 9 Rydal Avenue, Tilehurst, READING, RG30 6XT"
+
+        # and correct previous address is populated into address fields after selecting one of address
+        When I click on the "Use Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" button
+        Then I should see the text "Royal Mail" in field "address_address_line1"
+        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
+        And I should see the text "Dunstable Road" in field "address_address_line3"
+        And I should see the text "LUTON" in field "address_town"
+        And I should see "ENGLAND" in the "address_country" select or text field
+        And I should see the text "LU1 1AA" in field "address_postcode"
+
+        When I click on the "Edit address" button
+        And I enter "Edited Royal Mail" in the "address_address_line1" field
+        And I click on the "Continue" button
+
+        Then I should see the "Buyer details" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Buyer details" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should see the text "PrvAdrCheck"
+        And I should see the text "Edited Royal Mail, LUTON, LU1 1AA"
+
+        # Add a private seller
         When I click on the "Add a seller" link
         Then I should see the "About the seller" page
 
@@ -224,7 +451,7 @@ Feature: LBTT Returns
         Then I should see the text "A private individual"
         Then I should see the text "Edit"
 
-        # Add property
+        # Add a property (checking scottish property validation) with no ADS (not defaulted as no transaction)
         When I click on the "Add a property" link
         Then I should see the "Property address" page
 
@@ -255,13 +482,12 @@ Feature: LBTT Returns
         And I enter "4567" in the "returns_lbtt_property_parent_title_number" field
         And I click on the "Continue" button
 
-        # validation for ADS applies
+        # Validation for ADS applies
         Then I should see the "Does Additional Dwelling Supplement (ADS) apply to this transaction?" page
-        And I click on the "Continue" button
+        When I click on the "Continue" button
         Then I should receive the message "Does Additional Dwelling Supplement (ADS) apply to this transaction can't be blank"
-        And I check the "No" radio button
+        When I check the "No" radio button
         And I click on the "Continue" button
-
         # Verify entered details on return summary page
         Then I should see the "Return Summary" page
         And I should see the text "Edit row"
@@ -270,8 +496,14 @@ Feature: LBTT Returns
             | 8 Lavender Lane, CIRENCESTER, EH1 1BE | No   |
         And I should not see the text "About the Additional Dwelling Supplement"
 
-        # Go back and check a form still has data and modify it
-        When I click on the 4 th "Edit" link
+        # Attempt to submit the return to check no ADS error
+        When I click on the "Submit return" button
+        Then I should see the "Return Summary" page
+        And I should not receive the message "ADS must apply to all properties on this return where at least one of the buyers is not a private individual and the transaction is residential"
+        And I should receive the message "Please fill in the 'About the transaction' section"
+
+        # Amend the property (and add ADS)
+        When I click on the 7 th "Edit" link
         Then I should see the "Property address" page
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find Address" button
@@ -313,6 +545,7 @@ Feature: LBTT Returns
             | 31b/2 Chambers Street, EDINBURGH, EH1 1HU | Yes  |
         And I should see the text "About the Additional Dwelling Supplement"
 
+        # Add ADS details (including reliefs)
         When I click on the "Add ADS" link
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "Is the buyer replacing their main residence?"
@@ -322,32 +555,34 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the text "Total consideration liable to ADS"
-        And I should see the text "Amount of ADS liability from new main residence"
+        And I should see the text "The amount on which ADS is due - this will usually be the chargeable consideration of your new main residence but may change depending on your specific set of circumstances. See guidance on determining the chargeable consideration for the ADS (opens in a new window)"
+        And I should see a link with text "determining the chargeable consideration for the ADS (opens in a new window)"
+        And I should see the text "Total consideration attributable to new main residence"
         When I click on the "Continue" button
         Then I should receive the message "Total consideration liable to ADS can't be blank"
-        And I should receive the message "Amount of ADS liability from new main residence can't be blank"
+        And I should receive the message "Total consideration attributable to new main residence can't be blank"
 
         # numeric validation
-        When I enter "invalid" in the "Amount of ADS liability from new main residence" field
+        When I enter "invalid" in the "Total consideration attributable to new main residence" field
         And I enter "invalid" in the "Total consideration liable to ADS" field
         And I click on the "Continue" button
 
         Then I should receive the message "Total consideration liable to ADS is not a number"
-        And I should receive the message "Amount of ADS liability from new main residence is not a number"
+        And I should receive the message "Total consideration attributable to new main residence is not a number"
 
         # validation on negative and range check
-        When I enter "-1" in the "Amount of ADS liability from new main residence" field
+        When I enter "-1" in the "Total consideration attributable to new main residence" field
         And I enter "1000000000000000000" in the "Total consideration liable to ADS" field
         And I click on the "Continue" button
 
         Then I should see the text "Total consideration liable to ADS must be less than 1000000000000000000"
-        And I should see the text "Amount of ADS liability from new main residence must be greater than or equal to 0"
+        And I should see the text "Total consideration attributable to new main residence must be greater than or equal to 0"
 
-        When I enter "123.4567" in the "Amount of ADS liability from new main residence" field
+        When I enter "123.4567" in the "Total consideration attributable to new main residence" field
         And I click on the "Continue" button
-        Then I should see the text "Amount of ADS liability from new main residence must be a number to 2 decimal places"
+        Then I should see the text "Total consideration attributable to new main residence must be a number to 2 decimal places"
 
-        When I enter "40503" in the "Amount of ADS liability from new main residence" field
+        When I enter "40503" in the "Total consideration attributable to new main residence" field
         And I enter " 40750" in the "Total consideration liable to ADS" field
         And I click on the "Continue" button
 
@@ -397,13 +632,14 @@ Feature: LBTT Returns
 
         And I select "ADS - Family units" from the "returns_lbtt_ads_ads_relief_claims_0_relief_type_auto"
         And I click on the "Add row" button
-        And I should see the button with text "Delete row"
+        And I should see at least one button with text "Delete row"
         When I click on the 2 nd "Delete row" button
         Then I should not see the button with text "Delete row"
-        Then I should see the text "Calculated" in field "returns_lbtt_ads_ads_relief_claims_0_relief_amount"
+        And I should see the text "Calculated" in field "returns_lbtt_ads_ads_relief_claims_0_relief_amount"
         And field "returns_lbtt_ads_ads_relief_claims_0_relief_amount" should be readonly
 
-        And I click on the "Continue" button
+        # Check reliefs not yet calculated
+        When I click on the "Continue" button
         Then I should see the "Return Summary" page
         And the data is not displayed in table
             | About the reliefs | Edit reliefs                  |
@@ -412,10 +648,30 @@ Feature: LBTT Returns
         And the table of data is displayed
             | Address of existing main residence                                   | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
             | Does the buyer intend to sell their main residence within 18 months? | Yes                                       |
-            | Amount of ADS liability from new main residence                      | £40503                                    |
+            | Total consideration attributable to new main residence               | £40503                                    |
             | Total consideration liable to ADS                                    | £40750                                    |
             | Is relief being claimed from the ADS consideration?                  | Yes                                       |
-        # Transaction
+
+        #  Amend the property to remove ADS to validate MDR without ADS
+        When I click on the 7 th "Edit" link
+        Then I should see the "Property address" page
+
+        When I click on the "Continue" button
+        Then I should see the sub-title "Provide property details"
+
+        When I click on the "Continue" button
+        Then I should see the "Does Additional Dwelling Supplement (ADS) apply to this transaction?" page
+        And I check the "No" radio button
+        And I click on the "Continue" button
+
+        # Verify modified details on return summary page
+        Then I should see the "Return Summary" page
+        And the table of data is displayed
+            | Address                                   | ADS? |
+            | 31b/2 Chambers Street, EDINBURGH, EH1 1HU | No   |
+        And I should not see the text "About the Additional Dwelling Supplement"
+
+        # Add transaction details as residential with minimal data
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
 
@@ -432,7 +688,7 @@ Feature: LBTT Returns
         And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
         And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
         And I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
 
         When I check the "No" radio button
         And I click on the "Continue" button
@@ -455,46 +711,267 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
+        # Add a new property to check ADS defaulted
+        When I click on the "Add a property" link
+        Then I should see the "Property address" page
+        When I click on the "Enter an address manually" button
+        And I enter "8 Lavender Lane" in the "address_address_line1" field
+        And I enter "CIRENCESTER" in the "address_town" field
+        And I enter "EH1 1BE" in the "address_postcode" field
+        When I click on the "Continue" button
+        Then I should see the sub-title "Provide property details"
+
+        When I select "Aberdeen City" from the "Local authority"
+        And I click on the "Continue" button
+        Then I should see the "Does Additional Dwelling Supplement (ADS) apply to this transaction?" page
+        # ADS should default
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should see the text "Edit row"
+        And the table of data is displayed
+            | Address                               | ADS? |
+            | 8 Lavender Lane, CIRENCESTER, EH1 1BE | Yes  |
+        And I should see the text "About the Additional Dwelling Supplement"
+
+        # Amend the property to remove ADS
+        When I click on the 8 th "Edit" link
+        Then I should see the "Property address" page
+        # Check we have the correct property
+        And I should see the text "8 Lavender Lane" in field "address_address_line1"
+        When I click on the "Continue" button
+        Then I should see the sub-title "Provide property details"
+        And I click on the "Continue" button
+        Then I should see the "Does Additional Dwelling Supplement (ADS) apply to this transaction?" page
+        And I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should see the text "Edit row"
+        And the table of data is displayed
+            | Address                               | ADS? |
+            | 8 Lavender Lane, CIRENCESTER, EH1 1BE | No   |
+        And I should not see the text "About the Additional Dwelling Supplement"
+
+        # Attempt to submit the return to check ADS error
+        When I click on the "Submit return" button
+        Then I should see the "Return Summary" page
+        And I should receive the message "ADS must apply to all properties on this return where at least one of the buyers is not a private individual and the transaction is residential"
+
+        # Remove the property
+        When I click on the 7 th "Delete row" link
+        And if available, click the confirmation dialog
+        And I wait for 2 seconds
+        Then I should see the "Return Summary" page
+        And I should not see the text "8 Lavender Lane, CIRENCESTER, EH1 1BE"
+
+        # Amend the transaction details to be non residential
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+
+        When I check the "Non-residential" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the dates" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+
+        When I click on the "Continue" button
+        Then I should receive the message "VAT amount can't be blank"
+        And I should receive the message "Total consideration remaining can't be blank"
+
+        When I enter "1000" in the "VAT amount" field
+        And I enter "1235565" in the "Total consideration remaining" field
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Amend the transaction details to be residential and validate MDR
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+
+        When I check the "Residential" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the dates" page
+        And I should see the text "2021-08-02" in field "Effective date of transaction"
+        And I should see the text "2021-08-03" in field "Relevant date"
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+
+        And I check the "Yes" radio button
+        And I select "Multiple dwellings relief" from the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_type_auto"
+        And I enter "100" in the "returns_lbtt_lbtt_return_non_ads_relief_claims_0_relief_amount" field
+        And I click on the "Continue" button
+        Then I should see the "About multiple dwellings relief" page
+
+        When I click on the "Continue" button
+        And I should receive the message "Number of dwellings can't be blank"
+        And I should receive the message "Total consideration attributable to dwellings can't be blank"
+
+        When I enter "-1245" in the "Number of dwellings" field
+        And I enter "0" in the "Number of dwellings that attract ADS" field
+        And I enter "-1294657" in the "Total consideration attributable to dwellings" field
+        And I click on the "Continue" button
+        Then I should see the text "Number of dwellings must be greater than 0"
+        And  I should see the text "Number of dwellings that attract ADS must be greater than 0"
+        And I should see the text "Total consideration attributable to dwellings must be greater than 0"
+
+        When I enter "0.12" in the "Number of dwellings" field
+        And I enter "112331340.23" in the "Number of dwellings that attract ADS" field
+        And I click on the "Continue" button
+        Then I should see the text "Number of dwellings must be a whole number"
+        Then I should see the text "Number of dwellings that attract ADS must be a whole number"
+
+        When I enter "1000000000000000000" in the "Number of dwellings" field
+        And I enter "1000000000000000000" in the "Number of dwellings that attract ADS" field
+        And I enter "1000000000000000000" in the "Total consideration attributable to dwellings" field
+        And I click on the "Continue" button
+        Then I should see the text "Number of dwellings must be less than 1000000000000000000"
+        And  I should see the text "Number of dwellings that attract ADS must be less than 1000000000000000000"
+        And I should see the text "Total consideration attributable to dwellings must be less than 1000000000000000000"
+
+        When I enter "123.4567" in the "Total consideration attributable to dwellings" field
+        And I click on the "Continue" button
+        Then I should see the text "Total consideration attributable to dwellings must be a number to 2 decimal places"
+        When I enter "1580" in the "Number of dwellings" field
+        And I enter "0.22" in the "Total consideration attributable to dwellings" field
+        # Clearing the Number of dwellings that attract ADS to validate this field later with ADS presence.
+        And I clear the "Number of dwellings that attract ADS" field
+
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+        And I should see the text "1234565" in field "Total consideration"
+        And I should not see the text "VAT Amount"
+        And I should not see the text "Total consideration remaining"
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        #  Amend the property to add ADS back to validate MDR with ADS
+        When I click on the 7 th "Edit" link
+        Then I should see the "Property address" page
+
+        When I click on the "Continue" button
+        Then I should see the sub-title "Provide property details"
+
+        When I click on the "Continue" button
+        Then I should see the "Does Additional Dwelling Supplement (ADS) apply to this transaction?" page
+        And I check the "Yes" radio button
+        And I click on the "Continue" button
+
+        # Verify modified details on return summary page
+        Then I should see the "Return Summary" page
+        And the table of data is displayed
+            | Address                                   | ADS? |
+            | 31b/2 Chambers Street, EDINBURGH, EH1 1HU | Yes  |
+
+        # Attempt to submit and check ADS vs MDR relief validation
+        When I click on the "Submit return" button
+        Then I should receive the message "There's an error somewhere in the transaction - please review the transaction section of the return and update it"
+
+        # Amend the transaction details to correct MDR
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "About multiple dwellings relief" page
+
+        When I click on the "Continue" button
+        Then I should receive the message "Number of dwellings that attract ADS can't be blank"
+
+        When I enter "20" in the "Number of dwellings that attract ADS" field
+        And I click on the "Continue" button
+        Then I should see the "About future events" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
         # Relief amount table
         And the table of data is displayed
-            | About the reliefs  | Edit reliefs                  |
-            | Type of relief     | Amount of tax saved by relief |
-            | ADS - Family units | £1630.00                      |
+            | About the reliefs         | Edit reliefs                  |
+            | Type of relief            | Amount of tax saved by relief |
+            | Multiple dwellings relief | £100.00                       |
+            | ADS - Family units        | £1630.00                      |
         And the table of data is displayed
             | About the calculation      | Edit calculation |
             | LBTT calculated            | £106497.00       |
             | ADS calculated             | 1630.00          |
             | Total liability            | £108127.00       |
-            | Total LBTT reliefs claimed | £0.00            |
+            | Total LBTT reliefs claimed | £100.00          |
             | Total ADS reliefs claimed  | £1630.00         |
-            | Total tax payable          | £106497.00       |
+            | Total tax payable          | £106397.00       |
 
         When I click on the "Edit reliefs" link
         Then I should see the "Reliefs on this transactions" page
-        And I should see the text "1630" in field "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount"
+        And I should see the text "100" in field "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount"
+        And I should see the text "1630" in field "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount"
 
         #Validation on Max Amount reliefs
-        When I enter "1631" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
+        When I enter "1631" in the "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount" field
         And I click on the "Continue" button
 
         Then  I should receive the message "The amount you are claiming for ADS reliefs cannot be more than the ADS liability of £1630"
-        And I enter "1000" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
+        And I enter "1000" in the "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount" field
         And I click on the "Continue" button
 
         #Recalculate Return calculation after About Reliefs
         And the table of data is displayed
-            | About the reliefs  | Edit reliefs                  |
-            | Type of relief     | Amount of tax saved by relief |
-            | ADS - Family units | £1000.00                      |
+            | About the reliefs         | Edit reliefs                  |
+            | Type of relief            | Amount of tax saved by relief |
+            | Multiple dwellings relief | £100.00                       |
+            | ADS - Family units        | £1000.00                      |
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
             | LBTT calculated            | £106497.00       |
             | ADS calculated             | 1630.00          |
             | Total liability            | £108127.00       |
-            | Total LBTT reliefs claimed | £0.00            |
+            | Total LBTT reliefs claimed | £100.00          |
             | Total ADS reliefs claimed  | £1000.00         |
-            | Total tax payable          | £106497.00       |
+            | Total tax payable          | £107027.00       |
 
         # reset the value on ads wizard changes
         When I click on the "Edit ADS" link
@@ -514,17 +991,18 @@ Feature: LBTT Returns
 
         # Relief amount table
         And the table of data is displayed
-            | About the reliefs  | Edit reliefs                  |
-            | Type of relief     | Amount of tax saved by relief |
-            | ADS - Family units | £1630.00                      |
+            | About the reliefs         | Edit reliefs                  |
+            | Type of relief            | Amount of tax saved by relief |
+            | Multiple dwellings relief | £100.00                       |
+            | ADS - Family units        | £1630.00                      |
         And the table of data is displayed
             | About the calculation      | Edit calculation |
             | LBTT calculated            | £106497.00       |
             | ADS calculated             | £1630.00         |
             | Total liability            | £108127.00       |
-            | Total LBTT reliefs claimed | £0.00            |
+            | Total LBTT reliefs claimed | £100.00          |
             | Total ADS reliefs claimed  | £1630.00         |
-            | Total tax payable          | £106497.00       |
+            | Total tax payable          | £106397.00       |
 
         # Check the full model validation passes before we touch the Calculate section
         When I click on the "Submit return" button
@@ -538,7 +1016,7 @@ Feature: LBTT Returns
         And I should see the text "106497" in field "LBTT calculated"
         And I should see the text "1630" in field "ADS calculated"
 
-        And I should see the text "£0.00" in display field "Total LBTT reliefs claimed"
+        And I should see the text "£100.00" in display field "Total LBTT reliefs claimed"
         And I should see the text "£1630.00" in display field "Total ADS reliefs claimed"
 
         # Check you can edit the calculated amounts and then edit the relief amounts
@@ -549,27 +1027,29 @@ Feature: LBTT Returns
 
         When I click on the "Edit reliefs" link
         Then I should see the "Reliefs on this transactions" page
-        And I should see the text "1630" in field "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount"
+        And I should see the text "100" in field "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount"
+        And I should see the text "1630" in field "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount"
 
-        When I enter "1701" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
+        When I enter "1701" in the "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount" field
         And I click on the "Continue" button
         Then  I should receive the message "The amount you are claiming for ADS reliefs cannot be more than the ADS liability of £1700"
 
-        When I enter "1700" in the "returns_lbtt_lbtt_return_relief_claims_0_relief_override_amount" field
+        When I enter "1700" in the "returns_lbtt_lbtt_return_relief_claims_1_relief_override_amount" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And the table of data is displayed
-            | About the reliefs  | Edit reliefs                  |
-            | Type of relief     | Amount of tax saved by relief |
-            | ADS - Family units | £1700.00                      |
+            | About the reliefs         | Edit reliefs                  |
+            | Type of relief            | Amount of tax saved by relief |
+            | Multiple dwellings relief | £100.00                       |
+            | ADS - Family units        | £1700.00                      |
         And the table of data is displayed
             | About the calculation      | Edit calculation |
             | LBTT calculated            | £107000.00       |
             | ADS calculated             | £1700.00         |
             | Total liability            | £108700.00       |
-            | Total LBTT reliefs claimed | £0.00            |
+            | Total LBTT reliefs claimed | £100.00          |
             | Total ADS reliefs claimed  | £1700.00         |
-            | Total tax payable          | £107000.00       |
+            | Total tax payable          | £106900.00       |
 
         When I click on the "Save draft" button
         Then I should see the "Return saved" page
@@ -592,6 +1072,13 @@ Feature: LBTT Returns
         Then I should see the "Return Summary" page
         And I should see the text "Marks & Spencer Fund"
         And I should see the text "Charity"
+        And I should see the text "Partnership name"
+        And I should see the text "Partnership"
+        And I should see the text "JOHN LEWIS PLC"
+        And I should see the text "An organisation registered with Companies House"
+        And I should see the text "PrvAdrCheck"
+        And I should see the text "Charity"
+
         # Seller
         And I should see the text "Mr firstname surname"
         And I should see the text "Royal Mail, LUTON, LU1 1AA"
@@ -601,7 +1088,35 @@ Feature: LBTT Returns
         And the table of data is displayed
             | Address                                   | ADS? |
             | 31b/2 Chambers Street, EDINBURGH, EH1 1HU | Yes  |
-        When I click on the 4 th "Edit" link
+
+
+        When I click on the 4 th "Edit row" link
+        Then I should see the "About the buyer" page
+        And I click on the "Continue" button
+        Then I should see the "Organisation details" page
+        And I click on the "Continue" button
+        Then I should see the "Charity" page
+        And  I should see the button with text "Use Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA"
+        And  I should see the button with text "Use 9 Rydal Avenue, Tilehurst, READING, RG30 6XT"
+
+        When I click on the "Use Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" button
+        Then I should see the text "Royal Mail" in field "address_address_line1"
+        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
+        And I should see the text "Dunstable Road" in field "address_address_line3"
+        And I should see the text "LUTON" in field "address_town"
+        And I should see "ENGLAND" in the "address_country" select or text field
+        And I should see the text "LU1 1AA" in field "address_postcode"
+
+        When I click on the "Continue" button
+        Then I should see the "Contact details" page
+        When I click on the "Continue" button
+        Then I should see the "Buyer details" page
+        And I click on the "Continue" button
+        Then I should see the "Buyer details" page
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        When I click on the 7 th "Edit" link
         Then I should see the "Property address" page
         When I click on the "Continue" button
         Then I should see the sub-title "Provide property details"
@@ -616,7 +1131,7 @@ Feature: LBTT Returns
         And the table of data is displayed
             | Address of existing main residence                                   | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
             | Does the buyer intend to sell their main residence within 18 months? | Yes                                       |
-            | Amount of ADS liability from new main residence                      | £40503                                    |
+            | Total consideration attributable to new main residence               | £40503                                    |
             | Total consideration liable to ADS                                    | £40750                                    |
             | Is relief being claimed from the ADS consideration?                  | Yes                                       |
         # Transaction
@@ -625,9 +1140,9 @@ Feature: LBTT Returns
             | LBTT calculated            | £106497.00 |
             | ADS calculated             | £1630.00   |
             | Total liability            | £108127.00 |
-            | Total LBTT reliefs claimed | £0.00      |
+            | Total LBTT reliefs claimed | £100.00    |
             | Total ADS reliefs claimed  | £1630.00   |
-            | Total tax payable          | £106497.00 |
+            | Total tax payable          | £106397.00 |
 
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
@@ -886,7 +1401,7 @@ Feature: LBTT Returns
 
             | Title number (if provided) | ABN 4567                                  |
             | Property address           | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
-            | Buyer                      | Marks & Spencer Fund                      |
+            | Buyer                      | JOHN LEWIS PLC                            |
             | Description of transaction | Conveyance or transfer                    |
             | Effective date             | 02/08/2021                                |
 
@@ -896,12 +1411,12 @@ Feature: LBTT Returns
         Save the draft
         Download the PDF from the dashboard
         Retrieve the draft
-        Add an other organisation (partnership) buyer
-        Add a registered company buyer
+        Add a private buyer
         Add a registered company seller
         Add a residential property (no ADS)
         Add transaction details including linked transactions (checking table functionality) and non ads reliefs
         Edit the reliefs
+        Check validations on MD relief related fields
         Check the calculation of the first time buyer relief before and after the 15th July 2021
         Check the date warning(s) and link
         Submit the return (DD)
@@ -945,120 +1460,29 @@ Feature: LBTT Returns
 
         And I should see a link with text "Continue"
 
-        # Buyer
         And I click on the "Continue" link
         Then I should see the "Return Summary" page
 
         And the table of data is displayed
             | About the transaction | Add transaction details |
 
+        # Add a private buyer
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
-        When I check the "An other organisation" radio button
+
+        When I check the "A private individual" radio button
         And I click on the "Continue" button
-        Then I should see the "Organisation details" page
-
-        When I check the "Partnership" radio button
-        And I click on the "Continue" button
-
-        Then I should see the sub-title "Partnership details"
-        When I click on the "Continue" button
-
-        Then I should receive the message "What country's law is the organisation governed by can't be blank"
-        And I should receive the message "Name can't be blank"
-        And I should receive the message "Use the postcode search or enter the address manually"
-
-        When I enter "Partnership name" in the "Name" field
-        And I enter "ALBANIA" in the "What country's law is the organisation governed by" select or text field
-
-        And I enter "LU1 1AA" in the "address_summary_postcode" field
-        And I click on the "Find Address" button
-        And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
-        And I should see the text "Royal Mail" in field "address_address_line1"
-        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
-        And I should see the text "Dunstable Road" in field "address_address_line3"
-        And I should see the text "LUTON" in field "address_town"
-        And I should see "ENGLAND" in the "address_country" select or text field
-        And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Continue" button
-
-        Then I should see the "Contact details" page
-        When I enter "member" in the "Last name" field
-        And I enter "club" in the "First name" field
-        And I enter "Developer" in the "Job title or position" field
-        And I enter "0123456789" in the "Contact phone number" field
-        And I enter "noreply@necsws.com" in the "Email" field
-        And I enter "LU1 1AA" in the "address_summary_postcode" field
-        And I click on the "Find Address" button
-        And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
-        And I click on the "Continue" button
-
         Then I should see the "Buyer details" page
-        When I click on the "Continue" button
-        Then I should see the text "If they are linked can't be blank"
-        When I check the "Yes" radio button
-        And I enter "Test relation" in the "How are they connected?" field
-        And I click on the "Continue" button
-
-        Then I should see the "Buyer details" page
-        When I click on the "Continue" button
-        Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
-        When I check the "Yes" radio button
-        And I click on the "Continue" button
-
-        Then I should see the "Return Summary" page
-        And I should see the text "Partnership name"
-        And I should see the text "Partnership"
-
-        #Registered company as a buyer to check contact details
-        When I click on the "Add a buyer" link
-        Then I should see the "About the buyer" page
-        When I check the "An organisation registered with Companies House" radio button
-        And I click on the "Continue" button
-
-        Then I should see the "Registered company" page
-        When I enter "00233462" in the "Company number" field
-        And I click on the "Find Company" button
-
-        Then I should see the text "JOHN LEWIS PLC" in field "company_company_name"
-        And I should see the text "171 Victoria Street" in field "company_address_line1"
-        And I should see the empty field "company_address_line2"
-        And I should see the text "London" in field "company_locality"
-        And I should see the empty field "company_county"
-        And I should see the text "SW1E 5NN" in field "company_postcode"
-        And field "Company name" should be readonly
-        And field "Address" should be readonly
-        And field "Address line2" should be readonly
-        And field "Town" should be readonly
-        And field "County" should be readonly
-        And field "Postcode" should be readonly
-        When I click on the "Continue" button
-
-        # Test the contact details as this is a new page
-        Then I should see the "Contact details" page
-        And I click on the "Continue" button
-        Then I should receive the message "Job title or position can't be blank"
-        And I should receive the message "First name can't be blank"
-        And I should receive the message "Last name can't be blank"
-        And I should receive the message "Contact phone number can't be blank"
-        And I should receive the message "Job title or position can't be blank"
-        And I should receive the message "Email can't be blank"
-        And I should receive the message "Use the postcode search or enter the address manually"
-
-        When I enter "012" in the "Contact phone number" field
-        And I enter "noreplynecsws.com" in the "Email" field
-        And I click on the "Continue" button
-        Then I should receive the message "Contact phone number is invalid"
-        And I should receive the message "Email is invalid"
 
         When I enter "Smith" in the "Last name" field
-        And I enter "John" in the "First name" field
-        And I enter "Developer" in the "Job title or position" field
-        And I enter "0123456789" in the "Contact phone number" field
-        And I enter "noreply@necsws.com" in the "Email" field
-        And I enter "RG30 6XT" in the "address_summary_postcode" field
+        And I enter "James" in the "First name" field
+        And I enter "0123456780" in the "Telephone number" field
+        And I enter "noreply2@necsws.com" in the "Email" field
+        And I enter "NP103456D" in the "National Insurance Number (NINO)" field
+        And I click on the "Continue" button
+        Then I should see the "Buyer address" page
+
+        When I enter "RG30 6XT" in the "address_summary_postcode" field
         And I click on the "Find Address" button
         And I select "9 Rydal Avenue, Tilehurst, READING, RG30 6XT" from the "search_results"
         And if available, click the "Select" button
@@ -1069,16 +1493,19 @@ Feature: LBTT Returns
         And I should see "ENGLAND" in the "address_country" select or text field
         And I should see the text "RG30 6XT" in field "address_postcode"
         And I click on the "Continue" button
-        Then I should see the "Buyer details" page
+        Then I should see the "Buyer's contact address" page
 
         When I check the "No" radio button
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
         When I check the "No" radio button
         And I click on the "Continue" button
+        Then I should see the "Buyer details" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
-        And I should see the text "JOHN LEWIS PLC"
-        And I should see the text "171 Victoria Street, London, SW1E 5NN"
+        And I should see the text "James Smith"
+        And I should see the text "9 Rydal Avenue, READING, RG30 6XT"
 
         #Registered company as a seller
         When I click on the "Add a seller" link
@@ -1142,6 +1569,8 @@ Feature: LBTT Returns
 
         And I click on the "Continue" button
         Then I should see the "Does Additional Dwelling Supplement (ADS) apply to this transaction?" page
+        And I click on the "Continue" button
+        Then I should receive the message "Does Additional Dwelling Supplement (ADS) apply to this transaction can't be blank"
         When I check the "No" radio button
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
@@ -1164,7 +1593,7 @@ Feature: LBTT Returns
         And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
         And I click on the "Continue" button
         # Test core list processing for add and delete, including error handling
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I click on the "Continue" button
         Then I should receive the message "Are there any linked transactions can't be blank"
 
@@ -1177,7 +1606,7 @@ Feature: LBTT Returns
         When I enter "RS1234567ABCD" in the "returns_lbtt_lbtt_return_link_transactions_0_return_reference" field
         And I enter "1000" in the "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount" field
         And I click on the "Add row" button
-        Then I should see the button with text "Delete row"
+        Then I should see at least one button with text "Delete row"
         And I should see the text "RS1234567ABCD" in field "returns_lbtt_lbtt_return_link_transactions_0_return_reference"
         And I should see the text "1000" in field "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount"
 
@@ -1186,17 +1615,17 @@ Feature: LBTT Returns
         Then I should receive the message "Return consideration can't be blank"
         And I should see the text "RS1234567ABCD" in field "returns_lbtt_lbtt_return_link_transactions_0_return_reference"
         And I should see the text "1000" in field "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount"
-        And I should see the button with text "Delete row"
+        And I should see at least one button with text "Delete row"
 
         When I click on the "Back" link
         Then I should see the "About the transaction" page
         And I should not receive the message "Return consideration can't be blank"
 
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         And I should see the text "RS1234567ABCD" in field "returns_lbtt_lbtt_return_link_transactions_0_return_reference"
         And I should see the text "1000" in field "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount"
-        And I should see the button with text "Delete row"
+        And I should see at least one button with text "Delete row"
 
         # check we can delete the invalid row
         When I click on the 2 nd "Delete row" button
@@ -1218,7 +1647,7 @@ Feature: LBTT Returns
         And I should not receive the message "Return consideration can't be blank"
 
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         And I should see the text "RS1234567ABCD" in field "returns_lbtt_lbtt_return_link_transactions_0_return_reference"
         And I should see the text "1000" in field "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount"
         And I should not see the button with text "Delete row"
@@ -1278,7 +1707,13 @@ Feature: LBTT Returns
 
         When I click on the 4 th "Delete row" button
         And I click on the "Continue" button
-        Then I should see the "About future events" page
+        Then I should see the "About multiple dwellings relief" page
+
+        When I enter "10" in the "Number of dwellings" field
+        And  I enter "30.33" in the "Total consideration attributable to dwellings" field
+        And  I click on the "Continue" button
+        Then I should not receive the message "Number of dwellings that attract ADS can't be blank"
+        And  I should see the "About future events" page
 
         When I check the "returns_lbtt_lbtt_return_contingents_event_ind_n" radio button
         And I click on the "Continue" button
@@ -1404,7 +1839,7 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
@@ -1414,6 +1849,10 @@ Feature: LBTT Returns
         And field "returns_lbtt_lbtt_return_non_ads_relief_claims_1_relief_amount" should be readonly
         And I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount"
         And field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount" should be readonly
+        When I click on the "Continue" button
+        Then I should see the "About multiple dwellings relief" page
+        And I should see the text "10" in field "Number of dwellings"
+        And I should see the text "30.33" in field "Total consideration attributable to dwellings"
         When I click on the "Continue" button
         Then I should see the "About future events" page
         When I click on the "Continue" button
@@ -1445,7 +1884,7 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
@@ -1456,6 +1895,8 @@ Feature: LBTT Returns
         And I should see the text "Calculated" in field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount"
         And field "returns_lbtt_lbtt_return_non_ads_relief_claims_2_relief_amount" should be readonly
         When I click on the 3 rd "Delete row" button
+        When I click on the "Continue" button
+        Then I should see the "About multiple dwellings relief" page
         When I click on the "Continue" button
         Then I should see the "About future events" page
         When I click on the "Continue" button
@@ -1511,12 +1952,14 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I enter "2000" in the "returns_lbtt_lbtt_return_link_transactions_0_consideration_amount" field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About multiple dwellings relief" page
         When I click on the "Continue" button
         Then I should see the "About future events" page
         When I click on the "Continue" button
@@ -1539,11 +1982,13 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About multiple dwellings relief" page
         When I click on the "Continue" button
         Then I should see the "About future events" page
         When I click on the "Continue" button
@@ -1563,11 +2008,13 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About multiple dwellings relief" page
         When I click on the "Continue" button
         Then I should see the "About future events" page
         When I click on the "Continue" button
@@ -1587,11 +2034,13 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About multiple dwellings relief" page
         When I click on the "Continue" button
         Then I should see the "About future events" page
         When I click on the "Continue" button
@@ -1611,11 +2060,13 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About multiple dwellings relief" page
         When I click on the "Continue" button
         Then I should see the "About future events" page
         When I click on the "Continue" button
@@ -1649,7 +2100,7 @@ Feature: LBTT Returns
         And the table of data is displayed
             | Title number (if provided) | ABN 1234                                  |
             | Property address           | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
-            | Buyer                      | Partnership name                          |
+            | Buyer                      | James Smith                               |
             | Description of transaction | Conveyance or transfer                    |
             | Effective date             | NOW_DATE                                  |
         # Check you can't submit again
@@ -1672,6 +2123,12 @@ Feature: LBTT Returns
         And I should not see the text "This is usually more recent than this."
         And I should not see the text "This has typically already happened"
         And I should not see a link with text "You can edit the transaction details if you need to"
+
+        # Edit Buyer to edit existing address by selecting address from previously used address list
+        And the table of data is displayed
+            | Name        | Type                 | Address                           |      |        |
+            | James Smith | A private individual | 9 Rydal Avenue, READING, RG30 6XT | Edit | Delete |
+
         When I click on the "Submit return" button
         Then I should see the "Amendment reason" page
         When I enter "Test" in the "Tell us why you are amending this return" field
@@ -1863,13 +2320,15 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
-        And I should see the text "The tenant and landlord are connected if they have an existing personal or business relationship. See guidance on if the tenant and landlord are linked (opens in a new window) for further details"
-        And I should see a link with text "the tenant and landlord are linked (opens in a new window)"
+        And I should see the text "The tenant and landlord are connected if they have an existing personal or business relationship. See guidance on if the tenant and landlord are connected (opens in a new window) for further details"
+        And I should see a link with text "the tenant and landlord are connected (opens in a new window)"
         When I check the "Yes" radio button
         And I enter "Test relation" in the "How are they connected?" field
         And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
+        And I should see the text "See guidance on the meaning of 'representative partner' (opens in a new window) for further details"
+        And I should see a link with text "'representative partner' (opens in a new window)"
         When I check the "Yes" radio button
         And I click on the "Continue" button
 
@@ -1970,7 +2429,7 @@ Feature: LBTT Returns
         And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
         And I click on the "Continue" button
 
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I click on the "Continue" button
         Then I should receive the message "Are there any linked transactions can't be blank"
         When I check the "Yes" radio button
@@ -2048,7 +2507,7 @@ Feature: LBTT Returns
         When I click on the "Back" link
         Then I should see the "Reliefs on this transaction" page
         When I click on the "Back" link
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I click on the "Back" link
         Then I should see the "About the transaction" page
         When I click on the "Back" link
@@ -2058,7 +2517,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
         When I click on the "Continue" button
@@ -2073,7 +2532,7 @@ Feature: LBTT Returns
         When I click on the "Back" link
         Then I should see the "Reliefs on this transaction" page
         When I click on the "Back" link
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I click on the "Back" link
         Then I should see the "About the transaction" page
         When I click on the "Back" link
@@ -2082,7 +2541,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
         When I click on the "Continue" button
@@ -2193,7 +2652,7 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
         When I click on the "Continue" button
@@ -2234,7 +2693,7 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
         When I click on the "Continue" button
@@ -2259,7 +2718,7 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I enter "1000" in the "returns_lbtt_lbtt_return_link_transactions_0_npv_inc" field
         And I enter "500" in the "returns_lbtt_lbtt_return_link_transactions_0_premium_inc" field
         And I click on the "Continue" button
@@ -2360,6 +2819,8 @@ Feature: LBTT Returns
         When I enter "RS1234567ABCD" in the "What was the original return reference" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
+        # Check the dynamic text for the calculation region
+        And I should see the text "The amount of tax already paid below will show as £0.00. You will need to change this field to show the correct amount of tax already paid in order for the correct amount of tax due to show. For all other fields, the amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
 
         # pre-calculate validation
         When I click on the "Submit return" button
@@ -2483,17 +2944,17 @@ Feature: LBTT Returns
         And I should receive the message "Email can't be blank"
         And I should receive the message "Telephone number can't be blank"
         And I should receive the message "Provide a NINO or an alternate reference"
+
         When I enter "TenantSurname" in the "Last name" field
         And I enter "TenantFirstname" in the "First name" field
         And I select "Mr" from the "Title"
-
         # Allow spanish phone number
         And I enter "+34629629629" in the "Telephone number" field
         And I enter "noreply@necsws.com" in the "Email" field
         And I enter "AB323455C" in the "National Insurance Number (NINO)" field
-
         And I click on the "Continue" button
         Then I should see the "Tenant address" page
+
         When I click on the "Enter an address manually" button
         And I enter "Plaza del Ayuntamiento" in the "address_address_line1" field
         And I enter "1. 03002 Alicante" in the "Town" field
@@ -2653,7 +3114,7 @@ Feature: LBTT Returns
         And I enter "08-10-2025" in the "Lease end date" date field
         And I click on the "Continue" button
 
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         # linked-transactions - select no to get positive calculation results
         When I check the "No" radio button
         And I click on the "Continue" button
@@ -2837,6 +3298,8 @@ Feature: LBTT Returns
         When I enter "RS1234567ABAB" in the "What was the original return reference" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
+        # Check the dynamic text for the calculation region
+        And I should see the text "The amount of tax already paid below will show as £0.00. You will need to change this field to show the correct amount of tax already paid in order for the correct amount of tax due to show. For all other fields, the amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
         And I should not see the text "Contact details for this return"
         And I should not see the text "Save draft"
 
@@ -2915,7 +3378,7 @@ Feature: LBTT Returns
         And I enter "01-01-2019" in the "Lease start date" date field
         And I enter "01-01-2025" in the "Lease end date" date field
         And I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
 
         When I click on the "Back" link
         And I enter "29-02-2020" in the "Effective date of transaction" date field
@@ -2923,7 +3386,7 @@ Feature: LBTT Returns
         And I enter "01-03-2020" in the "Lease start date" date field
         And I enter "01-03-2030" in the "Lease end date" date field
         And I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
 
         When I click on the "Back" link
         And I enter "29-02-2020" in the "Effective date of transaction" date field
@@ -2931,7 +3394,7 @@ Feature: LBTT Returns
         And I enter "01-03-2020" in the "Lease start date" date field
         And I enter "01-03-2030" in the "Lease end date" date field
         And I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
 
         When I check the "No" radio button
         And I click on the "Continue" button
@@ -3013,6 +3476,8 @@ Feature: LBTT Returns
         When I enter "RS1234567ABCD" in the "What was the original return reference" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
+        # Check the dynamic text for the calculation region
+        And I should see the text "The amount of tax already paid below will show as £0.00. You will need to change this field to show the correct amount of tax already paid in order for the correct amount of tax due to show. For all other fields, the amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
 
         # pre-calculate validation
         When I click on the "Submit return" button
@@ -3092,29 +3557,28 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        And I click on the "Continue" button
-        And I should receive the message "Last name can't be blank"
-        And I should receive the message "First name can't be blank"
-        And I should receive the message "Email can't be blank"
-        And I should receive the message "Telephone number can't be blank"
-        And I should receive the message "Provide a NINO or an alternate reference"
         When I enter "surname" in the "Last name" field
         And I enter "firstname" in the "First name" field
         And I select "Mr" from the "Title"
-
-        # Allow spanish phone number
         And I enter "+34629629629" in the "Telephone number" field
         And I enter "noreply@necsws.com" in the "Email" field
-        And I enter "AB323455C" in the "National Insurance Number (NINO)" field
+        And I open the "Tenant does not have NINO" summary item
+        And I enter "ENGLAND" in the "Country where ID was issued" select or text field
+        And I click on the "Continue" button
+        Then I should receive the message "Provide a NINO or an alternate reference"
+
+        When I enter "AB323455C" in the "National Insurance Number (NINO)" field
         And I open the "Tenant does not have NINO" summary item
         And I select "ID Card" from the "Type of ID"
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
         And I click on the "Continue" button
         Then I should receive the message "Don't provide the alternate reference if you provide a NINO"
+
         When I clear the "National Insurance Number (NINO)" field
         And I click on the "Continue" button
         Then I should see the "Tenant address" page
+
         When I click on the "Continue" button
         Then I should receive the message "Use the postcode search or enter the address manually"
         And I enter "LU1 1AA" in the "address_summary_postcode" field
@@ -3165,7 +3629,7 @@ Feature: LBTT Returns
 
         When I enter "08-10-2023" in the "Lease end date" date field
         And I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         # linked-transactions - select no to get positive calculation results
         When I check the "No" radio button
         And I click on the "Continue" button
@@ -3456,7 +3920,7 @@ Feature: LBTT Returns
         And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
         And I click on the "Continue" button
 
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I check the "No" radio button
         When I click on the "Continue" button
 
@@ -3565,7 +4029,7 @@ Feature: LBTT Returns
         When I click on the "Submit return" button
 
         # hooks file purposely incomplete to simulate back office loading lost data = validation message
-        Then I should receive the message "About the calculation has errors that need to be corrected, edit it"
+        Then I should receive the message "There's an error somewhere in the about the calculation - please review the about the calculation section of the return and update it"
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
 
@@ -3575,7 +4039,7 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I click on the "Continue" button
@@ -3709,6 +4173,7 @@ Feature: LBTT Returns
         Create a conveyance return
         Add a private individual buyer
         Add a private individual seller
+        Add a Seller to check previously used address links funtionality
         Add a property with ADS
         Add ADS details
         Add transaction details (date 94 days ago)
@@ -3801,6 +4266,24 @@ Feature: LBTT Returns
 
         Then I should see the "Return Summary" page
 
+        # Add Seller to check previously used address links
+        When I click on the "Add a seller" link
+        Then I should see the "About the seller" page
+
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+
+        Then I should see the "Seller details" page
+        When I enter "SellerPrvAddChk" in the "Last name" field
+        And I enter "Daniel" in the "First name" field
+        And I click on the "Continue" button
+
+        Then I should see the "Seller address" page
+        And  I should see the button with text "Use Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA"
+        When I click on the "Use Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
         When I click on the "Add a property" link
         Then I should see the "Property address" page
 
@@ -3851,8 +4334,8 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter "11-12-2019" in the "Effective date of transaction" date field
-        When I enter 94 days ago in the "Relevant date" date field
+        When I enter 94 days ago in the "Effective date of transaction" date field
+        When I enter "22-07-2022" in the "Relevant date" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
@@ -3860,7 +4343,7 @@ Feature: LBTT Returns
         And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
         And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
         And I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
 
         When I check the "No" radio button
         And I click on the "Continue" button
@@ -3931,12 +4414,12 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter 394 days ago in the "Relevant date" date field
+        When I enter 394 days ago in the "Effective date of transaction" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
 
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
@@ -3983,12 +4466,12 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter 395 days ago in the "Relevant date" date field
+        When I enter 395 days ago in the "Effective date of transaction" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
 
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
@@ -4037,12 +4520,12 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter 398 days ago in the "Relevant date" date field
+        When I enter 398 days ago in the "Effective date of transaction" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
         When I click on the "Continue" button
-        Then I should see the "Linked Transactions" page
+        Then I should see the "Linked transactions" page
 
         When I click on the "Continue" button
         Then I should see the "About the transaction" page

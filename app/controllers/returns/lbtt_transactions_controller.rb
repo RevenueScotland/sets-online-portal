@@ -13,11 +13,12 @@ module Returns
 
     # store step flow of lbtt conveyance return transaction page name used for navigation
     CONVEYANCE_STEPS = %w[property_type transaction_dates about_the_transaction linked_transactions sale_of_business
-                          reliefs_on_transaction about_the_calculation conveyance_values].freeze
+                          reliefs_on_transaction multiple_dwellings_relief about_the_calculation
+                          conveyance_values].freeze
 
     # store step flow of lbtt lease return transaction page name used for navigation
     LEASE_STEPS = %w[property_type transaction_dates about_the_transaction linked_transactions reliefs_on_transaction
-                     lease_values rental_years premium_paid relevant_rent npv].freeze
+                     multiple_dwellings_relief lease_values rental_years premium_paid relevant_rent npv].freeze
 
     # store step flow of lbtt lease return, assignation and termination transaction page name used for navigation
     LEASE_REV_ASSIGN_TERMINATE_STEPS = %w[transaction_dates linked_transactions lease_values
@@ -67,7 +68,16 @@ module Returns
                             next_step: :calculate_next_step, cache_index: LbttController,
                             list_required: :non_ads_reliefclaim_option_ind,
                             list_attribute: :non_ads_relief_claims,
-                            new_list_item_instance: :new_list_item_non_ads_relief_claims)
+                            new_list_item_instance: :new_list_item_non_ads_relief_claims,
+                            loop: :start_next_step)
+    end
+
+    # wizard step
+    def multiple_dwellings_relief
+      wizard_step(nil) do
+        { next_step: :calculate_next_step, sub_object_attribute: :md_relief,
+          loop: :multiple_dwellings_relief, cache_index: LbttController }
+      end
     end
 
     # wizard step
@@ -79,8 +89,7 @@ module Returns
     def rental_years
       wizard_list_step(nil, setup_step: :setup_yearly_rents,
                             next_step: :calculate_next_step, cache_index: LbttController,
-                            list_not_required: :rent_for_all_years, list_attribute: :yearly_rents,
-                            new_list_item_instance: :new_list_item_yearly_rents)
+                            list_not_required: :rent_for_all_years, list_attribute: :yearly_rents)
     end
 
     # Wizard step which always goes to the Tax.npv action afterwards
@@ -107,13 +116,7 @@ module Returns
     # Used in wizard_list_step as part of the merging of data.
     # @return [Object] new instance of ReliefClaim class that has attributes with value.
     def new_list_item_non_ads_relief_claims
-      Lbtt::ReliefClaim.new
-    end
-
-    # Used in wizard_list_step as part of the merging of data.
-    # @return [Object] new instance of YearlyRent class that has attributes with value.
-    def new_list_item_yearly_rents
-      Lbtt::YearlyRent.new
+      Lbtt::ReliefClaim.new(lbtt_return_ads_due: @lbtt_return.show_ads?)
     end
 
     # Used in wizard_list_step as part of the merging of data.
@@ -137,7 +140,16 @@ module Returns
 
       raise Error::AppError.new('Return type', "Invalid return type for calc #{flbt_type}") if next_steps.nil?
 
-      next_steps
+      remove_mdr_step(next_steps)
+    end
+
+    # Remove step multiple_dwellings_relief if there is no MDR is selected as part of non ads reliefs
+    # @param next_steps [Array] Array of wizard step page names
+    # @return [Array] Array of wizard steps by removing the mdr step
+    def remove_mdr_step(next_steps)
+      next_steps_dup = next_steps.dup
+      next_steps_dup.delete('multiple_dwellings_relief') if @lbtt_return.md_relief.empty?
+      next_steps_dup
     end
 
     # convert lease return specific date
@@ -194,10 +206,15 @@ module Returns
     end
 
     # Loads existing wizard models from the wizard cache or redirects to the first step.
-    # @return [Waste] the model for wizard saving
+    # @return [Object] An array consisting of the Return and Relief Claim, or just the return
     def load_step(sub_object_attribute = nil)
       @post_path = wizard_post_path
-      @lbtt_return = wizard_load_or_redirect(returns_lbtt_summary_url, sub_object_attribute, Returns::LbttController)
+      if sub_object_attribute.nil?
+        @lbtt_return = wizard_load_or_redirect(returns_lbtt_summary_url, sub_object_attribute, Returns::LbttController)
+      elsif sub_object_attribute == :md_relief
+        @lbtt_return, @relief_claim = wizard_load_or_redirect(returns_lbtt_summary_url, sub_object_attribute,
+                                                              Returns::LbttController)
+      end
     end
 
     # Custom setup for this step.  Calls @see #load_step to set up the model.
@@ -206,7 +223,9 @@ module Returns
 
       # initialise row data if not already present
       if @lbtt_return.non_ads_relief_claims.blank?
-        @lbtt_return.non_ads_relief_claims = Array.new(1) { Lbtt::ReliefClaim.new }
+        @lbtt_return.non_ads_relief_claims = Array.new(1) do
+          new_list_item_non_ads_relief_claims
+        end
       end
 
       # get the ref data for relief types and only show the non-ADS ones @see LbttAdsController#ads_reliefs
@@ -222,7 +241,7 @@ module Returns
       return model if @lbtt_return.link_transactions.present?
 
       # NB this syntax uses a separate object for each element in the list
-      @lbtt_return.link_transactions = Array.new(1) { Lbtt::LinkTransactions.new }
+      @lbtt_return.link_transactions = Array.new(1) { new_list_item_link_transactions }
       model
     end
 
@@ -240,14 +259,18 @@ module Returns
     end
 
     # Return the parameter list filtered for the attributes of the LbttReturn model
-    def filter_params(_sub_object_attribute = nil)
-      required = :returns_lbtt_lbtt_return
-      attribute_list = Lbtt::LbttReturn.attribute_list
-      # to store multiple check box values in model attribute we will require to
-      # pass them as array in filter param this method will convert attribute to array
-      # ref url :https://www.sitepoint.com/save-multiple-checkbox-values-database-rails/
-      attribute_list[attribute_list.index(:sale_include_option)] = { sale_include_option: [] }
-      params.require(required).permit(attribute_list) if params[required]
+    def filter_params(sub_object_attribute = nil)
+      if sub_object_attribute == :md_relief
+        params.require(:returns_lbtt_relief_claim).permit(Lbtt::ReliefClaim.attribute_list)
+      else
+        required = :returns_lbtt_lbtt_return
+        attribute_list = Lbtt::LbttReturn.attribute_list
+        # to store multiple check box values in model attribute we will require to
+        # pass them as array in filter param this method will convert attribute to array
+        # ref url :https://www.sitepoint.com/save-multiple-checkbox-values-database-rails/
+        attribute_list[attribute_list.index(:sale_include_option)] = { sale_include_option: [] }
+        params.require(required).permit(attribute_list) if params[required]
+      end
     end
 
     # Return the parameter list filtered for the attributes of the link transactions model

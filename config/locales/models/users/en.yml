@@ -70,7 +70,7 @@ en:
         user_is_current: "This is the current status of the user" 
         CREATE_new_password: "This must be a minimum of 9 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character, like, +, $, !"
         UPDATE_new_password: "This must be a minimum of 9 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character, like, +, $, !"
-        token: "This is the token in the e-mail you have been sent"
+        token: "This is the token in the email you have been sent"
         MEMORABLE_password: Provide your password so that we know it is you making this change
         memorable_answer: We may use the hint to remind you of the memorable word when you ring us up
       user_filter:

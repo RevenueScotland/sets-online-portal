@@ -11,12 +11,7 @@
 #                </Address>
 #              </AddressList>
 #           </AddressSearchResponse>
-class AddressSummary
-  include ActiveModel::Model
-  include ActiveModel::Serialization
-  include ActiveModel::Translation
-  include ServiceClient
-
+class AddressSummary < FLApplicationRecord
   attr_accessor :postcode, :address_identifier, :formatted_address
 
   validates :postcode,

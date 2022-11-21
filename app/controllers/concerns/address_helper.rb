@@ -8,8 +8,10 @@ module AddressHelper
   # Returns the validation contexts for address validation based on whether the address read only flag is set or not
   # @return [Array] validation contexts
   def address_validation_contexts
+    default_page_statuses
+
     # Checking if address_read_only is true or EMPTY
-    if ActiveModel::Type::Boolean.new.cast(params[:address_read_only]) || params[:address_read_only].empty?
+    if @address_read_only
       %i[address_selected]
     else
       %i[save]
@@ -27,17 +29,21 @@ module AddressHelper
   # If error are present on address_detail and we are not showing the manual address
   # then move to the address summary as that is shown, functionally this would be
   # the 'you haven't chosen and address' message
-  # @param address_detail[Object] parameter use to view exiting address details on address view
+  # @param address_detail[Object] parameter use to view existing address details on address view
   # @param search_postcode[String] the postcode used in the search
   # @param default_country[String] the default country to be used for the address
-  def initialize_address_variables(address_detail = nil, search_postcode = nil, default_country = nil)
+  # @param address_list[Array] List of addresses that can be selected
+  def initialize_address_variables(address_detail: nil, search_postcode: nil,
+                                   default_country: nil, address_list: nil)
     @address_summary = AddressSummary.new
     @address_summary.postcode = search_postcode
-    @address_read_only = true
-    @show_manual_address = true if address_detail.present?
+    # NOTE: use .nil? not ||= as ||= is based on value equating to false, which a boolean does
+    @address_read_only = true if @address_read_only.nil?
+    @show_manual_address = address_detail.present? if @show_manual_address.nil?
     @address_detail = address_detail || Address.new(default_country: default_country)
+    @address_list = address_list
 
-    move_postcode_search_errors(address_detail) unless params[:show_manual_address] == 'true'
+    move_postcode_search_errors(address_detail) unless @show_manual_address
   end
 
   # If search_postcode is present and errors exist in address_detail, they will be moved to the @address_summary
@@ -52,23 +58,29 @@ module AddressHelper
 
   # Is the form submit for an address search?
   def address_search?
-    params[:search] || params[:select] || params[:manual_address] || params[:change_postcode]
+    # do any of the parameters start with pick_address
+    pick_address = params.each_key.find { |key| key.start_with? 'pick_address_' }.present?
+    params[:search] || params[:select] || params[:manual_address] || params[:change_postcode] || pick_address
   end
 
   # Performs an address search based on the search parameters and displays the results (if any)
   def address_search
-    # A search here is an initial search based on postcode, whereas a find is
-    # a detailed search based on the address identifier
-    if params[:search]
-      do_address_identifier_search
-    elsif params[:manual_address]
-      set_for_manual_address
-    elsif params[:change_postcode]
-      @address_summary.postcode = ''
-    elsif params[:search_results]
-      # user has selected address from the drop down list, get the full details for them
-      find_address_details
-    end
+    default_page_statuses
+
+    populate_address_list_from_params
+
+    # Pick the action based on the parameters
+    # Search here is an initial search based on postcode
+    return do_address_identifier_search if params[:search]
+    # User has selected to do enter a manual address, or edit a searched address
+    return set_for_manual_address if params[:manual_address]
+    # User has selected to change the postcode from a previous search
+    return (@address_summary.postcode = '') if params[:change_postcode]
+    # user has selected address from the drop down list, get the full details for them
+    return find_address_details if params[:search_results].present?
+
+    # User (may) have clicked on the list of previously used addresses
+    pick_address_from_list
   end
 
   # re-populate address summary and address details data from request param
@@ -77,11 +89,27 @@ module AddressHelper
     @address_detail = Address.new(address_params) unless params[:address].nil?
   end
 
+  # Picks the address from the address list
+  def pick_address_from_list
+    params.each_key do |key|
+      next unless key.start_with? 'pick_address'
+
+      index = key.to_s.delete_prefix('pick_address_').to_i
+
+      @show_manual_address = true
+      @address_read_only = true
+      @address_summary = AddressSummary.new
+      @address_detail = @address_list[index]
+      break
+    end
+  end
+
   # Performs an address search based on the search parameters
   # and displays the results (if any)
   def do_address_identifier_search
     @address_summary = AddressSummary.new(search_params)
     @search_results = @address_summary.search
+    @show_manual_address = false
     # We need to carry the default country set up forward as the address currently
     @address_detail = Address.new(default_country: params[:address][:default_country])
   end
@@ -108,6 +136,24 @@ module AddressHelper
     @address_read_only = false
     # clear the identifier as this address is no longer from the search
     @address_detail.address_identifier = nil
+  end
+
+  # populates the address list from the posted parameters
+  def populate_address_list_from_params
+    @address_list = []
+    params.each do |key, value|
+      next unless key.start_with? 'address_list_'
+
+      address = Address.new.from_json(value)
+      @address_list << address
+    end
+  end
+
+  # Sets the current page status based on the values posted by the page.
+  # These will be altered by later processing.
+  def default_page_statuses
+    @address_read_only = ActiveModel::Type::Boolean.new.cast(params[:address_read_only])
+    @show_manual_address = ActiveModel::Type::Boolean.new.cast(params[:show_manual_address])
   end
 
   # controls the permitted parameters to this controller to perform

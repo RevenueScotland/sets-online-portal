@@ -3,7 +3,7 @@
 # Class for validating number with two decimal places
 class TwoDpPatternValidator < ActiveModel::EachValidator
   # Regular Expression for 2DP decimals
-  TWO_DP_PATTERN = /\A[-+]?\d+(?:\.\d{0,2})?\z/
+  TWO_DP_PATTERN = /\A[-+]?\d*(?:\.\d{0,2})?\z/
   # Regular expression for general numeric
   NUMERIC_PATTERN = /\A[-+]?[0-9]*\.?[0-9]+\Z/
 

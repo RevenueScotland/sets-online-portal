@@ -173,9 +173,8 @@
 				</xs:complexType>
 			</xs:element>
 		</xs:schema>
-		<xs:schema xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" xmlns:ns1="http://www.northgateps.com/RSTS/LBTTTaxReturn" targetNamespace="http://www.northgateps.com/RSTS/LBTTTaxReturn" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/LBTTTaxReturn" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xs:import namespace="http://northgate-is.com/FL/Core"/>
-			<!-- xs:include schemaLocation="LBTTTaxReturn.xsd" -->
 			<xs:element name="LBTTTaxReturn">
 				<xs:annotation>
 					<xs:documentation>Comment describing your root element</xs:documentation>
@@ -220,6 +219,11 @@ Termination</xs:documentation>
 												<xs:enumeration value="LEASERET"/>
 											</xs:restriction>
 										</xs:simpleType>
+									</xs:element>
+									<xs:element name="ChangeReason" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Reason that the return changed</xs:documentation>
+										</xs:annotation>
 									</xs:element>
 									<xs:element name="PropertyType" type="xs:string" minOccurs="0">
 										<xs:annotation>
@@ -489,6 +493,21 @@ Termination</xs:documentation>
 															</xs:element>
 															<xs:element name="Amount" type="xs:decimal" minOccurs="0"/>
 															<xs:element name="OrigAmount" type="xs:decimal" minOccurs="0"/>
+															<xs:element name="MdrNumberDwellings" type="xs:integer" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Number of residential properties that the transaction relates to</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="MdrTotalConsideration" type="xs:decimal" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Total amount of money being spent on the residential property</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="MdrNumberDwellingsAds" type="xs:integer" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>The number of dwellings that attract ADS</xs:documentation>
+																</xs:annotation>
+															</xs:element>
 														</xs:sequence>
 													</xs:complexType>
 												</xs:element>

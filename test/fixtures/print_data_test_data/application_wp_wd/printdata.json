@@ -124,15 +124,9 @@
                     "itemformat": null,
                     "itemlabel": "Choose the relevant options below which describes how the water to be discounted relates to the waste",
                     "itemdata": "The water in the waste is present because it has arisen or been added (or both) in course of an industrial process"
-                },
-                {
-                    "itemcode": "added_for_transport",
-                    "itemformat": null,
-                    "itemlabel": "The water has been added to the waste for transportation to disposal",
-                    "itemdata": "Yes"
                 }
             ],
-            "itemcount": 2
+            "itemcount": 1
         },
         {
             "sectioncode": "banned_from_landfill",
@@ -189,27 +183,27 @@
             "sectiontitle": "Tell us about the water content",
             "listitem": [
                 {
-                    "itemcode": "waste_percentage",
-                    "itemformat": null,
-                    "itemlabel": "What percentage of water content is waste?",
-                    "itemdata": "21"
-                },
-                {
-                    "itemcode": "added_water_percentage",
-                    "itemformat": null,
-                    "itemlabel": "What is the percentage of added water content?",
-                    "itemdata": "12"
-                },
-                {
                     "itemcode": "naturally_occurring",
                     "itemformat": null,
-                    "itemlabel": "Is there naturally occurring water?",
+                    "itemlabel": "Is there naturally occurring water in the waste?",
                     "itemdata": "Yes"
                 },
                 {
                     "itemcode": "naturally_occurring_percentage",
                     "itemformat": null,
-                    "itemlabel": "Provide what percentage is naturally occurring",
+                    "itemlabel": "What percentage is naturally occurring?",
+                    "itemdata": "12"
+                },
+                {
+                    "itemcode": "waste_percentage",
+                    "itemformat": null,
+                    "itemlabel": "What is the water content of the waste?",
+                    "itemdata": "21"
+                },
+                {
+                    "itemcode": "added_water_percentage",
+                    "itemformat": null,
+                    "itemlabel": "What is the added water content?",
                     "itemdata": "12"
                 }
             ],
@@ -422,7 +416,7 @@
                     "itemcode": "supporting_document_list",
                     "itemformat": "list",
                     "itemlabel": "Supporting document list",
-                    "itemdata": "Evidence of the water content (naturally and added) of the waste (mandatory) : Yes\nDetails of how and why water is added to the waste : No\nDetails of water reduction or removal; or why this is not possible : No\nAnalysis of the waste : No\nResults of the quarterly analysis referred to in your approval letter (Review/Renew only) : Yes\nOther : No"
+                    "itemdata": "Evidence of the water content (naturally and added) of the waste (mandatory) : Yes\nDetails of how and why water is added to the waste : No\nDetails of water reduction or removal; or why this is not possible : No\nResults of the analysis referred to in your approval letter (Review/Renew only) : Yes\nOther : No"
                 }
             ],
             "itemcount": 1

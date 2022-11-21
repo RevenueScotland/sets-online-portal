@@ -23,8 +23,8 @@ module SessionCacheHandler
     master_object.initialize_ref_data if master_object.respond_to?(:initialize_ref_data)
     key = session_cache_key(cache_index, session_key)
     Rails.logger.debug do
-      "Saving wizard params for:#{key} master_object: #{master_object.class.name}"\
-        " expiring:#{session_cache_data_expiry_time}"
+      "Saving wizard params for:#{key} master_object: #{master_object.class.name} " \
+        "expiring:#{session_cache_data_expiry_time}"
     end
     Rails.cache.write(key, master_object, expires_in: session_cache_data_expiry_time)
   end

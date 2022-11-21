@@ -520,12 +520,12 @@ Feature: Claim payment
         And I upload "testpng with space.png" to "resource_item_default_file_data"
         And I click on the "Upload document" button
         Then the table of data is displayed
-            | File uploaded                    |             |
-            | testdoc.doc                      | Remove file |
-            | %r{testpng[+ ]with[+ ]space.png} | Remove file |
+            | File uploaded              |             |
+            | testdoc.doc                | Remove file |
+            | %r{testpng with space.png} | Remove file |
 
         When I click on the 1 st "Remove file" button
         Then the table of data is displayed
-            | File uploaded                    |             |
-            | %r{testpng[+ ]with[+ ]space.png} | Remove file |
+            | File uploaded              |             |
+            | %r{testpng with space.png} | Remove file |
         And I should not see the text "testdoc.doc"

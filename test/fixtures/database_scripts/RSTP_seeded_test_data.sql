@@ -57,11 +57,11 @@ DECLARE
 
   -- The amendable and non amendable date need to be updated once a year at the beginning of august
   -- Then update the same dates in the dashboard_returns.feature
-  AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2021';
-  NON_AMENDABLE_DATE VARCHAR2(12) := '01-JUN-2019';
+  AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2022';
+  NON_AMENDABLE_DATE VARCHAR2(12) := '01-JUN-2020';
   -- This is set to a few days before the amendable date for older versions
-  SLFT_SUBMITTED_DATE VARCHAR2(12) := '19-JUN-2021';
-  SLFT_AMENDABLE_YEAR VARCHAR2(4) := '2021';
+  SLFT_SUBMITTED_DATE VARCHAR2(12) := '19-JUN-2022';
+  SLFT_AMENDABLE_YEAR VARCHAR2(4) := '2022';
   
       PROCEDURE create_or_maintain_cde(p_par_refno parties.par_refno%TYPE,
          p_cde_cme_code contact_details.cde_cme_code%TYPE,

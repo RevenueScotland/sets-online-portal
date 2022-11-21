@@ -108,7 +108,7 @@ module Applications
 
       # Key information to display section error.(see CompleteModelValidationHelper)
       def key_info
-        "Site #{site_name}"
+        "site #{site_name}"
       end
 
       # is this a waste producer water discount

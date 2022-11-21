@@ -134,7 +134,7 @@
   header: { label: t('.edit_calculation'), link: @lbtt_return.tax&.tax_due.blank? ? nil : :edit_calculation,
             path: %w[CONVEY LEASERET].include?(@lbtt_return.flbt_type) ? returns_lbtt_tax_calculation_path : returns_lbtt_tax_calc_already_paid_path,
             link_options: { id: 'edit_calculation' } },
-  description: { region_description: t('.calculation_description') },
+  description: { region_description: %w[LEASERET CONVEY].include?(@lbtt_return.flbt_type) ? t('.calculation_description_LEASERET_CONVEY') : t('.calculation_description')},
 	data: [ { model: @lbtt_return.tax, 
 	          attributes: [ { attribute: :calculated },
                             { attribute: :ads_due, skip: !@lbtt_return.show_ads? },

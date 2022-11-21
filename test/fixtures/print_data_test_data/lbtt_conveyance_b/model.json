@@ -147,7 +147,10 @@
             "new_record": false,
             "relief_type": "MULTIPLE",
             "relief_amount": "0",
-            "relief_override_amount": "9000"
+            "relief_override_amount": "9000",
+            "mdr_number_dwellings": "20",
+            "mdr_number_dwellings_ads": "30",
+            "mdr_total_consideration": "44.44"
         }
     ],
     "repayment_ind": "Y",

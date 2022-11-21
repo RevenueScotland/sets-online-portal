@@ -91,12 +91,12 @@ class ResourceItem
   # Add an invalid file type error, with some additional logging
   def add_invalid_file_type_error
     Rails.logger.debug do
-      "File upload content type incorrect - actual type was #{@content_type}" \
-        " expected one of #{@content_type_allowlist}"
+      "File upload content type incorrect - actual type was #{@content_type} " \
+        "expected one of #{@content_type_allowlist}"
     end
     Rails.logger.debug do
-      'or file content unknown and file extension did not match - actual extension was' \
-        " #{File.extname(@original_filename)} expected one of #{@file_extension_allowlist}"
+      'or file content unknown and file extension did not match - actual extension was ' \
+        "#{File.extname(@original_filename)} expected one of #{@file_extension_allowlist}"
     end
     errors.add(:file_data, :invalid_file_type)
     false

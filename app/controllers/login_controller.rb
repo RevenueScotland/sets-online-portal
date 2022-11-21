@@ -40,6 +40,7 @@ class LoginController < ApplicationController # rubocop:disable Metrics/ClassLen
   def destroy
     logout_process
     redirect_to login_path
+    assign_headers
   end
 
   # Same as destroy except doesn't redirect to the login page so will render the session_expired view.
@@ -172,5 +173,10 @@ class LoginController < ApplicationController # rubocop:disable Metrics/ClassLen
     return :token if %i[invalid_token token_expired token_required].include?(reason)
 
     :base
+  end
+
+  # Assigns the headers for the logout page transaction
+  def assign_headers
+    response.set_header('Clear-Site-Data', '"storage"')
   end
 end

@@ -39,7 +39,7 @@ module AccountHandlers
   # display the address page
   def edit_address
     @account = Account.find(current_user)
-    initialize_address_variables(@account.address)
+    initialize_address_variables(address_detail: @account.address)
   end
 
   # update the account's (contact) address

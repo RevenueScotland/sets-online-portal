@@ -25,26 +25,34 @@ module Returns
         # by calls to model.valid?)
         errors = []
         validate_agent_section(lbtt_return, errors) if lbtt_return.is_public == false
-        validate_conveyance_parties(lbtt_return, errors)
-        validate_lease_parties(lbtt_return, errors)
+        validate_child_hash(lbtt_return.properties, (I18n.t '.property'), errors)
+        validate_parties(lbtt_return, errors)
         validate_transaction_section(lbtt_return, errors)
         validate_tax_model(lbtt_return, errors)
 
         build_model_errors(lbtt_return, errors)
       end
 
+      private
+
       # validating agent against child specific attribute list whether all required and valid details are provided.
       # also in Party model, it is validating on condition if: :individual? which checking party_type is 'AGENT'
       def validate_agent_section(lbtt_return, errors)
         # attribute list for agent
         # to check agent section specific error separated list of agent attributes from Party model
-        agent_attr_list = %i[
-          title surname firstname agent_reference agent_dx_number telephone email_address agent_address
-        ]
+        attr_list = %i[title surname firstname agent_reference agent_dx_number telephone email_address agent_address]
 
-        return if lbtt_return.agent.valid? agent_attr_list
+        return if lbtt_return.agent.valid?(attr_list)
 
         add_error(errors, (I18n.t '.returns.lbtt.summary.add_agent_description'), lbtt_return.agent)
+      end
+
+      # only check the attributes involved in the transaction section
+      def transaction_attribute_list
+        %i[ contingents_event_ind deferral_agreed_ind deferral_reference previous_option_ind exchange_ind uk_ind
+            linked_consideration non_chargeable remaining_chargeable annual_rent linked_ind link_transactions total_vat
+            premium_paid lease_premium linked_lease_premium property_type relevant_rent non_ads_reliefclaim_option_ind
+            non_ads_relief_claims rent_for_all_years yearly_rents business_ind sale_include_option total_consideration]
       end
 
       # validate transaction section
@@ -53,49 +61,51 @@ module Returns
         # if it is completely blank
         return if lbtt_return.effective_date.blank?
 
-        # only check the attributes involved in the transaction section
-        trans_attr_list = %i[
-          contingents_event_ind deferral_agreed_ind deferral_reference previous_option_ind exchange_ind uk_ind
-          linked_consideration non_chargeable remaining_chargeable annual_rent linked_ind link_transactions total_vat
-          premium_paid lease_premium linked_lease_premium property_type relevant_rent non_ads_reliefclaim_option_ind
-          non_ads_relief_claims rent_for_all_years yearly_rents business_ind sale_include_option total_consideration
-        ]
+        reliefs_valid = true # default to true as next line may not run
+        reliefs_valid = validate_child_array(lbtt_return.non_ads_relief_claims) if
+                           lbtt_return.non_ads_reliefclaim_option_ind == 'Y'
 
-        add_error(errors, (I18n.t '.transaction'), lbtt_return) unless lbtt_return.valid? trans_attr_list
+        add_error(errors, (I18n.t '.transaction'), lbtt_return) unless
+           reliefs_valid && lbtt_return.valid?(transaction_attribute_list)
       end
 
-      # Checks if any of the child objects have validation errors
-      def validate_conveyance_parties(lbtt_return, errors)
-        validate_child(Property.attribute_list, lbtt_return.properties, (I18n.t '.property'), errors)
-        validate_child(Party.attribute_list, lbtt_return.buyers, (I18n.t '.buyer'), errors)
-        validate_child(Party.attribute_list, lbtt_return.sellers, (I18n.t '.seller'), errors)
+      # Validates all elements in an array are valid
+      # @param list [Array] array of objects to check for validity
+      def validate_child_array(list)
+        valid = list.all? { |o| o.valid?(o.class.attribute_list) }
+
+        # Clearing the errors on array objects as we don't want these reported
+        # @see fl_application_record.error_objects
+        list.each { |o| o.errors.clear } if valid == false
+        valid
       end
 
-      # Checks if any of the lease party child objects have validation errors
-      def validate_lease_parties(lbtt_return, errors)
-        validate_child(Party.attribute_list, lbtt_return.tenants, (I18n.t '.tenant'), errors)
-        validate_child(Party.attribute_list, lbtt_return.landlords, (I18n.t '.landlord'), errors)
-        validate_child(Party.attribute_list, lbtt_return.new_tenants, (I18n.t '.new_tenant'), errors)
+      # Checks if any of the parties have validation errors
+      def validate_parties(lbtt_return, errors)
+        validate_child_hash(lbtt_return.buyers, (I18n.t '.buyer'), errors)
+        validate_child_hash(lbtt_return.sellers, (I18n.t '.seller'), errors)
+        validate_child_hash(lbtt_return.tenants, (I18n.t '.tenant'), errors)
+        validate_child_hash(lbtt_return.landlords, (I18n.t '.landlord'), errors)
+        validate_child_hash(lbtt_return.new_tenants, (I18n.t '.new_tenant'), errors)
       end
 
       # Passes list of objects and check all objects in the list are valid, add error if not valid
       # eg. list of tenants,list of buyers in the lbtt_return model
-      # @param validation_context [list] List of attributes against which to validate
-      # @param list [Array] array of objects to check for validity
+      # @param list [Hash] Hash of objects where the value is checked for validity
       # @param field_to_blame [symbol] displayable name of the field the error originates from
       # @param errors [ActiveModel::Errors] the errors object being passed around
-      def validate_child(validation_context, list, field_to_blame, errors)
+      def validate_child_hash(list, field_to_blame, errors)
         return if list.blank?
 
         # Check individual object from the list and added index to each object for identification
         list.values.each_with_index do |object, index|
-          next if object.valid? validation_context
-
-          # Concatenate key information about attribute eg Contact details for agent
-          error_attr = "#{field_to_blame} #{index + 1} #{object.key_info}"
+          next if object.valid?(object.class.attribute_list)
 
           # add error if child is not valid
-          add_error(errors, error_attr, object)
+          # Concatenate key information about attribute eg Contact details for agent
+          # @Note: We do not need to clear errors on the hash as the fl_application_record.error_objects does
+          # not extract errors from a hash structure
+          add_error(errors, "#{field_to_blame} #{index + 1} #{object.key_info}", object)
         end
       end
 
@@ -131,6 +141,7 @@ module Returns
       def save_convey_validation(model)
         model.errors.add(:base, :missing_buyer_entries, link_id: 'add_buyer') if model.buyers.blank?
         model.errors.add(:base, :missing_seller_entries, link_id: 'add_seller') if model.sellers.blank?
+        missing_ads_non_individual_validation(model)
         ads_summary_validation(model)
       end
 
@@ -138,7 +149,19 @@ module Returns
       def transaction_validation(model)
         return if model.effective_date.present?
 
-        model.errors.add(:base, :missing_about_the_transaction, link_id: 'add_transaction')
+        model.errors.add(:base, :missing_about_the_transaction,
+                         link_id: 'add_transaction')
+      end
+
+      # If there is at least one non individual buyer then ads is due on
+      # all the properties
+      def missing_ads_non_individual_validation(model)
+        # Property type 1 = residential
+        return if model.properties.blank? || !model.non_individual_buyer? || model.property_type != '1'
+
+        return if model.properties.values.all? { |p| p.ads_due_ind == 'Y' }
+
+        model.errors.add(:base, :non_individual_no_ads, link_id: 'add_property')
       end
 
       # validation specific to ads

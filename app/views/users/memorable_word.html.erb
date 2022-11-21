@@ -5,6 +5,6 @@
   <%= form_errors_for @user %>
   <%= f.text_field :memorable_question %>
   <%= f.text_field :memorable_answer %>
-  <%= f.password_field :password, translation_options: :memorable_word %>
+  <%= f.password_field :password, {translation_options: :memorable_word}, {autocomplete: "current-password"}  %>
   <%= f.button 'submit'%>
 <% end %>

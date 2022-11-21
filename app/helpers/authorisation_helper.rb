@@ -49,8 +49,10 @@ module AuthorisationHelper
   CREATE_ATTACHMENT = %i[wssmatt].freeze
   # Download attachment on show message page
   DOWNLOAD_ATTACHMENT = %i[wsgetatt].freeze
-  # Delete attachment link on post submission page for messages
-  DELETE_ATTACHMENT = %i[wssmdet].freeze
+  # The below is not used as you can only delete an attachment when creating/uploading and that is controlled
+  # by the create attachment. The use case for this is if a user can delete an attachment when viewing a previous
+  # secure message
+  # DELETE_ATTACHMENT = %i[wssmdet].freeze
   # Dashboard home page (and minimum set of actions required to access application)
   DASHBOARD_HOME = %i[racpvw tareview wsgetatt wssecmsg wsprtdtl wslsttra wsmsgdtl wslstusr].freeze
 
