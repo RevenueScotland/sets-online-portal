@@ -121,7 +121,7 @@ module WizardListHelper
     record_array = filter_list_params(list_attribute, overrides[:sub_object_attribute])
 
     record_array&.each_with_index do |record, i|
-      list_item = wizard_list_create_and_validate_item(record, overrides)
+      list_item = wizard_list_create_and_validate_item(list_contents[i], record, overrides)
       list_contents[i] = list_item
     end
     wizard_page_object.send("#{list_attribute}=", list_contents)
@@ -183,12 +183,13 @@ module WizardListHelper
 
   # create and validate a new item instance by calling the method on the controller
   # assigning the attributes and then validating
+  # @param object [Object] the existing object at that index if one exists
   # @param attributes [Hash] hash of attributes
   # @param overrides [Hash] overrides for this step
   # @return [Object] a new populated and validated list item
-  def wizard_list_create_and_validate_item(attributes, overrides)
-    # This stores the newly instantiated object with values from the record.
-    list_item = send(overrides[:new_list_item_instance])
+  def wizard_list_create_and_validate_item(object, attributes, overrides)
+    # list item is either the existing object or create a new one.
+    list_item = (object.nil? ? send(overrides[:new_list_item_instance]) : object)
     list_item.assign_attributes(attributes)
 
     # if the validation needs to be done on specific key.

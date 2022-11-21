@@ -42,92 +42,90 @@ end
   <%= fields_for resource_item do |ri| %>
     <div class="file">
       <label class="govuk-label" for=<%= "resource_item_" + index.to_s + "_file_data" %>><%= t(file_upload_label + '_' + index.to_s) if local_assigns[:file_upload_label] %></label>
-      <span class="govuk-hint"><%= (t(file_upload_hint + '_' + index.to_s + '_html', **file_upload_hint_variables)) if local_assigns[:file_upload_hint] %>
-        <% unless local_assigns[:hide_size_hint] %>
-          <br>
-          <% if @supported_types.nil? %>
-            <%= t('file_upload_hint_without_supported_item', supported_max_size_mb: @supported_max_size_mb.to_s ) %>
-          <% else %>
-            <%= t('file_upload_hint', count: @supported_types.count(',')+1, supported_types: @supported_types, supported_max_size_mb: @supported_max_size_mb.to_s ) %>
-          <% end %>
-        <%end%>
-      </span>
-      <table class="govuk-table">
-        <% if show_upload %>
-          <tr>
-            <td colspan='2'>
-              <div class="govuk-form-group">
-                <%= ri.file_field :file_data , { width: 'three-quarters', label: ''}, { index: index, data: { max_file_size: @supported_max_size_mb.megabytes, warning_message: t('file_upload_warning_message')} } %>
-              </div>
-            </td>
-          </tr>
-          <% unless local_assigns[:hide_description] %>
+        <span class="govuk-hint"><%= (t(file_upload_hint + '_' + index.to_s + '_html', **file_upload_hint_variables)) if local_assigns[:file_upload_hint] %>
+          <% unless local_assigns[:hide_size_hint] %>
+            <br>
+            <% if @supported_types.nil? %>
+              <%= t('file_upload_hint_without_supported_item', supported_max_size_mb: @supported_max_size_mb.to_s ) %>
+            <% else %>
+              <%= t('file_upload_hint', count: @supported_types.count(',')+1, supported_types: @supported_types, supported_max_size_mb: @supported_max_size_mb.to_s ) %>
+            <% end %>
+          <%end%>
+        </span>
+        <table class="govuk-table">
+          <% if show_upload %>
             <tr>
               <td colspan='2'>
-                <%= ri.text_field :description, { width: 'three-quarters', optional: true} , {index: index} %>
+                <div class="govuk-form-group">
+                  <%= ri.file_field :file_data , { width: 'three-quarters', label: ''}, { index: index, data: { max_file_size: @supported_max_size_mb.megabytes, warning_message: t('file_upload_warning_message')} } %>
+                </div>
+              </td>
+            </tr>
+            <% unless local_assigns[:hide_description] %>
+              <tr>
+                <td colspan='2'>
+                  <%= ri.text_field :description, { width: 'three-quarters', optional: true} , {index: index} %>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+          <% if index == upload_button_index %>
+            <tr>
+              <td class="width-fixed" class="govuk-form-group">
+                <%= ri.submit (upload_count > 1 ? 'AddResources' : 'AddResource' ), { :name => 'add_resource' } %>
+              </td>
+              <td class="hideline">
+                <span class="uploadspinner"></span>
               </td>
             </tr>
           <% end %>
-        <% end %>
-        <% if index == upload_button_index %>
-          <tr>
-            <td class="width-fixed" class="govuk-form-group">
-              <%= ri.submit (upload_count > 1 ? 'AddResources' : 'AddResource' ), { :name => 'add_resource' } %>
-            </td>
-            <td class="hideline">
-              <span class="uploadspinner"></span>
-            </td>
-          </tr>
-        <% end %>
-      </table>
-    </div>
-  <% end %>
-  <% if resource_items.length > 0 %>
-    <% if !resource_items[0].file_name.nil? %>
-      <div class="removefile">
-        <table class="govuk-table">
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th class="govuk-table__header"><%= t('upload_column_filename') %></th>
-              <% unless local_assigns[:hide_description] %>
-                <th class="govuk-table__header"><%= t('upload_column_file_description') %></th>
-              <% end %>
-              <th class="govuk-table__header"></th>
-            </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-            <% resource_items.each do |resource_item| %>
-              <% if resource_item && resource_item.original_filename %>
-                <tr class="govuk-table__row">
-                  <td>
-                    <%  
+        </table>
+      </div>
+    <% end %>
+    <% if resource_items.length > 0 %>
+      <% if !resource_items[0].file_name.nil? %>
+        <div class="removefile">
+          <table class="govuk-table">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th class="govuk-table__header"><%= t('upload_column_filename') %></th>
+                <% unless local_assigns[:hide_description] %>
+                  <th class="govuk-table__header"><%= t('upload_column_file_description') %></th>
+                <% end %>
+                <th class="govuk-table__header"></th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              <% resource_items.each do |resource_item| %>
+                <% if resource_item && resource_item.original_filename %>
+                  <tr class="govuk-table__row">
+                    <td>
+                      <%  
                     download_url = if local_assigns[:file_control_name]
                                      "../" + file_control_name + "/download-file/?doc_refno=" + resource_item.doc_refno
                                    else 
                                      "download-file/?doc_refno=" + resource_item.doc_refno      
                                    end 
                     %>
-                    <%= link_to resource_item.original_filename, download_url, { target: "_blank" }%>
-                  </td>
-                  <% unless local_assigns[:hide_description] %>
-                    <td>
-                      <%= resource_item.description %>
+                      <%= link_to resource_item.original_filename, download_url, { target: "_blank" }%>
                     </td>
-                  <% end %>
-                  <td class="hideline width-fixed">
-                    <% if !local_assigns[:remove_remove] %>
-                      <%= button_tag t('DeleteResource'), { :name => 'delete_resource', :class => 'scot-rev-button_link govuk-link', :id => 'DeleteResource', :value => resource_item.doc_refno } %>
+                    <% unless local_assigns[:hide_description] %>
+                      <td>
+                        <%= resource_item.description %>
+                      </td>
                     <% end %>
-                  </td>
-                  <td class="hideline">
-                    <span class="uploadspinner"></span>
-                  </td>
-                </tr>
+                    <td class="hideline width-fixed">
+                      <%= button_tag t('DeleteResource'), { :name => 'delete_resource', :class => 'scot-rev-button_link govuk-link', :id => 'DeleteResource', :value => resource_item.doc_refno } %>
+                    </td>
+                    <td class="hideline">
+                      <span class="uploadspinner"></span>
+                    </td>
+                  </tr>
+                <% end %>
               <% end %>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
     <% end %>
   <% end %>
-<% end %>

@@ -122,6 +122,8 @@ module Claim
     # Last step in the authenticated and unauthenticated claim
     def confirmation_of_payment
       wizard_step(NEW_STEPS)
+      # if unauthenticated then set the response header for clear site data to wild card
+      response.set_header('Clear-Site-Data', '"storage"') if current_user.blank?
 
       # Clear the cache to remove previously upload resource files
       # This means if the user refreshes the page they lose the list of files uploaded

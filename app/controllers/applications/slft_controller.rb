@@ -81,7 +81,7 @@ module Applications
 
     # wizard page for public slft application
     def about_waste_water
-      wizard_step(WP_STEPS) { { validates: :added_for_transport } }
+      wizard_step(WP_STEPS)
     end
 
     # wizard page for public slft application
@@ -121,6 +121,9 @@ module Applications
 
     # last wizard page for public slft application
     def confirmation_and_document_upload
+      # if unauthenticated then set the response header for clear site data to wild card
+      response.set_header('Clear-Site-Data', '"storage"') if current_user.blank?
+
       wizard_step(LO_STEPS)
 
       # Clear the cache to remove previously upload resource files

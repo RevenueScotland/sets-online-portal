@@ -191,9 +191,16 @@ module BackHelper
   end
 
   # Grabs the path of the url
-  # @return [String] the link without it's params or any other things
-  def uri_parse_path(link_path)
-    URI.parse(link_path).path.to_s
+  # @param link_path [String] the current URL
+  # @param host [String] the current host, if passed the URI is checked to be for the same host
+  # @return [String] the link without it's params or any other things, or nil if not for the same host
+  def uri_parse_path(link_path, host: nil)
+    return if link_path.blank?
+
+    uri = URI.parse(link_path)
+    return if host.present? && uri.host != host
+
+    uri.path.to_s
   end
 
   # Removes any linked we don't want e.g. loops or reloaded pages
@@ -206,14 +213,12 @@ module BackHelper
   # This is used to catch when the user clicks buttons/links too fast to go to different
   # pages with or without back link while the pages in between hasn't finished rendering.
   def remove_not_last_link(custom_path_given)
-    browser_last_link = request.referer
+    browser_last_link_path = uri_parse_path(request.referer, host: request.host)
     # As the user manually reloads/refreshes the page, the request.referer becomes nil
     #
     # Also, on a normal situation where we modified the path of the last visited link, then we would want
     # to escape this.
-    return if browser_last_link.nil? || custom_path_given
-
-    browser_last_link_path = uri_parse_path(browser_last_link)
+    return if browser_last_link_path.nil? || custom_path_given
 
     # Update the stack's last visited link to the browser's last visited link when the browser's last visited link
     # isn't found in the stack. This means that the user has clicked too fast to go from a page without-back-link to

@@ -119,7 +119,7 @@ class ServiceClientTest < ActiveSupport::TestCase
 
     assert test_instance.errors&.present?, 'expected errors message missing'
     assert_match(
-      /Something unexpected happened, you can try again in a few minutes or to report this error quote : \d\d\d\d\d/,
+      /Something unexpected happened, you can try again in a few minutes or to report this error quote : E\d\d\d\d\d/,
       test_instance.errors.map(&:message).first, 'Unexpected message'
     )
   end
@@ -138,7 +138,7 @@ class ServiceClientTest < ActiveSupport::TestCase
 
     assert test_instance.errors&.present?, 'expected errors message missing'
     assert_match(
-      /Something unexpected happened, you can try again in a few minutes or to report this error quote : \d\d\d\d\d/,
+      /Something unexpected happened, you can try again in a few minutes or to report this error quote : E\d\d\d\d\d/,
       test_instance.errors.map(&:message).first, 'Unexpected message'
     )
   end

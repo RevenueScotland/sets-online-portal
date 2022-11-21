@@ -3,7 +3,9 @@
 <% content_for :page_view, render_page_view(__FILE__) %>
 <%= form_for @ads, url: @post_path, method: :post, local: true do |f| %>
   <%= form_errors_for @ads %>
-  <%= f.currency_field :ads_amount_liable %>
+  <%= f.currency_field(:ads_amount_liable,
+                                        text_links: { t('.ads_amount_liable') =>
+                                                    link_to(t('.ads_amount_liable'), external_link_url('ADS_CHARGE_CONS'), target: '_blank')}) %>
   <%= f.currency_field :ads_consideration if @ads.ads_consideration_yes_no == 'Y' %>
   <%= f.button %>
 <% end %>

@@ -110,7 +110,7 @@ en:
   return_error: "Return not saved"
   term_and_cons: "terms & conditions (opens in a new window)"
   sec_doc: "email communication policy (opens in a new window)"
-  property: " Property"
+  property: "Property"
   buyer: "Buyer"
   seller: "Seller"
   tenant: "Tenant"
@@ -174,7 +174,7 @@ en:
         cant_be_blank: "%{attribute} can't be blank"
         company_not_chosen: "A company must be chosen"
         address_not_chosen: "Use the postcode search or enter the address manually"
-        section_not_complete: "%{attr} has errors that need to be corrected, edit it"
+        section_not_complete: "There's an error somewhere in the %{attr} - please review the %{attr} section of the return and update it"
   errors:
     error_report: "Something unexpected happened, you can try again in a few minutes or to report this error quote : %{error_ref}"
     ##

@@ -3,6 +3,37 @@
     {
       "warning_type": "Reverse Tabnabbing",
       "warning_code": 111,
+      "fingerprint": "034282500ec6e542cd26c9fec5f20c7caca6f045fe5644894364d173468920e1",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_ads/ads_amount.html.erb",
+      "line": 8,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".ads_amount_liable\"), external_link_url(\"ADS_CHARGE_CONS\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttAdsController",
+          "method": "ads_amount",
+          "line": 51,
+          "file": "app/controllers/returns/lbtt_ads_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_ads/ads_amount",
+            "file": "app/views/returns/lbtt_ads/ads_amount.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_ads/ads_amount"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": ""
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
       "fingerprint": "03a100e6191f94b6c49489d31bf6b2236ce7a710780944fa5c074f9bd43f900a",
       "check_name": "ReverseTabnabbing",
       "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
@@ -15,7 +46,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "premium_paid",
-          "line": 89,
+          "line": 98,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/premium_paid",
@@ -77,7 +108,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "conveyance_values",
-          "line": 47,
+          "line": 48,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/conveyance_values",
@@ -108,7 +139,7 @@
           "type": "controller",
           "class": "Dashboard::MessagesController",
           "method": "confirmation",
-          "line": 59,
+          "line": 65,
           "file": "app/controllers/dashboard/messages_controller.rb",
           "rendered": {
             "name": "dashboard/messages/confirmation",
@@ -139,7 +170,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "about_the_transaction",
-          "line": 54,
+          "line": 55,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/about_the_transaction",
@@ -170,7 +201,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "property_type",
-          "line": 29,
+          "line": 30,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/property_type",
@@ -183,26 +214,6 @@
         "template": "returns/lbtt_transactions/property_type"
       },
       "user_input": null,
-      "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "File Access",
-      "warning_code": 16,
-      "fingerprint": "28794ed69b0940f5144fd08f6c9034a6c1e10d60f8852f77b3350789e57cedd6",
-      "check_name": "FileAccess",
-      "message": "Model attribute used in file name",
-      "file": "app/controllers/concerns/file_upload_handler.rb",
-      "line": 284,
-      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
-      "code": "File.delete(ResourceItem.file_temp_storage_path(:upload, sub_directory, file_name))",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "FileUploadHandler",
-        "method": "delete_attachment"
-      },
-      "user_input": "ResourceItem.file_temp_storage_path(:upload, sub_directory, file_name)",
       "confidence": "Medium",
       "note": ""
     },
@@ -221,7 +232,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "conveyance_values",
-          "line": 47,
+          "line": 48,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/conveyance_values",
@@ -272,7 +283,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "premium_paid",
-          "line": 89,
+          "line": 98,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/premium_paid",
@@ -322,37 +333,6 @@
     {
       "warning_type": "Reverse Tabnabbing",
       "warning_code": 111,
-      "fingerprint": "3bb6e375fb75d6ece143035ee1904df1746e3d773e57013904faa733a20d896e",
-      "check_name": "ReverseTabnabbing",
-      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
-      "file": "app/views/returns/lbtt_parties/acting_as_trustee.html.erb",
-      "line": 9,
-      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
-      "code": "link_to(t(\".is_acting_as_trustee_trust\"), external_link_url(\"TRUSTS\"), :target => \"_blank\")",
-      "render_path": [
-        {
-          "type": "controller",
-          "class": "Returns::LbttPartiesController",
-          "method": "acting_as_trustee",
-          "line": 67,
-          "file": "app/controllers/returns/lbtt_parties_controller.rb",
-          "rendered": {
-            "name": "returns/lbtt_parties/acting_as_trustee",
-            "file": "app/views/returns/lbtt_parties/acting_as_trustee.html.erb"
-          }
-        }
-      ],
-      "location": {
-        "type": "template",
-        "template": "returns/lbtt_parties/acting_as_trustee"
-      },
-      "user_input": null,
-      "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "Reverse Tabnabbing",
-      "warning_code": 111,
       "fingerprint": "41f4b0ac38b6c26902e2131527ae8ce81d79064a24927ad0c7c131fe7ae4cd7f",
       "check_name": "ReverseTabnabbing",
       "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
@@ -365,7 +345,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "conveyance_values",
-          "line": 47,
+          "line": 48,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/conveyance_values",
@@ -376,6 +356,37 @@
       "location": {
         "type": "template",
         "template": "returns/lbtt_transactions/conveyance_values"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": ""
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "4a1d8c795fc4ae4c307d922321379e190ee38db9391125bf46d9f5f973250d90",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_transactions/multiple_dwellings_relief.html.erb",
+      "line": 4,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".description_link\"), external_link_url(\"MDR\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttTransactionsController",
+          "method": "multiple_dwellings_relief",
+          "line": 78,
+          "file": "app/controllers/returns/lbtt_transactions_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_transactions/multiple_dwellings_relief",
+            "file": "app/views/returns/lbtt_transactions/multiple_dwellings_relief.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_transactions/multiple_dwellings_relief"
       },
       "user_input": null,
       "confidence": "Medium",
@@ -396,7 +407,7 @@
           "type": "controller",
           "class": "Applications::SlftController",
           "method": "confirmation_and_document_upload",
-          "line": 130,
+          "line": 133,
           "file": "app/controllers/applications/slft_controller.rb",
           "rendered": {
             "name": "applications/slft/confirmation_and_document_upload",
@@ -427,7 +438,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "about_the_calculation",
-          "line": 94,
+          "line": 103,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/about_the_calculation",
@@ -438,37 +449,6 @@
       "location": {
         "type": "template",
         "template": "returns/lbtt_transactions/about_the_calculation"
-      },
-      "user_input": null,
-      "confidence": "Medium",
-      "note": ""
-    },
-    {
-      "warning_type": "Reverse Tabnabbing",
-      "warning_code": 111,
-      "fingerprint": "6e98c6a60f7e7d2e036e35ca1d38af5cc7fe9dc55efb113d2fa8dc338e25ee26",
-      "check_name": "ReverseTabnabbing",
-      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
-      "file": "app/views/returns/lbtt_parties/acting_as_trustee.html.erb",
-      "line": 7,
-      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
-      "code": "link_to(t(\".is_acting_as_trustee_partnership\"), external_link_url(\"PARTNERSHIPS\"), :target => \"_blank\")",
-      "render_path": [
-        {
-          "type": "controller",
-          "class": "Returns::LbttPartiesController",
-          "method": "acting_as_trustee",
-          "line": 67,
-          "file": "app/controllers/returns/lbtt_parties_controller.rb",
-          "rendered": {
-            "name": "returns/lbtt_parties/acting_as_trustee",
-            "file": "app/views/returns/lbtt_parties/acting_as_trustee.html.erb"
-          }
-        }
-      ],
-      "location": {
-        "type": "template",
-        "template": "returns/lbtt_parties/acting_as_trustee"
       },
       "user_input": null,
       "confidence": "Medium",
@@ -489,7 +469,7 @@
           "type": "controller",
           "class": "Claim::ClaimPaymentsController",
           "method": "confirmation_of_payment",
-          "line": 130,
+          "line": 132,
           "file": "app/controllers/claim/claim_payments_controller.rb",
           "rendered": {
             "name": "claim/claim_payments/confirmation_of_payment",
@@ -502,6 +482,26 @@
         "template": "claim/claim_payments/confirmation_of_payment"
       },
       "user_input": null,
+      "confidence": "Medium",
+      "note": ""
+    },
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "914fbdc06364cd40a6aa2ab69700c829c58bd49699d5c3640d558f248813a36c",
+      "check_name": "FileAccess",
+      "message": "Model attribute used in file name",
+      "file": "app/controllers/concerns/file_upload_handler.rb",
+      "line": 284,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "FileUtils.rm_f(ResourceItem.file_temp_storage_path(:upload, sub_directory, file_name))",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "FileUploadHandler",
+        "method": "delete_attachment"
+      },
+      "user_input": "ResourceItem.file_temp_storage_path(:upload, sub_directory, file_name)",
       "confidence": "Medium",
       "note": ""
     },
@@ -551,7 +551,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "transaction_dates",
-          "line": 34,
+          "line": 35,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/transaction_dates",
@@ -582,7 +582,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "reliefs_on_transaction",
-          "line": 67,
+          "line": 68,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/reliefs_on_transaction",
@@ -613,7 +613,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "conveyance_values",
-          "line": 47,
+          "line": 48,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/conveyance_values",
@@ -644,7 +644,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "transaction_dates",
-          "line": 34,
+          "line": 35,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/transaction_dates",
@@ -675,7 +675,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "conveyance_values",
-          "line": 47,
+          "line": 48,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/conveyance_values",
@@ -706,7 +706,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "property_type",
-          "line": 29,
+          "line": 30,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/property_type",
@@ -737,7 +737,7 @@
           "type": "controller",
           "class": "Returns::LbttPartiesController",
           "method": "parties_relation",
-          "line": 61,
+          "line": 68,
           "file": "app/controllers/returns/lbtt_parties_controller.rb",
           "rendered": {
             "name": "returns/lbtt_parties/parties_relation",
@@ -768,7 +768,7 @@
           "type": "controller",
           "class": "Returns::LbttTransactionsController",
           "method": "linked_transactions",
-          "line": 59,
+          "line": 60,
           "file": "app/controllers/returns/lbtt_transactions_controller.rb",
           "rendered": {
             "name": "returns/lbtt_transactions/linked_transactions",
@@ -799,7 +799,7 @@
           "type": "controller",
           "class": "Returns::LbttPartiesController",
           "method": "parties_relation",
-          "line": 61,
+          "line": 68,
           "file": "app/controllers/returns/lbtt_parties_controller.rb",
           "rendered": {
             "name": "returns/lbtt_parties/parties_relation",
@@ -814,8 +814,39 @@
       "user_input": null,
       "confidence": "Medium",
       "note": ""
+    },
+    {
+      "warning_type": "Reverse Tabnabbing",
+      "warning_code": 111,
+      "fingerprint": "ff4854e17896f1a58f96d7cdd7bc87e416f5dbeef6a03baed3801dfa1ce13888",
+      "check_name": "ReverseTabnabbing",
+      "message": "When opening a link in a new tab without setting `rel: \"noopener noreferrer\"`, the new tab can control the parent tab's location. For example, an attacker could redirect to a phishing page.",
+      "file": "app/views/returns/lbtt_parties/acting_as_trustee.html.erb",
+      "line": 7,
+      "link": "https://brakemanscanner.org/docs/warning_types/reverse_tabnabbing/",
+      "code": "link_to(t(\".is_acting_as_trustee_partnership\"), external_link_url(\"REP_PARTNER\"), :target => \"_blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Returns::LbttPartiesController",
+          "method": "acting_as_trustee",
+          "line": 74,
+          "file": "app/controllers/returns/lbtt_parties_controller.rb",
+          "rendered": {
+            "name": "returns/lbtt_parties/acting_as_trustee",
+            "file": "app/views/returns/lbtt_parties/acting_as_trustee.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "returns/lbtt_parties/acting_as_trustee"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "note": ""
     }
   ],
-  "updated": "2022-02-11 17:50:45 +0000",
-  "brakeman_version": "5.2.1"
+  "updated": "2022-07-07 14:21:34 +0530",
+  "brakeman_version": "5.2.3"
 }

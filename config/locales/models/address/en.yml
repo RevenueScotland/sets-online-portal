@@ -41,6 +41,7 @@ en:
   manual_address: "Enter an address manually"
   edit_address: "Edit address"
   change_postcode: "Change postcode"
+  use_existing_address: "Use %{full_address}"
   address_search:
     form:
       title: "Address Search"

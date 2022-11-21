@@ -103,15 +103,19 @@ module WizardAddressHelper
     # we use address required to stop it validating an address that isn't required atm
     address = Address.new(address_params.merge!(default_country: overrides[:default_country]))
 
-    success = false
-    if required && address.valid?(add_validation_contexts(address_validation_contexts, overrides)) && object_valid
-      success = wizard_save_address_in_object(wizard_cached_object, wizard_page_object, address, overrides)
-    end
+    # Are the details valid (and the address is a required object)
+    success = (required && address.valid?(add_validation_contexts(address_validation_contexts,
+                                                                  overrides)) && object_valid)
+    # If the address details are valid then save it, and save the result
+    success = wizard_save_address_in_object(wizard_cached_object, wizard_page_object, address, overrides) if success
 
     Rails.logger.debug { "Validation on address: #{success}, required: #{required}, object_valid: #{object_valid}" }
 
     # if the above didn't work then initialise the page address variables for the next iteration
-    initialize_address_variables(address, search_postcode) unless success
+    unless success
+      wizard_initialise_address_variables(wizard_page_object: wizard_page_object, address_detail: address,
+                                          address_list_method: overrides[:address_list])
+    end
     success
   end
 
@@ -176,12 +180,31 @@ module WizardAddressHelper
     true
   end
 
+  # This is the wizard wrapper for initialise_address_variables
+  # @see address_helper.initialise_address_variable
+  #
+  # @param wizard_page_object [Object] the wizard page object being manipulated
+  # @param address_detail[Object] parameter use to view existing address details on address view
+  # @param default_country[String] the default country to be used for the address
+  # @param address_list_method[Symbol] The method on the page object to call for the address list
+  def wizard_initialise_address_variables(wizard_page_object:, address_detail:,
+                                          address_list_method:, default_country: nil)
+    address_list = wizard_page_object.send(address_list_method) if address_list_method
+    # NOTE: search_postcode is a method in the address helper that processes the parameters
+    initialize_address_variables(address_detail: address_detail, search_postcode: search_postcode,
+                                 default_country: default_country,
+                                 address_list: address_list)
+  end
+
   # This is the standard address load. Primarily it populates the address detail from  the object
   # @param wizard_page_object [Object] the object on the page, a child or the same as the cached object
   # @param overrides [Hash] an array of overrides see @wizard_address_step
   def wizard_load_address(wizard_page_object, overrides)
     address = wizard_page_object.send(overrides[:address_attribute] || :address)
-    initialize_address_variables(address, search_postcode, overrides[:default_country])
+    wizard_initialise_address_variables(wizard_page_object: wizard_page_object,
+                                        address_detail: address,
+                                        default_country: overrides[:default_country],
+                                        address_list_method: overrides[:address_list])
   end
 
   # Populated the object with the address it doesn't save in the cache as later stages may error

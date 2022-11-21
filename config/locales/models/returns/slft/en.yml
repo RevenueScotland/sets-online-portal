@@ -43,7 +43,6 @@ en:
         lau_description: "Geographical area name"
         fmme_method: "Management method"
         from_non_disposal_ind: "Has this waste been moved out of a non-disposal area (NDA)"
-        pre_treated_ind: "Is it pre-treated"
         exemption_yes_no: "Is there an exemption for the waste"
         nda_ex_yes_no: "NDA"
         restoration_ex_yes_no: "Restoration"

@@ -33,7 +33,7 @@ en:
         orig_return_reference: "What was the original return reference"
         flbt_type: "Which return do you want to submit"
         business_ind: "Is the transaction part of the sale of a business"
-        sale_include_option: "Does the sale include any of the following"
+        sale_include_option: "Does the sale include any of the following"        
         non_ads_reliefclaim_option_ind: "Is relief being claimed for this transaction"
         linked_ind: "Are there any linked transactions"
         total_consideration: "Total consideration"
@@ -43,7 +43,7 @@ en:
         non_chargeable: "Non-chargeable consideration"
         remaining_chargeable: "Total consideration remaining"
         contingents_event_ind: "Does any part of your consideration depend on future events, like planning permission"
-        deferral_agreed_ind: "Have you applied to pay on a deferred basis?"
+        deferral_agreed_ind: "Have you applied to pay on a deferred basis"
         deferral_reference: "Revenue Scotland deferral reference"
         effective_date_CONVEY: "Effective date of transaction"
         effective_date_LEASERET: "Effective date of transaction"
@@ -124,9 +124,9 @@ en:
         linked_npv: "Net Present Value (NPV) for linked transactions"
       returns/lbtt/ads:
         ads_consideration_yes_no: "Is the buyer replacing their main residence"
-        ads_main_address: Address of existing main residence
-        ads_consideration: Amount of ADS liability from new main residence
+        ads_main_address: Address of existing main residence        
         ads_amount_liable: Total consideration liable to ADS
+        ads_consideration: Total consideration attributable to new main residence
         ads_sell_residence_ind: Does the buyer intend to sell their main residence within 18 months
         ads_sold_main_yes_no: Are you amending the return because the buyer has sold or disposed of the previous main residence
         rrep_ads_sold_date: What is the date of sale or disposal of the previous main residence
@@ -144,6 +144,9 @@ en:
         relief_type_description: "Type of relief"
         relief_override_amount: "Amount of tax saved by relief"
         calculated: "Calculated"
+        mdr_number_dwellings: "Number of dwellings"
+        mdr_total_consideration: "Total consideration attributable to dwellings"
+        mdr_number_dwellings_ads: "Number of dwellings that attract ADS"
       returns/lbtt/yearly_rent:
         rent: "Rent"
         year: "Year"
@@ -163,9 +166,9 @@ en:
         effective_date_LEASEREV: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
         effective_date_ASSIGN: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
         effective_date_TERMINATE: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
-        relevant_date_CONVEY: "This is usually the same as the effective date. See guidance on the relevant date (opens in a new window) for further details"
-        relevant_date_LEASERET: "This is usually the same as the effective date. See guidance on the relevant date (opens in a new window) for further details"
-        relevant_date_LEASEREV: "This is the date of the triennial anniversary. See guidance on the relevant date (opens in a new window) for further details"
+        relevant_date_CONVEY: "See guidance on the relevant date (opens in a new window) for further details"
+        relevant_date_LEASERET: "See guidance on the relevant date (opens in a new window) for further details"
+        relevant_date_LEASEREV: "This date will be the 3 year anniversary of the effective date and every subsequent three years for the duration of the lease. See guidance on the relevant date (opens in a new window) for further details"
         relevant_date_ASSIGN: "This is the date the lease was assigned. See guidance on the relevant date (opens in a new window) for further details"
         relevant_date_TERMINATE: "This is the date the lease was terminated or came to an end. See guidance on the relevant date (opens in a new window) for further details"
         fpay_method: "The payment method will only be used if a payment is actually due on this return"
@@ -187,8 +190,11 @@ en:
         total_reliefs: "This is the total amount of LBTT reliefs claimed"
         amount_already_paid: "How much you have already paid for any previous returns that relate to this lease agreement"
       returns/lbtt/ads:
-        ads_amount_liable: "The amount on which ADS is due, like the value of the new residence plus any others included in this return"
-        ads_consideration: "This is the value of the new main residence"
+        ads_amount_liable: "The amount on which ADS is due - this will usually be the chargeable consideration of your new main residence but may change depending on your specific set of circumstances. See guidance on determining the chargeable consideration for the ADS (opens in a new window)"
+        ads_consideration: "If the consideration includes a new main residence, this is the chargeable consideration for your new main residence"      
+        ads_reliefclaim_option_ind: "A reclaim of ADS already paid following the sale of a previous main residence is not a relief"
+      returns/lbtt/relief_claim:
+        mdr_number_dwellings_ads: "Only applicable if ADS applies to the transaction"
     errors:
       models:
         returns/lbtt/lbtt_return:
@@ -218,7 +224,7 @@ en:
               missing_agent_details: "Please fill in the 'Contact details for agent' section"
               missing_ads: "Please fill in the 'About the Additional Dwelling Supplement (ADS)' section"
               has_already_been_submitted: "This return has already been submitted. If you are unsure that the return has been submitted, save a draft version and check on the dashboard"
-
+              non_individual_no_ads: "ADS must apply to all properties on this return where at least one of the buyers is not a private individual and the transaction is residential"
         returns/lbtt/relief_claim:
           attributes:
             relief_type:
@@ -251,7 +257,8 @@ en:
         subtitle: "Your return summary"
         description: "The LBTT return is split into sections which can be completed in any order. You must complete all the sections before submitting the return."
         repayment_description: "If you need to request a repayment from Revenue Scotland, you can do this once you have clicked submit."
-        calculation_description: "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
+        calculation_description_LEASERET_CONVEY: "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
+        calculation_description: "The amount of tax already paid below will show as £0.00. You will need to change this field to show the correct amount of tax already paid in order for the correct amount of tax due to show. For all other fields, the amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
         add_properties_description: "About the property"
         add_transaction_description: "About the transaction"
         add_buyer_description: "About the buyer"
@@ -321,7 +328,8 @@ en:
     lbtt_ads:
       title: Additional Dwelling Supplement (ADS)
       ads_amount:
-        description: The ADS consideration is usually the same as the purchase price
+        description: The ADS consideration is usually the same as the purchase price        
+        ads_amount_liable: "determining the chargeable consideration for the ADS (opens in a new window)" 
       ads_intending_sell:
         address: What is the address of the main residence that will be sold
       ads_reliefs:
@@ -330,9 +338,9 @@ en:
         relief_type_auto: "Type of relief"
         relief_amount: Amount of tax saved by relief
         description_html:
-          "<p>Certain reliefs amounts will be calculated as part of the return and therefore cannot be entered at
-          this point. For all others, if you know the values for any relief you are claiming, enter it into the
-          ‘Amount of tax saved by relief’ field, if you don’t know the value now then enter 0. </p><p>
+          "<p>Certain relief amounts will be calculated as part of the return and therefore cannot be entered at
+           this point. For all others, if you know the values for any relief you are claiming, enter it into the 
+           ‘Amount of tax saved by relief’ field. If you don’t know the value, enter 0. </p><p>
           If you are claiming an LBTT Relief which also applies to ADS, please select this relief from the
           drop down below. The same LBTT relief should also be claimed within the ‘About the transaction’
           relief section. If the relief is partial, the value entered in the ‘Amount of tax saved by relief’ field
@@ -355,16 +363,21 @@ en:
         title: "Reliefs on this transaction"
         relief_type: "Type of relief"
         relief_type_auto: "Type of relief"
-        relief_amount: "Amount of tax saved by relief"
+        relief_amount: "Amount of tax saved by relief"        
         description_html:
-          "<p>Certain reliefs amounts will be calculated as part of the return and therefore cannot be entered at
+          "<p>Certain relief amounts will be calculated as part of the return and therefore cannot be entered at
           this point. For all others, if you know the values for any relief you are claiming, enter it into the
-          ‘Amount of tax saved by relief’ field, if you don’t know the value now enter 0.</p><p>
+          ‘Amount of tax saved by relief’ field, if you don’t know the value enter 0.</p><p>
           If you are claiming an LBTT relief which also applies to ADS, please ensure the relief selected in
           the drop down below is the same as the relief selected in the ‘Reliefs on ADS consideration’. If
           the relief is partial, the value entered in the ‘Amount of tax saved by relief’ field should relate only
           to the relief over the LBTT amount due</p>"
         non_ads_reliefclaim_option_ind: "Tax Reliefs (opens in a new window)"
+      multiple_dwellings_relief:
+        title: "About multiple dwellings relief"        
+        subtitle: "Provide the following values"        
+        description_html: "See guidance on multiple dwellings relief (opens in a new window) for further details. <br>The following fields are for information only and will not calculate the relief"
+        description_link: "multiple dwellings relief (opens in a new window)"
       conveyance_values:
         title: "About the conveyance or transfer"
         subtitle: "Provide the following values"
@@ -374,7 +387,7 @@ en:
         non_chargeable: "what is not chargeable consideration (opens in a new window)"
         remaining_chargeable: "determining the chargeable consideration (opens in a new window)"
       linked_transactions:
-        title: "Linked Transactions"
+        title: "Linked transactions"
         return_reference: "Return reference (if known)"
         consideration_amount: "Return consideration"
         npv_inc: "NPV (inc VAT)"

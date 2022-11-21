@@ -2,7 +2,7 @@
 
 * Ruby version
 
-Built with Ruby version 2.6.5
+Built with Ruby version 3.1.2
 
 * Rails version
 

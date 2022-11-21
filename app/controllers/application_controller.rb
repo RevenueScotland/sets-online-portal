@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
   before_action :require_user
   before_action :authorise_action
   before_action :set_locale
-  before_action :set_no_cache
+  before_action :set_response_headers
   before_action :check_session_expiry
   default_form_builder FormBuilderHelper::LabellingFormBuilder
 
@@ -139,9 +139,13 @@ class ApplicationController < ActionController::Base
 
   # Used in a before action to stop browsers caching the transaction pages
   # otherwise on logout you can use back to see previous data
-  def set_no_cache
-    response.headers['Cache-Control'] = 'no-cache, no-store'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = 'Tue, 01 Jan 1980 00:00:00 GMT'
+  # Note that turbolinks may override this as it uses it's own cache see application_ui.js
+  def set_response_headers
+    response.set_header('Cache-Control', 'no-cache,no-store')
+    response.set_header('Pragma', 'no-cache')
+    response.set_header('Expires', 'Tue, 01 Jan 1980 00:00:00 GMT')
+    response.set_header('Cross-Origin-Embedder-Policy', 'require-corp')
+    response.set_header('Cross-Origin-Opener-Policy', 'same-origin')
+    response.set_header('Cross-Origin-Resource-Policy', 'same-origin')
   end
 end

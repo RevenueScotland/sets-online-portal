@@ -50,7 +50,7 @@ module Error
     # Uses Time to get the current time now, which is used for timing the {.log_exception caught exceptions}
     # @return [String] Error reference
     private_class_method def self.error_reference
-      Time.now.to_i.to_s[5, 10]
+      "E#{Time.now.to_i.to_s[5, 10]}"
     end
 
     # Redirect to the generic error page with details of the error in the flash hash.

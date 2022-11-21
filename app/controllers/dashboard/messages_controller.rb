@@ -9,6 +9,7 @@ module Dashboard
     authorise route: :index, requires: AuthorisationHelper::VIEW_MESSAGES
     authorise route: :new, requires: AuthorisationHelper::CREATE_MESSAGE
     authorise route: :show, requires: AuthorisationHelper::VIEW_MESSAGE_DETAIL
+    authorise route: :retrieve_file_attachment, requires: AuthorisationHelper::DOWNLOAD_ATTACHMENT
 
     # This processes what messages to list down in the index page.
     # It shows all of the messages that are linked to logged in account
@@ -34,9 +35,12 @@ module Dashboard
     # Processes what happens when the send button for the new page, which is the page related to sending a message
     def create
       @message = Message.new(message_params)
-      return if handle_file_upload('new')
+      # Only handle a file upload if they can attach
+      if can?(AuthorisationHelper::CREATE_ATTACHMENT)
+        return if handle_file_upload('new')
 
-      @message.attachment = @resource_items[0] unless @resource_items.nil?
+        @message.attachment = @resource_items[0] unless @resource_items.nil?
+      end
       success, msg_refno = @message.save(current_user)
       # need to call return
       return render_confirmation_page(msg_refno) if success
@@ -47,12 +51,14 @@ module Dashboard
     # Handle confirmation related message
     def confirmation
       @message = Message.new(message_params)
-      handle_file_upload('confirmation',
-                         before_add: :add_document,
-                         before_delete: :delete_document)
+      # Only handle a file upload if they can attach
+      if can?(AuthorisationHelper::CREATE_ATTACHMENT)
+        handle_file_upload('confirmation',
+                           before_add: :add_document,
+                           before_delete: :delete_document)
 
-      return unless params[:finish]
-
+        return unless params[:finish]
+      end
       # clear cache
       clear_resource_items
       redirect_to dashboard_messages_path

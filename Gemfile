@@ -77,4 +77,5 @@ group :test do
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
+# Remove platform check following ruby 3.1 upgrade https://github.com/rubygems/rubygems/issues/5269
+gem 'tzinfo-data' # , platforms: %i[mingw mswin x64_mingw jruby]

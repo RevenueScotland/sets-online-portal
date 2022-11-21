@@ -89,6 +89,8 @@ module Returns
       @lbtt_return.properties = {} if @lbtt_return.properties.nil?
       @lbtt_return.properties[@property.property_id] = @property
 
+      @lbtt_return.synchronising_ads_due_on_reliefs!
+
       # if ADS applies to this property, update the tax calculations to take ADS into consideration
       update_tax_calculations if @property.ads_due_ind
 
@@ -118,19 +120,41 @@ module Returns
     end
 
     # If property_id is new then creates a new Property object with a UUID, otherwise calls @see #look_for_property.
-    # Save the property object into the wizard cache so it can be retrieved by #load_step.
+    # returns the property.
+    # @param lbtt_return [Object] The return being processed
+    # @param property_id [String] the property_id to look for
+    # @return [Property] object
+    def create_or_get_property(lbtt_return, property_id)
+      # new property case - assign a UUID
+      if property_id == 'new'
+        property = Lbtt::Property.new(property_id: SecureRandom.uuid, flbt_type: lbtt_return.flbt_type,
+                                      ads_due_ind: default_ads_due_ind(lbtt_return))
+      else
+
+        # or lookup the existing property by it's ID (which is a UUID)
+        property ||= look_for_property(property_id, lbtt_return)
+      end
+
+      property
+    end
+
+    # defaults the ads_due ind
+    # @param lbtt_return [Object] The return being processed
+    # @return Y or nil
+    def default_ads_due_ind(lbtt_return)
+      if lbtt_return.non_individual_buyer? && (lbtt_return.flbt_type == 'CONVEY') && (lbtt_return.property_type == '1')
+        'Y'
+      end
+    end
+
+    # Passes the property_id to the check if the property is new or not
+    # @param property_id [String] the property_id to look for
     # @raise [Error::AppError] if the property cannot be found
     # @return [Property] object
     def setup_by_property_id(property_id)
       lbtt_return = load_return
 
-      # new property case - assign a UUID
-      if property_id == 'new'
-        property = Lbtt::Property.new(property_id: SecureRandom.uuid, flbt_type: lbtt_return.flbt_type)
-      else
-        # or lookup the existing property by it's ID (which is a UUID)
-        property ||= look_for_property(property_id, lbtt_return)
-      end
+      property = create_or_get_property(lbtt_return, property_id)
 
       # @property with ID should exist now
       raise Error::AppError.new('Property', 'Missing property_id') if property&.property_id.nil?

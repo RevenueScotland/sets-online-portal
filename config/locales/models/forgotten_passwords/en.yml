@@ -44,7 +44,7 @@ en:
   forgotten_passwords:
     new:
       title: "Forgotten password"
-      description: "Enter your username, email address and the new password details below. If the username and email address you enter are valid, you will be sent an email containing an activation token with further instructions."
+      description: "Enter your email address, username and the new password details below. If the email address and username you enter are valid, you will be sent an email containing an activation token with further instructions."
       change_password: "Change Password"
     new-confirmation:
       title: "Forgotten password confirmation"

@@ -13,15 +13,14 @@ en:
         previous_case_reference_WP: Provide the previously approved water discount agreement number
         supporting_document_other_description: "Other description"
         why_water_present: Choose the relevant options below which describes how the water to be discounted relates to the waste
-        added_for_transport: The water has been added to the waste for transportation to disposal
         not_banned_waste: None of the waste material is a liquid waste and banned from landfill sites
         type_of_waste_text: What type of waste is produced
         how_produced: How is the waste produced
         how_added: How is water added
-        waste_percentage: What percentage of water content is waste
-        added_water_percentage: What is the percentage of added water content
-        naturally_occurring: Is there naturally occurring water
-        naturally_occurring_percentage: Provide what percentage is naturally occurring
+        naturally_occurring: Is there naturally occurring water in the waste
+        naturally_occurring_percentage: What percentage is naturally occurring
+        waste_percentage: What is the water content of the waste
+        added_water_percentage: What is the added water content
         treatment: If yes, what treatment have you undertaken
         reason_for_no_treatment: If no, what reasons are there for treatment not to have been possible
         start_date: Provide the date the agreement should start from
@@ -36,6 +35,10 @@ en:
         declaration_position: Job title or position
         declaration_telephone_number: Telephone
         declaration_email_address: Email address
+    hints:
+      applications/slft/applications: 
+        waste_percentage: Include natural water content
+        added_water_percentage: Water content of the waste minus natural water content
     errors:
       models:
         applications/slft/applications:
@@ -105,7 +108,7 @@ en:
         declare: I declare that
       confirmation_and_document_upload:
         title: Your application has been sent to Revenue Scotland
-        reference_message_html: 
+        reference_message_html:
           one: Your reference for this application is <span id=case_references>%{case_reference}</span>. A confirmation email has been sent to the email addresses provided.
           other: Your references for this application are <span id=case_references>%{case_reference}</span>. A confirmation email has been sent to the email addresses provided.
         submitted_date: The submission date is %{system_date}
@@ -120,4 +123,3 @@ en:
         link:
           print: Print confirmation details
           download_application_pdf: Download details of application
-        

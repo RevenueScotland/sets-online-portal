@@ -631,7 +631,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
-            "sectiontitle": "Linked Transactions",
+            "sectiontitle": "Linked transactions",
             "listitem": [
                 {
                     "itemcode": "linked_ind",

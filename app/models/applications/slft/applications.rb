@@ -16,7 +16,7 @@ module Applications
             supporting_document_list supporting_document_other_description declaration change_declaration
             declaration_name declaration_position declaration_telephone_number declaration_email_address
             waste_producer
-            renewal_or_review why_water_present added_for_transport not_banned_waste
+            renewal_or_review why_water_present not_banned_waste
             type_of_waste_text how_produced how_added waste_percentage added_water_percentage
             naturally_occurring naturally_occurring_percentage treatment reason_for_no_treatment start_date
             case_references case_ref_nos]
@@ -65,8 +65,6 @@ module Applications
       # renewal or review is a coding list with two options Renewal or Review
       validates :renewal_or_review, presence: true, on: :renewal_or_review, if: :renewal_or_review_mandatory?
       validates :why_water_present, presence: true, on: :why_water_present, if: :waste_producer_water_discount?
-      validates :added_for_transport, acceptance: { accept: ['Y'] }, on: :added_for_transport,
-                                      if: :waste_producer_water_discount?
       validates :not_banned_waste, acceptance: { accept: ['Y'] }, on: :not_banned_waste,
                                    if: :waste_producer_water_discount?
       # Note this is also asked in some applications at the site level, held in the site model
@@ -76,6 +74,10 @@ module Applications
                                if: :waste_producer_water_discount?
       validates :how_added, presence: true, length: { maximum: 2000 }, on: :how_added,
                             if: :waste_producer_water_discount?
+      validates :naturally_occurring, presence: true, on: :naturally_occurring, if: :waste_producer_water_discount?
+      validates :naturally_occurring_percentage, numericality: { greater_than: 0, less_than: 100,
+                                                                 allow_blank: true }, presence: true,
+                                                 on: :naturally_occurring_percentage, if: :naturally_occurring?
       validates :waste_percentage, numericality: { greater_than: 0, less_than: 100,
                                                    allow_blank: true }, presence: true, on: :waste_percentage,
                                    if: :waste_producer_water_discount?
@@ -83,10 +85,6 @@ module Applications
                                                          allow_blank: true }, presence: true,
                                          on: :added_water_percentage,
                                          if: :waste_producer_water_discount?
-      validates :naturally_occurring, presence: true,  on: :naturally_occurring, if: :waste_producer_water_discount?
-      validates :naturally_occurring_percentage, numericality: { greater_than: 0, less_than: 100,
-                                                                 allow_blank: true }, presence: true,
-                                                 on: :naturally_occurring_percentage, if: :naturally_occurring?
       validates :treatment, presence: true, length: { maximum: 2000 }, on: :treatment,
                             if: :treatment_required?
       validates :reason_for_no_treatment, presence: true, length: { maximum: 2000 }, on: :reason_for_no_treatment,
@@ -112,7 +110,6 @@ module Applications
         { existing_agreement: YESNO_COMP_KEY,
           declaration: YESNO_COMP_KEY,
           change_declaration: YESNO_COMP_KEY,
-          added_for_transport: YESNO_COMP_KEY,
           not_banned_waste: YESNO_COMP_KEY,
           naturally_occurring: YESNO_COMP_KEY }
       end
@@ -457,8 +454,7 @@ module Applications
           divider: true, # should we have a section divider
           display_title: true, # Is the title to be displayed
           type: :list, # type list = the list of attributes to follow
-          list_items: [{ code: :why_water_present, lookup: true },
-                       { code: :added_for_transport, lookup: true }] }
+          list_items: [{ code: :why_water_present, lookup: true }] }
       end
 
       # layout for the banned from landfill details
@@ -504,10 +500,10 @@ module Applications
 
       # fields for the water content
       def print_layout_water_content_list_items
-        [{ code: :waste_percentage },
-         { code: :added_water_percentage },
-         { code: :naturally_occurring, lookup: true },
-         { code: :naturally_occurring_percentage, when: :naturally_occurring?, is: [true] }]
+        [{ code: :naturally_occurring, lookup: true },
+         { code: :naturally_occurring_percentage, when: :naturally_occurring?, is: [true] },
+         { code: :waste_percentage },
+         { code: :added_water_percentage }]
       end
 
       # layout about the water treatment

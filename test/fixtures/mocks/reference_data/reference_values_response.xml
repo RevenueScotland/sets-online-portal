@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <soap:Body>
-        <GetReferenceValuesResponse xmlns="http://www.northgate-is.com/FL/GetReferenceValues" 
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        <GetReferenceValuesResponse xmlns="http://www.northgate-is.com/FL/GetReferenceValues"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:core="http://northgate-is.com/FL/Core">
             <core:Success>true</core:Success>
             <ReferenceValues>
@@ -4433,17 +4433,8 @@
                     <DomainCode>DOCUMENTS-WP-WD</DomainCode>
                     <ServiceCode>SLFT</ServiceCode>
                     <WorkplaceCode>RSTU</WorkplaceCode>
-                    <Code>DOC4</Code>
-                    <Name>Analysis of the waste</Name>
-                    <Default>no</Default>
-                    <Sequence>40</Sequence>
-                </ReferenceValue>
-                <ReferenceValue>
-                    <DomainCode>DOCUMENTS-WP-WD</DomainCode>
-                    <ServiceCode>SLFT</ServiceCode>
-                    <WorkplaceCode>RSTU</WorkplaceCode>
                     <Code>DOC5</Code>
-                    <Name>Results of the quarterly analysis referred to in your approval letter (Review/Renew only)</Name>
+                    <Name>Results of the analysis referred to in your approval letter (Review/Renew only)</Name>
                     <Default>no</Default>
                     <Sequence>50</Sequence>
                 </ReferenceValue>

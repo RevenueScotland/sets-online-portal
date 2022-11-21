@@ -96,7 +96,7 @@ Feature: Slft applications
         Then I should see the "Landfill sites" page
 
         When I click on the "Continue" button
-        Then I should receive the message "Site First site has errors that need to be corrected, edit it"
+        Then I should receive the message "There's an error somewhere in the site First site - please review the site First site section of the return and update it"
         And I should see a link with text "Edit"
         And I should see a link with text "Remove"
 
@@ -448,7 +448,7 @@ Feature: Slft applications
         And I enter "123" in the "applications_slft_sites_wastes_0_estimated_tonnage" field
 
         And I click on the "Add row" button
-        Then I should see the button with text "Delete row"
+        Then I should see at least one button with text "Delete row"
 
         When I enter "bio degradable" in the "applications_slft_sites_wastes_1_type_of_waste" field
         And I enter "678" in the "applications_slft_sites_wastes_1_estimated_tonnage" field
@@ -631,10 +631,8 @@ Feature: Slft applications
         Then I should see the "About the waste water" page
         When I click on the "Continue" button
         Then I should receive the message "Choose the relevant options below which describes how the water to be discounted relates to the waste can't be blank"
-        And I should receive the message "The water has been added to the waste for transportation to disposal must be accepted"
 
         When I check the "The water in the waste is present because it has been used for extraction of minerals" radio button
-        And I check the "applications_slft_applications_added_for_transport" checkbox
         And I click on the "Continue" button
 
         Then I should see the "Banned liquid waste" page
@@ -655,19 +653,19 @@ Feature: Slft applications
 
         Then I should see the "Tell us about the water content" page
         When I click on the "Continue" button
-        Then I should receive the message "What percentage of water content is waste can't be blank"
-        And I should receive the message "What is the percentage of added water content can't be blank"
-        And I should receive the message "Is there naturally occurring water can't be blank"
-        When I enter "102" in the "What percentage of water content is waste" field
-        And I enter "102" in the "What is the percentage of added water content" field
-        And I check the "Yes" radio button
+        And I should receive the message "Is there naturally occurring water in the waste can't be blank"
+        And I should receive the message "What is the water content of the waste can't be blank"
+        Then I should receive the message "What is the added water content can't be blank"
+        When I check the "Yes" radio button
+        And I enter "102" in the "What is the water content of the waste" field
+        And I enter "102" in the "What is the added water content" field
         And I click on the "Continue" button
-        Then I should receive the message "What percentage of water content is waste must be less than 100"
-        And I should receive the message "What is the percentage of added water content must be less than 100"
-        And I should receive the message "Provide what percentage is naturally occurring can't be blank"
-        When I enter " 5" in the "What percentage of water content is waste" field
-        And I enter "5" in the "What is the percentage of added water content" field
-        And I check the "No" radio button
+        Then I should receive the message "What percentage is naturally occurring can't be blank"
+        And I should receive the message "What is the water content of the waste must be less than 100"
+        And I should receive the message "What is the added water content must be less than 100"
+        When I check the "No" radio button
+        And I enter " 5" in the "What is the water content of the waste" field
+        And I enter "5" in the "What is the added water content" field
         And I click on the "Continue" button
 
         Then I should see the "Water treatment" page
@@ -872,8 +870,7 @@ Feature: Slft applications
         And I click on the "Continue" button
 
         Then I should see the "About the waste water" page
-        When I check the "The water in the waste is present because it has been used for extraction of minerals" radio button
-        And I check the "applications_slft_applications_added_for_transport" checkbox
+        When I check the "The water has been added to the waste for transportation to disposal" radio button
         And I click on the "Continue" button
 
         Then I should see the "Banned liquid waste" page
@@ -887,9 +884,9 @@ Feature: Slft applications
         And I click on the "Continue" button
 
         Then I should see the "Tell us about the water content" page
-        When I enter "5" in the "What percentage of water content is waste" field
-        And I enter "5" in the "What is the percentage of added water content" field
-        And I check the "No" radio button
+        When I check the "No" radio button
+        And I enter "5" in the "What is the water content of the waste" field
+        And I enter "5" in the "What is the added water content" field
         And I click on the "Continue" button
 
         Then I should see the "Water treatment" page
@@ -968,7 +965,9 @@ Feature: Slft applications
         And I click on the "Continue" button
 
         Then I should see the "Supporting documentation" page
-        When I click on the "Continue" button
+        # Check that evidence of water is content is mandatory even though other items checked
+        When I check the "Results of the analysis referred to in your approval letter (Review/Renew only)" checkbox
+        And I click on the "Continue" button
         Then I should receive the message "Evidence of the water content (naturally and added) of the waste must be accepted"
         When I check the "Evidence of the water content (naturally and added) of the waste (mandatory)" checkbox
         And I click on the "Continue" button

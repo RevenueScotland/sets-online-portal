@@ -5,20 +5,24 @@ module Returns
   # module to organise LBTT return models
   module Lbtt
     # Model for relief claim records
-    class ReliefClaim < FLApplicationRecord
+    class ReliefClaim < FLApplicationRecord # rubocop:disable Metrics/ClassLength
       include NumberFormatting
       include PrintData
 
       # Attributes for this class, in list so can re-use as permitted params list in the controller
       def self.attribute_list
-        %i[relief_type relief_amount relief_override_amount]
+        %i[relief_type relief_amount relief_override_amount mdr_number_dwellings mdr_total_consideration
+           mdr_number_dwellings_ads]
       end
 
       attribute_list.each { |attr| attr_accessor attr }
 
+      attr_accessor :lbtt_return_ads_due # HACK: values copied from LbttReturn
+
       # For each of the numeric fields create a setter, don't do this if there is already a setter
       # relief_amount has a setter
-      strip_attributes :relief_override_amount
+      strip_attributes :relief_override_amount, :mdr_number_dwellings, :mdr_total_consideration,
+                       :mdr_number_dwellings_ads
 
       # We validate relief_type_auto so the linking works on the page
       validates :relief_type_auto, presence: true
@@ -28,9 +32,24 @@ module Returns
                 two_dp_pattern: true, presence: true, on: :relief_override_amount
 
       validates :relief_amount,
-                presence: true,
                 numericality: { greater_than_or_equal_to: 0, less_than: 1_000_000_000_000_000_000, allow_blank: true },
-                two_dp_pattern: true, unless: :auto_calculated?
+                presence: true, two_dp_pattern: true, unless: :auto_calculated?
+
+      # MDR reliefs validation
+      validates :mdr_number_dwellings,
+                numericality: { greater_than: 0, less_than: 1_000_000_000_000_000_000,
+                                allow_blank: true, only_integer: true },
+                presence: true, on: :mdr_number_dwellings, if: :md_relief?
+      validates :mdr_number_dwellings_ads, presence: true, on: :mdr_number_dwellings_ads,
+                                           if: %i[md_relief? lbtt_return_ads_due]
+      validates :mdr_number_dwellings_ads,
+                numericality: { greater_than: 0, less_than: 1_000_000_000_000_000_000,
+                                allow_blank: true, only_integer: true },
+                on: :mdr_number_dwellings_ads, if: :md_relief?
+      validates :mdr_total_consideration,
+                numericality: { greater_than: 0, less_than: 1_000_000_000_000_000_000,
+                                allow_blank: true },
+                two_dp_pattern: true, presence: true, on: :mdr_total_consideration, if: :md_relief?
 
       # Text shown in relief amount field where amount is calculated by back office
       def self.calculated_text
@@ -83,7 +102,10 @@ module Returns
            display_title: false, # Is the title to be displayed
            type: :list, # type list = the list of attributes to follow
            list_items: [{ code: :relief_type_description },
-                        { code: :relief_override_amount, format: :money }] }]
+                        { code: :relief_override_amount, format: :money },
+                        { code: :mdr_number_dwellings, when: :md_relief?, is: [true] },
+                        { code: :mdr_number_dwellings_ads, when: :md_relief?, is: [true] },
+                        { code: :mdr_total_consideration, format: :money, when: :md_relief?, is: [true] }] }]
       end
 
       # Obtain the description of this relief type
@@ -104,6 +126,11 @@ module Returns
         (relief_type_class == 'ADS')
       end
 
+      # @return true if the relief type is Multiple Dwellings Relief (MDR)
+      def md_relief?
+        relief_type == 'MULTIPLE'
+      end
+
       # Fetch claim relief type information from cache
       def relief_type_hash
         @relief_type_hash ||= ReferenceData::TaxReliefType.lookup('RELIEF_TYPES', 'LBTT', 'RSTU')
@@ -117,39 +144,53 @@ module Returns
         output['ins1:Type'] = @relief_type
         output['ins1:OrigAmount'] = @relief_amount
         output['ins1:Amount'] = @relief_override_amount
-
-        output
+        add_mdr_fields(output)
       end
 
       # @return a hash suitable for use in a calc request to the back office
       def request_for_main_calc
-        output = {}
-        output['ins1:ReliefType'] = @relief_type
-        output['ins1:ReliefAmount'] = @relief_amount if @relief_amount.present?
-        output
+        output = add_common_fields({})
+        add_mdr_fields(output)
       end
 
       # @return a hash suitable for use in calc request for the relief type to teh back office
       def request_for_relief_type_calc
-        output = {}
-        output['ins1:ReliefType'] = @relief_type
-        output['ins1:ReliefAmount'] = @relief_amount if @relief_amount.present?
+        output = add_common_fields({})
         output['ins1:ReliefOverrideAmount'] = @relief_override_amount if @relief_override_amount.present?
-        output
+        add_mdr_fields(output)
       end
 
       # Create a new instance based on a back office style hash (@see LbttReturn.convert_back_office_hash).
       # Sort of like the opposite of @see #request_save
       def self.convert_back_office_hash(output)
-        output[:relief_type] = output[:type] if output[:type].present?
-        output[:relief_override_amount] = output[:amount] if output[:amount].present?
-        output[:relief_amount] = output[:orig_amount] if output[:orig_amount].present?
-        # strip out attributes we don't want yet
-        delete = %i[type amount orig_amount]
-        delete.each { |key| output.delete(key) }
+        # Change the name of those attributes which are different in the incoming hash
+        output.transform_keys!(type: :relief_type, amount: :relief_override_amount, orig_amount: :relief_amount)
 
         # Create new instance
         ReliefClaim.new_from_fl(output)
+      end
+
+      private
+
+      # Add the standard fields to an output hash
+      # @param output [Hash] the current hash
+      # @return [Hash] the revised hash
+      def add_common_fields(output)
+        output['ins1:ReliefType'] = @relief_type
+        output['ins1:ReliefAmount'] = @relief_amount if @relief_amount.present?
+        output
+      end
+
+      # Add the mdr fields to an output hash if this is an MDR
+      # @param output [Hash] the current hash
+      # @return [Hash] the revised hash
+      def add_mdr_fields(output)
+        return output unless md_relief?
+
+        output['ins1:MdrNumberDwellings'] = @mdr_number_dwellings
+        output['ins1:MdrTotalConsideration'] = @mdr_total_consideration
+        output['ins1:MdrNumberDwellingsAds'] = @mdr_number_dwellings_ads
+        output
       end
     end
   end

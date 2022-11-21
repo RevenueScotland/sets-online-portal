@@ -27,14 +27,20 @@ module Returns
 
     # Clears out existing errors on the model and creates new errors in the :base context with a suitable message.
     # @param model [ActiveModel] object to add errors to
-    # @param errors [Array] list of error sections created by the #add_error method.  Used as the attr arguement when
+    # @param errors [Array] list of error sections created by the #add_error method.  Used as the attr argument when
     #                       adding an error to the model
-    # @param message [Symbol] translation key to the message to add; defaults to :section_not_complete
-    def build_model_errors(model, errors, message = :section_not_complete)
+    def build_model_errors(model, errors)
       return if errors.blank?
 
       model.errors.clear
-      errors.each { |err_attr| model.errors.add :base, message, attr: err_attr unless err_attr.nil? }
+      errors.each do |err_attr|
+        next if err_attr.blank?
+
+        # Note lowercase the first letter as some section names have upper case first which does not
+        # work with the current message
+        err_attr[0] = err_attr[0].downcase
+        model.errors.add(:base, :section_not_complete, attr: err_attr)
+      end
     end
   end
 end

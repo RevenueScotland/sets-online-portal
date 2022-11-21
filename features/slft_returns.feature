@@ -216,14 +216,12 @@ Feature: SLfT Returns
         Then I should see the text "Geographical area can't be blank"
         Then I should see the text "Management method can't be blank"
         Then I should see the text "Has this waste been moved out of a non-disposal area (NDA)"
-        Then I should see the text "Is it pre-treated can't be blank"
 
         When I enter "05 01 02 Desalter sludges" in the "EWC code" select or text field
         And I enter "RANDOM_text,256" in the "Description of waste" field
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
-        And I check the "returns_slft_waste_pre_treated_ind_y" radio button
         And I click on the "Continue" button
 
         Then I should receive the message "Description of waste is too long (maximum is 255 characters)"
@@ -310,7 +308,6 @@ Feature: SLfT Returns
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
-        And I check the "returns_slft_waste_pre_treated_ind_y" radio button
         And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
         When I click on the "Continue" button
@@ -334,7 +331,6 @@ Feature: SLfT Returns
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
-        And I check the "returns_slft_waste_pre_treated_ind_y" radio button
         And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
         When I enter " 0.78 " in the "Standard tonnage" field
@@ -353,7 +349,6 @@ Feature: SLfT Returns
         And I select "Falkirk" from the "Geographical area"
         And I select "Recycled" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_n" radio button
-        And I check the "returns_slft_waste_pre_treated_ind_n" radio button
         And I click on the "Continue" button
         When I enter "1" in the "Standard tonnage" field
         And I enter "1" in the "Water discount tonnage" field
@@ -447,7 +442,6 @@ Feature: SLfT Returns
         And I select "Falkirk" from the "Geographical area"
         And I select "Recycled" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_n" radio button
-        And I check the "returns_slft_waste_pre_treated_ind_n" radio button
         And I click on the "Continue" button
         Then I should see the "Details of the 05 01 02 waste for Waste Site 2" page
         And I should see the sub-title "Provide tonnage details for this waste type"
@@ -468,7 +462,6 @@ Feature: SLfT Returns
         And I select "Fife" from the "Geographical area"
         And I select "Incinerated" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_n" radio button
-        And I check the "returns_slft_waste_pre_treated_ind_n" radio button
         And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
@@ -620,7 +613,6 @@ Feature: SLfT Returns
         And I should see the "Fife" option selected in "Geographical area"
         And I should see the "Incinerated" option selected in "Management method"
         And the radio button "returns_slft_waste_from_non_disposal_ind_n" should be selected
-        And the radio button "returns_slft_waste_pre_treated_ind_n" should be selected
         When I click on the "Continue" button
         Then I should see the "Details of the 01 01 01 waste for Waste Site 2" page
         And I should see the sub-title "Provide tonnage details for this waste type"
@@ -843,10 +835,10 @@ Feature: SLfT Returns
         # Begin calculation part
         # the loaded data is bogus and clicking calculate revalidates the model
         When I click on the "calculate_return" button
-        Then I should receive the message "Credits claimed has errors that need to be corrected, edit it"
-        And I should receive the message "Waste details with EWC code 03 02 02/Aciiiiiiid for Waste Site 1 has errors that need to be corrected, edit it"
-        And I should receive the message "Waste details with EWC code 01 03 07/Aciiiiiiid for Waste Site 2 has errors that need to be corrected, edit it"
-        And I should receive the message "Credits claimed has errors that need to be corrected, edit it"
+        Then I should receive the message "There's an error somewhere in the credits claimed - please review the credits claimed section of the return and update it"
+        And I should receive the message "There's an error somewhere in the waste details with EWC code 03 02 02/Aciiiiiiid for Waste Site 1 - please review the waste details with EWC code 03 02 02/Aciiiiiiid for Waste Site 1 section of the return and update it"
+        And I should receive the message "There's an error somewhere in the waste details with EWC code 01 03 07/Aciiiiiiid for Waste Site 2 - please review the waste details with EWC code 01 03 07/Aciiiiiiid for Waste Site 2 section of the return and update it"
+        And I should receive the message "There's an error somewhere in the credits claimed - please review the credits claimed section of the return and update it"
 
         # Go back and correct credit claimed wizard
         When I click on the "Edit credit details" link
@@ -972,10 +964,9 @@ Feature: SLfT Returns
 
         When I enter "05 01 03 Tank bottom sludges" in the "EWC code" select or text field
         And I enter "icky goo" in the "Description of waste" field
-        And I select "Falkirk" from the "Geographical area"
+        And I select "EU" from the "Geographical area"
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
-        And I check the "returns_slft_waste_pre_treated_ind_y" radio button
         And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
@@ -994,7 +985,6 @@ Feature: SLfT Returns
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
-        And I check the "returns_slft_waste_pre_treated_ind_y" radio button
         And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
@@ -1026,7 +1016,6 @@ Feature: SLfT Returns
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
         And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
-        And I check the "returns_slft_waste_pre_treated_ind_y" radio button
         And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 

@@ -175,6 +175,22 @@ module Returns
         @non_chargeable
       end
 
+      # @return [Array] The array of MD reliefs, we are only expecting one
+      def md_relief
+        md_relief = []
+        md_relief = @non_ads_relief_claims.select(&:md_relief?) if
+                              @non_ads_relief_claims.present? && @non_ads_reliefclaim_option_ind == 'Y'
+        md_relief
+      end
+
+      # Updates the ads_due flag on any linked reliefs and returns the mutated instance
+      # @return [Array] The array of non ads relief claims with the latest ads due flag
+      def synchronising_ads_due_on_reliefs!
+        ads_value = show_ads?
+        @non_ads_relief_claims.each { |r| r.lbtt_return_ads_due = ads_value } if @non_ads_relief_claims.present?
+        self
+      end
+
       # @return [Integer] the value of the @remaining_chargeable or @total_consideration attribute,
       # depending on the @property_type, @business_ind, @linked_ind values.
       # @see business_ind?, linked_transaction_validation to learn more about what
@@ -560,6 +576,21 @@ module Returns
         nino_hash
       end
 
+      # Returns Array of addresses which are previously used for the Return.
+      def list_of_used_addresses(party_id, party_type)
+        address_list = []
+        all_parties.each_value do |party|
+          # Populating Addresses which are related to the same Party type and except from current Party.
+          next unless party.party_type == party_type && party.party_id != party_id
+
+          address_list << party.address
+          address_list << party.contact_address
+          address_list << party.org_contact_address
+        end
+
+        address_list.compact.uniq(&:full_address)
+      end
+
       # The ADS section should only be shown if the user has specified that ADS applies to a property
       # @see LbttPropertiesController
       # @return [Boolean] whether or not to show the ADS section
@@ -567,6 +598,13 @@ module Returns
         return false if @properties.blank?
 
         @properties.values.detect { |property| property.ads_due_ind == 'Y' }.present?
+      end
+
+      # Checks if any buyer party is non individual
+      def non_individual_buyer?
+        return false if @buyers.blank?
+
+        @buyers.values.detect { |buyer| buyer.type != 'PRIVATE' }.present?
       end
 
       # The relief claim should only show if user has entered ADS and transaction details
@@ -588,9 +626,12 @@ module Returns
 
       # @return [Party] arbitrary "first" (they're stored by UUID) buyer or tenant depending on the return type
       def primary_party
-        return buyers&.values&.first if convey?
-
-        tenants&.values&.first
+        parties = if convey?
+                    buyers&.values
+                  else
+                    tenants&.values
+                  end
+        parties&.sort_by!(&:full_name)&.first
       end
 
       # @return [Property] arbitrary "first" (they're stored by UUID property)
@@ -604,7 +645,7 @@ module Returns
       def self.find(param_id, requested_by)
         Lbtt::LbttReturn.abstract_find(:lbtt_tax_return_details, param_id, requested_by,
                                        :lbtt_tax_return) do |data|
-          Lbtt::LbttReturn.new_from_fl(data)
+          Lbtt::LbttReturn.new_from_fl(data).synchronising_ads_due_on_reliefs!
         end
       end
 
@@ -853,7 +894,9 @@ module Returns
       # check the correct amounts are present for the tax calc
       # note we don't check all the amounts but if these are present which should have the others as well
       def amounts_for_tax_calc?
-        ((convey? && @total_consideration.present?) || (!convey? && @premium_paid.present?))
+        # Note we use the remaining chargeable method not the actual attribute as values are defaulted
+        ((convey? && @total_consideration.present? && remaining_chargeable.present?) ||
+          (!convey? && @premium_paid.present?))
       end
 
       # Called by @see Returns::AbstractReturn#save

@@ -325,16 +325,14 @@ module Returns
       # Extract relief details from the tax response to create the relief items
       # and assigned to the lbtt_return which will split into ads and non ads reliefs
       def convert_calc_relief_claim_back_office_hash(body, lbtt)
-        reliefs_hash = if body.key?(:conv_tax_payable)
-                         body[:conv_tax_payable][:reliefs]
-                       else
-                         body[:lease_tax_payable][:reliefs]
-                       end
+        reliefs_hash = (body.key?(:conv_tax_payable) ? body[:conv_tax_payable] : body[:lease_tax_payable])[:reliefs]
+
         reliefs = []
         ServiceClient.iterate_element(reliefs_hash) do |relief|
           reliefs << ReliefClaim.new_from_fl(relief)
         end
         lbtt.relief_claims = reliefs
+        lbtt.synchronising_ads_due_on_reliefs!
       end
 
       # Method to convert back office Tax calculations hash into a suitable format for loading into a Tax object.

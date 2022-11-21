@@ -9,7 +9,7 @@ module Returns
 
       # Attributes for this class, in list so can re-use as permitted params list in the controller
       def self.attribute_list
-        %i[ ewc_code description lau_code fmme_method from_non_disposal_ind pre_treated_ind
+        %i[ ewc_code description lau_code fmme_method from_non_disposal_ind
             standard_tonnage lower_tonnage exempt_tonnage water_tonnage
             nda_ex_yes_no nda_ex_tonnage restoration_ex_yes_no restoration_ex_tonnage
             other_ex_yes_no other_ex_tonnage other_ex_description ]
@@ -19,7 +19,7 @@ module Returns
       # @see post_csv_import for processing of other attributes
       def self.csv_attribute_list
         %i[ ewc_code ewc_description description lau_code lau_description
-            fmme_method from_non_disposal_ind pre_treated_ind
+            fmme_method from_non_disposal_ind
             standard_tonnage lower_tonnage water_tonnage
             nda_ex_tonnage restoration_ex_tonnage other_ex_tonnage other_ex_description ]
       end
@@ -38,13 +38,13 @@ module Returns
       # Define the ref data codes associated with the attributes to be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
       def cached_ref_data_codes
-        { lau_code: comp_key('LAU', 'SYS', 'RSTU'), fmme_method: comp_key('MANAGEMENT METHOD', 'SLFT', 'RSTU') }
+        { lau_code: comp_key('LAU', 'SLFT', 'RSTU'), fmme_method: comp_key('MANAGEMENT METHOD', 'SLFT', 'RSTU') }
       end
 
       # Define the ref data codes associated with the attributes but which won't be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
       def uncached_ref_data_codes
-        { from_non_disposal_ind: YESNO_COMP_KEY, pre_treated_ind:  YESNO_COMP_KEY,
+        { from_non_disposal_ind: YESNO_COMP_KEY,
           nda_ex_yes_no: YESNO_COMP_KEY, restoration_ex_yes_no:  YESNO_COMP_KEY,
           other_ex_yes_no: YESNO_COMP_KEY, ewc_code: comp_key('EWC_LIST', 'SLFT', 'RSTU') }
       end
@@ -55,7 +55,6 @@ module Returns
       validates :lau_code, presence: true, InReferenceValues: true, on: %i[ewc_code]
       validates :fmme_method, presence: true, InReferenceValues: true, on: %i[ewc_code]
       validates :from_non_disposal_ind, presence: true, InReferenceValues: true, on: %i[ewc_code]
-      validates :pre_treated_ind, presence: true, InReferenceValues: true, on: %i[ewc_code]
 
       # waste-tonnage validations, blank or 2dp decimals >= 0
       validates :standard_tonnage, allow_blank: true, two_dp_pattern: true,
@@ -152,11 +151,6 @@ module Returns
         @from_non_disposal_ind = value&.upcase
       end
 
-      # custom setter to make sure that the value is upper case mainly for csv load
-      def pre_treated_ind=(value)
-        @pre_treated_ind = value&.upcase
-      end
-
       # Getter for standard tonnage to return the default of zero
       # @return [String] the string for the tonnage
       def standard_tonnage_display
@@ -238,8 +232,8 @@ module Returns
       # Create the request hash in the exact order given by the save wsdl.
       def request_save
         output = { 'ins1:EWCCode': ewc_code, 'ins1:WasteDescription': description,
-                   'ins1:FMMEMethod': fmme_method, 'ins1:PreTreatedInd': pre_treated_ind == 'Y' ? 'yes' : 'no',
-                   'ins1:LAUCode': lau_code, 'ins1:FromNonDisposalInd': from_non_disposal_ind == 'Y' ? 'yes' : 'no' }
+                   'ins1:FMMEMethod': fmme_method, 'ins1:LAUCode': lau_code,
+                   'ins1:FromNonDisposalInd': from_non_disposal_ind == 'Y' ? 'yes' : 'no' }
 
         output['ins1:Exempt'] = request_save_exempt_hash if exempt_breakdown_needed?
 
@@ -265,7 +259,7 @@ module Returns
         raw_hash.delete(:total_tonnage)
 
         # convert back office yes/no to Y/N
-        yes_nos_to_yns(raw_hash, %i[from_non_disposal_ind pre_treated_ind])
+        yes_nos_to_yns(raw_hash, %i[from_non_disposal_ind])
 
         # derive yes no based on the data now that we've finished moving it around
         derive_yes_nos_in(raw_hash)
@@ -434,8 +428,7 @@ module Returns
          { code: :description },
          { code: :lau_code, lookup: true },
          { code: :fmme_method, lookup: true },
-         { code: :from_non_disposal_ind, lookup: true },
-         { code: :pre_treated_ind, lookup: true }]
+         { code: :from_non_disposal_ind, lookup: true }]
       end
 
       # Layout to print the data in this model

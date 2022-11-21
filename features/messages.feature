@@ -3,7 +3,7 @@
 Feature: Secure Communication
     As a registered user
     I want to be able to have a secure messaging communication
-    So that I can view a list of messages, send new message, view a message in full details and reply to messages
+    So that I can View a list of messages, send new message, View a message in full details and reply to messages
 
     Scenario: Upload and download a file attachment
         Given I have signed in "PORTAL.WASTE.NEW" and password "Password1!"
@@ -89,20 +89,20 @@ Feature: Secure Communication
         And I should see the text "Test png image file"
 
         And the table of data is displayed
-            | File uploaded                    | Description         |             |
-            | %r{testpng[+ ]with[+ ]space.png} | Test png image file | Remove file |
+            | File uploaded              | Description         |             |
+            | %r{testpng with space.png} | Test png image file | Remove file |
 
         And I click on the "Finish" button
 
         # Checking to see that the uploaded files from both the new and confirmation pages are there
-        And I click on the 1 st "view" link
+        And I click on the 1 st "View" link
         Then I should see the text "File uploaded"
         And I should see the text "Application for bad debt relief"
         And I should see a link to the file "testdocx.docx"
         Then the table of data is displayed
-            | File uploaded                    | Description         |
-            | testdocx.docx                    | This is a docx file |
-            | %r{testpng[+ ]with[+ ]space.png} | Test png image file |
+            | File uploaded              | Description         |
+            | testdocx.docx              | This is a docx file |
+            | %r{testpng with space.png} | Test png image file |
 
         # Downloading the file
         When I click on the 1 st "testpng with space.png" link to download a file
@@ -120,9 +120,9 @@ Feature: Secure Communication
         Then I click on the "Find" button
         And the table of data is displayed
             | Date & time      | Name             | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
-            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | no         | sent | view     |
-            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | no         | no   | view     |
-            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | no         | sent | view     |
+            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | No         | Sent | View     |
+            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | No         | No   | View     |
+            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
 
     # Show page tests
     Scenario: View a message in full details with the list of related messages and a related message
@@ -132,7 +132,7 @@ Feature: Secure Communication
         And I enter "RS2000001AAAA" in the "Reference" field
         And I click on the "Find" button
 
-        When I click on the "view" link of the first entry displayed
+        When I click on the "View" link of the first entry displayed
         Then I should see the "Message full details" page
         And I should see the text "Name"
         And I should see the text "Portal User One"
@@ -156,12 +156,12 @@ Feature: Secure Communication
         And I should see the text "Related messages"
         And the table of data is displayed
             | Date & time      | Name             | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
-            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | no         | sent | view     |
-            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | no         | no   | view     |
-            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | no         | sent | view     |
+            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | No         | Sent | View     |
+            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | No         | No   | View     |
+            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
 
         # This is showing all the details of the message that is related to the previous message
-        When I click on the 2 nd "view" link
+        When I click on the 2 nd "View" link
         Then I should see the "Message full details" page
         And I should see the text "Portal User One"
         And I should see the text "23/03/2019"
@@ -173,9 +173,9 @@ Feature: Secure Communication
         And I should see the text "Related messages"
         And the table of data is displayed
             | Date & time      | Name             | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
-            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | no         | sent | view     |
-            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | no         | no   | view     |
-            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | no         | sent | view     |
+            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | No         | Sent | View     |
+            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | No         | No   | View     |
+            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
         When I click on the "Go to all messages" link
         Then I should see the "Messages" page
 
@@ -187,7 +187,7 @@ Feature: Secure Communication
         And I enter "RS2000001AAAA" in the "Reference" field
         And I click on the "Find" button
 
-        When I click on the "view" link of the first entry displayed
+        When I click on the "View" link of the first entry displayed
         Then I should see the "Message full details" page
 
         When I click on the "Reply" button
@@ -268,11 +268,11 @@ Feature: Secure Communication
         When I enter "RANDOM_REFERENCE_NAME" in the "Reference" field
         Then the table of data is displayed
             | Date & time | Name                  | Message title | Reference             | Subject          | Attachment | Read | Action_1 |
-            | NOW_DATE    | Portal User New Users | My title      | RANDOM_REFERENCE_NAME | General question | no         | sent | view     |
+            | NOW_DATE    | Portal User New Users | My title      | RANDOM_REFERENCE_NAME | General question | No         | Sent | View     |
 
         # Reply to a message gets shown in list of messages
         # Now I'm in looking at the Messages page
-        When I click on the "view" link of the first entry displayed
+        When I click on the "View" link of the first entry displayed
         Then I should see the "Message full details" page
         # Now I'm in looking at the Message's full details page
         When I click on the "Reply" button
@@ -286,13 +286,13 @@ Feature: Secure Communication
         Then I should see the "Messages" page
         Then the table of data is displayed
             | Date & time | Name                  | Message title     | Reference             | Subject          | Attachment | Read | Action_1 |
-            | NOW_DATE    | Portal User New Users | My response title | RANDOM_REFERENCE_NAME | General question | no         | sent | view     |
+            | NOW_DATE    | Portal User New Users | My response title | RANDOM_REFERENCE_NAME | General question | No         | Sent | View     |
         # Show dependent message
-        When I click on the "view" link of the first entry displayed
+        When I click on the "View" link of the first entry displayed
         Then I should see the "Message full details" page
         And the table of data is displayed
             | Date & time | Name                  | Message title | Reference             | Subject          | Attachment | Read | Action_1 |
-            | NOW_DATE    | Portal User New Users | My title      | RANDOM_REFERENCE_NAME | General question | no         | sent | view     |
+            | NOW_DATE    | Portal User New Users | My title      | RANDOM_REFERENCE_NAME | General question | No         | Sent | View     |
 
 
     Scenario: Message filtering only shows the data that I want to see
@@ -311,8 +311,8 @@ Feature: Secure Communication
         And I click on the "Find" button
         Then the table of data is displayed
             | Date & time      | Name            | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
-            | 23/03/2019 15:16 | Portal User One | Test Message 1 - Reply to Response | RS2000001AAAA | General question | no         | sent | view     |
-            | 22/03/2019 11:13 | Portal User One | Test Message 1                     | RS2000001AAAA | General question | no         | sent | view     |
+            | 23/03/2019 15:16 | Portal User One | Test Message 1 - Reply to Response | RS2000001AAAA | General question | No         | Sent | View     |
+            | 22/03/2019 11:13 | Portal User One | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
 
         When I open the "Show more filter options" summary item
         And I clear the "Sent by" field
@@ -321,7 +321,7 @@ Feature: Secure Communication
         And I click on the "Find" button
         Then the table of data is displayed
             | Date & time      | Name             | Message title             | Reference     | Subject          | Attachment | Read | Action_1 |
-            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response | RS2000001AAAA | General question | no         | no   | view     |
+            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response | RS2000001AAAA | General question | No         | No   | View     |
         And I should not see the text "Test Message 1 - Reply to Response"
 
         When I open the "Show more filter options" summary item
@@ -329,8 +329,8 @@ Feature: Secure Communication
         And I click on the "Find" button
         Then the table of data is displayed
             | Date & time      | Name            | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
-            | 23/03/2019 15:16 | Portal User One | Test Message 1 - Reply to Response | RS2000001AAAA | General question | no         | sent | view     |
-            | 22/03/2019 11:13 | Portal User One | Test Message 1                     | RS2000001AAAA | General question | no         | sent | view     |
+            | 23/03/2019 15:16 | Portal User One | Test Message 1 - Reply to Response | RS2000001AAAA | General question | No         | Sent | View     |
+            | 22/03/2019 11:13 | Portal User One | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
         And I should not see the text "Test Message 1 - Response"
 
         When I open the "Show more filter options" summary item
@@ -339,9 +339,9 @@ Feature: Secure Communication
         And I click on the "Find" button
         Then the table of data is displayed
             | Date & time      | Name             | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
-            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | no         | sent | view     |
-            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | no         | no   | view     |
-            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | no         | sent | view     |
+            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | No         | Sent | View     |
+            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | No         | No   | View     |
+            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
 
         When I open the "Show more filter options" summary item
         And I select "Choose from list" from the "Subject"
@@ -349,16 +349,16 @@ Feature: Secure Communication
         And I click on the "Find" button
         Then the table of data is displayed
             | Date & time      | Name             | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
-            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | no         | sent | view     |
-            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | no         | no   | view     |
-            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | no         | sent | view     |
+            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | No         | Sent | View     |
+            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | No         | No   | View     |
+            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
 
         When I enter "RS2000001AAAA" in the "Reference" field
         And I enter "22-03-2019" in the "Created date from" date field
         And I click on the "Find" button
         Then the table of data is displayed
             | Date & time      | Name            | Message title  | Reference     | Subject          | Attachment | Read | Action_1 |
-            | 22/03/2019 11:13 | Portal User One | Test Message 1 | RS2000001AAAA | General question | no         | sent | view     |
+            | 22/03/2019 11:13 | Portal User One | Test Message 1 | RS2000001AAAA | General question | No         | Sent | View     |
 
     Scenario: Message filtering validation
         Given I have signed in

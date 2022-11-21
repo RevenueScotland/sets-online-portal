@@ -536,7 +536,7 @@
                 {
                     "itemcode": "ads_consideration",
                     "itemformat": "money",
-                    "itemlabel": "Amount of ADS liability from new main residence",
+                    "itemlabel": "Total consideration attributable to new main residence",
                     "itemdata": "1140"
                 },
                 {
@@ -720,7 +720,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
-            "sectiontitle": "Linked Transactions",
+            "sectiontitle": "Linked transactions",
             "listitem": [
                 {
                     "itemcode": "linked_ind",
@@ -859,9 +859,27 @@
                     "itemformat": "money",
                     "itemlabel": "Amount of tax saved by relief",
                     "itemdata": "9000"
+                },
+                {
+                    "itemcode": "mdr_number_dwellings",
+                    "itemformat": null,
+                    "itemlabel": "Number of dwellings",
+                    "itemdata": "20"
+                },
+                {
+                    "itemcode": "mdr_number_dwellings_ads",
+                    "itemformat": null,
+                    "itemlabel": "Number of dwellings that attract ADS",
+                    "itemdata": "30"
+                },
+                {
+                    "itemcode": "mdr_total_consideration",
+                    "itemformat": "money",
+                    "itemlabel": "Total consideration attributable to dwellings",
+                    "itemdata": "44.44"
                 }
             ],
-            "itemcount": 2
+            "itemcount": 5
         },
         {
             "sectioncode": "relief_types",
@@ -926,7 +944,7 @@
                 {
                     "itemcode": "deferral_agreed_ind",
                     "itemformat": null,
-                    "itemlabel": "Have you applied to pay on a deferred basis??",
+                    "itemlabel": "Have you applied to pay on a deferred basis?",
                     "itemdata": "Yes"
                 },
                 {

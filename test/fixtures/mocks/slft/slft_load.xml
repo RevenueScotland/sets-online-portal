@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
     <soap:Body>
-        <SLFTTaxReturnResponse xmlns="http://www.northgateps.com/RSTS/SLFTTaxReturnDetailsResponse" 
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        <SLFTTaxReturnResponse xmlns="http://www.northgateps.com/RSTS/SLFTTaxReturnDetailsResponse"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:core="http://northgate-is.com/FL/Core">
             <core:Success>true</core:Success>
             <SLFTTaxReturn>
@@ -40,7 +40,6 @@
                                         <![CDATA[Aciiiiiiid]]>
                                     </WasteDescription>
                                     <FMMEMethod>TR</FMMEMethod>
-                                    <PreTreatedInd>yes</PreTreatedInd>
                                     <GeographicalOrigin>9064</GeographicalOrigin>
                                     <WasteMovement>yes</WasteMovement>
                                     <Exempt>
@@ -63,7 +62,6 @@
                                         <![CDATA[er batteries]]>
                                     </WasteDescription>
                                     <FMMEMethod>LF</FMMEMethod>
-                                    <PreTreatedInd>yes</PreTreatedInd>
                                     <GeographicalOrigin>9065</GeographicalOrigin>
                                     <WasteMovement>yes</WasteMovement>
                                     <Exempt>
@@ -96,7 +94,6 @@
                                         <![CDATA[Aciiiiiiid]]>
                                     </WasteDescription>
                                     <FMMEMethod>LF</FMMEMethod>
-                                    <PreTreatedInd>yes</PreTreatedInd>
                                     <GeographicalOrigin>9059</GeographicalOrigin>
                                     <WasteMovement>no</WasteMovement>
                                     <Exempt>

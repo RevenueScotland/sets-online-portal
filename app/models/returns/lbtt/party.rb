@@ -21,19 +21,20 @@ module Returns
           org_name job_title company org_type other_type_description
           contact_surname contact_firstname org_contact_address is_acting_as_trustee agent_dx_number
           contact_email contact_tel_no com_jurisdiction agent_reference same_address
-          party_refno authority_date hash_for_nino
+          party_refno authority_date hash_for_nino used_address_list
         ]
       end
 
       attribute_list.each { |attr| attr_accessor attr }
 
       validates :type, presence: true, on: :type
+      validates :title, InReferenceValues: true, if: :individual?
       validates :surname, presence: true, length: { maximum: 100 }, on: :surname, if: :individual?
       validates :firstname, presence: true, length: { maximum: 50 }, on: :firstname, if: :individual?
       validates :agent_dx_number, length: { maximum: 100 }, on: %i[title]
       validates :agent_reference, length: { maximum: 30 }, on: %i[title]
 
-      # For a party not on a claim both e-mail address and telephone number are mandatory for individuals
+      # For a party not on a claim both email address and telephone number are mandatory for individuals
       # Unless they are the seller type
       validates :email_address, presence: true, on: :email_address,
                                 if: :individual_but_not_claim_seller_landlord_newtenant?
@@ -55,7 +56,7 @@ module Returns
       validates :org_type, presence: true, on: :org_type, if: proc { |p| p.type == 'OTHERORG' }
       validates :other_type_description, presence: true, length: { maximum: 255 },
                                          on: :org_type, if: proc { |w| w.org_type == 'OTHER' }
-      validates :com_jurisdiction, presence: true, length: { maximum: 255 }, on: :org_name,
+      validates :com_jurisdiction, presence: true, InReferenceValues: true, length: { maximum: 255 }, on: :org_name,
                                    if: proc { |p| p.type == 'OTHERORG' }
       # The party is used in both lbtt party and also in claim. The org_name is required in lbtt party but it is
       # optional in the claim flow. So this should only trigger for the lbtt party flow.
@@ -86,7 +87,8 @@ module Returns
       validate :no_nino_or_alternate?, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
       validate :both_nino_and_alternate?, on: :nino
       validates :nino, nino: true, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
-      validates :alrt_type, :ref_country, presence: true, on: :alrt_type, if: :incomplete_alternate?
+      validates :alrt_type, :ref_country, presence: true, InReferenceValues: true, on: :alrt_type,
+                                          if: :incomplete_alternate?
       validates :alrt_reference, presence: true, length: { maximum: 30 }, on: :alrt_type, if: :incomplete_alternate?
 
       # HACK: The conditions here are copying the #request_save method - they should use the same methods

@@ -5,9 +5,9 @@
 <%= form_for @account, url: @post_path, local: true do |f| %>
   <%= form_errors_for @account %>
   <%= f.fields_for :current_user, @account.current_user do |u| %>
-    <%= u.text_field :new_username %>
-    <%= u.password_field :new_password, translation_options: :new_user %>
-    <%= u.password_field :new_password_confirmation, translation_options: :new_user %>
+    <%= u.text_field :new_username, {}, {autocomplete: "username"} %>
+    <%= u.password_field :new_password, {translation_options: :new_user}, {autocomplete: "new-password"} %>
+    <%= u.password_field :new_password_confirmation, {translation_options: :new_user}, {autocomplete: "new-password"} %>
   <% end %>
   <%= f.check_box_field :terms_and_conditions,
                           text_links: { t('term_and_cons') => link_to(t('term_and_cons'), website_text_path('REGTSANDCS'), 

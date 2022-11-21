@@ -1,13 +1,21 @@
 <%
-   unless ( params[:manual_address] || params[:search] || params[:search_results])
-    # set show manual address to display div as per previous state
-      @show_manual_address = ActiveModel::Type::Boolean.new.cast(params[:show_manual_address]) if params[:show_manual_address]
-      @address_read_only  =  ActiveModel::Type::Boolean.new.cast(params[:address_read_only]) if params[:address_read_only]
-   end
-  # Control showing label instead of postcode search textbox
-  @show_label_postcode = (!@search_results.nil? || @show_manual_address) && !@address_summary.postcode.blank?
+  # Show the postcode as a label if we have a postcode and are showing the manual address, and are not currently showing search results
+  @show_label_postcode = @address_summary.postcode.present? && @show_manual_address && @search_results.nil? 
 %>
 <%= fields_for @address_summary do |asf| %>
+  <%# Displaying previously used addresses list %>
+  <% if @address_list.present? %>
+    <div class="govuk-form-group">
+      <%  @address_list.each_with_index do |addr, ind| %>
+        <%= hidden_field_tag "address_list_#{ind}", addr.to_json%>
+        <%= asf.button "pick_address_#{ind}", { :class => 'scot-rev-button_link govuk-link', :name => "pick_address_#{ind}" } do
+         t('use_existing_address', full_address: addr.full_address)
+      end
+      %>
+        <br/>
+      <% end %>
+    </div>
+  <% end %>
   <% if @show_label_postcode %>
     <div class="govuk-form-group">
       <%= display_field @address_summary, :postcode, wrapper: { class: "display-inline-text" }, text: { class: "govuk-label" } %>

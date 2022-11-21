@@ -4,8 +4,6 @@
   <%= form_errors_for @party %>
   <%= f.collection_radio_buttons_fields(:is_acting_as_trustee, @party.list_ref_data(:is_acting_as_trustee),
                                         text_links: { t('.is_acting_as_trustee_partnership') =>
-                                                    link_to(t('.is_acting_as_trustee_partnership'), external_link_url('PARTNERSHIPS'), target: '_blank'),
-                                                     t('.is_acting_as_trustee_trust') =>
-                                                    link_to(t('.is_acting_as_trustee_trust'), external_link_url('TRUSTS'), target: '_blank')}) %>
+                                                    link_to(t('.is_acting_as_trustee_partnership'), external_link_url('REP_PARTNER'), target: '_blank')}) %>
   <%= f.button %>
 <% end %>

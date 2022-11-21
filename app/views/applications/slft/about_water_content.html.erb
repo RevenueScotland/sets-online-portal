@@ -2,11 +2,11 @@
 <% content_for :page_title, t('.title') %>
 <%= form_for @slft_application, url: @post_path, local: true do |f| %>
   <%= form_errors_for @slft_application %>
-  <%= f.percentage_field :waste_percentage %>
-  <%= f.percentage_field :added_water_percentage %>
   <%= f.collection_radio_buttons_fields(:naturally_occurring, @slft_application.list_ref_data(:naturally_occurring)) %>
   <div id= "hideable">
     <%= f.percentage_field :naturally_occurring_percentage %>
   </div>
+  <%= f.percentage_field :waste_percentage %>
+  <%= f.percentage_field :added_water_percentage %>
   <%= f.button %>
 <% end %>

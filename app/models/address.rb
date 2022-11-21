@@ -2,10 +2,7 @@
 
 # Model for address records
 class Address < FLApplicationRecord
-  include ActiveModel::Model
-  include ActiveModel::Serialization
-  include ActiveModel::Translation
-  include ServiceClient
+  include ActiveModel::Serializers::JSON
   include PrintData
   validates_with ScotlandPostcodeValidator, on: :scotland_postcode_selected
 
@@ -13,6 +10,11 @@ class Address < FLApplicationRecord
   def self.attribute_list
     %i[address_identifier address_line1 address_line2 address_line3 address_line4 town county postcode country
        local_ed_auth_code local_auth_code udprn umprn delivery_point_suffix default_country]
+  end
+
+  # sets the attributes for serialising as JSON on the page
+  def attributes
+    Address.attribute_list.index_with { |_attr| nil }
   end
 
   attribute_list.each { |attr| attr_accessor attr }

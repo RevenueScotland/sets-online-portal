@@ -281,7 +281,7 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # @return nil
   def delete_attachment(file_name)
     file_path = ResourceItem.file_temp_storage_path(:upload, sub_directory, file_name)
-    File.delete(file_path) if File.exist?(file_path)
+    FileUtils.rm_f(file_path) # Will ignore errors
   end
 
   # Retrieve file size limit from configuration

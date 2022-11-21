@@ -1,0 +1,13 @@
+<% content_for :page_title, t('.title') %>
+<% content_for :page_subtitle, t('.subtitle') %>
+<% content_for :page_description, UtilityHelper.swap_texts(t('.description_html'),
+                            text_links: { t('.description_link') => link_to(t('.description_link'),
+                                           external_link_url('MDR'), target: '_blank') }) %>
+<% content_for :page_view, render_page_view(__FILE__) %>
+<%= form_for @relief_claim, url: @post_path, :method => 'post', local: true do |f| %>
+  <%= form_errors_for @relief_claim %>    
+    <%= f.text_field :mdr_number_dwellings %>
+    <%= f.text_field :mdr_number_dwellings_ads %>
+    <%= f.currency_field :mdr_total_consideration %>
+  <%= f.button %>
+<% end %>
