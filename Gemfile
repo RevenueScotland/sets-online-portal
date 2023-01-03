@@ -37,7 +37,7 @@ gem 'savon', '~> 2.12'
 # Wraps warden for security
 gem 'rails_warden', '~> 0.6'
 # Used for making REST calls
-gem 'httparty', '~> 0.17'
+gem 'httparty', '~> 0.21'
 # Read more: https://rubygems.org/gems/ruby-prof/versions/1.0.0
 # See https://github.com/ruby-prof/ruby-prof/issues/269
 # You may need to install this separately to use the non windows version
