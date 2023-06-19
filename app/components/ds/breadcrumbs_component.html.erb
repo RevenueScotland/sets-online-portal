@@ -1,0 +1,15 @@
+<nav aria-label="Breadcrumb">
+  <ol class="ds_breadcrumbs">
+    <% breadcrumb_urls.each_with_index do |b,i| %>
+      <li class="ds_breadcrumbs__item">
+        <% if i == (index-1) %>
+          <%= b[:page_title] %>
+        <% else %>
+          <a class="ds_breadcrumbs__link" href="<%= b[:page_url] %>">
+            <%= b[:page_title] %>
+          </a>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+</nav>

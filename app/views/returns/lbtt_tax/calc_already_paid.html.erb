@@ -1,7 +1,4 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @tax, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @tax %>
-  <%= f.currency_field :amount_already_paid %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @tax, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_currency(method: :amount_already_paid) %>
 <% end %>

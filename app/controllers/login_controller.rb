@@ -56,11 +56,11 @@ class LoginController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     @user, reason = failure_message.values_at :user, :reason
     if reason == :token_required
-      render 'token'
+      render('token', status: :unprocessable_entity)
     else
       Rails.logger.debug { "User #{@user.username} was unauthenticated and the message was : #{reason}" }
       @user.errors.add(error_attribute(reason), reason)
-      render reason == :invalid_token ? 'token' : 'new'
+      render((reason == :invalid_token ? 'token' : 'new'), status: :unprocessable_entity)
     end
     false # make sure we don't do anything else login related
   end
@@ -101,12 +101,10 @@ class LoginController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   # Redirect the current_user based on their status after authentication (called by {#create}).
   # login_form is the user object holding their username and any validation errors so can be reused on new form.
+  # See also require user which may redirect to expired or change password
   def redirect(login_form)
     if logged_in?
       setup_account_cache
-      return redirect_to user_change_password_path if current_user&.check_password_change_required?
-      return redirect_to user_update_tcs_path if current_user&.check_tcs_required?
-
       redirect_to dashboard_path
     else
       redirect_on_failure login_form
@@ -118,12 +116,12 @@ class LoginController < ApplicationController # rubocop:disable Metrics/ClassLen
   def redirect_on_failure(login_form)
     if two_factor?(login_params)
       @user = login_form
-      render 'token'
+      render('token', status: :unprocessable_entity)
     else
       # Reset session, use previous user object so they see username and validation errors
       logout_process
       @user = login_form
-      render 'new'
+      render('new', status: :unprocessable_entity)
     end
   end
 
@@ -149,7 +147,7 @@ class LoginController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   # get latest account data into cache
   def setup_account_cache
-    return unless authorised? current_user, requires_all_action: AuthorisationHelper::DASHBOARD_HOME
+    return unless authorised? current_user, requires_all_action: RS::AuthorisationHelper::DASHBOARD_HOME
 
     Account.refresh_cache!(current_user)
     User.refresh_cache!(current_user)

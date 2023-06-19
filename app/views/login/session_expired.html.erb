@@ -1,5 +1,4 @@
-<% content_for :turbolinks_cache_control, 'no-preview' %>
-<% content_for :hide_back_link, true %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<%= display_paragraph_components(body: t('.message')) %>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:turbo_cache_control, 'no-preview') %>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_paragraph { t('.message') } %>

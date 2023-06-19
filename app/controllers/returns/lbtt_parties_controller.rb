@@ -9,7 +9,7 @@ module Returns
     include LbttPartiesHelper
     include WizardCompanyHelper
 
-    authorise requires: AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
     # Allow unauthenticated/public access to parties actions
     skip_before_action :require_user
 
@@ -91,10 +91,10 @@ module Returns
     # then clear details related to trust, so user can see blank option on next pages to enter club details.
     def organisation_type_details
       load_step
-      return unless params[:continue]
+      return if request.get?
 
-      reset_party_details if filter_params.present? && @party.org_type != filter_params[:org_type]
-      wizard_step_submitted(OTHER_ORG_STEPS)
+      set_party_details if @party.org_type.present? && @party.org_type != filter_params[:org_type]
+      render(status: :unprocessable_entity) && return unless wizard_step_submitted(OTHER_ORG_STEPS)
     end
 
     # Party wizard - organisation steps page @see #next_page_or_summary
@@ -111,7 +111,7 @@ module Returns
     # Delete the party entry entry specified by params[:party_id]
     def destroy
       look_for_party(params[:party_id], delete: true)
-      redirect_to returns_lbtt_summary_path
+      redirect_to(returns_lbtt_summary_path, status: :see_other)
     end
 
     private
@@ -140,7 +140,9 @@ module Returns
 
     # Stores required data like party_id, party_type selected in previous pages and then clears all other party details
     # by creating a new Party object with the same party_id and party_type.
-    def reset_party_details
+    def set_party_details
+      Rails.logger.debug { "Resetting party details to #{@party.org_type} from #{filter_params[:org_type]}" }
+
       # Stores necessary details before clearing
       party_id = @party.party_id
       party_type = @party.party_type

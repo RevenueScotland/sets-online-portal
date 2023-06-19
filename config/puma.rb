@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'cache'
-
 # Puma can serve each request in a thread from an internal thread pool.
 # The `threads` method setting takes two numbers: a minimum and maximum.
 # Any libraries that use thread pools should be configured to match
@@ -41,18 +39,17 @@ unless Gem.win_platform? || web_concurrency <= 1
 end
 
 # NOTE: rails logger isn't set up at this point, so logging to the console is the only option
+# The below code disconnects the REDIS cache when a new worker is started, REDIS will then reconnect
+# automatically. This avoids issues if the connection is shared
 on_worker_boot do
   puts 'About to start a new puma worker, reconnecting rails cache'
-  client = ActionController::Base.cache_store.redis._client
-  client.disconnect if client.connected?
-  client.connect
+  pool = ActionController::Base.cache_store.redis
+  pool.reload { |c| c.close if c.connected? }
 end
 
 on_restart do
   puts 'Puma restarting, reconnecting rails cache'
-  client = ActionController::Base.cache_store.redis._client
-  client.disconnect if client.connected?
-  client.connect
+  pool.reload { |c| c.close if c.connected? }
 end
 
 # Allow puma to be restarted by `rails restart` command.

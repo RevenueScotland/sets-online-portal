@@ -7,15 +7,13 @@ module Returns
   # See tax wizard for a similar example
   class LbttAdsController < ApplicationController
     include Wizard
-    include WizardListHelper
     include WizardAddressHelper
     include LbttTaxHelper
-    include LbttControllerHelper
 
-    authorise requires: AuthorisationHelper::LBTT_SUMMARY
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY
 
     # wizard steps for the ADS simple wizard in order; last step responsible for redirecting @see #ads_intending_sell
-    STEPS = %w[ads_dwellings ads_amount ads_intending_sell ads_reliefs].freeze
+    STEPS = %w[ads_dwellings ads_amount ads_intending_sell].freeze
 
     # wizard steps for the repayment ADS wizard, @see LbttTaxController for the last step
     REPAYMENT_STEPS = %w[ads_repay_reason ads_repay_date ads_repay_address ads_repay_details].freeze
@@ -46,24 +44,15 @@ module Returns
     end
 
     # returns/lbtt/ads_amount - step in the ADS wizard
+    # tax is re calculated
     def ads_amount
-      wizard_step(STEPS)
+      wizard_step(STEPS) { { after_merge: :update_tax_calculations } }
     end
 
     # returns/lbtt/ads_intending_sell - step in the ADS wizard
     def ads_intending_sell
-      wizard_address_step(STEPS, address_attribute: :ads_main_address, address_required: :ads_sell_residence_ind)
-    end
-
-    # returns/lbtt/ads_reliefs - custom step in the ADS wizard to handle the list of reliefs without them being in
-    # their own special controller/wizard cache.
-    # Navigates to the LBTT summary page after submitted.
-    def ads_reliefs
-      wizard_list_step(returns_lbtt_summary_url, setup_step: :setup_ads_reliefs_step,
-                                                 list_attribute: :ads_relief_claims,
-                                                 new_list_item_instance: :new_list_item_ads_relief_claims,
-                                                 list_required: :ads_reliefclaim_option_ind,
-                                                 after_merge: :update_tax_calculations)
+      wizard_address_step(returns_lbtt_summary_url, address_attribute: :ads_main_address,
+                                                    address_required: :ads_sell_residence_ind)
     end
 
     private
@@ -74,12 +63,6 @@ module Returns
       return REPAYMENT_STEPS if @ads.ads_repayment?
 
       ['ads_repay_reason', STEPS.first]
-    end
-
-    # Used in wizard_list_step as part of the merging of data.
-    # @return [Object] new instance of ReliefClaim class that has attributes with value.
-    def new_list_item_ads_relief_claims
-      Lbtt::ReliefClaim.new
     end
 
     # Overwrites the wizard_save method to save @lbtt_return instead of @tax (which is why we don't need cache_index
@@ -97,20 +80,6 @@ module Returns
       @lbtt_return = wizard_load(Returns::LbttController)
       Lbtt::Ads.setup_ads(@lbtt_return)
       @ads = @lbtt_return.ads
-    end
-
-    # Custom setup for the ads_reliefs step
-    # @return [LbttReturn] the model for wizard saving
-    def setup_ads_reliefs_step
-      model = load_step
-
-      # ensure the form/model is populated with a list of ReliefClaim objects
-      @ads.ads_relief_claims ||= Array.new(1) { Lbtt::ReliefClaim.new }
-
-      # drop down list filtered to ADS reliefs
-      @relief_types = ReferenceData::TaxReliefType.list_ads(@lbtt_return.flbt_type, true)
-
-      model
     end
 
     # Return the parameter list filtered for the attributes of the Calculate model

@@ -196,7 +196,7 @@
 								<xsd:annotation>
 									<xsd:documentation>Depending on the action only certain fields are needed.
 							Change Password needs username, old password and new password
-							ForgottenPassword needs username and new password and if the FORGOT_PW_EMAIL parameter is Y on the system the email address as well
+							ForgottenPassword needs username and new password and if the FORGOT_PW_EMAIL parameter is Y on the system the e-mail address as well
 							Forgotten username needs the email address
 							Memorable details needs the meorable question and answer
 							

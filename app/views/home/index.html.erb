@@ -1,7 +1,8 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<p><%= link_to(t('.sign_in'), login_path, class: 'scot-rev-button') %></p>
-<p><%= link_to(t('.public_lbtt_lease_review'), returns_lbtt_public_landing_path, class: 'scot-rev-button') %></p>
-<p><%= link_to(t('.public_claim_repayment'), claim_claim_payments_public_claim_landing_path, class: 'scot-rev-button') %></p>
-<p><%= link_to(t('.public_slft_application'), public_landing_applications_slft_path, class: 'scot-rev-button') %></p>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_button_group do |c| %>
+  <%= c.with_button(name: t('.sign_in'), url: login_path) %>
+  <%= c.with_button(name: t('.public_lbtt_lease_review'), url: returns_lbtt_public_landing_path) %>
+  <%= c.with_button(name: t('.public_claim_repayment'), url: claim_claim_payments_public_claim_landing_path) %>
+  <%= c.with_button(name: t('.public_slft_application'), url: public_landing_applications_slft_path) %>
+<% end %>

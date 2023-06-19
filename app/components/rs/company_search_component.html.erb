@@ -1,0 +1,19 @@
+<%= ds_fields_for(company) do |c| %>
+  <fieldset>
+    <%= c.ds_text_field(method: :company_number, width: 10) %>
+    <%= c.builder.button "company_search", { :class => 'ds_button  ds_no-margin--top', :name => 'company_search' } do
+            t('.company_search')
+         end %>
+  </fieldset>
+  <% unless company.company_name.nil? %>
+    <fieldset>
+      <%= c.ds_text_field(method: :company_name, readonly: true,  width: 'one-half') %>
+      <%= c.ds_text_field(method: :address_line1, readonly: true,  width: 'one-half') %>
+      <%= c.ds_text_field(method: :address_line2, readonly: true,  width: 'one-half') %>
+      <%= c.ds_text_field(method: :locality, readonly: true,  width: 'one-half') %>
+      <%= c.ds_text_field(method: :county, readonly: true,  width: 'one-half') %>
+      <%= c.ds_text_field(method: :postcode, readonly: true,  width: 'one-quarter') %>
+      <%= c.ds_hidden_field(:country) %>
+    </fieldset>
+  <% end %>
+<% end %>

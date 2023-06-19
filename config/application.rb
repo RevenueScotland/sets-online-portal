@@ -9,12 +9,11 @@ require 'active_job/railtie'
 # require "active_record/railtie"
 # require "active_storage/engine"
 require 'action_controller/railtie'
-# require 'action_mailer/railtie'
-# require 'action_mailbox/engine'
-# require 'action_text/engine'
+# require "action_mailer/railtie"
+# require "action_mailbox/engine"
+# require "action_text/engine"
 require 'action_view/railtie'
-# require 'action_cable/engine'
-require 'sprockets/railtie'
+# require "action_cable/engine"
 require 'rails/test_unit/railtie'
 
 # Require the gems listed in Gemfile, including any gems
@@ -25,13 +24,23 @@ module RevScot
   # Main application class
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.1
+    config.load_defaults 7.0
 
+    # Configuration for the application, engines, and railties goes here.
+    #
+    # These settings can be overridden in specific environments using the files
+    # in config/environments, which are processed later.
+    #
+    # config.time_zone = "Central Time (US & Canada)"
+    # config.eager_load_paths << Rails.root.join("extras")
     # override Rails default behaviour of adding <div class=\"field_with_errors\"> in html tag when there is
     # validation failure
     config.action_view.field_error_proc = proc { |html_tag, _instance|
       html_tag
     }
+
+    # Set up the exceptions app to intercept exceptions
+    config.exceptions_app = ->(env) { DS::ExceptionsController.action(:show).call(env) }
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
@@ -47,6 +56,27 @@ module RevScot
         end
       end
     end
+
+    # Use the relative URL root if one is defined, after environment load
+    # Not for test as Capybara can't handle it
+    if ENV.key?('APPLICATION_DOCROOT') && !Rails.env.test?
+      config.relative_url_root = ENV.fetch('APPLICATION_DOCROOT', nil)
+    end
+
+    # Always set up Redis to do caching
+    # Note : unit test override this see test.rb
+    # Note: At 7.1 pool will be the default so can simplify this
+    config.cache_store = :redis_cache_store, {
+      url: ENV.fetch('REDIS_CACHE_URL', nil),
+      db: 0,
+      reconnect_attempts: 1, # Defaults to 0
+      pool_size: ENV.fetch('RAILS_MAX_THREADS', 5), # default to puma threads
+      error_handler: lambda { |method:, returning:, exception:|
+        Rails.logger.error do
+          "RedisCacheStore: #{method} failed, returned #{returning.inspect}: #{exception.class}: #{exception.message}"
+        end
+      }
+    }
 
     # REVSCOT Specific config below this line
 
@@ -119,6 +149,8 @@ module RevScot
     config.x.no_download_file_virus_scanning = ENV.key?('NO_DOWNLOAD_VIRUS_SCANNING')
 
     # Configuration for ActiveJobs
+    # To prevent the jobs running set to the offset to 0 seconds
+    config.x.scheduled_jobs.job_offset = 10.seconds
     config.x.scheduled_jobs.refresh_ref_data_every = 15.minutes
     config.x.scheduled_jobs.refresh_sys_params_every = 60.minutes
     config.x.scheduled_jobs.refresh_pws_text_every = 60.minutes

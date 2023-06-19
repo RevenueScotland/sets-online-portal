@@ -3,14 +3,26 @@ en:
     attributes:
       resource_item:
         original_filename: "File"
+        file_name: "File uploaded"
         file_data: "File"
         description: "Description of the uploaded file"            
+    labels:
+      resource_item:
+        file_data:
+          default: "Upload a supporting file"
+          confirmation: "Upload further files to your secure message"
+          site_waste_summary: "Load waste summary details from a csv file"
+    hints:
+      resource_item:
+        file_data:
+          default: "The file must be one of %{supported_file_types} with a maximum size of %{max_file_size_mb} mb per file"
+          new: "You will be able to upload more documents on the next page</br>The file must be one of %{supported_file_types} with a maximum size of %{max_file_size_mb} mb per file"
+          create: "You will be able to upload more documents on the next page</br>The file must be one of %{supported_file_types} with a maximum size of %{max_file_size_mb} mb per file"
+          site_waste_summary: "The file must be a %{supported_file_types} with a maximum size of %{max_file_size_mb} mb per file"
     errors:
       models:
         resource_item:
-          attributes:
-            base:
-              reimport_file: "Imported file contains validation errors. Correct these in the file, and the import the file again"
+          attributes:            
             file_data:
               invalid_file_type: Invalid file type
               invalid_file_size: File should be less than %{supported_max_size_mb} mb

@@ -1,0 +1,4 @@
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:navigation_link, :skip_page) %>
+<%=ds_paragraph { t('.try_again') } %>
+<%=ds_paragraph { t('.reporting', time: l(Time.now, format: :long))} %>

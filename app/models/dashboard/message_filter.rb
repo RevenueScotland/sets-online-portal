@@ -23,9 +23,10 @@ module Dashboard
 
     # Provides permitted filter request params
     def self.params(params)
-      params.permit(dashboard_message_filter:
-        %i[direction_code reference subject_code subject_full_key_code
-           sent_by from_datetime to_datetime])[:dashboard_message_filter]
+      params.fetch(:dashboard_message_filter, {}).permit(
+        :direction_code, :reference, :subject_code, :subject_full_key_code,
+        :sent_by, :from_datetime, :to_datetime
+      )
     end
 
     # @return a hash suitable for use in a list secure messages filter

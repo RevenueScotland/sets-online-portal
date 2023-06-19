@@ -1,9 +1,5 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title, t('.title') %>
-<% content_for :description, t('.description') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @forgotten_username, url: forgotten_username_path, local: true do |f| %>
-  <%= form_errors_for @forgotten_username %>
-  <%= f.text_field :email_address, {}, {autocomplete: "email"}  %><br>
-  <%= f.button 'confirm' %>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_form_with(model: @forgotten_username, url: forgotten_username_path, button_action: :confirm) do |f| %>
+  <%= f.ds_text_field(method: :email_address, autocomplete: 'email') %>
 <% end %>

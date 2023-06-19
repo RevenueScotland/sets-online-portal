@@ -5,7 +5,7 @@
 module Pagination
   # Class to hold pagination collections value
   class PaginationCollection
-    attr_reader :start_row, :num_rows, :sort_option, :total_rows, :more_rows_exists, :current_page
+    attr_reader :start_row, :num_rows, :total_rows, :more_rows_exists, :current_page
 
     def initialize(start_row, num_rows, total_rows, more_rows_exists, current_page)
       @start_row = start_row
@@ -35,14 +35,9 @@ module Pagination
     back_office_pagination = { total_rows: 0, more_rows_exist: 'N' } if back_office_pagination.nil?
     PaginationCollection.new(pagination.start_row,
                              pagination.num_rows,
-                             total_rows(pagination, back_office_pagination),
+                             back_office_pagination[:total_rows].to_i,
                              back_office_pagination[:more_rows_exist] == 'Y',
                              pagination.current_page)
-  end
-
-  # Calculates the total rows to be used to make a new instance of PaginationCollection.
-  private_class_method def self.total_rows(pagination, back_office_pagination)
-    [back_office_pagination[:total_rows].to_i, pagination.start_row + pagination.num_rows - 1].min
   end
 
   # This is main method to filter rows as per selected page. It also return pagination collection
@@ -74,14 +69,9 @@ module Pagination
     num_rows = Rails.configuration.x.pagination.per_page if num_rows.nil?
     # default start row
     start_row = get_pagination_start_row_parameter(num_rows, page)
-    total_rows = nil
+    total_rows = collections.count
     # check if its last set of rows display on pagination screen
-    if collections.count <= start_row + num_rows - 1
-      more_rows_exists = false
-      # do not delete this line as its used in pagination helper file to render last rows number
-      # displayed
-      total_rows = collections.count
-    end
+    more_rows_exists = false if collections.count <= start_row + num_rows - 1
     PaginationCollection.new(start_row, num_rows, total_rows, more_rows_exists, page)
   end
 

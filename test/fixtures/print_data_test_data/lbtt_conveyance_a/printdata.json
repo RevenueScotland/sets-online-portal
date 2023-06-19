@@ -438,26 +438,16 @@
                     "itemdata": "Dundee"
                 },
                 {
-                    "itemcode": "title_code",
+                    "itemcode": "full_title_number",
                     "itemformat": null,
-                    "itemlabel": "Title number (optional)",
-                    "itemdata": "LAN"
+                    "itemlabel": "Title number",
+                    "itemdata": "LAN 8808"
                 },
                 {
-                    "itemcode": "title_number",
+                    "itemcode": "full_parent_title_number",
                     "itemformat": null,
-                    "itemdata": "8808"
-                },
-                {
-                    "itemcode": "parent_title_code",
-                    "itemformat": null,
-                    "itemlabel": "Parent title number (optional)",
-                    "itemdata": "KRK"
-                },
-                {
-                    "itemcode": "parent_title_number",
-                    "itemformat": null,
-                    "itemdata": "7907"
+                    "itemlabel": "Parent title number",
+                    "itemdata": "KRK 7907"
                 },
                 {
                     "itemcode": "ads_due_ind",
@@ -466,7 +456,7 @@
                     "itemdata": "Yes"
                 }
             ],
-            "itemcount": 6
+            "itemcount": 4
         },
         {
             "sectioncode": "address",
@@ -512,154 +502,6 @@
                 }
             ],
             "itemcount": 6
-        },
-        {
-            "sectioncode": "ads_consideration",
-            "sectiontype": "list",
-            "sectiondivider": true,
-            "pagebreak": null,
-            "displaytitle": true,
-            "sectiontitle": "Additional Dwelling Supplement (ADS)",
-            "listitem": [
-                {
-                    "itemcode": "ads_consideration_yes_no",
-                    "itemformat": null,
-                    "itemlabel": "Is the buyer replacing their main residence?",
-                    "itemdata": "Yes"
-                },
-                {
-                    "itemcode": "ads_amount_liable",
-                    "itemformat": "money",
-                    "itemlabel": "Total consideration liable to ADS",
-                    "itemdata": "1500"
-                },
-                {
-                    "itemcode": "ads_consideration",
-                    "itemformat": "money",
-                    "itemlabel": "Total consideration attributable to new main residence",
-                    "itemdata": "1140"
-                },
-                {
-                    "itemcode": "ads_sell_residence_ind",
-                    "itemformat": null,
-                    "itemlabel": "Does the buyer intend to sell their main residence within 18 months?",
-                    "itemdata": "Yes"
-                }
-            ],
-            "itemcount": 4
-        },
-        {
-            "sectioncode": "address",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": true,
-            "sectiontitle": "What is the address of the main residence that will be sold",
-            "listitem": [
-                {
-                    "itemcode": "address_line1",
-                    "itemformat": null,
-                    "itemlabel": "Building and street",
-                    "itemdata": "Fruition Partners Ltd"
-                },
-                {
-                    "itemcode": "address_line2",
-                    "itemformat": null,
-                    "itemdata": "Unit 7"
-                },
-                {
-                    "itemcode": "address_line3",
-                    "itemformat": null,
-                    "itemdata": "Bracknell Beeches"
-                },
-                {
-                    "itemcode": "address_line4",
-                    "itemformat": null,
-                    "itemdata": "Old Bracknell Lane West"
-                },
-                {
-                    "itemcode": "town",
-                    "itemformat": null,
-                    "itemlabel": "Town",
-                    "itemdata": "BRACKNELL"
-                },
-                {
-                    "itemcode": "county",
-                    "itemformat": null,
-                    "itemlabel": "County",
-                    "itemdata": ""
-                },
-                {
-                    "itemcode": "postcode",
-                    "itemformat": null,
-                    "itemlabel": "Postcode",
-                    "itemdata": "RG12 7BW"
-                }
-            ],
-            "itemcount": 7
-        },
-        {
-            "sectioncode": "ads_relief_claim_ind",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": true,
-            "sectiontitle": "Reliefs on ADS consideration",
-            "listitem": [
-                {
-                    "itemcode": "ads_reliefclaim_option_ind",
-                    "itemformat": null,
-                    "itemlabel": "Is relief being claimed from the ADS consideration?",
-                    "itemdata": "Yes"
-                }
-            ],
-            "itemcount": 1
-        },
-        {
-            "sectioncode": "relief_types",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": false,
-            "sectiontitle": null,
-            "listitem": [
-                {
-                    "itemcode": "relief_type_description",
-                    "itemformat": null,
-                    "itemlabel": "Type of relief",
-                    "itemdata": "ADS  Relief for 6 or more dwellings"
-                },
-                {
-                    "itemcode": "relief_override_amount",
-                    "itemformat": "money",
-                    "itemlabel": "Amount of tax saved by relief",
-                    "itemdata": "500"
-                }
-            ],
-            "itemcount": 2
-        },
-        {
-            "sectioncode": "relief_types",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": false,
-            "sectiontitle": null,
-            "listitem": [
-                {
-                    "itemcode": "relief_type_description",
-                    "itemformat": null,
-                    "itemlabel": "Type of relief",
-                    "itemdata": "ADS - Family units"
-                },
-                {
-                    "itemcode": "relief_override_amount",
-                    "itemformat": "money",
-                    "itemlabel": "Amount of tax saved by relief",
-                    "itemdata": "450"
-                }
-            ],
-            "itemcount": 2
         },
         {
             "sectioncode": "about_the_transaction",
@@ -824,110 +666,6 @@
             "itemcount": 2
         },
         {
-            "sectioncode": "non_ads_relief_claim_ind",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": true,
-            "sectiontitle": "Reliefs on this transaction",
-            "listitem": [
-                {
-                    "itemcode": "non_ads_reliefclaim_option_ind",
-                    "itemformat": null,
-                    "itemlabel": "Is relief being claimed for this transaction?",
-                    "itemdata": "Yes"
-                }
-            ],
-            "itemcount": 1
-        },
-        {
-            "sectioncode": "relief_types",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": false,
-            "sectiontitle": null,
-            "listitem": [
-                {
-                    "itemcode": "relief_type_description",
-                    "itemformat": null,
-                    "itemlabel": "Type of relief",
-                    "itemdata": "Multiple dwellings relief"
-                },
-                {
-                    "itemcode": "relief_override_amount",
-                    "itemformat": "money",
-                    "itemlabel": "Amount of tax saved by relief",
-                    "itemdata": "9000"
-                },
-                {
-                    "itemcode": "mdr_number_dwellings",
-                    "itemformat": null,
-                    "itemlabel": "Number of dwellings",
-                    "itemdata": "20"
-                },
-                {
-                    "itemcode": "mdr_number_dwellings_ads",
-                    "itemformat": null,
-                    "itemlabel": "Number of dwellings that attract ADS",
-                    "itemdata": "30"
-                },
-                {
-                    "itemcode": "mdr_total_consideration",
-                    "itemformat": "money",
-                    "itemlabel": "Total consideration attributable to dwellings",
-                    "itemdata": "44.44"
-                }
-            ],
-            "itemcount": 5
-        },
-        {
-            "sectioncode": "relief_types",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": false,
-            "sectiontitle": null,
-            "listitem": [
-                {
-                    "itemcode": "relief_type_description",
-                    "itemformat": null,
-                    "itemlabel": "Type of relief",
-                    "itemdata": "Charities relief (Full Relief)"
-                },
-                {
-                    "itemcode": "relief_override_amount",
-                    "itemformat": "money",
-                    "itemlabel": "Amount of tax saved by relief",
-                    "itemdata": "880"
-                }
-            ],
-            "itemcount": 2
-        },
-        {
-            "sectioncode": "relief_types",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": false,
-            "sectiontitle": null,
-            "listitem": [
-                {
-                    "itemcode": "relief_type_description",
-                    "itemformat": null,
-                    "itemlabel": "Type of relief",
-                    "itemdata": "Charities relief (Partial Relief)"
-                },
-                {
-                    "itemcode": "relief_override_amount",
-                    "itemformat": "money",
-                    "itemlabel": "Amount of tax saved by relief",
-                    "itemdata": "7050"
-                }
-            ],
-            "itemcount": 2
-        },
-        {
             "sectioncode": "about_the_calculation",
             "sectiontype": "list",
             "sectiondivider": false,
@@ -996,6 +734,236 @@
                 }
             ],
             "itemcount": 5
+        },
+        {
+            "sectioncode": "ads_consideration",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Additional Dwelling Supplement (ADS)",
+            "listitem": [
+                {
+                    "itemcode": "ads_consideration_yes_no",
+                    "itemformat": null,
+                    "itemlabel": "Is the buyer replacing their main residence?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "ads_amount_liable",
+                    "itemformat": "money",
+                    "itemlabel": "Total consideration liable to ADS",
+                    "itemdata": "1500"
+                },
+                {
+                    "itemcode": "ads_consideration",
+                    "itemformat": "money",
+                    "itemlabel": "Total consideration attributable to new main residence",
+                    "itemdata": "1140"
+                },
+                {
+                    "itemcode": "ads_sell_residence_ind",
+                    "itemformat": null,
+                    "itemlabel": "Does the buyer intend to sell their main residence within 18 months?",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 4
+        },
+        {
+            "sectioncode": "address",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "What is the address of the main residence that will be sold",
+            "listitem": [
+                {
+                    "itemcode": "address_line1",
+                    "itemformat": null,
+                    "itemlabel": "Building and street",
+                    "itemdata": "Fruition Partners Ltd"
+                },
+                {
+                    "itemcode": "address_line2",
+                    "itemformat": null,
+                    "itemdata": "Unit 7"
+                },
+                {
+                    "itemcode": "address_line3",
+                    "itemformat": null,
+                    "itemdata": "Bracknell Beeches"
+                },
+                {
+                    "itemcode": "address_line4",
+                    "itemformat": null,
+                    "itemdata": "Old Bracknell Lane West"
+                },
+                {
+                    "itemcode": "town",
+                    "itemformat": null,
+                    "itemlabel": "Town",
+                    "itemdata": "BRACKNELL"
+                },
+                {
+                    "itemcode": "county",
+                    "itemformat": null,
+                    "itemlabel": "County",
+                    "itemdata": ""
+                },
+                {
+                    "itemcode": "postcode",
+                    "itemformat": null,
+                    "itemlabel": "Postcode",
+                    "itemdata": "RG12 7BW"
+                }
+            ],
+            "itemcount": 7
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Reliefs on this transaction",
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "Multiple dwellings relief"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of LBTT tax saved by relief",
+                    "itemdata": "9000"
+                },
+                {
+                    "itemcode": "mdr_number_dwellings",
+                    "itemformat": null,
+                    "itemlabel": "Number of dwellings",
+                    "itemdata": "20"
+                },
+                {
+                    "itemcode": "mdr_total_consideration",
+                    "itemformat": "money",
+                    "itemlabel": "Total consideration attributable to dwellings",
+                    "itemdata": "44.44"
+                },
+                {
+                    "itemcode": "mdr_number_dwellings_ads",
+                    "itemformat": null,
+                    "itemlabel": "Number of dwellings that attract ADS",
+                    "itemdata": "30"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": null,
+            "sectiontitle": "Reliefs on this transaction",
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "Charities relief (Full Relief)"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of LBTT tax saved by relief",
+                    "itemdata": "880"
+                },
+                {
+                    "itemcode": "relief_override_amount_ads",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of ADS tax saved by relief",
+                    "itemdata": ""
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": null,
+            "sectiontitle": "Reliefs on this transaction",
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "Charities relief (Partial Relief)"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of LBTT tax saved by relief",
+                    "itemdata": "7050"
+                },
+                {
+                    "itemcode": "relief_override_amount_ads",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of ADS tax saved by relief",
+                    "itemdata": ""
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": null,
+            "sectiontitle": "Reliefs on this transaction",
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "ADS - Relief for 6 or more dwellings"
+                },
+                {
+                    "itemcode": "relief_override_amount_ads",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of ADS tax saved by relief",
+                    "itemdata": "500"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": null,
+            "sectiontitle": "Reliefs on this transaction",
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "ADS - Family units"
+                },
+                {
+                    "itemcode": "relief_override_amount_ads",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of ADS tax saved by relief",
+                    "itemdata": "450"
+                }
+            ],
+            "itemcount": 2
         },
         {
             "sectioncode": "calculation",

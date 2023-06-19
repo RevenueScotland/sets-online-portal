@@ -1,22 +1,33 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_description, t('.description') %>
-<%= form_for @slft_application, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @slft_application %>
-    <% column_attribute_list = if @slft_application.waste_producer_water_discount? 
-                                [:sepa_license_number, :site_name, :landfill_operator, :slft_registration_number ]
-                             else
-                                [:sepa_license_number, :site_name]
-                             end %>
-  <%= display_table(
-    @slft_application.sites,
-    column_attribute_list,
-    [ { label: t('.edit_row'), path: :details_applications_slft_site_path, object_index_attribute: :sub_object_index, id_prefix: 'edit' },
-      { label: t('.delete_row'), path: :applications_slft_site_path, action: :destroy, options: { data: { confirm: "Delete site?" } }, object_index_attribute: :sub_object_index } 
-    ]
-    ) %>
-  <p>
-    <%= navigational_links [ { link: '.add_site', path: new_applications_slft_sites_path, link_html_options: { id: 'add_site' } } ] %>
-  </p>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_paragraph{t('.description') } %>
+<%= ds_form_with(model: @slft_application, url: @post_path) do |f| %>
+  <%= ds_table(caption: @caption, id: @id) do |table| %>
+    <% table.with_header(klass: Applications::Slft::Sites) do |header| %>
+      <% header.with_cell(method: :sepa_license_number) %>
+      <% header.with_cell(method: :site_name) %>
+      <% if @slft_application.waste_producer_water_discount? %>
+        <% header.with_cell(method: :landfill_operator) %>
+        <% header.with_cell(method: :slft_registration_number) %>
+      <% end %>
+    <% end %>
+    <% @slft_application.sites&.each_with_index do |site, index| %>
+      <% table.with_row(model: site) do |row| %>
+        <% row.with_cell(method: :sepa_license_number) %>
+        <% row.with_cell(method: :site_name) %>
+        <% if @slft_application.waste_producer_water_discount? %>
+          <% row.with_cell(method: :landfill_operator) %>
+          <% row.with_cell(method: :slft_registration_number) %>
+        <% end %>
+      <% end %>
+      <% table.with_row do |row|%>
+        <% row.with_cell(colspan: (@slft_application.waste_producer_water_discount? ? 4 : 2)) do %>
+          <%= ds_link(name: t('.edit_row'), url: details_applications_slft_site_path(sub_object_index: index + 1),
+           subtype: :padded) %>
+          <%= ds_link(name: t('.delete_row'), url: applications_slft_site_path(sub_object_index: index + 1),
+                         delete: true, confirm_message: "Delete site?", subtype: :padded ) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= ds_link(name: t('.add_site'), url: new_applications_slft_sites_path) %><br>
 <% end %>

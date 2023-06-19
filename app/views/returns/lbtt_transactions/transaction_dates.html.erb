@@ -1,17 +1,13 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
-  <% f.current_browser = application_browser %>
-  <%= f.date_field :effective_date, text_links: { t('.effective_date') =>
-                                                    link_to(t('.effective_date'), external_link_url('EFFECTIVE_DATE'), target: '_blank') } %>
-  <%= f.date_field :relevant_date, text_links: { t('.relevant_date') =>
-                                                    link_to(t('.relevant_date'), external_link_url('RELEVANT_DATE'), target: '_blank') }  %>
-  <%= f.date_field :contract_date , { optional:true } %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_date_picker(method: :effective_date, interpolations: { link:
+                                                    ds_link(name: t('.effective_date'), url: external_link_url('EFFECTIVE_DATE'), target: '_blank') } ) %>
+  <%= f.ds_date_picker(method: :relevant_date, interpolations: { link:
+                                                    ds_link(name: t('.relevant_date'), url: external_link_url('RELEVANT_DATE'), target: '_blank') } )  %>
+  <%= f.ds_date_picker(method: :contract_date , optional: true ) %>
   <% unless @lbtt_return.flbt_type == 'CONVEY' %>
-    <%= f.date_field :lease_start_date %>
-    <%= f.date_field :lease_end_date %>
+    <%= f.ds_date_picker(method: :lease_start_date) %>
+    <%= f.ds_date_picker(method: :lease_end_date) %>
   <% end %>
-  <%= f.button %>
 <% end %>

@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<soap:Body>
-		<GetTaxReliefTypesResponse xmlns="http://www.northgateps.com/RSTS/GetTaxReliefTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+		<GetTaxReliefTypesResponse xmlns="http://www.northgateps.com/RSTS/GetTaxReliefTypes"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:core="http://northgate-is.com/FL/Core">
 			<core:Success>true</core:Success>
 			<ReliefTypes>
 				<ReliefType>
@@ -81,7 +85,7 @@
 					<Service>LBTT</Service>
 					<Description>Lighthouses relief</Description>
 					<CurrentInd>yes</CurrentInd>
-					<Class>STANDARD</Class>
+					<Class>LBTT</Class>
 					<FullReliefInd>yes</FullReliefInd>
 				</ReliefType>
 				<ReliefType>
@@ -111,15 +115,15 @@
 				<ReliefType>
 					<Type>INVESTCOMP</Type>
 					<Service>LBTT</Service>
-					<Description>Openended Investment Companies relief</Description>
+					<Description>Open-ended Investment Companies relief</Description>
 					<CurrentInd>yes</CurrentInd>
-					<Class>STANDARD</Class>
+					<Class>LBTT</Class>
 					<FullReliefInd>yes</FullReliefInd>
 				</ReliefType>
 				<ReliefType>
 					<Type>ADSRELIEF</Type>
 					<Service>LBTT</Service>
-					<Description>ADS  Relief for 6 or more dwellings</Description>
+					<Description>ADS - Relief for 6 or more dwellings</Description>
 					<CurrentInd>yes</CurrentInd>
 					<Class>ADS</Class>
 					<FullReliefInd>yes</FullReliefInd>
@@ -186,7 +190,7 @@
 					<Service>LBTT</Service>
 					<Description>Multiple dwellings relief</Description>
 					<CurrentInd>yes</CurrentInd>
-					<Class>STANDARD</Class>
+					<Class>LBTT</Class>
 					<FullReliefInd>no</FullReliefInd>
 					<ReturnTypes>CONVEY</ReturnTypes>
 				</ReliefType>
@@ -203,7 +207,7 @@
 					<Service>LBTT</Service>
 					<Description>Friendly societies relief</Description>
 					<CurrentInd>yes</CurrentInd>
-					<Class>STANDARD</Class>
+					<Class>LBTT</Class>
 					<FullReliefInd>yes</FullReliefInd>
 				</ReliefType>
 				<ReliefType>
@@ -211,7 +215,7 @@
 					<Service>LBTT</Service>
 					<Description>Building societies relief</Description>
 					<CurrentInd>yes</CurrentInd>
-					<Class>STANDARD</Class>
+					<Class>LBTT</Class>
 					<FullReliefInd>yes</FullReliefInd>
 				</ReliefType>
 				<ReliefType>
@@ -244,7 +248,7 @@
 					<Service>LBTT</Service>
 					<Description>First-Time Buyer Relief</Description>
 					<CurrentInd>yes</CurrentInd>
-					<Class>STANDARD</Class>
+					<Class>LBTT</Class>
 					<UpperLimit>600</UpperLimit>
 					<FullReliefInd>no</FullReliefInd>
 				</ReliefType>

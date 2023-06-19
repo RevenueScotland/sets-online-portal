@@ -3,7 +3,7 @@
 # Sub-directory to organise the applications.
 module Applications
   # Controller class for SLfT (Scottish Landfill Tax) application Sites.
-  class SitesController < ApplicationController
+  class SitesController < ApplicationController # rubocop:disable Metrics/ClassLength
     # Wizard controller - allows fast generation of wizards storing merged parameters which can be converted
     # to FLApplication objects with the appropriate .new call.  Downside is when we load an object graph,
     # only the top level is created as that object (eg SlftReturn.new(wizard_load) makes a SlftReturn object
@@ -93,7 +93,7 @@ module Applications
       # deletes the site and save the return to make the deletion permanent
       @slft_application.sites.delete_at(params[:sub_object_index].to_i - 1)
       wizard_save(@slft_application, parent_controller)
-      redirect_to summary_applications_slft_sites_path
+      redirect_to(summary_applications_slft_sites_path, status: :see_other)
     end
 
     # Calculates which wizard steps to be followed after address page of sites
@@ -169,17 +169,22 @@ module Applications
 
     # The permitted parameters which is filtered using the Site model's attributes.
     def filter_params(_sub_object_attribute = nil)
-      return unless params[:applications_slft_sites]
+      return {} unless params[:applications_slft_sites]
 
-      params.require(:applications_slft_sites).permit(Applications::Slft::Sites.attribute_list)
+      permit = { applications_slft_wastes: Applications::Slft::Wastes.attribute_list }
+      params.require(:applications_slft_sites)
+            .permit(Applications::Slft::Sites.attribute_list, permit).except(:applications_slft_wastes)
     end
 
     # Return the parameter list filtered for the attributes in list_attribute
     # note we have to permit everything because we get a hash of the records returned e.g. "0" => details
-    def filter_list_params(list_attribute, _sub_object_attribute = nil)
-      return unless params[:applications_slft_sites] && params[:applications_slft_sites][list_attribute]
+    def filter_list_params(_list_attribute, _sub_object_attribute = nil)
+      return unless params[:applications_slft_sites] && params[:applications_slft_sites][:applications_slft_wastes]
 
-      params.require(:applications_slft_sites).permit(list_attribute => {})[list_attribute].values
+      permitted_list = Applications::Slft::Wastes.attribute_list
+      attributes = %i[full_or_part estimated_timescale further_treatment]
+      params.require(:applications_slft_sites)
+            .permit(attributes, applications_slft_wastes: permitted_list)[:applications_slft_wastes].values
     end
   end
 end

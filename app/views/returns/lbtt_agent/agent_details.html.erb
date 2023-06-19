@@ -1,16 +1,12 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :hide_back_link, :lbtt_agent_details_url %>
-<%= form_for @agent, url:returns_lbtt_agent_details_path, method: :post, html:{autocomplete: "on"} ,local: true do |f| %>
-  <%= form_errors_for @agent %>
-  <% content_for :page_title, t('.title') %>
-  <% content_for :page_subtitle, t('.subtitle') %>
-  <% content_for :page_description, t('.description') %>
-  <%= f.select :title, @agent.list_ref_data(:title), { optional: true, width: 'width-10' } %>
-  <%= f.text_field :firstname %>
-  <%= f.text_field :surname %>
-  <%= f.text_field :agent_reference, { optional:true } %>
-  <%= f.text_field :agent_dx_number, { optional:true } %>
-  <%= f.text_field :telephone %>
-  <%= f.text_field :email_address %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_section_title(section_title: t('.section_title')) %>
+<%= ds_paragraph {t('.description')} %>
+<%= ds_form_with(model: @agent, url: returns_lbtt_agent_details_path, method: :post, action_name: :confirm, autocomplete: true) do |f| %>
+  <%= f.ds_select(method: :title, select_options: @agent.list_ref_data(:title), width: 10, optional: true) %>
+  <%= f.ds_text_field(method: :firstname, autocomplete: 'given-name') %>
+  <%= f.ds_text_field(method: :surname, autocomplete: 'family-name') %>
+  <%= f.ds_text_field(method: :agent_reference, optional: true) %>
+  <%= f.ds_text_field(method: :agent_dx_number, optional: true) %>
+  <%= f.ds_text_field(method: :telephone, autocomplete: 'tel') %>
+  <%= f.ds_text_field(method: :email_address, autocomplete: 'email') %>
 <% end %>

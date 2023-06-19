@@ -1,74 +1,18 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= sub_heading %>
-<%= form_for @dashboard_return_filter, url: dashboard_dashboard_returns_path, :method => 'get', local: true do |form| %>
-  <%= form_errors_for @dashboard_return_filter %>
-  <% form.current_browser = application_browser %>
-  <%= form.text_field :tare_reference %>
-  <%= form.text_field :agent_reference if account_has_service?(:lbtt) %>
-  <%= render '/layouts/hideable_details/', { clickable_text: [t('filter_show'), t('filter_hide')] } do %>
-    <div class = "display-inline-text govuk-!-width-one-third">
-      <%= form.date_field :from_return_date, { width: 'full' } %>
-    </div>
-    <div class = "display-inline-text govuk-input--width-2">
-    </div>
-    <div class = "display-inline-text govuk-!-width-one-third">
-      <%= form.date_field :to_return_date, { width: 'full' } %>
-    </div>
-    <%= form.text_field :description %>
-    <%= form.select :return_status, ReferenceData::ReferenceValue.list('RETURN_STATUS', 'SYS', 'RSTU'), { include_blank: true }, {} %>
-    <%= form.check_box_field :all_versions %>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_form_with(model: @dashboard_return_filter, url: dashboard_dashboard_returns_path, method: :get,
+                 button_action: :find, autofocus: @on_filter_find) do |f| %>
+  <%= f.ds_text_field(method: :tare_reference) %>
+  <%= f.ds_text_field(method: :agent_reference) if account_has_service?(:lbtt) %>
+  <%= ds_details(header: t('.filter_show')) do %>
+    <%= ds_field_set do %>
+      <%= f.ds_date_picker(method: :from_return_date) %>
+      <%= f.ds_date_picker(method: :to_return_date) %>
+    <% end %>
+    <%= f.ds_text_field(method: :description) %>
+    <%= f.ds_select(method: :return_status, select_options: ReferenceData::ReferenceValue.list('RETURN_STATUS', 'SYS', 'RSTU')) %>
+    <%= f.ds_checkbox(method: :all_versions) %>
   <% end %>
-  <br>
-  <%= form.button t('.find'), autofocus: (@on_filter_find && !content_for?(:form_error_found)) %>
 <% end %>
-<br>
-<%= display_table(@dashboard_returns,
-                  [:tare_reference, :agent_reference, :return_date, :description, :version, :return_balance, :summary_status],
-                  [
-                    { label: t('.download_pdf'),  path: :download_pdf_dashboard_dashboard_return_path,
-                                                    options: { target: '_blank' },
-                                                    link_options: { requires_action: AuthorisationHelper::DOWNLOAD_RETURN_PDF } },
-                    { label: t('.receipt'),  path: :download_receipt_dashboard_dashboard_return_path,
-                                                    visible_for: :receipt_indicator?, options: { target: '_blank' },
-                                                    link_options: { requires_action: AuthorisationHelper::DOWNLOAD_RECEIPT } },
-                    { label: t('.download_waste'),  path: :download_waste_dashboard_dashboard_return_path,
-                                                    visible_for: :return_has_waste?,
-                                                    options: { target: '_blank' } },
-                    { label: t('.transactions'), path: :dashboard_financial_transactions_path,
-                                                 visible_for: :indicator_is_latest,
-                                                 query: { attributes: [ { label: :related_reference, attribute: :tare_reference } ],
-                                                          filter_model: :dashboard_financial_transaction_filter } },
-                    { label: t('.amend'), path: :load_dashboard_dashboard_return_path,
-                                               visible_for: :return_is_amendable?,
-                                               link_options: { requires_action_path: :amend_action } },
-
-                    { label: t('.claim'), path: :claim_claim_payments_claim_reason_path,
-                                          visible_for: :return_is_claimable,
-                                          query: { attributes: [:tare_refno, :version, :srv_code,
-                                                                { label: :reference, attribute: :tare_reference },
-                                                                { label: :new, value: true }] },
-                                          link_options: { requires_action: AuthorisationHelper::CLAIM_REPAYMENT } },
-                    { label: t('.message'), path: :dashboard_messages_path,
-                                            visible_for: :indicator_is_latest,
-                                            query: { attributes: [ { label: :reference, attribute: :tare_reference } ],
-                                                     filter_model: :dashboard_message_filter } },
-                    { label: t('.continue'), path: :load_dashboard_dashboard_return_path,
-                                               visible_for: :return_is_continuable?,
-                                               link_options: { requires_action_path: :continue_action } },
-                    { label: t('.delete'),  action: :destroy, visible_for: :indicator_is_draft,
-                                             link_options: { requires_action_path: :delete_action },
-                                            options: {data: {confirm: 'Delete draft return?' }}},
-                    { label: t('.enquiry_open'), path: :display, visible_for: :enquiry_indicator? },
-                    { label: t('.draft_present'), path: :display, visible_for: :draft_present? },
-                    { label: t('.not_amendable'), path: :display, visible_for: :not_continuable_indicator? },
-                    { label: t('.amendable_period'), value_method: :amendable_cut_off_date, path: :display, visible_for: :not_continuable_warning? }
-                  ],
-                  { return_date: {format: :date},
-                    agent_reference: {break_characters: '/', add: account_has_service?(:lbtt)},
-                    return_balance: {format: :money}}) %>
-<% if @dashboard_returns.blank? %>
-  <%= display_paragraph_components(body: t('.no_data_found')) %>
-<% end %>
-<%= paginate @pagination_collection %>
+<%= rs_return_table(returns:@dashboard_returns, caption: t('.caption'), id: 'dashboard_returns', 
+      small_screen: 'scrolling', pagination_collection: @pagination_collection) %>

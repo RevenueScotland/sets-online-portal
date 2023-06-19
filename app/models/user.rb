@@ -26,12 +26,11 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   include AccountBasedCaching
 
   # Attributes for this class, in list so can re-use as permitted params list in the controller
-  # note memorable answer and memorable question and are shown as memorable word and hint on the page
   def self.attribute_list
     %i[party_refno user_roles work_place_refno forename surname email_address phone_number preferred_language
        email_address_confirmation old_password new_password new_password_confirmation password password_change_required
        password_expiry_date user_is_authenticated user_is_registered user_locked user_is_current username new_username
-       token user_is2_fa token_valid2_fa user_is_signed_ta_cs memorable_question memorable_answer]
+       token user_is2_fa token_valid2_fa user_is_signed_ta_cs ]
   end
 
   # Fields that can be set on a user
@@ -85,16 +84,6 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     call_ok?(:maintain_user, confirm_tcs_request)
   end
 
-  # Update the user's memorable word
-  def update_memorable_word(word_params, requested_by)
-    assign_attributes(word_params)
-
-    return false unless valid?(:update_memorable_word)
-
-    success = call_ok?(:maintain_user, update_memorable_word_request)
-    User.refresh_cache!(requested_by) if success
-  end
-
   # Getting the formatted full name of the user.
   # @return [String] the formatted full name of the user.
   def full_name
@@ -107,10 +96,10 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     username
   end
 
-  # sets the attributes that wil be serialised
+  # sets the attributes that will be serialised in the session
   def attributes
     { 'username' => nil, 'work_place_refno' => nil, 'party_refno' => nil, 'user_roles' => nil,
-      'password_change_required' => nil, 'password_expiry_date' => nil }
+      'password_change_required' => nil, 'password_expiry_date' => nil, 'user_is_signed_ta_cs' => nil }
   end
 
   # Returns the paginated users list linked to the current username, optionally restricted by a UserFilter.
@@ -172,22 +161,6 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     save_or_update(requested_by)
   end
 
-  # Returns a alternative translation key where necessary.
-  # "MEMORABLE_password" translated key returned if is been called from Memorable word page
-  # "new password" and "new password confirmation" fields are "password" and "password confirmation" for new user.
-  # @param attribute [Symbol] the name of the attribute to translate
-  # @param translation_options [Object] in this case the party type being processed passed from the page
-  # @return [Symbol] the name of the translation attribute
-  def translation_attribute(attribute, translation_options = nil)
-    return "MEMORABLE_#{attribute}".to_sym if attribute == :password && translation_options == :memorable_word
-
-    return attribute unless %i[new_password new_password_confirmation].include?(attribute)
-
-    return "CREATE_#{attribute}".to_sym if translation_options == :new_user
-
-    "UPDATE_#{attribute}".to_sym
-  end
-
   private
 
   # Do the save processing for either update or create as long as validation passes
@@ -217,12 +190,6 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   def update_password_request
     { Username: username, Requestor: username, Action: 'ChangePassword',
       OldPassword: old_password, NewPassword: new_password, ServiceCode: 'SYS' }
-  end
-
-  # @return [Hash] request to update the memorable word and hint of this user using the authority of this user
-  def update_memorable_word_request
-    { Username: username, Requestor: username, Action: 'MemorableDetails', Password: password,
-      MemorableQuestion: memorable_question, MemorableAnswer: memorable_answer, ServiceCode: 'SYS' }
   end
 
   # @return [Hash] request to update the user that they've confirmed the terms and conditions

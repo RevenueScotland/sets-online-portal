@@ -1,0 +1,6 @@
+<div data-controller="visibility" data-visibility-visible-value=<%= visible_value %>>
+  <%= visibility_control %>
+  <%= ds_inset_text(conditional_visibility: true) do %>
+    <%= content %>
+  <% end %>
+</div>

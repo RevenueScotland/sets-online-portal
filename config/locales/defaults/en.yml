@@ -30,23 +30,7 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 en:
   revenue_scotland: "Revenue Scotland"
-  action: "Action"
-  this: "This"
-  working: "Working ..."
-  row: "%{title} (row %{row})"
-  add_row: Add row
-  edit_row: Edit row
-  delete_row: Delete row
-  AddResource: Upload document
-  AddResources: Upload documents
-  DeleteResource: Remove file
-  upload_column_filename: File uploaded
-  upload_column_file_description: Description
-  file_upload_hint:
-    other: The file must be one of %{supported_types} with a maximum size of %{supported_max_size_mb} mb per file
-    one: The file must be a %{supported_types} file with a maximum size of %{supported_max_size_mb} mb per file
-  file_upload_hint_without_supported_item: The file must be a maximum size of %{supported_max_size_mb} mb per file
-  file_upload_warning_message: "You have selected a file to upload but haven't uploaded it. Do you still want to continue without uploading the file?"
+  service_name: "Scottish Electronic Tax System"
   # The translated texts below are being used as the whitelist of suffixes for file uploads,
   # depending on which page it is some may not be used.
   label_application/vnd:
@@ -65,101 +49,20 @@ en:
   label_application/rtf: rtf
   label_application/pdf: pdf
   label_text/csv: csv
-
-  default_title: "Scotland's devolved taxes authority | Revenue Scotland"
-  error: "Error"
-  back: "Back"
   go_to_dashboard: "Go to dashboard"
-  back_to_return_summary: "Back to return summary"
-  filter_show: "Show more filter options"
-  filter_hide: "Hide options"
-  Find: "Find"
-  show: "Show"
-  signout: "Sign out"
-  signin: "Sign in"
-  account-details: "Account details"
-  select_prompt: "Choose from list"
   continue: "Continue"
   cancel: "Cancel"
   start_now: "Start now"
   none_provided: "None provided"
-  error_title: "Something has gone wrong"
-  error_advice: "There is a problem"
   close: "Close"
-  forbidden: "You are not authorised to view this page"
-  forbidden_text: "You may have mistyped the address or the page may have moved. If you are the application owner check the logs for more information."
   optional: "optional"
-  no_address_search_results: "The postcode doesn't return any addresses"
-  no_company_search_results: "The company number doesn't return a company"
-  no_address_find_results: "Address could not be found"
-  pagination:
-    hidden-label:
-      previous: "Previous page of %{context}"
-      next: "Next page of %{context}"
-      items: "Items of %{context}"
-  next: "Next"
-  previous: "Previous"
-  continue: "Continue"
-  confirm: "Confirm"
-  finish: "Finish"
-  session_ttl_warning_message: "Your session is about to time out"
-  save_draft: "Save draft"
-  submit_return: "Submit return"
-  submit: "Submit"
-  calculate_return: "Calculate"
-  return_error: "Return not saved"
-  term_and_cons: "terms & conditions (opens in a new window)"
-  sec_doc: "email communication policy (opens in a new window)"
-  property: "Property"
-  buyer: "Buyer"
-  seller: "Seller"
-  tenant: "Tenant"
-  new_tenant: "New Tenant"
-  landlord: "Landlord"
-  transaction: "Transaction"
-  return_period: "Return period"
-  credit_claimed: "Credits claimed"
-  print_confirmation_text: Receipt
-  send_secure_message_text: Send secure message
-  lbtt_acknowledgment: "Acknowledgment of validated LBTT return"
-  lbtt_amend_acknowledgment: "Acknowledgment of LBTT return amendment"
-  include_transaction_ref_html: "The transaction ID must be included with any payment submitted or in any correspondence regarding this transaction. This acknowledgment should <b>not</b> be sent to Registers of Scotland as part of the land registration process."
-  invalid_csv: "File is invalid CSV file: %{message}"
-  csv_too_many_errors: "File is invalid, greater than %{failure}% of rows had the wrong number of columns"
-  more_info: "More information"
-  important: "Important"
-
-  import_row_error:
-    one: "%{description} has the following error: %{messages}"
-    other: "%{description} has the following errors: %{messages}"
-
+  opens_new_window: "opens in a new window"  
+  give_feed_back: "Give feedback about this service"
   notification:
     one: "Your password expires in 1 day"
     other: "Your password expires in %{count} days"
-  layouts:
-    footer:
-      link:
-        accessibility: "Accessibility"
-        legal_notices: "Legal Notices"
-        site_map: "Site Map"
-        foi_html: "Freedom of <br />Information"
-        cookies: "Cookies"
-    address:
-      search: "Find Address"
-      select: "Select"
-      select_blank: "Pick an address"
-    company_search:
-      search: "Find Company"
-    cookies:
-      heading: "We use cookies on this site to enhance your user experience"
-      body_html: By clicking any link on this page you are giving your consent for us to set cookies. <a href="website_texts/COOKIES">more info</a>
-      ok_thanks: "OK, thanks"
-      no_thanks: "No, thanks"
+
   activemodel:
-    attributes:
-      address:
-        full_address: "Address"
-        full_property_address: "Property address"
     errors:
       messages:
         account_number_is_invalid: "%{attribute} must be 8 digits long"
@@ -174,7 +77,12 @@ en:
         cant_be_blank: "%{attribute} can't be blank"
         company_not_chosen: "A company must be chosen"
         address_not_chosen: "Use the postcode search or enter the address manually"
-        section_not_complete: "There's an error somewhere in the %{attr} - please review the %{attr} section of the return and update it"
+        section_not_complete: "There's an error somewhere in the %{attr} - please review the %{attr} section of the return and update it"        
+        invalid_csv: "File is invalid CSV file: %{details}"
+        csv_too_many_errors: "File is invalid, greater than %{failure}% of rows had the wrong number of columns"
+        no_address_search_results: "The postcode doesn't return any addresses"
+        no_company_search_results: "The company number doesn't return a company"
+        no_address_find_results: "Address could not be found"
   errors:
     error_report: "Something unexpected happened, you can try again in a few minutes or to report this error quote : %{error_ref}"
     ##
@@ -183,6 +91,7 @@ en:
     ##
     # The default format to use in full error messages.
     format: "%{message}"
+    error: "Error"
 
     # The values :model, :attribute and :value are always available for interpolation
     # The value :count is available when applicable. Can be used for pluralization.
@@ -215,7 +124,7 @@ en:
       other_than: "%{attribute} must be other than %{count}"
       odd: "%{attribute} must be odd"
       even: "%{attribute} must be even"
-  # Support for to_sentence in an array
+# Support for to_sentence in an array
   support:
     array:
       words_connector: ", "

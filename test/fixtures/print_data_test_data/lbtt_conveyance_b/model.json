@@ -1,6 +1,6 @@
 {
     "json_class": "Returns::Lbtt::LbttReturn",
-    "is_public": false,
+    "user_account_type": "AGENT",
     "new_record": false,
     "tax": {
         "json_class": "Returns::Lbtt::Tax",
@@ -24,23 +24,6 @@
         "ads_amount_liable": "1500",
         "ads_consideration": "1140",
         "ads_sell_residence_ind": "Y",
-        "ads_relief_claims": [
-            {
-                "json_class": "Returns::Lbtt::ReliefClaim",
-                "new_record": false,
-                "relief_type": "ADSFAMUNIT",
-                "relief_amount": "0",
-                "relief_override_amount": "450"
-            },
-            {
-                "json_class": "Returns::Lbtt::ReliefClaim",
-                "new_record": false,
-                "relief_type": "ADSRELIEF",
-                "relief_amount": "0",
-                "relief_override_amount": "500"
-            }
-        ],
-        "ads_reliefclaim_option_ind": "Y",
         "ads_sold_main_yes_no": "Y",
         "ads_main_address": {
             "json_class": "Address",
@@ -127,11 +110,13 @@
     "linked_ind": "Y",
     "rent_for_all_years": "N",
     "premium_paid": "N",
-    "non_ads_relief_claims": [
+    "relief_claims": [
         {
             "json_class": "Returns::Lbtt::ReliefClaim",
             "new_record": false,
             "relief_type": "CHARITIES",
+            "lbtt_return_ads_due": true,
+            "lbtt_return_flbt_type": "CONVEY",
             "relief_amount": "0",
             "relief_override_amount": "880"
         },
@@ -139,13 +124,45 @@
             "json_class": "Returns::Lbtt::ReliefClaim",
             "new_record": false,
             "relief_type": "CHARITIESP",
+            "lbtt_return_ads_due": true,
+            "lbtt_return_flbt_type": "CONVEY",
             "relief_amount": "0",
             "relief_override_amount": "7050"
         },
         {
             "json_class": "Returns::Lbtt::ReliefClaim",
             "new_record": false,
+            "relief_type": "ADSFAMUNIT",
+            "lbtt_return_ads_due": true,
+            "lbtt_return_flbt_type": "CONVEY",
+            "relief_amount": "0",
+            "relief_override_amount": "0",
+            "mdr_number_dwellings": "0",
+            "mdr_number_dwellings_ads": "0",
+            "mdr_total_consideration": "0",
+            "relief_amount_ads": "0",
+            "relief_override_amount_ads": "450"
+        },
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false,
+            "relief_type": "ADSRELIEF",
+            "lbtt_return_ads_due": true,
+            "lbtt_return_flbt_type": "CONVEY",
+            "relief_amount": "0",
+            "relief_override_amount": "0",
+            "mdr_number_dwellings": "0",
+            "mdr_number_dwellings_ads": "0",
+            "mdr_total_consideration": "0",
+            "relief_amount_ads": "0",
+            "relief_override_amount_ads": "500"
+        },
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false,
             "relief_type": "MULTIPLE",
+            "lbtt_return_ads_due": true,
+            "lbtt_return_flbt_type": "CONVEY",
             "relief_amount": "0",
             "relief_override_amount": "9000",
             "mdr_number_dwellings": "20",
@@ -164,7 +181,6 @@
     "exchange_ind": "Y",
     "previous_option_ind": "Y",
     "uk_ind": "Y",
-    "non_ads_reliefclaim_option_ind": "Y",
     "buyers": {
         "6e45d8fa-3ab4-4161-9113-f3084432430a": {
             "json_class": "Returns::Lbtt::Party",

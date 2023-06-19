@@ -1,0 +1,18 @@
+en:
+  layouts:
+    footer:
+      accessibility: "Accessibility"
+      cookies: "Cookies"
+      content_copyright_message_html: 'All content is available under the <a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence v3.0</a>, except for graphic assets and where otherwise stated'
+      crown_copyright: "Crown Copyright"
+      foi: "Freedom of Information"
+      legal_notices: "Legal Notices"
+      site_map: "Site Map"
+      version_html: "Version: %{version}"
+    header:
+      menu: "Menu"
+      service_name: "Scottish Electronic Tax System"
+      revenue_scotland: "Revenue Scotland"
+    application:
+      timeout_warning_message: "Your session is about to time out"
+      cancel_warning_message: "You are about to leave this return. If you haven't saved your changes click 'Cancel' followed by the 'Save draft' button on the return summary screen. Any unsaved changes will be lost."

@@ -1,25 +1,22 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @claim_payment, url:@post_path, html: { multipart: true }, method: :post, local: true do |f| %>
-  <%= form_errors_for [@claim_payment, @resource_items_hash] %>
-  <%= display_region( {
-          data: [
-            { model: @claim_payment, attributes: [ { attribute: :case_reference } ] },
-            { model: @claim_payment, attributes: [ { attribute: :submitted_date, format: :full_month_date } ] },
-          ]
-      },
-      { data: { heading_cell_class: 'govuk-!-width-one-quarter' } } 
-      ) %>
-  <%= display_paragraph_components(body: t('.' + @claim_payment.translation_prefix + '_confirmation_note')) %>
-  <%= navigational_links( [{link: ('.print'), path: nil, link_html_options: { class:'print govuk-link' } },
-                           { link: :download_claim_details, path: claim_download_claim_path, link_html_options: { target: '_blank' } } ] )%>
-  <%= display_paragraph_components(heading: t('.what_next'),
-                                   body: UtilityHelper.swap_texts(t('.contact_us'),
-                                                                  text_links: { t('.contact_us_link_text') => link_to(t('.contact_us_link_text'), 
-                                                                                                                       external_link_url('CONTACT_US'),
-                                                                                                                       target: '_blank') })) %>
-  <%= display_paragraph_components(heading: t('.additional_documents'), body: t('.' + @claim_payment.translation_prefix + '_upload_note')) %>
-  <%= render "/layouts/file_upload_component", multiple: true, hide_description: true, hide_size_hint: true %>
+<% content_for(:navigation_link, :clear_stack) %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with( model: @claim_payment, url: @post_path, file_upload: true, method: :post,
+ button_action: (current_user ? :finish : :none ) ) do |f| %>
+  <%= ds_notification_panel(title: t('.title'), reference: @claim_payment
+.case_reference, success: true) %>
+  <%= ds_paragraph{t('.date_text', system_date: DateFormatting.to_display_date_format(Date.today))} %>
+  <%= ds_paragraph do %>
+    <%= t('.' + @claim_payment.translation_prefix + '_confirmation_note')  %>
+  <% end %>
+  <%= ds_print_link(name: t('.print'))  %>
+  <%= ds_link(name: t('.download_claim_details'), url: claim_download_claim_path, target: '_blank') %>
+  <%= f.ds_section_title(section_title: t('.what_next')) %>
+  <%= ds_paragraph {t('.contact_us_html', link: ds_link(url: external_link_url('CONTACT_US'), name: t('.contact_us_link'),target: '_blank')).html_safe} %>
+  <%= f.ds_section_title(section_title: t('.additional_documents')) %>
+  <%= ds_paragraph {t('.' + @claim_payment.translation_prefix + '_upload_note')} %>
+  <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, multiple: true, optional: true,
+                     description: false,  supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb) %>
+  <%= ds_button(name: t('ds.submit_component.finish'), url: external_link_url('CANCEL_HOME') ) unless current_user%>
+  <%= ds_paragraph { ds_link(name: t('give_feed_back'), url: external_link_url('FDBK_ADS_REPAY'),
+                             target: '_blank', subtype: :centered)}  unless current_user %>
 <% end %>
-<%= link_to t('go_to_dashboard'), dashboard_path if current_user %>

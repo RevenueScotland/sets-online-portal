@@ -4,10 +4,8 @@
 
 Capybara.register_driver :selenium_chrome do |app|
   opts = Selenium::WebDriver::Chrome::Options.new
-  opts.add_option('useAutomationExtension', false)
-
   chrome_common(opts)
-  Capybara::Selenium::Driver.new(app, browser: :chrome, capabilities: opts)
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: opts)
 end
 
 # register a remote selenium chrome base driver. The URL for the remote driver selenium hub must be
@@ -24,13 +22,14 @@ Capybara.register_driver :selenium_remote_chrome do |app|
                                  capabilities: [capabilities, opts])
 end
 
-# register a local selenium firefox based driver, which ignores insecure certificates, and
-# has a screen size of 800x800
+# register a local selenium firefox based driver, which ignores insecure certificates
 Capybara.register_driver :selenium_firefox do |app|
-  opts = Selenium::WebDriver::Firefox::Options.new(args: ['--window-size=1920,1024'],
-                                                   profile: customized_firefox_profile)
-  capabilities = Selenium::WebDriver::Remote::Capabilities.firefox(accept_insecure_certs: true)
-  Capybara::Selenium::Driver.new(app, browser: :firefox, capabilities: [capabilities, opts])
+  opts = Selenium::WebDriver::Options.firefox
+  opts.add_argument('--width=1600')
+  opts.add_argument('--height=900')
+  opts.profile = customized_firefox_profile
+  opts.accept_insecure_certs = true
+  Capybara::Selenium::Driver.new(app, browser: :firefox, options: opts)
 end
 
 # register a remote selenium firefox based driver, which ignores insecure certs
@@ -62,7 +61,10 @@ Capybara.default_driver = ENV['CAPYBARA_DRIVER'].to_sym unless ENV['CAPYBARA_DRI
 Capybara.javascript_driver = ENV['CAPYBARA_DRIVER'].to_sym unless ENV['CAPYBARA_DRIVER'].nil?
 
 # override the default wait time as we seem to have network issues
-Capybara.default_max_wait_time = 30
+Capybara.default_max_wait_time = 10
+
+# Click the label for non visible radio groups and check boxes
+Capybara.automatic_label_click = true
 
 # Set the environment variable CAPYBARA_APP_HOST to run the tests against a remote instance
 # or local instance of the application, on a local instance, fix the host and port
@@ -111,7 +113,7 @@ end
 # @see https://src.chromium.org/viewvc/chrome/trunk/src/chrome/common/pref_names.cc?view=markup to learn more about
 # the Chrome preferences that can be added and what each of them mean.
 def chrome_common(options)
-  options.add_argument('window-size=1920,1024')
+  options.add_argument('window-size=1600,900')
   options.add_preference(:download, directory_upgrade: true,
                                     prompt_for_download: false,
                                     default_directory: ENV.fetch('TEST_FILE_DOWNLOAD_PATH', nil))

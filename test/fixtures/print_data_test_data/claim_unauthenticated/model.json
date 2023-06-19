@@ -12,7 +12,7 @@
   "taxpayers": [
     {
       "json_class": "Returns::Lbtt::Party",
-      "party_type": "CLAIMANT",
+      "party_type": "UNAUTH_CLAIMANT",
       "new_record": true,
       "surname": "Last tname",
       "firstname": "First name",
@@ -32,7 +32,7 @@
     },
     {
       "json_class": "Returns::Lbtt::Party",
-      "party_type": "CLAIMANT",
+      "party_type": "UNAUTH_CLAIMANT",
       "new_record": true,
       "surname": "Buyer 2 Last tname",
       "firstname": "Buyer 2 First name",
@@ -40,7 +40,7 @@
     },
     {
       "json_class": "Returns::Lbtt::Party",
-      "party_type": "CLAIMANT",
+      "party_type": "UNAUTH_CLAIMANT",
       "new_record": true,
       "surname": "Buyer 3 Last tname",
       "firstname": "Buyer 3 First name",
@@ -59,7 +59,7 @@
     },
     {
       "json_class": "Returns::Lbtt::Party",
-      "party_type": "CLAIMANT",
+      "party_type": "UNAUTH_CLAIMANT",
       "new_record": true,
       "surname": "Buyer 4 Last tname",
       "firstname": "Buyer 4 First name",
@@ -78,7 +78,7 @@
     },
     {
       "json_class": "Returns::Lbtt::Party",
-      "party_type": "CLAIMANT",
+      "party_type": "UNAUTH_CLAIMANT",
       "new_record": true,
       "surname": "Additional Buyer Last tname",
       "firstname": "Additional Buyer First name",

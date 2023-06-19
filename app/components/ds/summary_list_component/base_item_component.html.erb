@@ -1,0 +1,15 @@
+<li class="ds_summary-list__item">
+  <span class="ds_summary-list__key"><%= label_text %></span>
+  <span class="ds_summary-list__value">
+    <span class="visually-hidden"><%= t('.your_answer_is') %></span>
+    <q class="ds_summary-list__answer"><%= formatted_value %></q>
+  </span>
+  <% if actions? %>
+    <div class="ds_summary-list__actions">
+      <% actions.each_with_index do |action,i| %>
+        <%= tag.br unless i == 0 %>
+        <%= action %>
+      <% end %>
+    </div %>
+  <% end %>
+</li>

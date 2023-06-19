@@ -9,7 +9,8 @@ module Returns
     # tare_refno is the number the back office uses to identify this return (probably the primary key)
     # form_type is the status of the return 'D' for draft, 'L'/'F' for Latest/Filed
     # previous_pay_method is the payment method used on the previous version of a return (nil for the first return)
-    attr_accessor :tare_reference, :tare_refno, :form_type, :previous_form_type, :version, :previous_fpay_method
+    attr_accessor :tare_reference, :tare_refno, :form_type, :previous_form_type, :version, :previous_fpay_method,
+                  :non_notifiable_reasons
 
     # @return [Boolean] whether or not this return is an amendment based on the version number and form type
     def amendment?
@@ -60,7 +61,7 @@ module Returns
     # @param response_element [Symbol] expected element in the response body eg. :slft_tax_return
     def self.abstract_find(operation, id, requested_by, response_element)
       ref_no = id[:tare_refno]
-      load_request = { 'ins1:TareRefno': ref_no, Version: id[:version], Username: requested_by.username,
+      load_request = { 'ins0:TareRefno': ref_no, Version: id[:version], Username: requested_by.username,
                        ParRefno: requested_by.party_refno }
       call_ok?(operation, load_request) do |body|
         refined_hash = convert_back_office_hash(body[response_element])
@@ -71,21 +72,39 @@ module Returns
       end
     end
 
+    # Sets the portal variables from the back office values
+    def extract_data_from_body(body)
+      @tare_reference = body[:return_reference]
+      @tare_refno = body[:return_refno]
+      @payment_date = DateFormatting.to_display_date_format(body[:payment_date]) unless body[:payment_date].nil?
+      @version = body[:version]
+      @non_notifiable = body[:non_notifiable]
+      @non_notifiable_reasons = []
+      ServiceClient.iterate_element(body[:non_notifiable_reasons]) do |reason|
+        @non_notifiable_reasons << reason[:reason_text]
+      end
+      @already_submitted = false if @non_notifiable
+    end
+
     # Send the return to the back office to save.  Stores the save reference in tare_reference.
     # Calls #save_operation to get the right type of save (ie new or update) and set any required fields appropriately.
     # @param requested_by [User] the user saving the return (ie current_user, public requests will pass nil)
-    def save(requested_by) # rubocop:disable Metrics/AbcSize
-      call_ok?(save_operation,
-               additional_save_parameters(requested_by).merge!(request_save(requested_by,
-                                                                            form_type: @form_type))) do |body|
-        @tare_reference = body[:return_reference]
-        @tare_refno = body[:return_refno]
-        @payment_date = DateFormatting.to_display_date_format(body[:payment_date]) unless body[:payment_date].nil?
-        @version = body[:version] unless body[:version].nil?
-        raise Error::AppError.new('Save', 'Return reference missing') if @tare_reference.blank?
+    def save(requested_by)
+      call_ok?(save_operation, additional_save_parameters(requested_by)
+      .merge!(request_save(requested_by, form_type: @form_type))) do |body|
+        extract_data_from_body(body)
+        if @non_notifiable
+          Rails.logger.info("return is non notifiable #{@non_notifiable_reasons.join}")
+        else
+          raise Error::AppError.new('Save', 'Return reference missing') if @tare_reference.blank?
 
-        Rails.logger.info("Saved return reference : #{@tare_reference} (#{tare_refno}) as version #{version}")
+          Rails.logger.info("Saved return reference : #{@tare_reference} (#{tare_refno}) as version #{version}")
+        end
       end
+    end
+
+    def non_notifiable?
+      (@non_notifiable == true)
     end
 
     # Helper method for saving slft returns. @see #save

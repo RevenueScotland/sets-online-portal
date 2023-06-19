@@ -1,8 +1,4 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<%= form_for @slft_application, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @slft_application %>
-  <% f.current_browser = application_browser %>
-  <%= f.date_field :start_date %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with( model: @slft_application, url: @post_path) do |f| %>  
+  <%= f.ds_date_picker(method: :start_date) %>
 <% end %>

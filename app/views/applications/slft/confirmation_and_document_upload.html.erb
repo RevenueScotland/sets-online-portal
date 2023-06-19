@@ -1,20 +1,37 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<%= form_for @slft_application, url: @post_path, html: { multipart: true }, local: true do |f| %>
-  <%= form_errors_for [@slft_application, @resource_items_hash] %>
-  <%= display_paragraph_components(body: t('.reference_message_html', case_reference: @slft_application.case_references.to_sentence(),
-                                                                      count: @slft_application.case_references.length)) %>
-  <%= display_paragraph_components(body: t('.submitted_date', system_date: DateFormatting.to_display_date_format(Date.today))) %>
-  <%= display_paragraph_components(body: UtilityHelper.swap_texts(t('.contact_us'),
-                                                                  text_links: { t('.contact_us_link_text') => link_to(t('.contact_us_link_text'), 
-                                                                                                                       external_link_url('CONTACT_US'),
-                                                                                                                       target: '_blank') })) %>
-  <%= navigational_links( [{link: ('.print'), path: nil, link_html_options: {class:'print govuk-link'} },
-                           { link: :download_application_pdf, path: download_pdf_applications_slft_path, link_html_options: { target: '_blank' } } ] )%>
-  <%= display_paragraph_components(heading: t('.evidence_heading'), body: t('.evidence_body')) %>
-  <%= display_table(@slft_application.display_supporting_document_list, [:code, :value], [], { code: { label: t('.code') }, value: { label: t('.value') } }) %>
-  <%= render "/layouts/file_upload_component", file_upload_hint: full_lazy_lookup_path('.file_upload_hint'), multiple: true %>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_notification_panel(title: t('.title'),reference: @slft_application.case_references,success: true) do %>
+  <%= ds_paragraph {t('.confirmation_email')} %>
 <% end %>
-<%= link_to t('go_to_dashboard'), dashboard_path if current_user %>
-<%= link_to t('finish'), external_link_url('CANCEL_HOME') unless current_user %>
+<%= ds_paragraph {t('.submitted_date', system_date: DateFormatting.to_display_date_format(Date.today))} %>
+<%= ds_paragraph {t('.contact_us_html', link: ds_link(url: external_link_url('CONTACT_US'), name: t('.contact_us_link'),target: '_blank')).html_safe} %>
+<%= ds_print_link(name: t('.print'))  %>
+<%= ds_link(name: t('.download_application_pdf'), url: download_pdf_applications_slft_path, target: '_blank') %>
+<%= ds_section_title(section_title: t('.evidence_heading')) %>
+<%= ds_table(caption: t('.evidence_body'), id: 'supporting_documents') do |table| %>
+  <% table.with_header do |header| %>
+    <% header.with_cell do %>
+      <%= t('.code') %>
+    <% end %>
+    <% header.with_cell do %>
+      <%= t('.value') %>
+    <% end %>
+  <% end %>
+  <% @slft_application.display_supporting_document_list&.each do |doc| %>
+    <% table.with_row do |row| %>
+      <% row.with_cell do %>
+        <%= doc.code %>
+      <% end %>
+      <% row.with_cell do %>
+        <%= doc.value %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+<%= ds_paragraph {t('.file_upload_hint_default')} %>
+<%= ds_form_with( model: @slft_application, url: @post_path, file_upload: true, method: :post, button_action: :none ) do |f| %>
+  <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, multiple: true,
+                     description: true,  supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb) %>
+  <%= ds_paragraph { ds_button(name: t('ds.submit_component.finish'), url: external_link_url('CANCEL_HOME')) } %>
+  <%= ds_paragraph { ds_link(name: t('give_feed_back'), url: external_link_url('FDBK_UA_SLFT'),
+                             target: '_blank', subtype: :centered)}%>
+<% end %>

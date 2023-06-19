@@ -1,15 +1,13 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
 <% amount_page_title = @claim_payment.reason != 'ADS' ? '.non_ads_claiming_amount_title' : '.claiming_amount_title'%>
-<% content_for :page_title, t(amount_page_title) %>
-<%= form_for @claim_payment, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @claim_payment %>
+<% content_for(:page_title, t(amount_page_title)) %>
+<%= ds_form_with( model: @claim_payment, url: @post_path) do |f| %>
   <% if @claim_payment.reason == 'ADS'%>
-    <%= f.collection_radio_buttons_fields(:full_repayment_of_ads, @claim_payment.list_ref_data(:full_repayment_of_ads), alignment: 'vertical') %>
-    <div id='hideable' class= 'govuk-radios__conditional'>
-      <%= f.currency_field :claiming_amount %>
-    </div>
+    <%= rs_conditional_visibility(visible_value: "N") do |c| %>
+      <% c.with_visibility_control_radio_group(builder: f.builder, method: :full_repayment_of_ads, 
+      options_list:@claim_payment.list_ref_data(:full_repayment_of_ads), alignment: :horizontal ) %>
+      <%= f.ds_currency(method: :claiming_amount) %>
+    <% end %>
   <% else %>
-    <%= f.currency_field :claiming_amount %>
+    <%= f.ds_currency(method: :claiming_amount) %>
   <% end %>
-  <%= f.button %>
 <% end %>

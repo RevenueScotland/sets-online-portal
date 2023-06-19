@@ -1,173 +1,222 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :page_description, t('.description') %>
-<!-- Applies the CSS class 'external-link' to the navigation bar options, see return-form-dirty.js for details -->
-<% content_for :nav_bar_html_options, '{ class: "govuk-link external-link" }'.html_safe %>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:back_link_data_action, "cancel-warning#displayWarning") %>
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_paragraph{ t('.description')} %>
 <% if @lbtt_return.show_repayment? %>
-  <div class='govuk-body'>
-    <%= t('.repayment_description') %>
-  </div>
+  <%= ds_paragraph{ t('.repayment_description')} %>
 <% end %>
-<%= govuk_warning( t('.save_changes_warning') ) if current_user %>
-<% content_for :page_view, render_page_view(__FILE__) %>
+<%= ds_warning { t('.save_changes_warning') } if current_user %>
 <% if User.account_type(current_user) != 'PUBLIC' %>
-  <%= display_table_region( {
-      header: { label: t('.add_agent_description'), link: :edit_agent_details,  path: returns_lbtt_agent_details_path(party_id: 'new'), options: { id: 'amend_details' } }, 
-      table: {models: [@agent], attributes: [:full_name, :agent_reference_or_not_provided] }
-      },
-      { header: { link_cell_class: 'text_align_right' } } ) %>
+  <%= rs_lbtt_party_table(parties: [@agent], party_type: :agent, id: 'agent') %>
 <% end %>
 <% if @lbtt_return.flbt_type == 'CONVEY' %>
-  <%= display_table_region( {
-      header: { label: t('.add_buyer_description'), link: :add_buyer, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'BUYER'), link_options: { id: 'add_buyer' } }, 
-      table: { models: @lbtt_return.buyers&.values, attributes: [:full_name, :display_type, :display_address], 
-              actions: [{ label: t('edit_row'), path: :returns_lbtt_about_the_party_path },
-                        { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete buyer?" } } }] }
-      }, 
-      { header: { link_cell_class: 'text_align_right' } } ) %>
-  <%= display_table_region( {
-      header: { label: t('.add_seller_description'), link: :add_seller, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'SELLER'), link_options: { id: 'add_seller' } }, 
-      table: { models: @lbtt_return.sellers&.values, attributes: [:full_name, :display_type, :display_address], 
-              actions: [{ label: t('edit_row'), path: :returns_lbtt_about_the_party_path },
-                        { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete seller?" } } }] }
-      }, 
-      { header: { link_cell_class: 'text_align_right' } } ) %>
+  <%= rs_lbtt_party_table(parties: @lbtt_return.buyers&.values, party_type: :buyer, id: 'buyer') %>
+  <%= rs_lbtt_party_table(parties: @lbtt_return.sellers&.values, party_type: :seller, id: 'seller') %>
 <% else %>
-  <%= display_table_region( { 
-      header: { label: t('.add_tenant_description'), link: :add_tenant, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'TENANT'), link_options: { id: 'add_tenant' } }, 
-      table: { models: @lbtt_return.tenants&.values, attributes: [:full_name, :display_type, :display_address], 
-              actions: [{ label: t('edit_row'), path: :returns_lbtt_about_the_party_path },
-                        { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete tenant?" } } }] }
-      }, 
-      { header: { link_cell_class: 'text_align_right' } } ) %>
+  <%= rs_lbtt_party_table(parties:@lbtt_return.tenants&.values, party_type: :tenant,id: 'tenant') %>
   <% if @lbtt_return.flbt_type == 'LEASERET' %>
-    <%= display_table_region( { 
-      header: { label: t('.add_landlord_description'), link: :add_landlord, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'LANDLORD'), link_options: { id: 'add_landlord' } }, 
-      table: { models: @lbtt_return.landlords&.values, attributes: [:full_name, :display_type, :display_address], 
-              actions: [{ label: t('edit_row'), path: :returns_lbtt_about_the_party_path },
-                        { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete landlord?" } } }] }
-      }, 
-      { header: { link_cell_class: 'text_align_right' } } ) %>
+    <%= rs_lbtt_party_table(parties:@lbtt_return.landlords&.values, party_type: :landlord, id: 'landlord') %>
   <% end %>
   <% if @lbtt_return.flbt_type == 'ASSIGN' %>
-    <%= display_table_region( { 
-      header: { label: t('.add_new_tenant_description'), link: :add_new_tenant, path: returns_lbtt_about_the_party_path(party_id: 'new', party_type: 'NEWTENANT'), link_options: { id: 'add_new_tenant' } }, 
-      table: { models: @lbtt_return.new_tenants&.values, attributes: [:full_name, :display_type, :display_address], 
-              actions: [{ label: t('edit_row'), path: :returns_lbtt_about_the_party_path },
-                        { label: t('delete_row'), path: :returns_party_path, action: :destroy, options: { data: { confirm: "Delete new tenant?" } } }] }
-      }, 
-      { header: { link_cell_class: 'text_align_right' } } ) %>
+    <%= rs_lbtt_party_table(parties: @lbtt_return.new_tenants&.values, party_type: :newtenant, id: 'new_tenant') %>
   <% end %>
 <% end %>
-<%= display_table_region( { 
-      header: { label: t('.add_properties_description'), link: :add_property, path: returns_lbtt_property_address_path(property_id: 'new'), link_options: { id: 'add_property' } }, 
-      table: { models: @lbtt_return.properties&.values, attributes: [:address, :ads_due_ind], 
-               actions: [{ label: t('edit_row'), path: :returns_lbtt_property_address_path },
-                         { label: t('delete_row'), path: :returns_property_path, action: :destroy, options: { data: { confirm: "Delete property?" } } }],
-               options: { ads_due_ind: { skip: @lbtt_return.flbt_type != 'CONVEY', label: t('activemodel.attributes.returns/lbtt/property.ads'), format: :lookup_ref } }
-             } 
-      }, 
-      { header: { link_cell_class: 'text_align_right' } } ) %>
+<%= ds_table(caption: tag.h2(t('.add_properties_description'), class: 'ds_!_margin-bottom--0'), 
+             id: @id, small_screen: 'scrolling') do |table| %>
+  <% table.with_link(name: t('.add_property'), url: returns_lbtt_property_address_path(property_id: 'new')) %>
+  <% table.with_header(klass: Returns::Lbtt::Property) do |header| %>
+    <% header.with_cell(method: :address) %>
+    <% header.with_cell(method: :ads) if @lbtt_return.flbt_type == 'CONVEY' %>
+  <% end %>
+  <% @lbtt_return&.properties&.values&.each do |property| %>
+    <% table.with_row(model: property) do |row| %>
+      <% row.with_cell(method: :address) %>
+      <% row.with_cell(method: :ads_due_ind, type: :lookup) if @lbtt_return.flbt_type == 'CONVEY' %>
+    <% end %>
+    <% table.with_row do |row| %>
+      <% row.with_cell(colspan: (@lbtt_return.flbt_type == 'CONVEY' ? 2 : 1)) do %>
+        <%= ds_link(name: t('.edit_row'), url: returns_lbtt_property_address_path(property_id: property), subtype: :padded) %>
+        <%= ds_link(name: t('.delete_row'), url: returns_property_path(property_id: property), delete: true, confirm_message: "Delete property?", subtype: :padded) %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+<%= ds_table(caption: tag.h2(t('.add_transaction_description'), class: 'ds_!_margin-bottom--0'), id: @id) do |table| %>
+  <% table.with_link( name: (@lbtt_return.property_type.blank? && @lbtt_return.linked_ind.nil?) ? t('.add_transaction') : t('.edit_transaction'),
+                      url: %w[CONVEY LEASERET].include?(@lbtt_return.flbt_type) ? returns_lbtt_property_type_path : returns_lbtt_transaction_dates_path) %>
+  <% unless @lbtt_return.any_lease_review? || @lbtt_return.property_type.blank? %>
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :property_type, header: :label) %>
+      <% row.with_cell(method: :property_type, type: :lookup) %>
+    <% end %>
+  <% end %>
+  <% table.with_row(model: @lbtt_return) do |row| %>
+    <% row.with_cell(method: :effective_date, header: :label) %>
+    <% row.with_cell(method: :effective_date) %>
+  <% end %>
+  <% table.with_row(model: @lbtt_return) do |row| %>
+    <% row.with_cell(method: :relevant_date, header: :label) %>
+    <% row.with_cell(method: :relevant_date) %>
+  <% end %>
+  <% if @lbtt_return.flbt_type == 'CONVEY'%>
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :linked_ind, header: :label) %>
+      <% row.with_cell(method: :linked_ind, type: :lookup) %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :business_ind, header: :label) %>
+      <% row.with_cell(method: :business_ind, type: :lookup) %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :remaining_chargeable, header: :label) %>
+      <% row.with_cell(method: :remaining_chargeable, type: :currency) %>
+    <% end %>
+  <% else %>
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :lease_start_date, header: :label) %>
+      <% row.with_cell(method: :lease_start_date) %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :lease_end_date, header: :label) %>
+      <% row.with_cell(method: :lease_end_date) %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :linked_ind, header: :label) %>
+      <% row.with_cell(method: :linked_ind, type: :lookup) %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :premium_paid, header: :label) %>
+      <% row.with_cell(method: :premium_paid, type: :lookup) %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :lease_premium, header: :label) %>
+      <% row.with_cell(method: :lease_premium, type: :currency) %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :relevant_rent, header: :label) %>
+      <% row.with_cell(method: :relevant_rent, type: :currency) %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return.tax) do |row| %>
+      <% row.with_cell(method: :npv, header: :label) %>
+      <% row.with_cell(method: :npv, type: :currency) %>
+    <% end %>
+  <% end %>
+<% end %>
 <% if @lbtt_return.show_ads? %>
-  <%= display_region( {
-    header: { label: t('.add_additional_dwelling_supplements_description'),
-              link: %w[Y N].include?(@lbtt_return.ads.ads_sold_main_yes_no) || %w[Y N].include?(@lbtt_return.ads.ads_consideration_yes_no) ? :edit_ads : :add_ads,
-              path: @lbtt_return.amendment? ? returns_lbtt_ads_repay_reason_path : returns_lbtt_ads_dwellings_path,
-              link_options: { 'id' => 'returns_lbtt_lbtt_return_tax_ads_due' } },
-    data: [ { model: @lbtt_return.ads,
-              attributes: [
-               { attribute: :ads_sell_residence_ind, format: :lookup_ref, skip: :if_blank },
-               { attribute: :ads_main_address, skip: :if_blank },
-               { attribute: :ads_consideration, format: :money, skip: :if_blank },
-               { attribute: :ads_amount_liable, format: :money, skip: :if_blank },
-               { attribute: :ads_reliefclaim_option_ind, format: :lookup_ref, skip: :if_blank } ],
-             } ]
-  },
-  { header: { link_cell_class: 'text_align_right' },
-    data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } ) %>
-<% end %>
-<%= display_region( {
-  header: { label: t('.add_transaction_description'),
-            link: (@lbtt_return.property_type.blank? && @lbtt_return.linked_ind.nil?) ? :add_transaction : :edit_transaction, 
-            path: %w[CONVEY LEASERET].include?(@lbtt_return.flbt_type) ? returns_lbtt_property_type_path : returns_lbtt_transaction_dates_path,
-            link_options: { id: 'add_transaction' } },
-	data: [ { model: @lbtt_return, 
-            attributes: [ { attribute: :property_type, format: :lookup_ref, skip: @lbtt_return.any_lease_review? || @lbtt_return.property_type.blank?},
-                          { attribute: :effective_date, format: :full_month_date, skip: :if_blank },
-                          { attribute: :relevant_date, format: :full_month_date, skip: :if_blank } ] },
-          { model: @lbtt_return,
-            attributes: [ { attribute: :linked_ind, format: :lookup_ref, skip: :if_blank },
-                          { attribute: :business_ind, format: :lookup_ref, skip: :if_blank },
-                          { attribute: :non_ads_reliefclaim_option_ind, format: :lookup_ref, skip: :if_blank },
-                          { attribute: :remaining_chargeable, format: :money, skip: :if_blank } ], 
-            skip: @lbtt_return.flbt_type != 'CONVEY' },
-          { model: @lbtt_return,
-            attributes: [ { attribute: :lease_start_date, format: :full_month_date, skip: :if_blank },
-                          { attribute: :lease_end_date, format: :full_month_date, skip: :if_blank },
-                          { attribute: :linked_ind, format: :lookup_ref, skip: :if_blank },
-                          { attribute: :non_ads_reliefclaim_option_ind, format: :lookup_ref, skip: :if_blank },
-                          { attribute: :premium_paid, format: :lookup_ref, skip: :if_blank },
-                          { attribute: :lease_premium, format: :money, skip: :if_blank },
-                          { attribute: :relevant_rent, format: :money, skip: :if_blank } ],
-            skip: @lbtt_return.flbt_type == 'CONVEY' },
-          { model: @lbtt_return.tax,
-            attributes: [ { attribute: :npv, format: :money, skip: :if_blank } ],
-            skip: @lbtt_return.flbt_type == 'CONVEY' } ]
-  }, 
-  { header: { link_cell_class: 'text_align_right' },
-    data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
-%>
-<% if @lbtt_return.show_relief_calc? %>
-  <%= display_table_region( {
-      header: { label: t('.edit_relief'), 
-            link: :edit_relief,
-            path: returns_lbtt_reliefs_calculation_path
-            },
-      table: { models: @lbtt_return.relief_claims, 
-              attributes: [ :relief_type_description ,:relief_override_amount ],
-              options: { relief_override_amount: {format: :money } },
-      }},
-      { header: { link_cell_class: 'text_align_right' },
-        data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } ) %>
-<% end %>
-<%= display_region( {
-  header: { label: t('.edit_calculation'), link: @lbtt_return.tax&.tax_due.blank? ? nil : :edit_calculation,
-            path: %w[CONVEY LEASERET].include?(@lbtt_return.flbt_type) ? returns_lbtt_tax_calculation_path : returns_lbtt_tax_calc_already_paid_path,
-            link_options: { id: 'edit_calculation' } },
-  description: { region_description: %w[LEASERET CONVEY].include?(@lbtt_return.flbt_type) ? t('.calculation_description_LEASERET_CONVEY') : t('.calculation_description')},
-	data: [ { model: @lbtt_return.tax, 
-	          attributes: [ { attribute: :calculated },
-                            { attribute: :ads_due, skip: !@lbtt_return.show_ads? },
-                            { attribute: :due_before_reliefs, skip: !@lbtt_return.show_ads? },
-                            { attribute: :total_reliefs },
-                            { attribute: :total_ads_reliefs, skip: !@lbtt_return.show_ads? },
-                            { attribute: :tax_due } ],
-            skip: @lbtt_return.flbt_type != 'CONVEY',
-            format: :money },
-          { model: @lbtt_return.tax,
-            attributes: [ { attribute: :npv_tax_due },
-                          { attribute: :premium_tax_due },
-                          { attribute: :total_reliefs, skip: %w[LEASEREV ASSIGN TERMINATE].include?(@lbtt_return.flbt_type) },
-                          { attribute: :tax_due },
-                          { attribute: :amount_already_paid, skip: !%w[LEASEREV ASSIGN TERMINATE].include?(@lbtt_return.flbt_type) },
-                          { attribute: :tax_due_for_return, skip: !%w[LEASEREV ASSIGN TERMINATE].include?(@lbtt_return.flbt_type) } ],
-            skip: @lbtt_return.flbt_type == 'CONVEY',
-            format: :money } ]
-  }, 
-  { header: { link_cell_class: 'text_align_right' },
-    data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
-%>
-<% if show_dates_warning?(@lbtt_return) %>
-  <%= govuk_warning( dates_warning_text(@lbtt_return)) %>
-  <%= display_paragraph_components(body: navigational_links([{link: :change_the_transaction, path: returns_lbtt_property_type_path}])) %>
-<% end %>
-<!-- See return-form-dirty.js for details of the application of form-dirty-warning-message values of data property -->
-<%= form_for @lbtt_return, url: returns_lbtt_summary_path, method: :post, :data => { 'form-dirty-warning-message' => t('.form_dirty_warning_message') } , local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
-  <% if can? AuthorisationHelper::LBTT_SAVE %>
-    <%= f.button 'save_draft', { :name => 'save_draft' } if current_user %>
+  <%= ds_table(caption: tag.h2(t('.add_additional_dwelling_supplements_description'), class: 'ds_!_margin-bottom--0'),
+               id: @id, small_screen: 'scrolling') do |table| %>
+    <% table.with_link(name: @lbtt_return.ads.ads_sold_main_yes_no.present? || 
+        @lbtt_return.ads.ads_consideration_yes_no.present? ? t('.edit_ads') : t('.add_ads'), 
+        url: @lbtt_return.amendment? ? returns_lbtt_ads_repay_reason_path : returns_lbtt_ads_dwellings_path)%>
+    <% table.with_row(model: @lbtt_return.ads) do |row| %>
+      <% row.with_cell(method: :ads_sell_residence_ind, header: :label) %>
+      <% row.with_cell(method: :ads_sell_residence_ind, type: :lookup) %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return.ads) do |row| %>
+      <% row.with_cell(method: :ads_main_address, header: :label) %>
+      <% row.with_cell(method: :ads_main_address)%>
+    <% end %>
+    <% table.with_row(model: @lbtt_return.ads) do |row| %>
+      <% row.with_cell(method: :ads_consideration, header: :label) %>
+      <% row.with_cell(method: :ads_consideration, type: :currency) %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return.ads) do |row| %>
+      <% row.with_cell(method: :ads_amount_liable, header: :label) %>
+      <% row.with_cell(method: :ads_amount_liable, type: :currency) %>
+    <% end %>
   <% end %>
-  <% if can?(AuthorisationHelper::LBTT_SUBMIT) || public %>
-    <%= f.submit 'submit_return', { :name => 'submit_return' } %>
+<% end %>
+<% if @lbtt_return.ready_for_tax_calc? && !(@lbtt_return.any_lease_review?) %>
+  <%= ds_table(caption: tag.h2(t('.add_relief_description'), class: 'ds_!_margin-bottom--0'),
+               id: @id, small_screen: 'scrolling') do |table| %>
+    <% table.with_link(name: @lbtt_return.relief_claims.present? ? t('.edit_relief') : t('.add_relief'),
+                       url: returns_lbtt_reliefs_on_transaction_path) %>
+    <% table.with_header(klass: Returns::Lbtt::ReliefClaim) do |header| %>
+      <% header.with_cell(method: :relief_type_description) %>
+      <% header.with_cell(method: :relief_override_amount)%>
+      <% header.with_cell(method: :relief_override_amount_ads) if @lbtt_return.show_ads?%>
+    <% end %>
+    <% if @lbtt_return.relief_claims.present? %>
+      <% @lbtt_return.relief_claims.each do |claim| %>
+        <% table.with_row(model: claim) do |row| %>
+          <% row.with_cell(method: :relief_type_description) %>
+          <% row.with_cell(method: :relief_override_amount, type: :currency)%>
+          <% row.with_cell(method: :relief_override_amount_ads, type: :currency) if @lbtt_return.show_ads?%>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+<%= ds_table(caption: tag.h2(t('.about_calculation'), class: 'ds_!_margin-bottom--0'),
+             id: @id, small_screen: 'scrolling') do |table| %>
+  <% table.with_link(name: t('.edit_calculation'), url: %w[CONVEY LEASERET].include?(@lbtt_return.flbt_type) ? returns_lbtt_tax_calculation_path : returns_lbtt_tax_calc_already_paid_path) %>
+  <%= %w[LEASERET CONVEY].include?(@lbtt_return.flbt_type) ? t('.calculation_description_LEASERET_CONVEY') : t('.calculation_description') %>
+  <% if @lbtt_return.flbt_type == 'CONVEY'%>
+    <% table.with_row(model: @lbtt_return.tax) do |row| %>
+      <% row.with_cell(method: :calculated, header: :label) %>
+      <% row.with_cell(method: :calculated, type: :currency) %>
+    <% end %>
+    <% if @lbtt_return.show_ads? %>
+      <% table.with_row(model: @lbtt_return.tax) do |row| %>
+        <% row.with_cell(method: :ads_due, header: :label) %>
+        <% row.with_cell(method: :ads_due, type: :currency) %>
+      <% end %>
+      <% table.with_row(model: @lbtt_return.tax) do |row| %>
+        <% row.with_cell(method: :due_before_reliefs, header: :label) %>
+        <% row.with_cell(method: :due_before_reliefs, type: :currency) %>
+      <% end %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return.tax) do |row| %>
+      <% row.with_cell(method: :total_reliefs, header: :label) %>
+      <% row.with_cell(method: :total_reliefs, type: :currency) %>
+    <% end %>
+    <% if @lbtt_return.show_ads? %>
+      <% table.with_row(model: @lbtt_return.tax) do |row| %>
+        <% row.with_cell(method: :total_ads_reliefs, header: :label) %>
+        <% row.with_cell(method: :total_ads_reliefs, type: :currency) %>
+      <% end %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return.tax) do |row| %>
+      <% row.with_cell(method: :tax_due, header: :label) %>
+      <% row.with_cell(method: :tax_due, type: :currency) %>
+    <% end %>
+  <% else %>
+    <% table.with_row(model: @lbtt_return.tax) do |row| %>
+      <% row.with_cell(method: :npv_tax_due, header: :label) %>
+      <% row.with_cell(method: :npv_tax_due, type: :currency) %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return.tax) do |row| %>
+      <% row.with_cell(method: :premium_tax_due, header: :label) %>
+      <% row.with_cell(method: :premium_tax_due, type: :currency) %>
+    <% end %>
+    <% unless %w[LEASEREV ASSIGN TERMINATE].include?(@lbtt_return.flbt_type)%>
+      <% table.with_row(model: @lbtt_return.tax) do |row| %>
+        <% row.with_cell(method: :total_reliefs, header: :label) %>
+        <% row.with_cell(method: :total_reliefs, type: :currency) %>
+      <% end %>
+    <% end %>
+    <% table.with_row(model: @lbtt_return.tax) do |row| %>
+      <% row.with_cell(method: :tax_due, header: :label) %>
+      <% row.with_cell(method: :tax_due, type: :currency) %>
+    <% end %>
+    <% if %w[LEASEREV ASSIGN TERMINATE].include?(@lbtt_return.flbt_type)%>
+      <% table.with_row(model: @lbtt_return.tax) do |row| %>
+        <% row.with_cell(method: :amount_already_paid, header: :label) %>
+        <% row.with_cell(method: :amount_already_paid, type: :currency) %>
+      <% end %>
+      <% table.with_row(model: @lbtt_return.tax) do |row| %>
+        <% row.with_cell(method: :tax_due_for_return, header: :label) %>
+        <% row.with_cell(method: :tax_due_for_return, type: :currency) %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+<% if show_dates_warning?(@lbtt_return) %>
+  <%= ds_warning{ dates_warning_text(@lbtt_return)} %>
+  <%= ds_link(name: t('.change_the_transaction'), url: returns_lbtt_property_type_path)%>
+<% end %>
+<%= ds_form_with(model: @lbtt_return, url: returns_lbtt_summary_path, method: :post, button_action: :submit_return, button_label: t('.submit_return')) do |f| %>
+  <% if can? RS::AuthorisationHelper::LBTT_SAVE %>
+    <%= f.ds_submit(button_action: 'save_draft', button_label: t('.save_draft'), type: :secondary) if current_user %>
   <% end %>
 <% end %>

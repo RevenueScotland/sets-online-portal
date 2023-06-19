@@ -7,21 +7,13 @@ en:
         address: "Address"
         ads: "ADS?"
         full_title_number: "Title number (if provided)"
+        full_parent_title_number: "Parent title number"
+        full_address: "Property address"
+    labels:
+      returns/lbtt/property:
+        full_title_number: 
+          default: "%{label}"
+          print: "Title number"
     hints:
       returns/lbtt/property:
-        ads_due_ind: "See guidance on LBTT Additional Dwelling Supplement (opens in a new window) for further details"
-  returns:
-    lbtt_properties:
-      about_the_property:
-        title: "About the property"
-        subtitle: "Provide property details"
-        title_code: "Title number (optional)"
-        parent_title_code: "Parent title number (optional)"
-        parent_title_hint: "Not all properties will have a parent title"
-
-      property_address:
-        title: "Property address"
-        subtitle: "Provide property address"
-      property_ads_applies:
-        title: "About the property"
-        ads_due_ind_link: "LBTT Additional Dwelling Supplement (opens in a new window)"
+        ads_due_ind: "See guidance on %{link} for further details"    

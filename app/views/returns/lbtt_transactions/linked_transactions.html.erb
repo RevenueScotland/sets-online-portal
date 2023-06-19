@@ -1,23 +1,49 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%# Declared global variable %>
-<% $convey_type = 'CONVEY'%>
-<%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
-  <%= f.collection_radio_buttons_fields(:linked_ind, @lbtt_return.list_ref_data(:linked_ind), text_links: { t('.linked_ind') =>
-                                                    link_to(t('.linked_ind'), external_link_url('LINKED_TRANS'), target: '_blank')}) %>
-  <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden' >
-    <%= f.table_fields(@lbtt_return, :link_transactions) do |table_form| %>
-      <%= table_form.text_field(:return_reference) %>
-      <% if @lbtt_return.flbt_type == "#{$convey_type}" %>
-        <%= table_form.currency_field(:consideration_amount) %>
-      <% else %>
-        <%= table_form.currency_field(:npv_inc) %>
-        <%= table_form.currency_field(:premium_inc) %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :linked_ind,
+                       options_list: @lbtt_return.list_ref_data(:linked_ind), interpolations: { link:
+                        ds_link(name: t('.linked_ind_link'), url: external_link_url('LINKED_TRANS'), target: '_blank')}, 
+                        alignment: :horizontal) %>
+    <%= f.ds_table_form(add_link: true, delete_links: true) do |table| %>
+      <% table.with_header(klass: Returns::Lbtt::LinkTransactions) do |header| %>
+        <% header.with_cell(method: :return_reference) %>
+        <% if @lbtt_return.flbt_type == "CONVEY" %>
+          <% header.with_cell(method: :consideration_amount) %>
+        <% else %>
+          <% header.with_cell(method: :npv_inc) %>
+          <% header.with_cell(method: :premium_inc) %>
+        <% end %>
+      <% end %>
+      <% @lbtt_return.link_transactions.each_with_index do |link_transaction, index| %>
+        <% table.with_form_row(model: link_transaction, index: index,
+                               delete_link: (true if @lbtt_return.link_transactions.count > 1)) do |row| %>
+          <% row.with_cell do |c| %>
+          <%# TODO: RSTP-1154 remove the capture %>
+            <% capture do %>
+              <%= c.ds_text_field(method: :return_reference) %>
+            <% end %>
+          <% end %>
+          <% if @lbtt_return.flbt_type == "CONVEY" %>
+            <% row.with_cell do|c| %>
+              <% capture do %>
+                <%= c.ds_currency(method: :consideration_amount) %>
+              <% end %>
+            <% end %>
+          <% else %>
+            <% row.with_cell do|c| %>
+              <% capture do %>
+                <%= c.ds_currency(method: :npv_inc) %>
+              <% end %>
+            <% end %>
+            <% row.with_cell do|c| %>
+             <% capture do %>
+                <%= c.ds_currency(method: :premium_inc) %>
+             <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
       <% end %>
     <% end %>
-  </div>
-  <div class="govuk-form-group">
-    <%= f.button %>
-  </div>
+  <% end %>
 <% end %>

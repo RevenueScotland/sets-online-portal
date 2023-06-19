@@ -50,10 +50,10 @@ module Returns
       def request_save
         output = {}
 
-        xml_element_if_present(output, 'ins1:Reference', @return_reference)
-        xml_element_if_present(output, 'ins1:ConsiderationAmount', @consideration_amount)
-        xml_element_if_present(output, 'ins1:NetPresentValue', @npv_inc)
-        xml_element_if_present(output, 'ins1:LeasePremium', @premium_inc)
+        xml_element_if_present(output, 'ins0:Reference', @return_reference)
+        xml_element_if_present(output, 'ins0:ConsiderationAmount', @consideration_amount)
+        xml_element_if_present(output, 'ins0:NetPresentValue', @npv_inc)
+        xml_element_if_present(output, 'ins0:LeasePremium', @premium_inc)
         output
       end
 

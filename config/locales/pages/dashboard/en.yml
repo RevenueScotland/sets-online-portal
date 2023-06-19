@@ -1,0 +1,40 @@
+en:
+  dashboard:
+    dashboard_home:
+      index:
+        title: "Dashboard"
+        no_services: "Your registration has not been approved yet"
+        unread_messages: "Unread messages"
+        draft_returns: "Draft returns"
+        outstanding_balance: "Outstanding balance"
+    dashboard_returns:
+      index:
+        title: "All returns"
+        filter_show: "Show more filter options"
+        caption: "List of returns"
+    financial_transactions:
+      index:
+        title: "All transactions"
+        filter_show: "Show more filter options"
+        caption: "List of transactions"
+      show:
+        title: "Financial transaction"
+        caption: "Related financial transactions"
+    messages:
+      index:
+        title: "Messages"
+        filter_show: "Show more filter options"
+        caption: "List of messages"
+        create_new_message: "Create a new message about %{reference}"
+      new:
+        title: "New message"
+        send: "Send message"
+      confirmation:
+        title: Thank you for your secure message
+        what_happens_next_html: We aim to respond as quickly as possible. In the meantime, full information and guidance is available on the %{link}.
+        what_happens_next_link: Revenue Scotland website
+      show:
+        title: "Message details"
+        caption: "Attachments"
+        heading: "Related messages"
+        reply: "Reply"

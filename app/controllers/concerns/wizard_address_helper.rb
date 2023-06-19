@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Helper for the main Wizard methods concern handling addresses as a special case
-module WizardAddressHelper
+module WizardAddressHelper # rubocop:disable Metrics/ModuleLength
   extend ActiveSupport::Concern
   include AddressHelper
 
@@ -40,29 +40,43 @@ module WizardAddressHelper
   #
   #
   def wizard_address_step(steps, overrides = {})
-    wizard_handle_clear_cache(overrides)
     # non standard names used to avoid a line length issue further down
     cached_object, page_object = wizard_setup_step(overrides)
 
-    # POST
-    if params[:continue]
-      return unless wizard_store_address(cached_object, page_object, overrides)
-
-      return wizard_navigation_step(steps, overrides, wizard_page_objects_size(cached_object, overrides))
+    if request.get?
+      wizard_address_get(page_object, overrides)
+    elsif address_search?
+      wizard_address_search(cached_object, page_object, overrides)
+    elsif wizard_store_address(cached_object, page_object, overrides)
+      wizard_navigation_step(steps, overrides, wizard_page_objects_size(cached_object, overrides))
+    else
+      # Error on address
+      render(status: :unprocessable_entity)
     end
-
-    # special POST and GET
-    # The standard pre-search makes sure any non address items are saved in the object before the search
-    # for the address. Then sets global variables about the address used for the rendered address layout
-    if address_search?
-      return wizard_address_pre_search(cached_object, page_object, overrides, false) && search_for_addresses
-    end
-
-    # GET
-    wizard_load_address(page_object, overrides)
   end
 
   private
+
+  # Processing for a get request on a page with an address
+  # @param wizard_page_object [Object] the object on the page, a child or the same as the cached object
+  # @param overrides [Hash] an array of overrides see @wizard_address_step
+  def wizard_address_get(wizard_page_object, overrides)
+    wizard_handle_clear_cache(overrides)
+    wizard_load_address(wizard_page_object, overrides)
+  end
+
+  # processing for the address search
+  # @param wizard_cached_object [Object] the object being cached
+  # @param wizard_page_object [Object] the object on the page, a child or the same as the cached object
+  # @param overrides [Hash] an array of overrides see @wizard_address_step
+  def wizard_address_search(wizard_cached_object, wizard_page_object, overrides)
+    # Special POST and GET - Address search
+    search_for_addresses if wizard_address_pre_search(wizard_cached_object, wizard_page_object, overrides, false)
+    # Force back to current page
+    # I did try and use a status of see_other if there were no errors on the address search, but this breaks
+    # rack_test as it expects a redirect with see other
+    render(status: :unprocessable_entity)
+  end
 
   # Standard store address code to handle storing address in the current mode
   # @param wizard_cached_object [Object] the object being cached

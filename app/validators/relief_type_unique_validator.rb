@@ -10,7 +10,7 @@ class ReliefTypeUniqueValidator < ActiveModel::EachValidator
   # @param value [String] actual value of an object to be checked for validation
   # To use this validation pattern, add "relief_claim: true" in the model specific to that attribute
   # similar to how we use presence: true
-  # @example validates :non_ads_relief_claims, relief_type_unique: true
+  # @example validates :relief_claims, relief_type_unique: true
   def validate_each(_record, _attribute, value)
     return if value.blank?
 
@@ -20,7 +20,7 @@ class ReliefTypeUniqueValidator < ActiveModel::EachValidator
       relief_type = obj.relief_type&.to_sym
       next if relief_type.nil?
 
-      obj.errors.add(:relief_type, :is_duplicate) if used_hash.key?(relief_type)
+      obj.errors.add(:relief_type_expanded, :is_duplicate) if used_hash.key?(relief_type)
       used_hash[relief_type] = i
     end
   end

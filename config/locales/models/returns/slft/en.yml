@@ -97,10 +97,17 @@ en:
             nda_ex_yes_no:
               missing_exemption_tonnage: "%{attribute} or restoration or other must be selected"
             base:
-              exemption_tonnage_isnt_equal: "The total tonnage %{total_tonnage} of these exemptions must be equal to the exempt tonnage of %{exempt_tonnage}"
+              exemption_tonnage_isnt_equal: "The total tonnage %{total_tonnage} of these exemptions must be equal to the exempt tonnage of %{exempt_tonnage}"        
+        returns/slft/site:
+          attributes:
+            base:
+              reimport_file: "Imported file contains validation errors. Correct these in the file, and the import the file again"
+              import_row_error:
+                one: "%{description} has the following error: %{messages}"
+                other: "%{description} has the following errors: %{messages}"
     hints:
       returns/slft/slft_return:
-        slcf_credit_claimed: "This can't be more than %{env_contrib_cut_off}% of your total contribution for the accounting period and must not exceed %{liability_cut_off}% of your SLFT liability in the contribution year"
+        slcf_credit_claimed: "This can't be more than %{env_contrib_cut_off} of your total contribution for the accounting period and must not exceed %{liability_cut_off} of your SLFT liability in the contribution year"
         bank_account_no: "This should be 8 digits"
         bank_sort_code: "The sort code should be entered in the format 99-99-99"
       returns/slft/waste:
@@ -108,104 +115,3 @@ en:
         restoration_exempt_tonnage: "Round down to the nearest whole number"
         other_exempt_tonnage: "Round down to the nearest whole number"
         total_tonnage: "Round down to the nearest whole number"
-  # page translations
-  returns:
-    slft:
-      summary:
-        title: "Return summary"
-        subtitle: "Your return summary"
-        description: "The SLfT return is split into sections which can be completed in any order."
-        transaction_subtitle: "Return period"
-        sites_subtitle: "Registered site list"
-        deleted_sites_subtitle: "Removed site list"
-        deleted_sites_description: "The sites listed are not owned by you during this period and will not be saved, if this is incorrect change the return period"
-        no_sites_description_html: "No registered sites for this period"
-        credits_subtitle: "Credits claimed"
-        save_changes_warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
-        form_dirty_warning_message: "You are about to leave this return. If you haven't saved your changes click 'Cancel' followed by the 'Save draft' button on the return summary screen. Any unsaved changes will be lost."
-        add_waste_details: "Add waste details"
-        total: "Total"
-        link:
-          add_transaction_details: "Add return period"
-          edit_transaction_details: "Edit return period"
-          add_credits_details: "Add credit details"
-          edit_credits_details: "Edit credit details"
-      credit_environmental:
-        title: "Environmental credit"
-        subtitle: ""
-        credit_claimed_hint: "This is the amount you are claiming to be deducted from your total tax liability for this quarter. It can't be more than specified percentage of the total contribution"
-      credit_bad_debt:
-        title: "Bad debt credit"
-        subtitle: ""
-      credit_site_specific:
-        title: "Permanent removal credit"
-        subtitle: ""
-      transaction_period:
-        title: "What accounting period is this return for?"
-      transaction_new_non_disposal:
-        title: "Non disposal area information"
-      transaction_ceased_non_disposal:
-        title: "Non disposal area information"
-      save_draft:
-        title: "Return saved"
-        information: "Your tax return has been saved so that you can return to either complete or cancel it."
-        caution: "It has not been submitted to Revenue Scotland."
-        return_html: "Your return reference is"
-        reference_html: "You will need this to find your return."
-        link:
-          back_to_return_summary: "Back to return summary"
-          go_to_dashboard: "Go to dashboard"
-      repayment_bank_details:
-        title: "Enter bank details"
-      repayment_declaration:
-        title: "Declaration"
-        warning: "If you give false information, you may face penalties and/or prosecution"
-      repayment_submitted:
-        title: ""
-      declaration_calculation:
-        title: "Calculated tax liability"
-        description: "If these figures are not as expected then click back and update the waste details data in the return"
-      declaration_repayment:
-        title: "Repayment details"
-      declaration:
-        title: "Payment and submission"
-        SLFT_additional_Warning: "Your credit claimed cannot be more than 90% of your qualifying contribution for the accounting period and must not exceed 5.6% of your SLFT liability in the contribution year"
-        dd_not_available: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
-        warning: "If you give false information, you may face penalties and/or prosecution"
-      declaration_submitted:
-        title: ""
-        return_submitted: "Your return has been submitted"
-        ref: "Your reference number : "
-        pay_soon: "Please make payments within the next 5 days to avoid any penalties."
-      load:
-        title: "Error loading return"
-    slft_sites_waste:
-      site_waste_summary:
-        title: "Waste details summary"
-        subtitle: "Waste details summary for %{site_name}"
-        description: "EWC code"
-        standard_tonnage: "Standard tonnage"
-        lower_tonnage: "Lower tonnage"
-        total_tonnage: "Total tonnage"
-        exempt_tonnage: "Exempt tonnage"
-        water_tonnage: "Water tonnage"
-        file_upload_label_default: "Load waste summary details from a CSV file"
-        delete_all: "Delete all waste types?"
-        edit_row: "Edit row"
-        delete_row: "Delete row"
-        delete: "Delete %{value}?"
-        link:
-          add_new_waste_type: "Add new waste type"
-          delete_all_waste_types: "Delete all waste types"
-      waste_description:
-        title: "Details of the %{waste} waste for %{site_name}"
-        subtitle: "Provide the following waste details"
-      waste_tonnage:
-        title: "Details of the %{waste} waste for %{site_name}"
-        subtitle: "Provide tonnage details for this waste type"
-      waste_exemption:
-        title: "Details of the %{waste} waste for %{site_name}"
-        subtitle: "Why is some tonnage exempt?"
-      csv_upload:
-        title: "CSV upload results"
-        subtitle: "Review the imported lines and select which to load"

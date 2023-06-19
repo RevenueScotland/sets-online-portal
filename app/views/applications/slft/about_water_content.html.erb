@@ -1,12 +1,10 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<%= form_for @slft_application, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @slft_application %>
-  <%= f.collection_radio_buttons_fields(:naturally_occurring, @slft_application.list_ref_data(:naturally_occurring)) %>
-  <div id= "hideable">
-    <%= f.percentage_field :naturally_occurring_percentage %>
-  </div>
-  <%= f.percentage_field :waste_percentage %>
-  <%= f.percentage_field :added_water_percentage %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with( model: @slft_application, url: @post_path) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :naturally_occurring,
+      options_list:@slft_application.list_ref_data(:naturally_occurring), alignment: :horizontal) %>
+    <%= f.rs_percent(method: :naturally_occurring_percentage) %>
+  <% end %>
+  <%= f.rs_percent(method: :waste_percentage) %>
+  <%= f.rs_percent(method: :added_water_percentage) %>
 <% end %>

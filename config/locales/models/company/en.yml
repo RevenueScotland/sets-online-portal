@@ -30,11 +30,6 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  company_search:
-    form:
-      title: "Company Search"
-    search:
-      search: "Find Company"
   activemodel:
     attributes:
       company:
@@ -43,6 +38,7 @@ en:
         COMPANY_company_name: "Company name"
         OTHER_company_name: "Organisation name"
         address_line1: "Address"
+        address_line2: "Address line 2"
         locality: "Town"
         county: "County"
         postcode: "Postcode"
@@ -51,3 +47,8 @@ en:
         org_email_address: "Organisation email address"
         org_telephone: "Organisation phone number"
         main_rep_name: "Organisation main representative name"
+    labels:
+      company:
+        address_line1: "%{label}<span class=\"visually-hidden\"> line 1 of 2</span>"
+        address_line2:
+          visually_hidden: "%{label} of 2"

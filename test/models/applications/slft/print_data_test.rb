@@ -2,7 +2,6 @@
 
 require 'test_helper'
 require 'print_data_test_helper'
-require 'models/reference_data/memory_cache_helper'
 require 'savon/mock/spec_helper'
 
 # Run tests that are included only in this file by:
@@ -13,18 +12,18 @@ module Applications
     # Unit test for the public slft application print data
     # This requires at least a model.json and printdata.json for each unit test
     class PrintDataTest < ActiveSupport::TestCase
-      include ReferenceData::MemoryCacheHelper
       include PrintDataTestHelper
 
       # This test relies on the cache so clear the cache first
       # and mock the calls to the back office to populate
       setup do
-        set_memory_cache
         @savon ||= Savon::SpecHelper::Interface.new
         @savon.mock!
         fixture = File.read('test/fixtures/mocks/reference_data/reference_values_response.xml')
         @savon.expects(:get_reference_values_wsdl).returns(fixture)
         Rails.logger.debug { 'Mocking started' }
+        # Force cache population for ref data
+        ReferenceData::ReferenceValue.lookup('TITLES', 'SYS', 'RSTU')
 
         # Each unit test cases has their own setups after this, so see each test cases for their specific setups.
       end
@@ -33,7 +32,6 @@ module Applications
       teardown do
         @savon&.unmock!
         Rails.logger.debug { 'Mocking ended' }
-        restore_original_cache
       end
 
       # Here are some information regarding this test:

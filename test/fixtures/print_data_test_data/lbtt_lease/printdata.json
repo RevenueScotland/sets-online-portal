@@ -424,29 +424,19 @@
                     "itemdata": "Dundee"
                 },
                 {
-                    "itemcode": "title_code",
+                    "itemcode": "full_title_number",
                     "itemformat": null,
-                    "itemlabel": "Title number (optional)",
-                    "itemdata": "ANG"
+                    "itemlabel": "Title number",
+                    "itemdata": "ANG 2910234"
                 },
                 {
-                    "itemcode": "title_number",
+                    "itemcode": "full_parent_title_number",
                     "itemformat": null,
-                    "itemdata": "2910234"
-                },
-                {
-                    "itemcode": "parent_title_code",
-                    "itemformat": null,
-                    "itemlabel": "Parent title number (optional)",
-                    "itemdata": ""
-                },
-                {
-                    "itemcode": "parent_title_number",
-                    "itemformat": null,
+                    "itemlabel": "Parent title number",
                     "itemdata": ""
                 }
             ],
-            "itemcount": 5
+            "itemcount": 3
         },
         {
             "sectioncode": "address",
@@ -629,92 +619,6 @@
             "itemcount": 3
         },
         {
-            "sectioncode": "non_ads_relief_claim_ind",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": true,
-            "sectiontitle": "Reliefs on this transaction",
-            "listitem": [
-                {
-                    "itemcode": "non_ads_reliefclaim_option_ind",
-                    "itemformat": null,
-                    "itemlabel": "Is relief being claimed for this transaction?",
-                    "itemdata": "Yes"
-                }
-            ],
-            "itemcount": 1
-        },
-        {
-            "sectioncode": "relief_types",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": false,
-            "sectiontitle": null,
-            "listitem": [
-                {
-                    "itemcode": "relief_type_description",
-                    "itemformat": null,
-                    "itemlabel": "Type of relief",
-                    "itemdata": "Alternative property finance relief"
-                },
-                {
-                    "itemcode": "relief_override_amount",
-                    "itemformat": "money",
-                    "itemlabel": "Amount of tax saved by relief",
-                    "itemdata": "5300"
-                }
-            ],
-            "itemcount": 2
-        },
-        {
-            "sectioncode": "relief_types",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": false,
-            "sectiontitle": null,
-            "listitem": [
-                {
-                    "itemcode": "relief_type_description",
-                    "itemformat": null,
-                    "itemlabel": "Type of relief",
-                    "itemdata": "Charities relief (Full Relief)"
-                },
-                {
-                    "itemcode": "relief_override_amount",
-                    "itemformat": "money",
-                    "itemlabel": "Amount of tax saved by relief",
-                    "itemdata": "100"
-                }
-            ],
-            "itemcount": 2
-        },
-        {
-            "sectioncode": "relief_types",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": false,
-            "sectiontitle": null,
-            "listitem": [
-                {
-                    "itemcode": "relief_type_description",
-                    "itemformat": null,
-                    "itemlabel": "Type of relief",
-                    "itemdata": "Charities relief (Partial Relief)"
-                },
-                {
-                    "itemcode": "relief_override_amount",
-                    "itemformat": "money",
-                    "itemlabel": "Amount of tax saved by relief",
-                    "itemdata": "63"
-                }
-            ],
-            "itemcount": 2
-        },
-        {
             "sectioncode": "lease_values",
             "sectiontype": "list",
             "sectiondivider": false,
@@ -863,6 +767,98 @@
                 }
             ],
             "itemcount": 4
+        },
+        {
+            "sectioncode": "non_notifiable",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Non notifiable return",
+            "listitem": [
+                {
+                    "itemcode": "non_notifiable_submit_ind",
+                    "itemformat": null,
+                    "itemlabel": "Do you still want to submit the return?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "non_notifiable_explanation",
+                    "itemformat": null,
+                    "itemlabel": "Why are you submitting a non-notifiable return",
+                    "itemdata": "Test"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Reliefs on this transaction",
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "Alternative property finance relief"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of LBTT tax saved by relief",
+                    "itemdata": "5300"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": null,
+            "sectiontitle": "Reliefs on this transaction",
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "Charities relief (Full Relief)"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of LBTT tax saved by relief",
+                    "itemdata": "100"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": null,
+            "sectiontitle": "Reliefs on this transaction",
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "Charities relief (Partial Relief)"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of LBTT tax saved by relief",
+                    "itemdata": "63"
+                }
+            ],
+            "itemcount": 2
         },
         {
             "sectioncode": "calculation",

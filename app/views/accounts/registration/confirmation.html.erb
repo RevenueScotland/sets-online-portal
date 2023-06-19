@@ -1,5 +1,5 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :hide_back_link, true %>
-<% content_for :page_description, t('.description_html') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_section_title(section_title: t('.section_title')) %>
+<%= ds_paragraph { t('.description') } %>
+<%= ds_warning { t('.warning') } %>

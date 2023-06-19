@@ -53,7 +53,8 @@ module Returns
         return if slft.slcf_yes_no.blank?
 
         # log error
-        add_error(errors, (I18n.t '.credit_claimed'), slft) unless slft.valid? SlftReturn.credit_claimed_attr_list
+        region_name = (I18n.t '.returns.slft.summary.credits_subtitle')
+        add_error(errors, region_name, slft) unless slft.valid? SlftReturn.credit_claimed_attr_list
       end
 
       # validate each site and associated waste details in the slft return

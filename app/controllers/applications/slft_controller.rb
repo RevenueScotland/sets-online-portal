@@ -124,15 +124,19 @@ module Applications
       # if unauthenticated then set the response header for clear site data to wild card
       response.set_header('Clear-Site-Data', '"storage"') if current_user.blank?
 
-      wizard_step(LO_STEPS)
+      # Load the model, but not a proper wizard step
+      @slft_application ||= load_step
 
       # Clear the cache to remove previously upload resource files
       # This means if the user refreshes the page they lose the list of files uploaded
       # but prevents files being shown incorrectly
-      handle_file_upload('confirmation_and_document_upload',
-                         before_add: :add_supporting_document,
-                         before_delete: :delete_supporting_document,
-                         clear_cache: request.get?)
+      if handle_file_upload(parent_param: :applications_slft_applications,
+                            before_add: :add_supporting_document,
+                            before_delete: :delete_supporting_document,
+                            clear_cache: request.get?)
+        # Always return to this page
+        render(status: :unprocessable_entity)
+      end
     end
 
     # Send document to back office
@@ -166,10 +170,6 @@ module Applications
 
       # Download the file
       send_file_from_attachment(application_pdf[:document_case])
-    rescue StandardError => e
-      error_ref = Error::ErrorHandler.log_exception(e)
-
-      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     private

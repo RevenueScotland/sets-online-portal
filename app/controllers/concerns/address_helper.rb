@@ -2,7 +2,7 @@
 
 # Address helpers for this application
 # Included by controllers to help manage address search/lookup forms.
-module AddressHelper
+module AddressHelper # rubocop:disable Metrics/ModuleLength
   extend ActiveSupport::Concern
 
   # Returns the validation contexts for address validation based on whether the address read only flag is set or not
@@ -75,7 +75,7 @@ module AddressHelper
     # User has selected to do enter a manual address, or edit a searched address
     return set_for_manual_address if params[:manual_address]
     # User has selected to change the postcode from a previous search
-    return (@address_summary.postcode = '') if params[:change_postcode]
+    return set_for_postcode_search if params[:change_postcode]
     # user has selected address from the drop down list, get the full details for them
     return find_address_details if params[:search_results].present?
 
@@ -86,7 +86,7 @@ module AddressHelper
   # re-populate address summary and address details data from request param
   def populate_address_data
     @address_summary = AddressSummary.new(search_params)
-    @address_detail = Address.new(address_params) unless params[:address].nil?
+    @address_detail = Address.new(address_params)
   end
 
   # Picks the address from the address list
@@ -114,6 +114,22 @@ module AddressHelper
     @address_detail = Address.new(default_country: params[:address][:default_country])
   end
 
+  # Sets the address search up for a manual search
+  def set_for_manual_address
+    @show_manual_address = true
+    @address_read_only = false
+    # clear the identifier as this address is no longer from the search
+    @address_detail.address_identifier = nil
+  end
+
+  # Sets the address search up for a postcode search
+  def set_for_postcode_search
+    @show_manual_address = false
+    @address_read_only = false
+    @address_summary.postcode = ''
+    @address_detail = Address.new(default_country: params[:address][:default_country])
+  end
+
   # Given an address identifier get the detail of that address
   # that matches the identifier
   def find_address_details
@@ -121,21 +137,13 @@ module AddressHelper
     # Carry forward the default country otherwise it gets lost
     @address_detail = Address.find(find_params[:search_results], params[:address][:default_country])
     if @address_detail.nil?
-      @address_summary.errors.add(:postcode, (I18n.t '.no_address_find_results'))
+      @address_summary.errors.add(:postcode, :no_address_find_results)
     else
       @address_summary.postcode = @address_detail.postcode
       @show_manual_address = true
     end
     @address_read_only = true
     [@address_detail, @address_summary, @address_read_only, @show_manual_address]
-  end
-
-  # Sets the address search up for a manual search
-  def set_for_manual_address
-    @show_manual_address = true
-    @address_read_only = false
-    # clear the identifier as this address is no longer from the search
-    @address_detail.address_identifier = nil
   end
 
   # populates the address list from the posted parameters
@@ -159,12 +167,12 @@ module AddressHelper
   # controls the permitted parameters to this controller to perform
   # a search
   def search_params
-    params.require(:address_summary).permit(:postcode)
+    params.require(:address_summary).permit(:postcode) unless params[:address_summary].nil?
   end
 
   # controls the permitted parameters for address
   def address_params
-    params.require(:address).permit(Address.attribute_list)
+    params.require(:address).permit(Address.attribute_list) unless params[:address].nil?
   end
 
   # controls the permitted parameters to this controller to perform

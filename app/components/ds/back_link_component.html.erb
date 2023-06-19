@@ -1,0 +1,5 @@
+<nav aria-label="Back">
+  <a class="ds_back-link" href="<%= back_link_url %>" <%= "data-action=#{content_for(:back_link_data_action)}" if content_for?(:back_link_data_action) %> >
+    <%= t('.back') %>
+  </a>
+</nav>

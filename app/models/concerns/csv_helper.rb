@@ -10,14 +10,15 @@ module CsvHelper
   # @param resource_item [Object] A resource item that represents the CSV file to be imported, any errors
   #   at a file level (can't open file, not a well formed CSV file) will be added to this resource_item
   # @param model [Class] The type of object to import
+  # @return [Array] The array of imported models
   def csv_import(resource_item, model)
-    from_csv_data CSV.parse(resource_item.file_data), model
+    from_csv_data(CSV.parse(resource_item.file_data), model)
   rescue CSV::MalformedCSVError => e
-    @imported = []
-    resource_item.errors.add(:file_data, I18n.t(:invalid_csv, message: e.message))
+    resource_item.errors.add(:file_data, :invalid_csv, details: e.message)
+    []
   rescue Error::CsvImportError => e
-    @imported = []
     resource_item.errors.add(:file_data, e.message)
+    []
   end
 
   # Exports an array of data into a CSV file. The first line of the file will contain the headers,
@@ -44,11 +45,12 @@ module CsvHelper
   # @param csv_data [Array] array of CSV data imported from the file, the first row is assumed to be the header row
   #   of the CSV file, and is ignored in all cases
   # @param model [Class] The type of object to import
+  # @return [Array] The array of imported models
   def from_csv_data(csv_data, model)
     csv_data.shift
     attributes = csv_attribute_list model
     failure_percentage = Rails.configuration.x.slft_waste_file_upload_percent_invalid_reject
-    validate_csv_data csv_data, attributes.count, failure_percentage
+    validate_csv_data csv_data, model, attributes.count, failure_percentage
     import_csv_data csv_data, model, attributes
   end
 
@@ -56,15 +58,13 @@ module CsvHelper
   # @param csv_data [Array] array of CSV data imported from the file
   # @param model [Class] model class to import the data against
   # @param attributes [Array] array of attributes to import
+  # @return [Array] The array of imported models
   def import_csv_data(csv_data, model, attributes)
-    @imported = []
+    imported = []
     csv_data.each do |row|
-      if respond_to?(:import_csv_row, true)
-        @imported.push import_csv_row(model, attributes, row)
-      else
-        @imported.push import_csv_row_for_model(model, attributes, row)
-      end
+      imported.push import_csv_row_for_model(model, attributes, row)
     end
+    imported
   end
 
   # Using the supplied array of attributes, this method imports each item of the row into the model object and then
@@ -122,15 +122,17 @@ module CsvHelper
   # the number of attributes to import. If the percentage number of failed rows is greater
   # then the threshold, then fail the import, by raising an exception
   # @param csv_data [Array] array of CSV data imported from the file
+  # @param model [Class] model class to import the data against
   # @param attribute_count [Integer] the number of attributes/columns expected to import
   # @param failure_percentage [Integer] the limit of failed rows, as a percentage
-  def validate_csv_data(csv_data, attribute_count, failure_percentage)
+  def validate_csv_data(csv_data, model, attribute_count, failure_percentage)
     limit = (csv_data.size * (failure_percentage / 100.0)).to_i
     failures = 0
+    value = model.new.errors.generate_message(:base, :csv_too_many_errors, failure: failure_percentage)
     csv_data.each do |row|
       if row.size != attribute_count
         failures += 1
-        raise Error::CsvImportError, I18n.t(:csv_too_many_errors, failure: failure_percentage) if failures > limit
+        raise Error::CsvImportError, value if failures > limit
       end
     end
   end

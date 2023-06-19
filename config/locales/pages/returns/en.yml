@@ -1,0 +1,416 @@
+en:
+  returns:
+    lbtt:
+      summary:
+        title: "Return Summary"
+        subtitle: "Your return summary"
+        description: "The LBTT return is split into sections which can be completed in any order. You must complete all the sections before submitting the return."
+        repayment_description: "If you need to request a repayment from Revenue Scotland, you can do this once you have clicked submit."
+        calculation_description_LEASERET_CONVEY: "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
+        calculation_description: "The amount of tax already paid below will show as £0.00. You will need to change this field to show the correct amount of tax already paid in order for the correct amount of tax due to show. For all other fields, the amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
+        add_properties_description: "About the property"
+        add_transaction_description: "About the transaction"
+        add_additional_dwelling_supplements_description: About the Additional Dwelling Supplement (ADS)
+        add_repayment_claim_description: Claim repayment
+        about_calculation: "About the calculation"
+        add_relief_description: "About the reliefs"
+        edit_relief: "Edit reliefs"
+        add_relief: "Add reliefs"
+        save_changes_warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
+        save_draft: "Save draft"
+        submit_return: "Submit return"
+        delete_buyer: "Delete buyer?"
+        delete_seller: "Delete seller?"
+        delete_landlord: "Delete landlord?"
+        delete_tenant: "Delete tenant?"
+        add_property: "Add a property"
+        add_ads: "Add ADS"
+        edit_ads: "Edit ADS"
+        add_transaction: "Add transaction details"
+        edit_transaction: "Edit transaction details"
+        edit_calculation: "Edit calculation"
+        change_the_transaction: "You can edit the transaction details if you need to"
+        edit_row: "Edit row"
+        delete_row: "Delete row"
+        date_in_past:
+          one: "%{attribute_name} is 1 day in the past. This is usually more recent than this."
+          other: "%{attribute_name} is %{count} days in the past. This is usually more recent than this."
+        date_in_future:
+          one: "%{attribute_name} is 1 day in the future. This has typically already happened."
+          other: "%{attribute_name} is %{count} days in the future. This has typically already happened."
+        link:
+          change_the_transaction: "You can edit the transaction details if you need to"
+          non_notifiable_return_link: "notifiable lease transactions (opens in a new window)"
+      public_landing:
+        title: "To complete this return, you will need the following information:"
+        info_needed_html:
+          "<ul><li>the lease agreement, showing information such as the start and end dates of the lease</li>
+          <li>transaction reference of the LBTT return originally submitted for the lease</li>
+          <li>effective date of the LBTT return originally submitted for the lease</li>
+          <li>a recalculation of the total LBTT payable on the lease</li>
+          <li>how much LBTT has already been paid on the lease</li></ul>"
+        start_warning: "Once you have started the return you must complete it. You will not be able to save a draft and go back to it later."
+      public_return_type:
+        title: "About the return"
+        flbt_type: "Description of transaction"
+      return_type:
+        title: "About the return"
+        flbt_type: "Description of transaction"
+      return_reference_number:
+        title: "Return reference number"
+        orig_effective_date: "the effective date"
+      save_draft:
+        title: "Your return has been saved"
+        information: "You can complete or cancel it later using the reference below."
+        caution: "Your return has not been submitted to Revenue Scotland."
+        back_to_return_summary: "Back to return summary"
+        go_to_dashboard: "Go to dashboard"
+    load:
+      title: "Error loading return"
+    lbtt_agent:
+      agent_details:
+        title: Agent details
+        section_title : Provide your details
+        description: Provide details of the agent dealing with this transaction        
+      agent_address:
+        title: Agent address
+        section_title: Provide agent address
+    lbtt_reliefs:
+      multiple_dwellings_relief:
+        title: "About multiple dwellings relief"        
+        section_title: "Provide the following values"        
+        description_html: "See guidance on %{link} for further details. <br>The following fields are for information only and will not calculate the relief"
+        description_link: "multiple dwellings relief"
+      reliefs_on_transaction:
+        title: "Reliefs on this transaction"
+        description_1_html: "See guidance on %{link} for further details"
+        description_1_link: "Tax Reliefs"
+      reliefs_calculation:
+        title: "Reliefs on this transaction"
+    lbtt_tax:
+      calc_already_paid:
+        title: "Calculated tax"
+      calculation:
+        title: "Calculated tax"
+      npv:
+        title: Calculated Net Present Value (NPV)
+    lbtt_ads:
+      title: "Additional Dwelling Supplement (ADS)"
+      ads_dwellings:
+        title: "Additional Dwelling Supplement (ADS)"
+      ads_intending_sell:
+        title: "Additional Dwelling Supplement (ADS)"
+        address: "What is the address of the main residence that will be sold"
+      ads_amount:
+        title: "Additional Dwelling Supplement (ADS)"
+        description: "The ADS consideration is usually the same as the purchase price"
+        ads_amount_liable_link: "determining the chargeable consideration for the ADS"
+      ads_repay_reason:
+        title: "Additional Dwelling Supplement (ADS)"
+      ads_repay_date:
+        title: "Additional Dwelling Supplement (ADS)"
+      ads_repay_address:
+        title: "Additional Dwelling Supplement (ADS)"
+        rrep_ads_sold_address: "Confirm the address of the previous main residence that has been sold or disposed of"
+      ads_repay_details:
+        title: "Additional Dwelling Supplement (ADS)"
+        section_title: "When you submit the return you will be asked for the bank details for the repayment."
+    lbtt_submit:
+      non_notifiable:
+        title: "Non-notifiable return"
+        non_notifiable_return_html: "Current values indicate this is a non-notifable return. See guidance on %{link} for further details."
+        non_notifiable_return_link: "notifiable lease transactions"
+        go_back_auth_html: "Go %{link} to review the values on this return or to save as draft"
+        go_back_html: "Go %{link} to review the values on this return"
+        go_back_link: "back to return summary"
+      non_notifiable_reason:
+        title: "Non-notifiable return"
+        non_notifiable_return_html: "Current values indicate this is a non-notifable return. See guidance on %{link} for further details."
+        non_notifiable_return_link: "notifiable lease transactions"        
+        go_back_auth_html: "Go %{link} to review the values on this return or to save as draft"
+        go_back_html: "Go %{link} to review the values on this return"
+        go_back_link: "back to return summary"
+        submit_return: "Submit return"
+      amendment_reason:
+        title: "Amendment reason"    
+      repayment_claim:
+        title: Repayment details
+      repayment_claim_amount:
+        title: Claim repayment
+      repayment_claim_bank_details:
+        title: Enter bank details
+      repayment_claim_declaration:
+        title: Declaration
+      declaration:
+        title: "Payment and submission"
+        dd_not_available: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
+        warning: "If you give false information, you may face penalties and/or prosecution"
+        submit_return: "Submit return"
+      declaration_submitted:
+        return_submitted: "Your return has been submitted"
+        ref: "Your reference number : "
+        pay_soon: "Please make payments within the next 5 days to avoid any penalties."
+        include_transaction_ref_html: "The transaction ID must be included with any payment submitted or in any correspondence regarding this transaction. This acknowledgment should <b>not</b> be sent to Registers of Scotland as part of the land registration process."
+        public_landing_return_page: "Exit"
+    lbtt_properties:
+      about_the_property:
+        title: "About the property"
+        section_title: "Provide property details"
+        title_code: "Title number (optional)"
+        parent_title_code: "Parent title number (optional)"
+        parent_title_hint: "Not all properties will have a parent title"
+      property_address:
+        title: "Property address"
+        section_title: "Provide property address"
+      property_ads_applies:
+        title: "About the property"
+        ads_due_ind_link: "LBTT Additional Dwelling Supplement"
+    lbtt_transactions:
+      property_type:
+        title: "About the transaction"
+        property_type_residential_link: "meaning of residential property"
+        property_type_non_residential_link: "non-residential property and the treatment of ‘mixed’ property"
+      non_notifiable:
+        title: Non notifiable return
+      about_the_transaction:
+        title: "About the transaction"
+        previous_option_ind_link: "options and rights of pre-emption"
+      sale_of_business:
+        title: "About the transaction"
+      conveyance_values:
+        title: "About the conveyance or transfer"
+        subtitle: "Provide the following values"
+        total_consideration_link: "determining the chargeable consideration"
+        total_vat_link: "what is chargeable consideration"
+        linked_consideration_link: "linked transactions"
+        non_chargeable_link: "what is not chargeable consideration"
+        remaining_chargeable_link: "determining the chargeable consideration"
+      linked_transactions:
+        title: "Linked transactions"
+        return_reference: "Return reference (if known)"
+        consideration_amount: "Return consideration"
+        npv_inc: "NPV (inc VAT)"
+        premium_inc: "Premium (inc VAT)"
+        linked_ind_link: "linked transactions"
+      about_the_calculation:
+        title: "About future events"
+        contingents_event_ind_link: "contingent, uncertain or unascertained consideration"
+      transaction_dates:
+        title: "About the dates"
+        subtitle: "Provide the following dates"
+        effective_date: "the effective date"
+        relevant_date: "the relevant date"
+      tenant_landlord_relation:
+        title: Landlord details
+      lease_values:
+        title: About the lease values
+      rental_years:
+        title: About the lease values
+        rent: Rent
+        year: Year
+      premium_paid:
+        title: About the lease values
+        lease_premium_link: "consideration other than rent"
+      relevant_rent:
+        title: About the lease values
+    lbtt_parties:
+      about_the_party:
+        BUYER_title: "About the buyer"
+        SELLER_title: "About the seller"
+        LANDLORD_title: "About the landlord"
+        TENANT_title: "About the tenant"
+        NEWTENANT_title: "About the new tenant"
+      form:
+        address: "Address"
+      party_details:
+        BUYER_title: "Buyer details"
+        SELLER_title: "Seller details"
+        BUYER_show_hide: "Buyer does not have NINO"
+        SELLER_show_hide: "Seller does not have NINO"
+        LANDLORD_title: "Landlord details"
+        LANDLORD_show_hide: "Landlord does not have NINO"
+        TENANT_title: "Tenant details"
+        TENANT_show_hide: "Tenant does not have NINO"
+        NEWTENANT_title: "New tenant details"
+        NEWTENANT_show_hide: "New tenant does not have NINO"
+      party_address:
+        BUYER_title: "Buyer address"
+        BUYER_description: "Provide buyer address"
+        SELLER_title: "Seller address"
+        SELLER_description: "Provide seller address"
+        LANDLORD_title: "Landlord address"
+        LANDLORD_description: "Provide landlord address"
+        TENANT_title: "Tenant address"
+        TENANT_description: "Provide tenant address"
+        NEWTENANT_title: "New tenant address"
+        NEWTENANT_description: "Provide new tenant address"
+      party_alternate_address:
+        BUYER_title: "Buyer's contact address"
+        SELLER_title: "Seller's contact address"
+        LANDLORD_title: "Landlord's contact address"
+        TENANT_title: "Tenant's contact address"
+        NEWTENANT_title: "New tenant's contact address"
+      parties_relation:
+        BUYER_title: "Buyer details"
+        BUYER_buyer_seller_linked_ind: "the buyer and seller are connected (opens in a new window)"
+        TENANT_buyer_seller_linked_ind: "the tenant and landlord are connected (opens in a new window)"
+        SELLER_title: "Seller details"
+        LANDLORD_title: "Landlord details"
+        TENANT_title: "Tenant details"
+        NEWTENANT_title: "New tenant details"
+        buyer_seller_linked_ind: "they are connected"
+      acting_as_trustee:
+        BUYER_title: "Buyer details"
+        is_acting_as_trustee_partnership: "'representative partner'"  
+        TENANT_title: "Tenant details"
+        NEWTENANT_title: "New tenant details"
+      company_number:
+        title: "Registered company"
+        subtitle: "Registered company details"
+      organisation_contact_details:
+        title: "Contact details"
+      organisation_details:
+        PARTNER_title: "Partnership"
+        PARTNER_subtitle: "Partnership details"
+        TRUST_title: "Trust"
+        TRUST_subtitle: "Trust details"
+        CHARITY_title: "Charity"
+        CHARITY_subtitle: "Charity details"
+        CLUB_title: "Club"
+        CLUB_subtitle: "Club details"
+        COMPANYOTH_title: "Company"
+        COMPANYOTH_subtitle: "Company details"
+        OTHER_title: "Organisation details"
+        OTHER_subtitle: ""
+        address: "Address"
+      organisation_type_details:
+        title: "Organisation details"
+      representative_contact_details:
+        title: "Contact details"
+        PARTNER_description: "Enter the details of the representative partner that should be contact in relation to this tax return"
+        TRUST_description: "Enter the details of the trustee that should be contacted in relation to this tax return "
+        CHARITY_description: ""
+        CLUB_description: "Enter the details of the representative that should be contacted in relation to this tax return"
+        COMPANY_description: ""
+        COMPANYOTH_description: ""
+        OTHER_description: ""
+        address: "Address"
+        registered_address: "Registered address"
+    slft:
+      summary:
+        title: "Return summary"
+        subtitle: "Your return summary"
+        description: "The SLfT return is split into sections which can be completed in any order."
+        transaction_subtitle: "Return period"
+        sites_subtitle: "Registered site list"
+        deleted_sites_subtitle: "Removed site list"
+        credits_subtitle: "Credits claimed"
+        save_changes_warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
+        calculate: "Calculate"
+        save_draft: "Save draft"
+        add_transaction_details: "Add return period"
+        edit_transaction_details: "Edit return period"
+        add_credits_details: "Add credit details"
+        edit_credits_details: "Edit credit details"
+      credit_environmental:
+        title: "Environmental credit"
+        credit_claimed_hint: "This is the amount you are claiming to be deducted from your total tax liability for this quarter. It can't be more than specified percentage of the total contribution"
+      credit_bad_debt:
+        title: "Bad debt credit"
+      credit_site_specific:
+        title: "Permanent removal credit"
+      transaction_period:
+        title: "What accounting period is this return for?"
+      transaction_new_non_disposal:
+        title: "Non disposal area information"
+      transaction_ceased_non_disposal:
+        title: "Non disposal area information"
+      save_draft:
+        title: "Return saved"
+        information: "Your tax return has been saved so that you can return to either complete or cancel it."
+        caution: "It has not been submitted to Revenue Scotland."        
+        back_to_return_summary: "Back to return summary"
+        go_to_dashboard: "Go to dashboard"
+      repayment_bank_details:
+        title: "Enter bank details"
+      repayment_declaration:
+        title: "Declaration"
+        warning: "If you give false information, you may face penalties and/or prosecution"
+      declaration_calculation:
+        title: "Calculated tax liability"
+        description: "If these figures are not as expected then click back and update the waste details data in the return"
+      declaration_repayment:
+        title: "Repayment details"
+      declaration:
+        title: "Payment and submission"
+        SLFT_additional_Warning: "Your credit claimed cannot be more than 90% of your qualifying contribution for the accounting period and must not exceed 5.6% of your SLFT liability in the contribution year"
+        dd_not_available: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
+        warning: "If you give false information, you may face penalties and/or prosecution"
+        submit_return: "Submit return"
+      declaration_submitted:
+        return_submitted: "Your return has been submitted"
+        ref: "Your reference number : "
+        pay_soon: "Please make payments within the next 5 days to avoid any penalties."
+    slft_sites_waste:
+      site_waste_summary:
+        title: "Waste details summary"
+        subtitle: "Waste details summary for %{site_name}"
+        description: "EWC code"
+        standard_tonnage: "Standard tonnage D"
+        lower_tonnage: "Lower tonnage"
+        total_tonnage: "Total tonnage"
+        exempt_tonnage: "Exempt tonnage"
+        water_tonnage: "Water tonnage" 
+        file_upload_label_default: "Load waste summary details from a CSV file"
+        delete_all: "Delete all waste types?"
+        edit_row: "Edit row"
+        delete_row: "Delete row"
+        delete: "Delete %{value}?"
+        add_new_waste_type: "Add new waste type"
+        delete_all_waste_types: "Delete all waste types"
+        return_summary: "Return summary"
+        return_saved: "Your return has been saved"
+        information: "You can complete or cancel it later using the reference below."
+        save_draft: "Save draft"
+      waste_description:
+        title: "Details of the %{waste} waste for %{site_name}"
+        subtitle: "Provide the following waste details" 
+      waste_tonnage:
+        title: "Details of the %{waste} waste for %{site_name}"
+        subtitle: "Provide tonnage details for this waste type"
+      waste_exemption:
+        title: "Details of the %{waste} waste for %{site_name}"
+        subtitle: "Why is some tonnage exempt?"
+       
+# submit return text
+  return:
+    submit:
+      common:
+        date_text: "The submission date is %{system_date}."
+        queries_contact_text: "If you have any queries about this return, you can contact Revenue Scotland by sending a secure message or by calling the support desk on 03000 200 310."
+        queries_contact_text_amend: "If you have any queries about this amendment, you can contact Revenue Scotland by sending a secure message or by calling the support desk on 03000 200 310."
+        send_secure_message_text: Send secure message
+        print_confirmation_text: Receipt
+      slft:
+        submit_html: "If the return is submitted close to the filing date you must ensure that full payment reaches us no later than the filing date for the return. Interest is chargeable on any outstanding tax that is not paid by the filing date.<br>If the return is submitted late you may be liable to a penalty. If tax is paid late, interest is chargeable and you may also become liable to a penalty, depending on how late the tax is paid. Further guidance on interest and penalties is available on our website."
+        amend_return_reference_text: "Your amendment to your Scottish Landfill tax return %{return_reference} has now been submitted."
+        amend_submit_text: "If your amendment has resulted in a payment due to Revenue Scotland then your payment is due immediately.If tax is paid late, interest is chargeable and you may also become liable to a penalty, depending on how late the tax is paid. Further guidance on interest and penalties is available on our website."
+        payment_due_text: "Payment is due by the earlier of either 5 working days after submission of the return, or the last working day which is, or precedes, the 44th calendar day after the end of the SLFT quarter."
+        payment_method_html: "You have stated that you are going to pay by %{payment_method}. Details on how to make payments can be found %{link}."
+        payment_method_link: "here"
+      lbtt:
+        heading_text: "Your Land and Buildings Transaction Tax return has now been submitted."
+        penalties_html: "If your return or payment is late, you may be %{penalties_link} or %{interest_link}."
+        liable_to_penalties_link: "liable to penalties"
+        liable_to_interest_link: "liable to interest"
+        payment_due_text: "Payment is due by the earlier of either 5 working days after submission of the return OR the filing date of the return."
+        lease_html: "You may need to submit further returns at the following times:<br>- every 3 years from the effective date of the lease <br>- on assignation<br>- on termination"
+        lease_further_information_html: "Further %{link} is available."
+        lease_further_information_link: "information on leases"
+        payment_method_html: "You are paying by %{payment_method}. Help and advice on %{link} is available."
+        # Also used in amend_payment_method_html's link
+        payment_method_link: "how to pay LBTT"
+        claim_text: "If you have claimed for a repayment of tax, we will aim to process it within 10 working days.We will contact you if we need further information."
+        amend_return_reference_text: "Your amendment to your Land and Buildings Transaction Tax return has now been submitted."
+        amend_payment_method_html: "If you need to pay additional tax, you must arrange to make your payment now. Help and advice on %{link} is available."
+        

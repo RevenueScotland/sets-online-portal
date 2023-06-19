@@ -1,0 +1,14 @@
+<div class="ds_notification-panel <%= 'ds_notification-panel--success' if success %>">
+  <% if header %>
+    <% content_for(:notification_panel_as_title, title) %>
+    <h1 class="ds_notification-panel__title"><%= title %></h1>
+  <% else %>
+    <p class="ds_notification-panel__title"><%= title %></p>
+  <% end %>
+  <div class="ds_notification-panel__content">
+    <%= content %>
+    <% if reference %>
+      <p><%= t('.your_reference_html', reference: reference.to_sentence(), count: reference.length)%></p>
+    <% end %>
+  </div>
+</div>

@@ -9,15 +9,10 @@ module UserValidation
     validates :username, length: { maximum: 30 }, presence: true, on: %i[update update_password login two_factor]
     validates :new_username, length: { minimum: 5, maximum: 30 }, on: %i[save new_username]
 
-    validates :password, presence: true, length: { maximum: 200 }, on: %i[login update_memorable_word]
+    validates :password, presence: true, length: { maximum: 200 }, on: :login
     validates :old_password, presence: true, length: { maximum: 200 }, on: :update_password
     validates :new_password, presence: true, length: { maximum: 200 }, on: %i[save update_password new_password]
     validates :new_password, confirmation: true
-
-    validates :memorable_question, presence: true, length: { maximum:   100 }, on: :update_memorable_word,
-                                   if: :check_word_or_hint_is_set?
-    validates :memorable_answer, presence: true, length: { maximum: 100 }, on: :update_memorable_word,
-                                 if: :check_word_or_hint_is_set?
 
     validates :token, presence: true, length: { maximum: 100 }, on: :two_factor
 
@@ -35,13 +30,6 @@ module UserValidation
   # Check password is expired or not
   def check_password_expired?
     !days_to_password_expiry.nil? && days_to_password_expiry <= 0
-  end
-
-  # Check memorable Hint or word id required to be filled or not
-  def check_word_or_hint_is_set?
-    return false if memorable_answer.blank? && memorable_question.blank?
-
-    true
   end
 
   # If password_change_required parameter from back-office is true or password is expired

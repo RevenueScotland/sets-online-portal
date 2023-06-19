@@ -1,0 +1,149 @@
+en:
+  ds:
+    address_search_component:
+      address_select: "Select an address"
+      change_postcode_html: "Change <span class=\"visually-hidden\">your answer for: <q>Postcode</q></span>"
+      edit_address: "Or edit the selected address"
+      manual_address: "Or type in your full address"
+      postcode: "Postcode"
+      search: "Find address"
+      selected_address: "Selected address"
+      tell_us_your_full_address: "Tell us your full address"
+      return_to_postcode: "Return to postcode lookup"
+      select_address: "Select %{address}"
+      previous_addresses: "Previously used addresses"
+      previous_address: "Previous address"
+      select: "Select"
+    base_item_component:
+      change: "Change"
+    summary_list_component:
+      method_item_component:
+        your_answer_is: "Your answer is:"
+        your_answer_for: "Your answer for:"
+        change: "Change"  
+    back_to_top_component:
+      back: "Back to top"
+    back_link_component:
+      back: "Back"
+    cookie_banner_component:
+      information: "Information"
+      notification_text1_html: "We use <a href=\"%{cookies_path}\">cookies</a> to collect anonymous data to help us improve your site browsing experience."
+      notification_text2_html: "Click 'Accept all cookies' to agree to all cookies that collect anonymous data. To only allow the cookies that make the site work, click 'Use essential cookies only.' Visit 'Set cookie preferences' to control specific cookies."
+      all_cookies: "Accept all cookies"
+      essential_only: "Use essential cookies only"
+      set_preferences: "Set cookie preferences"
+      success_html: "Your cookie preferences have been saved. You can <a href=\"%{cookies_path}\">change your cookie settings</a> at any time."
+      close: "Close this notification"
+    error_summary_component:
+      problem: "There is a problem"
+    form_component:
+      file_upload_warning_text: "You have selected a file to upload but haven't uploaded it. Do you want to upload the file before proceeding?"
+    notification_panel_component:
+      your_reference_html:
+        one: "Your reference number is <br /><strong><span id=\"notification_banner_reference\">%{reference}</span></strong>"
+        other: "Your reference numbers are <br /><strong><span id=\"notification_banner_reference\">%{reference}</span></strong>"
+    pagination_component:
+      next: "Next"
+      previous: "Previous"
+    select_component:
+      extra_hint: "Start typing to see the available values, or use the show all button"
+      show_all: "Show all the options"
+    skip_link_component:
+      skip: "Skip to main content"
+    submit_component:
+      change_password: "Change password"
+      continue: "Continue"
+      confirm: "Confirm"
+      find: "Find"
+      finish: "Finish"
+      signin: "Sign in"
+      save_draft: "Save draft"
+    table_component:
+      form_row_component:
+        delete_row: "Delete row"
+      header_component:
+        action: "Action"
+    table_form_component:
+      add_row: "Add row" 
+    warning_component:
+      warning: "Warning"
+  rs:
+    company_search_component:
+      company_search: "Find company"
+    file_upload_component:
+      add_resource: Upload file
+      add_resources: Upload files
+      caption:
+        one: Uploaded file
+        other: Uploaded files
+      file_upload_hint:
+        other: The file must be one of %{supported_types} with a maximum size of %{supported_max_size_mb} mb per file
+        one: The file must be a %{supported_types} file with a maximum size of %{supported_max_size_mb} mb per file
+      file_upload_hint_no_supported_types: The file must be a maximum size of %{supported_max_size_mb} mb per file
+    financial_transaction_table_component:
+      show: "View related"
+    message_table_component:
+      all_messages: "See all messages"
+      selected_message: "Selected message"
+      view: "View"
+    notification_banner_component:
+      information: "Information"
+      more_info: "More information"
+      close: "Close this notification"
+    party_table_component:
+      add_agent_description: "Contact details for agent"
+      add_buyer_description: "About the buyer"
+      add_seller_description: "About the seller"
+      add_tenant_description: "About the tenant"
+      add_landlord_description: "About the landlord"
+      add_newtenant_description: "About the new tenant"
+      add_agent: "Edit agent details"
+      add_buyer: "Add a buyer"
+      add_seller: "Add a seller"
+      add_tenant: "Add a tenant"
+      add_landlord: "Add a landlord"
+      add_newtenant: "Add a new tenant"
+      edit_row: "Edit row"
+      delete_row: "Delete row"
+      delete_buyer: "Delete a buyer"
+      delete_seller: "Delete a seller"
+      delete_tenant: "Delete a tenant"
+      delete_landlord: "Delete a landlord"
+      delete_newtenant: "Delete a new tenant"
+    site_header_navigation_component:
+      account_details: "Account details"
+      dashboard: "Dashboard"
+      lbtt_return: "Create LBTT return"
+      slft_return: "Create SLfT return"
+      cancel: "Cancel"
+      login: "Sign in"
+      logout: "Sign out"
+      new_message: "Create new message"
+      password_notification:
+        one: "Your password expires in 1 day"
+        other: "Your password expires in %{count} days"
+    resource_item_table_component:
+      delete_resource: Delete file
+    return_table_component:
+      all_returns: "See all returns"
+      all_transactions: "See all transactions"
+      amend: "Amend"
+      amendable_period: "You have until %{value} to complete this draft"
+      continue: "Continue"
+      delete: "Delete"
+      delete_draft: "Delete draft return?"
+      download_pdf: "Download PDF"
+      download_waste: "Download waste details"
+      draft_present: "Draft present"
+      enquiry_open: "Ongoing enquiry"
+      message: "Messages"
+      not_amendable: "This return is no longer amendable, use the claim option"
+      receipt: "Receipt"
+      transactions: "Transactions"
+      claim: "Claim"
+    site_table_component:      
+      deleted_sites_description: "The sites listed are not owned by you during this period and will not be saved, if this is incorrect change the return period"
+      no_sites_description: "No registered sites for this period"
+      add_waste_details: "Add waste details"
+    user_table_component:
+      edit: "Edit row"

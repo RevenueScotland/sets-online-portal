@@ -10,7 +10,8 @@ class WebsiteTextsController < ApplicationController
 
   # Renders pws_text
   def show
-    @text = ReferenceData::PwsText.lookup(params[:text_code], 'SYS', 'RSTU')
-    @text.to_s
+    pws_text = ReferenceData::PwsText.lookup(params[:text_code], 'SYS', 'RSTU')
+    @text = pws_text.to_s
+    @page_title = pws_text.page_title
   end
 end

@@ -1,6 +1,6 @@
 {
     "json_class": "Returns::Lbtt::LbttReturn",
-    "is_public": false,
+    "user_account_type": "AGENT",
     "new_record": true,
     "tax": {
         "json_class": "Returns::Lbtt::Tax",
@@ -26,23 +26,6 @@
         "ads_amount_liable": "1500",
         "ads_consideration": "1140",
         "ads_sell_residence_ind": "Y",
-        "ads_relief_claims": [
-            {
-                "json_class": "Returns::Lbtt::ReliefClaim",
-                "new_record": false,
-                "relief_type": "ADSRELIEF",
-                "relief_amount": "0",
-                "relief_override_amount": "500"
-            },
-            {
-                "json_class": "Returns::Lbtt::ReliefClaim",
-                "new_record": false,
-                "relief_type": "ADSFAMUNIT",
-                "relief_amount": "0",
-                "relief_override_amount": "450"
-            }
-        ],
-        "ads_reliefclaim_option_ind": "Y",
         "ads_main_address": {
             "json_class": "Address",
             "address_line1": "Fruition Partners Ltd",
@@ -110,11 +93,13 @@
     "relevant_date": "2019-11-07",
     "contract_date": "2019-11-07",
     "linked_ind": "Y",
-    "non_ads_relief_claims": [
+    "relief_claims": [
         {
             "json_class": "Returns::Lbtt::ReliefClaim",
             "new_record": false,
             "relief_type": "MULTIPLE",
+            "lbtt_return_ads_due": true,
+            "lbtt_return_flbt_type": "CONVEY",
             "relief_amount": "0",
             "relief_override_amount": "9000",
             "mdr_number_dwellings": "20",
@@ -125,6 +110,8 @@
             "json_class": "Returns::Lbtt::ReliefClaim",
             "new_record": false,
             "relief_type": "CHARITIES",
+            "lbtt_return_ads_due": true,
+            "lbtt_return_flbt_type": "CONVEY",
             "relief_amount": "0",
             "relief_override_amount": "880"
         },
@@ -132,8 +119,32 @@
             "json_class": "Returns::Lbtt::ReliefClaim",
             "new_record": false,
             "relief_type": "CHARITIESP",
+            "lbtt_return_ads_due": true,
+            "lbtt_return_flbt_type": "CONVEY",
             "relief_amount": "0",
             "relief_override_amount": "7050"
+        },
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false,
+            "relief_type": "ADSRELIEF",
+            "lbtt_return_ads_due": true,
+            "lbtt_return_flbt_type": "CONVEY",
+            "relief_amount": "0",
+            "relief_override_amount": "0",
+            "relief_amount_ads": "0",
+            "relief_override_amount_ads": "500"
+        },
+        {
+            "json_class": "Returns::Lbtt::ReliefClaim",
+            "new_record": false,
+            "relief_type": "ADSFAMUNIT",
+            "lbtt_return_ads_due": true,
+            "lbtt_return_flbt_type": "CONVEY",
+            "relief_amount": "0",
+            "relief_override_amount": "0",
+            "relief_amount_ads": "0",
+            "relief_override_amount_ads": "450"
         }
     ],
     "fpay_method": "BACS",
@@ -146,7 +157,6 @@
     "exchange_ind": "Y",
     "previous_option_ind": "Y",
     "uk_ind": "Y",
-    "non_ads_reliefclaim_option_ind": "Y",
     "buyers": {
         "2ad9f4f7-bd14-4546-95ce-0c6b3026448e": {
             "json_class": "Returns::Lbtt::Party",

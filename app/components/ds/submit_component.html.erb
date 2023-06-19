@@ -1,0 +1,5 @@
+<% if submit? %>
+  <%= builder.submit(class: ds_classes, autofocus: autofocus, **data_options ) %>
+<% else %>
+  <%= builder.submit(name, name: button_action, class: ds_classes, autofocus: autofocus, **data_options ) %>
+<% end %>

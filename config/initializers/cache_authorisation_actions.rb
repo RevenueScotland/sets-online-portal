@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-if !Rails.env.development? && ENV['UNIT_TEST'].nil?
+unless Rails.env.development?
   Rails.application.reloader.to_prepare do
-    Rails.logger.info('Pre-seeding action/roles cache before starting tests')
+    Rails.logger.info('Pre-seeding action/roles cache')
 
     ActionRoles.cache_all_actions
   end

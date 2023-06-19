@@ -231,15 +231,15 @@ module Returns
 
       # Create the request hash in the exact order given by the save wsdl.
       def request_save
-        output = { 'ins1:EWCCode': ewc_code, 'ins1:WasteDescription': description,
-                   'ins1:FMMEMethod': fmme_method, 'ins1:LAUCode': lau_code,
-                   'ins1:FromNonDisposalInd': from_non_disposal_ind == 'Y' ? 'yes' : 'no' }
+        output = { 'ins0:EWCCode': ewc_code, 'ins0:WasteDescription': description,
+                   'ins0:FMMEMethod': fmme_method, 'ins0:LAUCode': lau_code,
+                   'ins0:FromNonDisposalInd': from_non_disposal_ind == 'Y' ? 'yes' : 'no' }
 
-        output['ins1:Exempt'] = request_save_exempt_hash if exempt_breakdown_needed?
+        output['ins0:Exempt'] = request_save_exempt_hash if exempt_breakdown_needed?
 
-        output.merge!('ins1:StandardTonnage': standard_tonnage, 'ins1:LowerTonnage': lower_tonnage,
-                      'ins1:WaterTonnage': water_tonnage, 'ins1:ExemptTonnage': exempt_tonnage,
-                      'ins1:TotalTonnage': total_tonnage) # call method to work out total
+        output.merge!('ins0:StandardTonnage': standard_tonnage, 'ins0:LowerTonnage': lower_tonnage,
+                      'ins0:WaterTonnage': water_tonnage, 'ins0:ExemptTonnage': exempt_tonnage,
+                      'ins0:TotalTonnage': total_tonnage) # call method to work out total
 
         output
       end
@@ -414,17 +414,17 @@ module Returns
 
       # provide the details for the request for the exemption details
       def request_save_exempt_hash
-        { 'ins1:NDAExTonnage': nda_ex_tonnage,
-          'ins1:RestorationExTonnage': restoration_ex_tonnage,
-          'ins1:OtherExTonnage': { 'ins1:Tonnage': other_ex_tonnage,
-                                   'ins1:Description': other_ex_description } }
+        { 'ins0:NDAExTonnage': nda_ex_tonnage,
+          'ins0:RestorationExTonnage': restoration_ex_tonnage,
+          'ins0:OtherExTonnage': { 'ins0:Tonnage': other_ex_tonnage,
+                                   'ins0:Description': other_ex_description } }
       end
 
       # Layout to print the data in this model
       # REturns the array for the row title
       def print_layout_row_title
         [{ code: :ewc_code },
-         { code: :ewc_code, lookup: true, nolabel: true },
+         { code: :ewc_code, lookup: true, label: false },
          { code: :description },
          { code: :lau_code, lookup: true },
          { code: :fmme_method, lookup: true },

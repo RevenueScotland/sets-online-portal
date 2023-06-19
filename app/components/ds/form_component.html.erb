@@ -1,0 +1,13 @@
+<% if file_upload %>
+  <div data-controller="file-upload" data-warning-text="<%=t('.file_upload_warning_text')%>">
+  <% end %>
+  <%= content %>
+  <% store_base_errors %>
+  <% button_actions.each_with_index do |button_action, i| %>
+    <% next if button_action == :none %>
+    <%= render(DS::SubmitComponent.new(builder: builder, button_action: button_action, button_label: button_label, 
+             type: action_type(index: i), autofocus: autofocus, data_options: data_options )) %>
+  <% end %>
+  <% if file_upload %>
+  </div>
+<% end %>

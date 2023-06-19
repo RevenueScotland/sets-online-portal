@@ -6,7 +6,7 @@ Feature: SLfT CSV File Upload
 
   Scenario: Check Validation
     Given I have signed in "portal.waste.new" and password "Password1!"
-    When I click on the "Create SLfT return" link
+    When I click on the "Create SLfT return" menu item
     Then I should see the "Return summary" page
     When I set a period of "2018/19" and "October to December (Quarter 3)"
     Then I should see the "Return summary" page
@@ -15,30 +15,30 @@ Feature: SLfT CSV File Upload
     Then I should see the "Waste details summary" page
     And I should see the text "Waste details summary for Waste Site 1"
 
-    When I click on the "Upload document" button
+    When I click on the "Upload file" button
     Then I should see the text "File can't be blank"
     And I should not see the text "Imported file contains validation errors. Correct these in the file, and the import the file again"
 
-    When I upload "testdocx.docx" to "resource_item_default_file_data"
-    And I click on the "Upload document" button
+    When I upload "testdocx.docx" to "returns_slft_site_resource_item_default_file_data"
+    And I click on the "Upload file" button
     Then I should see the text "Invalid file type"
     And I should not see the text "Imported file contains validation errors. Correct these in the file, and the import the file again"
     And I should not see the text "testdocx.docx"
 
-    When I upload "test-not-a-csv-file.csv" to "resource_item_default_file_data"
-    And I click on the "Upload document" button
+    When I upload "test-not-a-csv-file.csv" to "returns_slft_site_resource_item_default_file_data"
+    And I click on the "Upload file" button
     Then I should see the text "File is invalid CSV file: Illegal quoting in line 1"
     And I should not see the text "Imported file contains validation errors. Correct these in the file, and the import the file again"
     And I should not see the text "test-not-a-csv-file.csv"
 
-    When I upload "test-csv-wrong-no-cols.csv" to "resource_item_default_file_data"
-    And I click on the "Upload document" button
+    When I upload "test-csv-wrong-no-cols.csv" to "returns_slft_site_resource_item_default_file_data"
+    And I click on the "Upload file" button
     Then I should see the text "File is invalid, greater than 60% of rows had the wrong number of columns"
     And I should not see the text "Imported file contains validation errors. Correct these in the file, and the import the file again"
     And I should not see the text "test-csv-wrong-no-cols.csv"
 
-    When I upload "test-invalid-slft-waste-upload.csv" to "resource_item_default_file_data"
-    And I click on the "Upload document" button
+    When I upload "test-invalid-slft-waste-upload.csv" to "returns_slft_site_resource_item_default_file_data"
+    And I click on the "Upload file" button
     Then I should see the text "Imported file contains validation errors. Correct these in the file, and the import the file again"
     And I should see the text "01 01 01/Entry 1 has the following errors: Standard tonnage cannot be set when other tonnages are set, Lower tonnage cannot be set when other tonnages are set, Water discount tonnage cannot exceed the waste tonnage"
     And I should see the text "01 03 99/Entry 2 has the following errors: Lower tonnage cannot be set when other tonnages are set, Exempt tonnage cannot be set when other tonnages are set, Water discount tonnage cannot be set when exempt tonnage is set"
@@ -47,10 +47,18 @@ Feature: SLfT CSV File Upload
     And I should see the text "10 99 99/Invalid has the following errors: EWC code value of 10 99 99 is not allowed, Geographical area value of 0000 is not allowed, Management method value of XX is not allowed, Has this waste been moved out of a non-disposal area (NDA) value of X is not allowed"
     And I should see the text "04 02 16/Incomplete has the following errors: Geographical area can't be blank, Management method can't be blank, Has this waste been moved out of a non-disposal area (NDA) can't be blank, Standard tonnage or the lower or exempt tonnage must be entered"
     And I should not see the text "test-invalid-slft-waste-upload.csv"
+    # Test errors are cleared
+    When I upload "test-valid-slft-waste-upload.csv" to "returns_slft_site_resource_item_default_file_data"
+    And I click on the "Upload file" button
+    Then I should not see the text "Invalid file type"
+    And I should not see the text "File can't be blank"
+    And I should not see the text "File is invalid CSV file"
+    And I should not see the text "File is invalid, greater than 60% of rows had errors"
+    And I should not see the text "Imported file contains validation errors. Correct these in the file, and the import the file again"
 
   Scenario: Upload a valid file
     Given I have signed in "portal.waste.new" and password "Password1!"
-    When I click on the "Create SLfT return" link
+    When I click on the "Create SLfT return" menu item
     Then I should see the "Return summary" page
     When I set a period of "2018/19" and "October to December (Quarter 3)"
     Then I should see the "Return summary" page
@@ -59,8 +67,8 @@ Feature: SLfT CSV File Upload
     Then I should see the "Waste details summary" page
     And I should see the text "Waste details summary for Waste Site 1"
 
-    When I upload "test-valid-slft-waste-upload.csv" to "resource_item_default_file_data"
-    And I click on the "Upload document" button
+    When I upload "test-valid-slft-waste-upload.csv" to "returns_slft_site_resource_item_default_file_data"
+    And I click on the "Upload file" button
     Then I should not see the text "Invalid file type"
     And I should not see the text "File can't be blank"
     And I should not see the text "File is invalid CSV file"
@@ -73,7 +81,7 @@ Feature: SLfT CSV File Upload
       | 16 01 03/Entry 3 | 0             | 0                | 40             | 0             | 40            |
       | 19 08 11/Entry 4 | 100           | 0                | 0              | 0             | 100           |
 
-    And I click on the "Upload document" button
+    And I click on the "Upload file" button
     And I should see the text "File can't be blank"
     And the table of data is displayed
       | EWC code         | Lower tonnage | Standard tonnage | Exempt tonnage | Water tonnage | Total tonnage |
@@ -136,7 +144,6 @@ Feature: SLfT CSV File Upload
     Then I should see the "Waste details summary" page
     When I click on the "Delete all waste types" link
     And if available, click the confirmation dialog
-    And I wait for 2 seconds
     Then I should see the "Waste details summary" page
     And I should not see the text "01 01 01/Entry 1"
     And I should not see the text "01 03 99/Entry 2"
@@ -168,14 +175,16 @@ Feature: SLfT CSV File Upload
     Then I should see the text "06 13 04/don't breath it"
 
     When I click on the "Save draft" button
-    And I click on the "Add new waste type" link
+    Then I should see the "Waste details summary" page
+    When I click on the "Add new waste type" link
     Then I should see the "Details of the waste for Waste Site 1" page
 
     When I click on the "Back" link
     # The save_draft query string should not be retained
     Then I should see the text "06 13 04/don't breath it"
 
-    When I click on the "Upload document" button
+    When I click on the "Upload file" button
+    Then I should see the "Waste details summary" page
     And I click on the "Add new waste type" link
     Then I should see the "Details of the waste for Waste Site 1" page
 

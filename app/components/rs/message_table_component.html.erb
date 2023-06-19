@@ -1,0 +1,38 @@
+<div class="ds_!_margin-bottom--2">
+  <%= ds_table(caption: tag.h2(caption, class: 'ds_!_margin-bottom--0'),
+               id: id, small_screen: small_screen) do |table| %>
+    <% table.with_link(name: t('.all_messages'), url: dashboard_messages_path) if show_all_link? && can?(RS::AuthorisationHelper::VIEW_MESSAGES) %>
+    <% table.with_header(klass: Dashboard::Message) do |header| %>
+      <% header.with_cell(method: :created_date) %>
+      <% header.with_cell(method: :full_name) %>
+      <% header.with_cell(method: :title) %>
+      <% header.with_cell(method: :reference) %>
+      <% header.with_cell(method: :subject_description)%>
+      <% header.with_cell(method: :has_attachment )%>
+      <% header.with_cell(method: :read_indicator)%>
+    <% end %>
+    <% messages&.each do |message| %>
+      <% table.with_row(model: message) do |row| %>
+        <% row.with_cell(method: :created_date, type: :date) %>
+        <% row.with_cell(method: :full_name) %>
+        <% row.with_cell(method: :title) %>
+        <% row.with_cell(method: :reference)%>
+        <% row.with_cell(method: :subject_description) %>
+        <% row.with_cell(method: :has_attachment) %>
+        <% row.with_cell(method: :read_indicator) %>
+      <% end %>
+      <% table.with_row do |row| %>
+        <% row.with_cell(colspan:  7) do %>
+          <% if message.selected%>
+            <%= t('.selected_message')%>
+          <% else %>
+            <%= ds_link(name: t('.view'),
+             url: dashboard_message_path(message),
+             subtype: :padded) if can?(RS::AuthorisationHelper::VIEW_MESSAGE_DETAIL) %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= ds_pagination(collection: pagination_collection, region_name: caption, page_name: page_name, anchor: id) %>
+</div>

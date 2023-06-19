@@ -6,10 +6,10 @@ module Dashboard
     include FileUploadHandler
     include DownloadHelper
 
-    authorise route: :index, requires: AuthorisationHelper::VIEW_MESSAGES
-    authorise route: :new, requires: AuthorisationHelper::CREATE_MESSAGE
-    authorise route: :show, requires: AuthorisationHelper::VIEW_MESSAGE_DETAIL
-    authorise route: :retrieve_file_attachment, requires: AuthorisationHelper::DOWNLOAD_ATTACHMENT
+    authorise route: :index, requires: RS::AuthorisationHelper::VIEW_MESSAGES
+    authorise route: :new, requires: RS::AuthorisationHelper::CREATE_MESSAGE
+    authorise route: :show, requires: RS::AuthorisationHelper::VIEW_MESSAGE_DETAIL
+    authorise route: :retrieve_file_attachment, requires: RS::AuthorisationHelper::DOWNLOAD_ATTACHMENT
 
     # This processes what messages to list down in the index page.
     # It shows all of the messages that are linked to logged in account
@@ -30,38 +30,48 @@ module Dashboard
       @message_filter = show_message_filter
       @messages, @pagination_collection =
         Message.list_paginated_messages(current_user, params[:page], @message_filter)
+      # Don't show related messages if there is only one
+      @messages = nil if @messages.count < 2
+    end
+
+    # Processes some data to initially load up for the sending a message page.
+    # If it is a reply then carry over the :subject, :origin_id, :title and :reference.
+    def new
+      @message = Message.initialise_message(current_user, params[:smsg_refno], params[:reference])
+      handle_file_upload(clear_cache: true)
     end
 
     # Processes what happens when the send button for the new page, which is the page related to sending a message
     def create
       @message = Message.new(message_params)
       # Only handle a file upload if they can attach
-      if can?(AuthorisationHelper::CREATE_ATTACHMENT)
-        return if handle_file_upload('new')
+      if can?(RS::AuthorisationHelper::CREATE_ATTACHMENT)
+        render('new', status: :unprocessable_entity) && return if handle_file_upload(parent_param: :dashboard_message)
 
         @message.attachment = @resource_items[0] unless @resource_items.nil?
       end
       success, msg_refno = @message.save(current_user)
       # need to call return
-      return render_confirmation_page(msg_refno) if success
+      return redirect_to_confirmation_page(msg_refno) if success
 
-      render 'new'
+      render('new', status: :unprocessable_entity)
     end
 
     # Handle confirmation related message
     def confirmation
-      @message = Message.new(message_params)
+      @message = Message.find(params[:smsg_refno], current_user)
       # Only handle a file upload if they can attach
-      if can?(AuthorisationHelper::CREATE_ATTACHMENT)
-        handle_file_upload('confirmation',
-                           before_add: :add_document,
-                           before_delete: :delete_document)
-
+      if can?(RS::AuthorisationHelper::CREATE_ATTACHMENT) &&
+         handle_file_upload(parent_param: :dashboard_message, before_add: :add_document,
+                            before_delete: :delete_document)
+        render(status: :unprocessable_entity)
+      else
         return unless params[:finish]
+
+        # clear cache
+        clear_resource_items
+        redirect_to dashboard_messages_path
       end
-      # clear cache
-      clear_resource_items
-      redirect_to dashboard_messages_path
     end
 
     # Call delete attachment method of message to delete document from backoffice
@@ -80,20 +90,13 @@ module Dashboard
 
     # Retrieve file from backoffice
     def retrieve_file_attachment
-      return unless params[:attachment_ref_no] || params[:attachment_type]
+      return unless params[:doc_refno] || params[:type]
 
       success, attachments = retrieve_file_details_from_backoffice
 
       return unless success
 
       send_file_from_attachment(attachments[:attachment])
-    end
-
-    # Processes some data to initially load up for the sending a message page.
-    # If it is a reply then carry over the :subject, :origin_id, :title and :reference.
-    def new
-      @message = Message.initialise_message(current_user, params[:smsg_refno], params[:reference])
-      handle_file_upload(nil, clear_cache: true)
     end
 
     private
@@ -105,14 +108,14 @@ module Dashboard
 
     # Retrieve download file details
     def retrieve_file_details_from_backoffice
-      Message.retrieve_file_attachment(current_user, params[:attachment_ref_no], params[:attachment_type])
+      Message.retrieve_file_attachment(current_user, params[:doc_refno], params[:type])
     end
 
     # Permits the access to the data passed on the .permit of :message objects
     def message_params
-      params.require(:dashboard_message).permit(:original_smsg_refno,
-                                                :subject_code, :subject_full_key_code,
-                                                :reference, :title, :body, :attachment, :additional_file, :smsg_refno)
+      params.require(:dashboard_message).except(:resource_item)
+            .permit(:original_smsg_refno, :subject_code, :subject_full_key_code, :reference, :title, :body,
+                    :attachment, :smsg_refno)
     end
 
     # Used specifically for show method to filter message
@@ -123,11 +126,11 @@ module Dashboard
 
     # This method will render the confirmation page if the message is successfully
     # sent to back-office
-    def render_confirmation_page(msg_refno)
+    def redirect_to_confirmation_page(msg_refno)
       @message.smsg_refno = msg_refno
       # Need to clear the resource items for the initial submission
       clear_resource_items
-      render 'confirmation', id: msg_refno
+      redirect_to confirmation_dashboard_message_path(smsg_refno: msg_refno)
     end
   end
 end

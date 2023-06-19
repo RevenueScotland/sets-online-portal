@@ -1,0 +1,52 @@
+<div class="ds_!_margin-bottom--2">
+	<%= ds_table(caption: caption, id: id, small_screen: small_screen) do |table| %>
+    <% table.with_header(klass: Returns::Slft::Site) do |header| %>
+      <% header.with_cell(method: :site_name) %>
+      <% header.with_cell(method: :net_lower_tonnage) %>
+      <% header.with_cell(method: :net_standard_tonnage) %>
+      <% header.with_cell(method: :exempt_tonnage)%>
+      <% header.with_cell(method: :total_tonnage) %>
+    <% end %>
+    <% case format %>
+    <% when :deleted_sites %>
+      <% table.with_row do |row| %>
+        <% row.with_cell(colspan: 5) do %>
+          <%= ds_paragraph{t('.deleted_sites_description')} %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% sites&.each do |key, site| %>
+      <% table.with_row(model: site) do |row| %>
+        <% row.with_cell(method: :site_name) %>
+        <% row.with_cell(method: :net_lower_tonnage) %>
+        <% row.with_cell(method: :net_standard_tonnage) %>
+        <% row.with_cell(method: :exempt_tonnage)%>
+        <% row.with_cell(method: :total_tonnage) %>
+      <% end %>
+      <% table.with_row do |row| %>
+        <% row.with_cell(colspan: 5) do %>
+          <%= ds_link(name: t('.add_waste_details'),
+                url: returns_slft_site_waste_summary_path(key), subtype: :padded ) %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% case format %>
+    <% when :sites %>
+      <% if sites.blank? %>        
+        <% table.with_row do |row| %>
+          <% row.with_cell(colspan: 5) do %>
+            <%= ds_paragraph{t('.no_sites_description')} %>
+          <% end %>
+        <% end %>
+      <% else %>
+        <% table.with_row(model: totals) do |row| %>
+          <% row.with_cell(header: true) do "Total" end %>
+          <% row.with_cell(method: :net_lower_tonnage, header: true) %>
+          <% row.with_cell(method: :net_standard_tonnage, header: true) %>
+          <% row.with_cell(method: :exempt_tonnage, header: true)%>
+          <% row.with_cell(method: :total_tonnage, header: true) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,23 +1,13 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= display_field @financial_transaction,:actual_date, format: :date %>
-<%= display_field @financial_transaction,:effective_date, format: :date %>
-<%= display_field @financial_transaction,:related_reference %>
-<%= display_field @financial_transaction,:description %>
-<%= display_field @financial_transaction,:amount, format: :money  %>
-<%= display_field @financial_transaction, :outstanding_balance, format: :money %>
-<%= sub_heading %>
-<%= display_table(@related_transactions,
-                  [:actual_date, :effective_date, :description, :matched_amount, :original_amount],
-                  [],
-                  { actual_date: {format: :date},
-                    effective_date: {format: :date},
-                    matched_amount: {format: :money},
-                    original_amount: {format: :money} }) %>
-<%= paginate @pagination_collection %>
-<% links = [
-            { link: :dashboard, path: dashboard_path },
-            { link: :financial_transactions, path: dashboard_financial_transactions_path }
-            ] %>
-<%= navigational_links(links) %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_summary_list(model: @financial_transaction, show_border: false) do |s|%>
+  <% s.with_item_method(method: :actual_date) %>
+  <% s.with_item_method(method: :effective_date) %>
+  <% s.with_item_method(method: :related_reference) %>
+  <% s.with_item_method(method: :description) %>
+  <% s.with_item_method(method: :amount, type: :currency) %>
+  <% s.with_item_method(method: :outstanding_balance, type: :currency) %>
+<% end %>
+<% if @related_transactions.present? %>
+  <%= rs_financial_transaction_table(financial_transactions:@related_transactions, caption: t('.caption'), 
+                                   id: 'related_transaction', small_screen: 'scrolling', pagination_collection: @pagination_collection, format: :related_transaction)%>
+<% end %>

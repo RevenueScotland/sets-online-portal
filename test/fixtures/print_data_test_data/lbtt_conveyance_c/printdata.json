@@ -379,25 +379,15 @@
                     "itemdata": "Dundee"
                 },
                 {
-                    "itemcode": "title_code",
+                    "itemcode": "full_title_number",
                     "itemformat": null,
-                    "itemlabel": "Title number (optional)",
+                    "itemlabel": "Title number",
                     "itemdata": ""
                 },
                 {
-                    "itemcode": "title_number",
+                    "itemcode": "full_parent_title_number",
                     "itemformat": null,
-                    "itemdata": ""
-                },
-                {
-                    "itemcode": "parent_title_code",
-                    "itemformat": null,
-                    "itemlabel": "Parent title number (optional)",
-                    "itemdata": ""
-                },
-                {
-                    "itemcode": "parent_title_number",
-                    "itemformat": null,
+                    "itemlabel": "Parent title number",
                     "itemdata": ""
                 },
                 {
@@ -407,7 +397,7 @@
                     "itemdata": "No"
                 }
             ],
-            "itemcount": 6
+            "itemcount": 4
         },
         {
             "sectioncode": "address",
@@ -448,52 +438,6 @@
                 }
             ],
             "itemcount": 5
-        },
-        {
-            "sectioncode": "ads_consideration",
-            "sectiontype": "list",
-            "sectiondivider": true,
-            "pagebreak": null,
-            "displaytitle": true,
-            "sectiontitle": "Additional Dwelling Supplement (ADS)",
-            "listitem": [
-                {
-                    "itemcode": "ads_consideration_yes_no",
-                    "itemformat": null,
-                    "itemlabel": "Is the buyer replacing their main residence?",
-                    "itemdata": ""
-                },
-                {
-                    "itemcode": "ads_amount_liable",
-                    "itemformat": "money",
-                    "itemlabel": "Total consideration liable to ADS",
-                    "itemdata": ""
-                },
-                {
-                    "itemcode": "ads_sell_residence_ind",
-                    "itemformat": null,
-                    "itemlabel": "Does the buyer intend to sell their main residence within 18 months?",
-                    "itemdata": ""
-                }
-            ],
-            "itemcount": 3
-        },
-        {
-            "sectioncode": "ads_relief_claim_ind",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": true,
-            "sectiontitle": "Reliefs on ADS consideration",
-            "listitem": [
-                {
-                    "itemcode": "ads_reliefclaim_option_ind",
-                    "itemformat": null,
-                    "itemlabel": "Is relief being claimed from the ADS consideration?",
-                    "itemdata": ""
-                }
-            ],
-            "itemcount": 1
         },
         {
             "sectioncode": "about_the_transaction",
@@ -587,23 +531,6 @@
                 }
             ],
             "itemcount": 2
-        },
-        {
-            "sectioncode": "non_ads_relief_claim_ind",
-            "sectiontype": "list",
-            "sectiondivider": false,
-            "pagebreak": null,
-            "displaytitle": true,
-            "sectiontitle": "Reliefs on this transaction",
-            "listitem": [
-                {
-                    "itemcode": "non_ads_reliefclaim_option_ind",
-                    "itemformat": null,
-                    "itemlabel": "Is relief being claimed for this transaction?",
-                    "itemdata": "No"
-                }
-            ],
-            "itemcount": 1
         },
         {
             "sectioncode": "about_the_calculation",

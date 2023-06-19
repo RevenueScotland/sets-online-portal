@@ -15,7 +15,7 @@ en:
         repayment_declaration_CONVEY_AGENT: "I, the agent of the buyer(s), having been authorised to complete this claim on behalf of the buyer(s), certify that the buyer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the buyer(s) is/are eligible for the refund claimed"
         repayment_declaration_CONVEY_TAXPAYER: "I, the buyer, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed"
         repayment_declaration_CONVEY_PUBLIC: "I, the buyer, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed"
-        repayment_declaration_LEASERET_AGENT: I, the agent of the tenant(s), having been authorised to complete this form on behalf of the tenant(s), certify that the tenant(s) has/have declared that the information provided is to the best of their knowledge, correct and complete, and confirm that the tenant(s) is/are eligible for the refund claimed"
+        repayment_declaration_LEASERET_AGENT: "I, the agent of the tenant(s), having been authorised to complete this form on behalf of the tenant(s), certify that the tenant(s) has/have declared that the information provided is to the best of their knowledge, correct and complete, and confirm that the tenant(s) is/are eligible for the refund claimed"
         repayment_declaration_LEASERET_TAXPAYER: "I, the tenant, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed"
         repayment_declaration_LEASERET_PUBLIC: "I, the tenant, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed"
         repayment_declaration_LEASEREV_AGENT: "I, the agent of the tenant(s), having been authorised to complete this claim on behalf of the tenant(s), certify that the tenant(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tenant(s) is/are eligible for the refund claimed"
@@ -33,8 +33,7 @@ en:
         orig_return_reference: "What was the original return reference"
         flbt_type: "Which return do you want to submit"
         business_ind: "Is the transaction part of the sale of a business"
-        sale_include_option: "Does the sale include any of the following"        
-        non_ads_reliefclaim_option_ind: "Is relief being claimed for this transaction"
+        sale_include_option: "Does the sale include any of the following"
         linked_ind: "Are there any linked transactions"
         total_consideration: "Total consideration"
         total_consideration_residential: "Total consideration"
@@ -51,6 +50,7 @@ en:
         effective_date_ASSIGN: "Effective date of transaction"
         effective_date_TERMINATE: "Effective date of transaction"
         effective_date: Effective date of transaction
+        orig_effective_date: "What was the original return effective date"
         relevant_date_CONVEY: "Relevant date"
         relevant_date_LEASERET: "Relevant date"
         relevant_date_LEASEREV: "Relevant date"
@@ -69,7 +69,7 @@ en:
         premium_paid: Is a premium being paid
         lease_premium: Premium amount (inc VAT)
         linked_lease_premium: Premium for linked transactions
-        relevant_rent: What is the relevant rent amount for this transaction
+        relevant_rent: "What is the relevant rent amount for this transaction"
         previous_option_ind: Is the transaction linked to a previous option agreement
         exchange_ind: Does the transaction include any element of exchange or part exchange
         uk_ind: Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland
@@ -87,6 +87,7 @@ en:
         authority_ind_LEASEREV: "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         authority_ind_ASSIGN: "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         authority_ind_TERMINATE: "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        non_notifiable_submit_ind: "Do you still want to submit the return"
         declaration: "The declaration"
         declaration_CONVEY_AGENT: "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): <br> (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct"
         declaration_LEASERET_AGENT: "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): <br> (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and <br> (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct"
@@ -108,10 +109,10 @@ en:
         lease_declaration_TAXPAYER: "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date"
         lease_declaration_PUBLIC: "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date"
         change_reason: "Tell us why you are amending this return"
+        non_notifiable_explanation: "Why are you submitting a non-notifiable return"
       returns/lbtt/tax:
         calculated: "LBTT calculated"
         ads_due: "ADS calculated"
-        ads_due_repay_original: "Original total ADS paid"
         tax_due: "Total tax payable"
         total_reliefs: "Total LBTT reliefs claimed" # ie non-ADS reliefs
         due_before_reliefs: "Total liability"
@@ -131,7 +132,6 @@ en:
         ads_sold_main_yes_no: Are you amending the return because the buyer has sold or disposed of the previous main residence
         rrep_ads_sold_date: What is the date of sale or disposal of the previous main residence
         ads_repay_amount_claimed: "Amount of ADS you want to reclaim"
-        ads_reliefclaim_option_ind: Is relief being claimed from the ADS consideration
       returns/lbtt/link_transactions:
         return_reference: "Return reference (if known)"
         consideration_amount: "Return consideration"
@@ -139,66 +139,101 @@ en:
         premium_inc: "Premium (inc VAT)"
       returns/lbtt/relief_claim:
         relief_type: "Type of relief"
-        relief_type_auto: "Type of relief"
-        relief_amount: "Amount of tax saved by relief"
+        relief_type_expanded: "Type of relief"
+        relief_amount: "Amount of LBTT tax saved by relief"
+        relief_amount_ads: "Amount of ADS tax saved by relief"
         relief_type_description: "Type of relief"
-        relief_override_amount: "Amount of tax saved by relief"
+        relief_override_amount: "Amount of LBTT tax saved by relief"
+        relief_override_amount_ads: "Amount of ADS tax saved by relief"
         calculated: "Calculated"
+        na: "n/a"
         mdr_number_dwellings: "Number of dwellings"
         mdr_total_consideration: "Total consideration attributable to dwellings"
         mdr_number_dwellings_ads: "Number of dwellings that attract ADS"
       returns/lbtt/yearly_rent:
         rent: "Rent"
         year: "Year"
+    labels:  
+      returns/lbtt/lbtt_return:
+        flbt_type:
+          default: "%{label}"
+          declaration_submitted: "Description of transaction"
+        effective_date_CONVEY:
+          default: "%{label}"
+          declaration_submitted: "Effective date"
+        effective_date_LEASERET:
+          default: "%{label}"
+          declaration_submitted: "Effective date"
+        effective_date_LEASEREV:
+          default: "%{label}"
+          declaration_submitted: "Effective date"
+        effective_date_ASSIGN:
+          default: "%{label}"
+          declaration_submitted: "Effective date"
+        effective_date_TERMINATE:
+          default: "%{label}"
+          declaration_submitted: "Effective date"
+        effective_date:
+          default: "%{label}"
+          declaration_submitted: "Effective date"
+      returns/lbtt/tax:
+        ads_due:
+          default: "%{label}"
+          ads_repay_details: "Original total ADS paid"
     hints:
       returns/lbtt/lbtt_return:
+        non_notifiable_submit_ind: "If you don't submit the return your changes won't be saved"
         sale_include_option: "Select all that apply"
-        total_consideration: "See guidance on determining the chargeable consideration (opens in a new window) for further details"
+        total_consideration: "See guidance on %{link} for further details"
         total_consideration_residential: "See guidance on determining the chargeable consideration (opens in a new window) for further details"
-        total_vat: "See guidance on what is chargeable consideration (opens in a new window) for further details"
+        total_vat: "See guidance on %{link} for further details"
         non_chargeable: "This is the amount that LBTT does not apply to"
         premium_paid: "This is paid by the tenant to the owner, in addition to the rent"
-        relevant_rent: This is your annual rent, including VAT. If you have linked transactions, it will be the total of all rents and must be entered when a premium is being paid
+        relevant_rent: "This is your annual rent, including VAT. If you have linked transactions, it will be the total of all rents and must be entered when a premium is being paid"
         account_number: "This should be 8 digits"
         branch_code: "The sort code should be entered in the format 99-99-99"
-        effective_date_CONVEY: "This is usually the date the land transaction is completed (e.g. the date of settlement). See guidance on the effective date (opens in a new window) for further details"
-        effective_date_LEASERET: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
-        effective_date_LEASEREV: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
-        effective_date_ASSIGN: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
-        effective_date_TERMINATE: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
-        relevant_date_CONVEY: "See guidance on the relevant date (opens in a new window) for further details"
-        relevant_date_LEASERET: "See guidance on the relevant date (opens in a new window) for further details"
-        relevant_date_LEASEREV: "This date will be the 3 year anniversary of the effective date and every subsequent three years for the duration of the lease. See guidance on the relevant date (opens in a new window) for further details"
-        relevant_date_ASSIGN: "This is the date the lease was assigned. See guidance on the relevant date (opens in a new window) for further details"
-        relevant_date_TERMINATE: "This is the date the lease was terminated or came to an end. See guidance on the relevant date (opens in a new window) for further details"
+        effective_date_CONVEY: "This is usually the date the land transaction is completed (e.g. the date of settlement). See guidance on %{link} for further details"
+        effective_date_LEASERET: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
+        effective_date_LEASEREV: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
+        effective_date_ASSIGN: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
+        effective_date_TERMINATE: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
+        orig_effective_date: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
+        relevant_date_CONVEY: "See guidance on %{link} for further details"
+        relevant_date_LEASERET: "See guidance on %{link} for further details"
+        relevant_date_LEASEREV: "This date will be the 3 year anniversary of the effective date and every subsequent three years for the duration of the lease. See guidance on %{link} for further details"
+        relevant_date_ASSIGN: "This is the date the lease was assigned. See guidance on %{link} for further details"
+        relevant_date_TERMINATE: "This is the date the lease was terminated or came to an end. See guidance on %{link} for further details"
+        orig_effective_date: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
         fpay_method: "The payment method will only be used if a payment is actually due on this return"
-        property_type: "See guidance on the meaning of residential property (opens in a new window) and of non-residential property and the treatment of ‘mixed’ property (opens in a new window) for further details"
-        previous_option_ind: "See guidance on options and rights of pre-emption (opens in a new window) for further details"
-        linked_ind: "See guidance on linked transactions (opens in a new window) for further details"
-        non_ads_reliefclaim_option_ind: "See guidance on Tax Reliefs (opens in a new window) for further details"
-        contingents_event_ind: "See guidance on contingent, uncertain or unascertained consideration (opens in a new window) for further details"
-        linked_consideration: "See guidance on linked transactions (opens in a new window) for further details"
-        non_chargeable: "See guidance on what is not chargeable consideration (opens in a new window) for further details"
-        remaining_chargeable: "See guidance on determining the chargeable consideration (opens in a new window) for further details"
-        lease_premium: "See guidance on consideration other than rent (opens in a new window) for further details"
+        property_type: "See guidance on the %{residential_link} and of %{non_residential_link} for further details"
+        previous_option_ind: "See guidance on %{link} for further details"
+        linked_ind: "See guidance on %{link} for further details"
+        contingents_event_ind: "See guidance on %{link} for further details"
+        linked_consideration: "See guidance on %{link} for further details"
+        non_chargeable: "See guidance on %{link} for further details"
+        remaining_chargeable: "See guidance on %{link} for further details"
+        lease_premium: "See guidance on %{link} for further details"
       returns/lbtt/tax:
         calculated: "This is the derived LBTT liability from values provided in this form"
         ads_due: "This is ADS liability"
-        total_ads_reliefs: "This is the total amount of reliefs claimed"
-        total_non_ads_reliefs_claimed: "This is the total amount of reliefs claimed"
-        npv: "This is the amount on which tax is calculated. See guidance on tax due on the rent (opens in a new window) for further details"
-        total_reliefs: "This is the total amount of LBTT reliefs claimed"
+        total_non_ads_reliefs_claimed: "This is the total amount of reliefs claimed"        
+        npv: "This is the amount on which tax is calculated. See guidance on %{link} for further details"
+        npv_link: "tax due on the rent"
         amount_already_paid: "How much you have already paid for any previous returns that relate to this lease agreement"
       returns/lbtt/ads:
-        ads_amount_liable: "The amount on which ADS is due - this will usually be the chargeable consideration of your new main residence but may change depending on your specific set of circumstances. See guidance on determining the chargeable consideration for the ADS (opens in a new window)"
-        ads_consideration: "If the consideration includes a new main residence, this is the chargeable consideration for your new main residence"      
-        ads_reliefclaim_option_ind: "A reclaim of ADS already paid following the sale of a previous main residence is not a relief"
+        ads_amount_liable: "The amount on which ADS is due - this will usually be the chargeable consideration of your new main residence but may change depending on your specific set of circumstances. See guidance on %{link}"
+        ads_consideration: "If the consideration includes a new main residence, this is the chargeable consideration for your new main residence"
       returns/lbtt/relief_claim:
         mdr_number_dwellings_ads: "Only applicable if ADS applies to the transaction"
     errors:
       models:
         returns/lbtt/lbtt_return:
           attributes:
+            orig_return_reference:
+              return_not_filed_lease: "The original return reference and original effective date is not a filed lease return"
+              return_disregarded: "The original return reference and original effective date is not a filed lease return. Contact Revenue Scotland as there could be a duplicate return for this reference"
+            orig_effective_date:
+              past_date_error: "%{attribute} must be on or after %{start_date}"
             effective_date:
               past_date_error: "%{attribute} must be on or after %{start_date}"
             relevant_date:
@@ -227,7 +262,7 @@ en:
               non_individual_no_ads: "ADS must apply to all properties on this return where at least one of the buyers is not a private individual and the transaction is residential"
         returns/lbtt/relief_claim:
           attributes:
-            relief_type:
+            relief_type_expanded:
               is_duplicate: "%{attribute} has already been used on this return"
             relief_amount:
               amount_exceed: "%{attribute} should not exceed £%{upper_limit}"
@@ -236,9 +271,9 @@ en:
         returns/lbtt/tax:
           attributes:
             total_reliefs:
-              less_than_or_equal_to: "The amount you are claiming for reliefs cannot be more than the tax liability of £%{count}"
+              less_than_or_equal_to: "The amount you are claiming for reliefs cannot be more than the tax liability of £%<count>.2f"
             total_ads_reliefs:
-              less_than_or_equal_to: "The amount you are claiming for ADS reliefs cannot be more than the ADS liability of £%{count}"
+              less_than_or_equal_to: "The amount you are claiming for ADS reliefs cannot be more than the ADS liability of £%<count>.2f"
     hidden_label:
       returns/lbtt/link_transactions:
         return_reference: "Return reference"
@@ -250,197 +285,3 @@ en:
         relief_amount: "Amount of tax saved by relief"
       returns/lbtt/yearly_rent:
         rent: "Rent"
-  returns:
-    lbtt:
-      summary:
-        title: "Return Summary"
-        subtitle: "Your return summary"
-        description: "The LBTT return is split into sections which can be completed in any order. You must complete all the sections before submitting the return."
-        repayment_description: "If you need to request a repayment from Revenue Scotland, you can do this once you have clicked submit."
-        calculation_description_LEASERET_CONVEY: "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
-        calculation_description: "The amount of tax already paid below will show as £0.00. You will need to change this field to show the correct amount of tax already paid in order for the correct amount of tax due to show. For all other fields, the amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
-        add_properties_description: "About the property"
-        add_transaction_description: "About the transaction"
-        add_buyer_description: "About the buyer"
-        add_seller_description: "About the seller"
-        add_additional_dwelling_supplements_description: About the Additional Dwelling Supplement (ADS)
-        add_agent_description: Contact details for agent
-        add_tenant_description: "About the tenant"
-        add_landlord_description: "About the landlord"
-        add_new_tenant_description: "About the new tenant"
-        add_repayment_claim_description: Claim repayment
-        edit_calculation: "About the calculation"
-        edit_relief: "About the reliefs"
-        save_changes_warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
-        date_in_past:
-          one: "%{attribute_name} is 1 day in the past. This is usually more recent than this."
-          other: "%{attribute_name} is %{count} days in the past. This is usually more recent than this."
-        date_in_future:
-          one: "%{attribute_name} is 1 day in the future. This has typically already happened."
-          other: "%{attribute_name} is %{count} days in the future. This has typically already happened."
-        form_dirty_warning_message: "You are about to leave this return. If you haven't saved your changes click 'Cancel' followed by the 'Save draft' button on the return summary screen. Any unsaved changes will be lost."
-        link:
-          edit_agent_details: "Edit agent details"
-          add_buyer: "Add a buyer"
-          add_seller: "Add a seller"
-          add_tenant: "Add a tenant"
-          add_landlord: "Add a landlord"
-          add_new_tenant: "Add a new tenant"
-          add_property: "Add a property"
-          add_ads: "Add ADS"
-          edit_ads: "Edit ADS"
-          add_transaction: "Add transaction details"
-          edit_transaction: "Edit transaction details"
-          edit_calculation: "Edit calculation"
-          edit_relief: "Edit reliefs"
-          change_the_transaction: "You can edit the transaction details if you need to"
-      public_landing:
-        title: "To complete this return, you will need the following information:"
-        info_needed_html:
-          "<ul><li>the lease agreement, showing information such as the start and end dates of the lease</li>
-          <li>transaction reference of the LBTT return originally submitted for the lease</li>
-          <li>effective date of the LBTT return originally submitted for the lease</li>
-          <li>a recalculation of the total LBTT payable on the lease</li>
-          <li>how much LBTT has already been paid on the lease</li></ul>"
-        start_warning: "Once you have started the return you must complete it. You will not be able to save a draft and go back to it later."
-      public_return_type:
-        title: "About the return"
-      return_type:
-        title: "About the return"
-        flbt_type: "Description of transaction"
-      return_reference_number:
-        title: "Return reference number"
-      save_draft:
-        title: "Return saved"
-        information: "Your tax return has been saved so that you can return to either complete or cancel it."
-        caution: "It has not been submitted to Revenue Scotland."
-        return_html: "Your return reference is"
-        reference_html: "You will need this to find your return."
-        link:
-          back_to_return_summary: "Back to return summary"
-          go_to_dashboard: "Go to dashboard"
-      reliefs_calculation:
-        title: "Reliefs on this transactions"
-        relief_override_amount: "Amount of tax saved by relief"
-        relief_type: "Type of relief"
-    load:
-      title: "Error loading return"
-    lbtt_ads:
-      title: Additional Dwelling Supplement (ADS)
-      ads_amount:
-        description: The ADS consideration is usually the same as the purchase price        
-        ads_amount_liable: "determining the chargeable consideration for the ADS (opens in a new window)" 
-      ads_intending_sell:
-        address: What is the address of the main residence that will be sold
-      ads_reliefs:
-        title: Reliefs on ADS consideration
-        relief_type: "Type of relief"
-        relief_type_auto: "Type of relief"
-        relief_amount: Amount of tax saved by relief
-        description_html:
-          "<p>Certain relief amounts will be calculated as part of the return and therefore cannot be entered at
-           this point. For all others, if you know the values for any relief you are claiming, enter it into the 
-           ‘Amount of tax saved by relief’ field. If you don’t know the value, enter 0. </p><p>
-          If you are claiming an LBTT Relief which also applies to ADS, please select this relief from the
-          drop down below. The same LBTT relief should also be claimed within the ‘About the transaction’
-          relief section. If the relief is partial, the value entered in the ‘Amount of tax saved by relief’ field
-          should relate only to the relief over the ADS amount due</p>"
-      ads_repay_address:
-        rrep_ads_sold_address: Confirm the address of the previous main residence that has been sold or disposed of
-      ads_repay_details:
-        subtitle: "When you submit the return you will be asked for the bank details for the repayment."
-    lbtt_transactions:
-      property_type:
-        title: "About the transaction"
-        property_type_residential: "meaning of residential property (opens in a new window)"
-        property_type_non_residential: "non-residential property and the treatment of ‘mixed’ property (opens in a new window)"
-      about_the_transaction:
-        title: "About the transaction"
-        previous_option_ind: "options and rights of pre-emption (opens in a new window)"
-      sale_of_business:
-        title: "About the transaction"
-      reliefs_on_transaction:
-        title: "Reliefs on this transaction"
-        relief_type: "Type of relief"
-        relief_type_auto: "Type of relief"
-        relief_amount: "Amount of tax saved by relief"        
-        description_html:
-          "<p>Certain relief amounts will be calculated as part of the return and therefore cannot be entered at
-          this point. For all others, if you know the values for any relief you are claiming, enter it into the
-          ‘Amount of tax saved by relief’ field, if you don’t know the value enter 0.</p><p>
-          If you are claiming an LBTT relief which also applies to ADS, please ensure the relief selected in
-          the drop down below is the same as the relief selected in the ‘Reliefs on ADS consideration’. If
-          the relief is partial, the value entered in the ‘Amount of tax saved by relief’ field should relate only
-          to the relief over the LBTT amount due</p>"
-        non_ads_reliefclaim_option_ind: "Tax Reliefs (opens in a new window)"
-      multiple_dwellings_relief:
-        title: "About multiple dwellings relief"        
-        subtitle: "Provide the following values"        
-        description_html: "See guidance on multiple dwellings relief (opens in a new window) for further details. <br>The following fields are for information only and will not calculate the relief"
-        description_link: "multiple dwellings relief (opens in a new window)"
-      conveyance_values:
-        title: "About the conveyance or transfer"
-        subtitle: "Provide the following values"
-        total_consideration: "determining the chargeable consideration (opens in a new window)"
-        total_vat: "what is chargeable consideration (opens in a new window)"
-        linked_consideration: "linked transactions (opens in a new window)"
-        non_chargeable: "what is not chargeable consideration (opens in a new window)"
-        remaining_chargeable: "determining the chargeable consideration (opens in a new window)"
-      linked_transactions:
-        title: "Linked transactions"
-        return_reference: "Return reference (if known)"
-        consideration_amount: "Return consideration"
-        npv_inc: "NPV (inc VAT)"
-        premium_inc: "Premium (inc VAT)"
-        linked_ind: "linked transactions (opens in a new window)"
-      about_the_calculation:
-        title: "About future events"
-        contingents_event_ind: "contingent, uncertain or unascertained consideration (opens in a new window)"
-      transaction_dates:
-        title: "About the dates"
-        subtitle: "Provide the following dates"
-        effective_date: "the effective date (opens in a new window)"
-        relevant_date: "the relevant date (opens in a new window)"
-      tenant_landlord_relation:
-        title: Landlord details
-      lease_values:
-        title: About the lease values
-      rental_years:
-        title: About the lease values
-        rent: Rent
-        year: Year
-      premium_paid:
-        title: About the lease values
-        lease_premium: "consideration other than rent (opens in a new window)"
-      relevant_rent:
-        title: About the lease values
-    lbtt_submit:
-      amendment_reason:
-        title: "Amendment reason"    
-      repayment_claim:
-        title: Repayment details
-      repayment_claim_amount:
-        title: Claim repayment
-      repayment_claim_bank_details:
-        title: Enter bank details
-      repayment_claim_declaration:
-        title: Declaration
-      declaration:
-        title: "Payment and submission"
-        dd_not_available: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
-        warning: "If you give false information, you may face penalties and/or prosecution"
-      declaration_submitted:
-        title: ""
-        return_submitted: "Your return has been submitted"
-        ref: "Your reference number : "
-        pay_soon: "Please make payments within the next 5 days to avoid any penalties."
-        link:
-          public_landing_return_page: "Exit"
-    lbtt_tax:
-      calc_already_paid:
-        title: "Calculated tax"
-      calculation:
-        title: "Calculated tax"
-      npv:
-        title: Calculated Net Present Value (NPV)
-        npv: "tax due on the rent (opens in a new window)"

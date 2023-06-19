@@ -1,19 +1,6 @@
-<% if @lbtt_return.errors.blank? %>
-  <% content_for :page_title, t('.title') %>
-<% else %>
-  <% content_for :page_title, t('return_error') %>
-<% end%>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
+<%= ds_notification_panel(title: t('.title'), reference: @lbtt_return.tare_reference, success: true) do %>
+  <%= ds_paragraph{t('.information')} %>
 <% end %>
-<% if @lbtt_return.errors.blank? %>
-  <%= display_paragraph_components(body: t('.information')) %>
-  <br>
-  <%= display_paragraph_components(body: "<b>#{t('.caution')}</b>".html_safe) %>
-  <br>
-  <%= display_paragraph_components(body: t('.return_html') + " <b><span id= 'ret_ref_val'>#{@lbtt_return.tare_reference}</span>.</b>".html_safe ) %>
-  <%= display_paragraph_components(body: t('.reference_html')) %>
-<% end %>
-<%= navigational_links( [ { link: :back_to_return_summary, path: returns_lbtt_summary_path }, 
-                          { link: :go_to_dashboard, path: dashboard_path} ] ) %>
+<%= ds_warning{t('.caution')} %>
+<%= ds_paragraph { ds_link(name: t('.back_to_return_summary'),url: returns_lbtt_summary_path)} %>
+<%= ds_paragraph {ds_link(name: t('.go_to_dashboard'),url: dashboard_path)} %>

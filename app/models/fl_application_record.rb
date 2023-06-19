@@ -49,20 +49,18 @@ class FLApplicationRecord
   end
 
   # This returns a list of any sub objects that have a rails
-  # error object attached. You can optionally restrict it to
-  # those that actually have errors
-  # @param check_errors [Boolean] only include the object if errors are included
-  # @return [Array] an array of hashes containing the object that respond to errors and an optional index
-  def error_objects(check_errors: true)
-    errs = []
+  # error object attached and have errors
+  # @return [Array] an array of objects which have errors and the current object.
+  def error_objects
+    errs = [self]
     instance_variables.each do |var|
       obj = instance_variable_get(var)
 
       if obj.instance_of?(Array)
         # check if the object in the array responds to error and if so add to the return hash
-        obj.each_with_index { |this_obj, i| add_error_object(errs, var, this_obj, check_errors, i) }
-      else
-        add_error_object(errs, var, obj, check_errors)
+        obj.each { |this_obj| errs << this_obj if add_error_object?(this_obj, var) }
+      elsif add_error_object?(obj, var)
+        errs << obj
       end
     end
     errs
@@ -81,8 +79,9 @@ class FLApplicationRecord
   # correct order to match the screen starting from the end of the wizard.
   #
   # @example
-  #    lbtt[:business_ind] = derive_yes_no(value: lbtt[:sale_include_option],
-  #                                        default_n: lbtt[:non_ads_reliefclaim_option_ind].present? )
+  #        lbtt[:business_ind] = derive_yes_no(value: lbtt[:sale_include_option],
+  #                                                    default_n: lbtt[:deferral_agreed_ind].present? ||
+  #                                                               lbtt[:annual_rent].present?)
   #
   # @example This is a numeric field so we treat 0 as N but not defaulting to N if nil
   #    slft[:slcf_yes_no] = derive_yes_no(value: slft[:slcf_contribution], default_n: false)
@@ -122,7 +121,7 @@ class FLApplicationRecord
   # @param hash [Hash] the data structure representing back office data
   # @param keys [Array] list of keys to look at and convert
   private_class_method def self.yes_nos_to_yns(hash, keys)
-    keys.each { |key| hash[key] = (hash[key].upcase == 'YES' ? 'Y' : 'N') unless hash[key].nil? }
+    keys.each { |key| hash[key] = (hash[key].casecmp('YES').zero? ? 'Y' : 'N') unless hash[key].nil? }
   end
 
   # Used when converting back office data.
@@ -165,9 +164,9 @@ class FLApplicationRecord
 
   # Used for creating conditional hash if the value is present
   # example when we have following condition in your request
-  #   output['ins1:Reference'] = @return_reference unless @return_reference.blank?
+  #   output[:Reference] = @return_reference unless @return_reference.blank?
   # need to replace with
-  #  xml_element_if_present(output, 'ins1:Reference', @return_reference)
+  #  xml_element_if_present(output, Reference:, @return_reference)
   # @param hash [Hash] the data structure representing back office data
   # @param key [Object] key in hash
   # @param value [Object] value assigned to hash
@@ -178,28 +177,15 @@ class FLApplicationRecord
 
   private
 
-  # Adds the error object details to the array
-  # @param errs [Array] The array to be added to
+  # returns true if object has errors.
   # @param obj [Object] The object
-  # @param var [String] The name of the object, used to build the eventual link
-  # @param check_errors [Boolean] only include the object if errors are included
-  # @param ind [Integer] The index of the object in an array
-  # @return [Array] The  hash with the object: and optionally an index:
-  def add_error_object(errs, var, obj, check_errors, ind = nil)
-    return errs unless obj.is_a?(ActiveModel::Model)
-    return errs if check_errors && obj.errors.none?
+  # @param var [String] variable used for debugging
+  # @return [Boolean]  does the object have ActiveModel errors
+  def add_error_object?(obj, var)
+    return false unless obj.is_a?(ActiveModel::Model)
 
-    Rails.logger.debug { "    Adding #{var}-#{ind} to error objects" }
-    errs << object_and_index_hash(obj, var, ind)
-  end
-
-  # Returns the hash representing and error object and if needed its index
-  # @param obj [Object] The object
-  # @param var [String] The name of the object, used to build the eventual link
-  # @param ind [Integer] The index of the object in an array
-  # @return [Hash] The  hash with the object: and optionally an index:
-  def object_and_index_hash(obj, var, ind = nil)
-    { object: obj, attribute: var, index: ind }
+    Rails.logger.debug { "    Adding #{obj.class.name},#{var} to error objects " } if obj.errors.any?
+    obj.errors.any?
   end
 
   # Helpful method to convert yes ,no value as per backoffice format

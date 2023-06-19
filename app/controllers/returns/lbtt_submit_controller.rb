@@ -8,13 +8,14 @@ module Returns
     include ControllerHelper
     include LbttControllerHelper
 
-    authorise requires: AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
     # Allow unauthenticated/public access to claim actions
     skip_before_action :require_user
 
     # wizard steps for the submit return
     STEPS = %w[amendment_reason repayment_claim repayment_claim_amount repayment_claim_bank_details
-               repayment_claim_declaration declaration declaration_submitted].freeze
+               repayment_claim_declaration declaration non_notifiable non_notifiable_reason
+               declaration_submitted].freeze
 
     # returns/lbtt/amendment_reason - check if they want to request a repayment
     def amendment_reason
@@ -51,9 +52,37 @@ module Returns
     # the normal validation context detection).
     # Ensures the correct validation context is checked on clicking Next (ie so won't submit until declaration ticked).
     def declaration
-      wizard_step(STEPS) do
-        { after_merge: :submit_return, validates: :declaration }
+      wizard_step(nil) do
+        { after_merge: :submit_return, validates: :declaration, next_step: :declaration_next_step }
       end
+    end
+
+    # returns/lbtt/non_notifiable - step in the non notifiable wizard
+    def non_notifiable
+      wizard_step(nil) { { cache_index: LbttController, next_step: :non_notifiable_next_step } }
+    end
+
+    # returns/lbtt/non_notifiable_reason - step in the non notifiable wizard
+    # Triggers validation to ensure that non_notifiable_reason is not blank
+    # Submits the return to the back office
+    def non_notifiable_reason
+      wizard_step(STEPS) do
+        { after_merge: :submit_return, validates: :non_notifiable_reason }
+      end
+    end
+
+    # Returns a path to the next step after the non_notifiable action
+    def non_notifiable_next_step
+      return (current_user.present? ? dashboard_path : root_path) unless @lbtt_return.non_notifiable_submit_ind?
+
+      STEPS
+    end
+
+    # Returns a path to the next step if the return is non notifiable or not
+    def declaration_next_step
+      return returns_lbtt_non_notifiable_path if @lbtt_return.non_notifiable?
+
+      returns_lbtt_declaration_submitted_path
     end
 
     # returns/<type>/declaration_submitted - custom final step in declaration wizard

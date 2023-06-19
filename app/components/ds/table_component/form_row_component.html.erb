@@ -1,0 +1,6 @@
+<tr <%= data_options.map{ |k,v| "#{k}=#{v}" }.join(' ') if data_options %>>
+  <% cells.each do |cell| %>
+    <%= cell %>
+  <% end %>
+  <%= tag.td(delete_link) if delete_link? %>
+</tr>

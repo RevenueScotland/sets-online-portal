@@ -138,7 +138,7 @@
         {
           "itemcode": "telephone",
           "itemformat": null,
-          "itemlabel": "Telephone",
+          "itemlabel": "Telephone number",
           "itemdata": "0111456789"
         },
         {
@@ -228,7 +228,7 @@
         {
           "itemcode": "telephone",
           "itemformat": null,
-          "itemlabel": "Telephone",
+          "itemlabel": "Telephone number",
           "itemdata": ""
         },
         {
@@ -251,7 +251,7 @@
         {
           "itemcode": "same_address",
           "itemformat": null,
-          "itemlabel": "Public same address",
+          "itemlabel": "Is this the same as the first buyer's address?",
           "itemdata": "Yes"
         }
       ],
@@ -280,7 +280,7 @@
         {
           "itemcode": "telephone",
           "itemformat": null,
-          "itemlabel": "Telephone",
+          "itemlabel": "Telephone number",
           "itemdata": ""
         },
         {
@@ -303,7 +303,7 @@
         {
           "itemcode": "same_address",
           "itemformat": null,
-          "itemlabel": "Public same address",
+          "itemlabel": "Is this the same as the first buyer's address?",
           "itemdata": "No"
         }
       ],
@@ -377,7 +377,7 @@
         {
           "itemcode": "telephone",
           "itemformat": null,
-          "itemlabel": "Telephone",
+          "itemlabel": "Telephone number",
           "itemdata": ""
         },
         {
@@ -400,7 +400,7 @@
         {
           "itemcode": "same_address",
           "itemformat": null,
-          "itemlabel": "Public same address",
+          "itemlabel": "Is this the same as the first buyer's address?",
           "itemdata": "No"
         }
       ],
@@ -474,7 +474,7 @@
         {
           "itemcode": "telephone",
           "itemformat": null,
-          "itemlabel": "Telephone",
+          "itemlabel": "Telephone number",
           "itemdata": ""
         },
         {
@@ -497,7 +497,7 @@
         {
           "itemcode": "same_address",
           "itemformat": null,
-          "itemlabel": "Public same address",
+          "itemlabel": "Is this the same as the first buyer's address?",
           "itemdata": "No"
         }
       ],

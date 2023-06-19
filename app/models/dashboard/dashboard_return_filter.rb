@@ -14,6 +14,8 @@ module Dashboard
     # Fields that can be set on a financial transaction filter
     attribute_list.each { |attr| attr_accessor attr }
 
+    strip_attributes :tare_reference, :agent_reference
+
     validates :tare_reference, length: { maximum: 30 }
     validates :agent_reference, length: { maximum: 30 }
     validates :description, length: { maximum: 255 }
@@ -36,21 +38,12 @@ module Dashboard
         draft_only: YESNO_COMP_KEY }
     end
 
-    # custom setter to trim spaces from reference
-    def tare_reference=(value)
-      @tare_reference = value.strip
-    end
-
-    # custom setter to trim spaces from reference
-    def agent_reference=(value)
-      @agent_reference = value.strip
-    end
-
     # Provides permitted filter request params
     def self.params(params)
-      params.permit(dashboard_dashboard_return_filter:
-        %i[tare_reference agent_reference return_status all_versions
-           description from_return_date to_return_date])[:dashboard_dashboard_return_filter]
+      params.fetch(:dashboard_dashboard_return_filter, {}).permit(
+        :tare_reference, :agent_reference, :return_status, :all_versions, :description,
+        :from_return_date, :to_return_date
+      )
     end
   end
 end

@@ -8,7 +8,7 @@ require 'savon/mock/spec_helper'
 Before('@mock_slft_load_amend') do
   start_mock
   mock_valid_signin
-  message = { 'ins1:TareRefno': '960', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
+  message = { 'ins0:TareRefno': '960', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
   fixture = File.read("#{FIXTURES_MOCK_ROOT}slft/slft_load_amend.xml")
   @savon.expects(:slft_tax_return_wsdl).with(message: message).returns(fixture)
 
@@ -27,7 +27,7 @@ end
 Before('@mock_slft_load_one_site_details') do
   start_mock
   mock_valid_signin
-  message = { 'ins1:TareRefno': '960', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
+  message = { 'ins0:TareRefno': '960', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
   fixture = File.read("#{FIXTURES_MOCK_ROOT}slft/slft_load_one_site.xml")
   @savon.expects(:slft_tax_return_wsdl).with(message: message).returns(fixture)
 
@@ -53,7 +53,7 @@ end
 Before('@mock_slft_load_submit_draft') do
   start_mock
   mock_valid_signin
-  message = { 'ins1:TareRefno': '960', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
+  message = { 'ins0:TareRefno': '960', Version: '1', Username: 'VALID.USER', ParRefno: '117' }
   fixture = File.read("#{FIXTURES_MOCK_ROOT}slft/slft_load.xml")
   @savon.expects(:slft_tax_return_wsdl).with(message: message).returns(fixture)
 

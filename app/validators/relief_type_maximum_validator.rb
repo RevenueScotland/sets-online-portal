@@ -9,7 +9,7 @@ class ReliefTypeMaximumValidator < ActiveModel::EachValidator
   # @param value [String] actual value of an object to be checked for validation
   # To use this validation pattern, add "relief_type_maximum: true" in the model specific to that attribute
   # similar to how we use presence: true
-  # @example validates :non_ads_relief_claims, relief_type_maximum: true
+  # @example validates :relief_claims, relief_type_maximum: true
   def validate_each(record, attribute, value)
     return if value.blank?
 

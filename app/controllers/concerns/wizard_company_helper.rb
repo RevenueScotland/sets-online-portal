@@ -27,29 +27,47 @@ module WizardCompanyHelper
   #
   #
   def wizard_company_step(steps, overrides = {})
-    wizard_cached_object, wizard_page_object = wizard_setup_step(overrides)
+    # non standard names used to avoid a line length issue further down
+    cached_object, page_object = wizard_setup_step(overrides)
 
-    if params[:continue]
-      # POST
-      return unless wizard_store_company(wizard_cached_object, wizard_page_object, overrides)
-
-      return wizard_navigation_step(steps, overrides, wizard_page_objects_size(wizard_cached_object, overrides))
+    if request.get?
+      wizard_company_get(page_object, overrides)
     elsif company_search?
-      # Special POST and GET - Find Company
-      wizard_company_pre_search(wizard_cached_object, wizard_page_object, overrides, false)
-      return search_for_companies
+      wizard_company_search(cached_object, page_object, overrides)
+    elsif wizard_store_company(cached_object, page_object, overrides)
+      wizard_navigation_step(steps, overrides, wizard_page_objects_size(cached_object, overrides))
+    else
+      # Error on company
+      render(status: :unprocessable_entity)
     end
-
-    # GET
-    wizard_load_company(wizard_page_object, overrides)
   end
 
   private
 
+  # Processing for a get request on a page with a company search
+  # @param wizard_page_object [Object] the object on the page, a child or the same as the cached object
+  # @param overrides [Hash] an array of overrides see @wizard_company_step
+  def wizard_company_get(wizard_page_object, overrides)
+    wizard_handle_clear_cache(overrides)
+    wizard_load_company(wizard_page_object, overrides)
+  end
+
+  # processing for the company search
+  # @param wizard_cached_object [Object] the object being cached
+  # @param wizard_page_object [Object] the object on the page, a child or the same as the cached object
+  # @param overrides [Hash] an array of overrides see @wizard_company_step
+  def wizard_company_search(wizard_cached_object, wizard_page_object, overrides)
+    # Special POST and GET - Find Company
+    search_for_companies if wizard_company_pre_search(wizard_cached_object, wizard_page_object, overrides, false)
+    # Force a redirect back to the current page
+    render(status: :unprocessable_entity)
+  end
+
   # Standard store company code to handle storing company in the current object
   # @param wizard_cached_object [Object] the object being cached
   # @param wizard_page_object [Object] the object on the page, a child or the same as the cached object
-  # @param overrides [Hash] an array of overrides see @wizard_address_step
+  # @param overrides [Hash] an array of overrides see @wizard_company_step
+  # @return [Boolean] was the save successful or was there an error
   def wizard_store_company(wizard_cached_object, wizard_page_object, overrides)
     # we may also have main object parameters so store these and validate them first
     # the standard company search does the save

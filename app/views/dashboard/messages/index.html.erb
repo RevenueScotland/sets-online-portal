@@ -1,39 +1,20 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% if can? AuthorisationHelper::CREATE_MESSAGE %>
-  <%= form_with url: new_dashboard_message_path, method: :get, local: true do |f| %>
-    <%= hidden_field_tag :original_smsg_refno, @message_filter.reference %>
-    <%= hidden_field_tag :reference, @message_filter.reference %>
-    <%= f.button '.new' %>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_form_with(model: @message_filter, url: dashboard_messages_path,  method: :get,
+                 button_action: :find, autofocus: @on_filter_find) do |form| %>
+  <%= ds_field_set do %>
+    <%= form.ds_date_picker(method: :from_datetime) %>
+    <%= form.ds_date_picker(method: :to_datetime) %>
   <% end %>
-  <br>
-<% end %>
-<%= form_for @message_filter, url: dashboard_messages_path, :method => 'get', local: true do |form| %>
-  <%= form_errors_for @message_filter %>
-  <% form.current_browser = application_browser %>
-  <%= form.date_field :from_datetime %>
-  <%= form.date_field :to_datetime %>
-  <%= form.text_field :reference %>
-  <%= render '/layouts/hideable_details/', { clickable_text: [t('filter_show'), t('filter_hide')] } do %>
-    <%= form.text_field :sent_by %>
-    <%= form.select :direction_code, @message_filter.list_ref_data(:direction_code), { include_blank: true }, {} %>
-    <%= form.select :subject_code, @message_filter.subject_description_list(current_user), { selected: @message_filter.subject_code, :code => :full_key_code, :value => :value, include_blank: true }, {} %>
+  <%= form.ds_text_field(method: :reference) %>
+  <% if can?(RS::AuthorisationHelper::CREATE_MESSAGE) && @message_filter.reference.present? %>
+    <%= ds_link(url: new_dashboard_message_path(reference: @message_filter.reference ), name: t('.create_new_message', reference: @message_filter.reference )) %>
   <% end %>
-  <%= form.button t('.find'), autofocus: (@on_filter_find && !content_for?(:form_error_found)) %>
+  <%= ds_details(header: t('.filter_show')) do %>
+    <%= form.ds_text_field(method: :sent_by) %>
+    <%= form.ds_select(method: :direction_code, select_options: @message_filter.list_ref_data(:direction_code), width: 10) %>
+    <%= form.ds_select(method: :subject_code, select_options: @message_filter.subject_description_list(current_user).collect {|v| [v.value, v.full_key_code]} ) %>
+  <% end %>
 <% end %>
-<br>
-<%= display_table(@messages,
-                  [:created_date, :full_name, :title, :reference, :subject_description, :has_attachment, :read_indicator],
-                  [
-                    { label: t('.show'), action: :show, link_options: { requires_action: AuthorisationHelper::VIEW_MESSAGE_DETAIL } }
-                  ],
-                  {created_date: {format: :datetime}}) %>
-<% if @messages.nil? %>
-  <%= display_paragraph_components(body: t('.no_data_found')) %>
-<% end %>
-<%= paginate @pagination_collection %>
-<% link = [
-            { link: :dashboard, path: dashboard_path }
-            ] %>
-<%= navigational_links(link) %>
+<%= rs_message_table(messages:@messages, caption: t('.caption'), id: 'messages', small_screen: 'scrolling',
+                     pagination_collection: @pagination_collection ) %>

@@ -14,7 +14,7 @@ module Dashboard
     attr_accessor :created_datetime, :created_by,
                   :party_refno, :reference, :title, :body,
                   :selected,
-                  :attachment, :additional_file, :document, :smsg_refno,
+                  :attachment, :document, :smsg_refno,
                   :original_smsg_refno, :direction, :wrk_refno, :created_date,
                   :srv_code, :read_indicator, :subject_domain, :has_attachment,
                   :read_datetime, :attachments, :forename, :surname
@@ -90,10 +90,11 @@ module Dashboard
         # Handle reply
         message = Message.find(smsg_refno, requested_by)
         message.body = ''
+        message.new_record!(true)
       end
       # current_user.username gets the name as it is needed and not the User object
       message.created_by = requested_by.username
-      message.party_refno = requested_by.party_refno # @account.company_name
+      message.party_refno = requested_by.party_refno
       message
     end
 
@@ -167,13 +168,12 @@ module Dashboard
 
     # retrieve document from backoffice
     # @param requested_by [Object] the user who requested to get access for the specific set of data.
-    # @param attachment_refno [String] document reference number
-    # @param attachment_type [String] document type
+    # @param doc_refno [String] document reference number
+    # @param type [String] document type
     # @return [Boolean] [Object] return file in binary format if success is true
-    def self.retrieve_file_attachment(requested_by, attachment_refno, attachment_type)
+    def self.retrieve_file_attachment(requested_by, doc_refno, type)
       attachment = ''
-      success = call_ok?(:get_attachment, request_get_attachment(requested_by, attachment_refno,
-                                                                 attachment_type)) do |response|
+      success = call_ok?(:get_attachment, request_get_attachment(requested_by, doc_refno, type)) do |response|
         break if response.blank?
 
         attachment = response
@@ -210,13 +210,34 @@ module Dashboard
     # @return a hash where the back office values are converted to class values
     private_class_method def self.convert_back_office_hash(hash, filter = nil)
       hash[:has_attachment] = boolean_to_yesno(hash[:has_attachment])
-      hash[:read_indicator] = if hash[:direction] == 'I'
-                                I18n.t('.sent', scope: [i18n_scope, model_name.i18n_key])
-                              else
-                                boolean_to_yesno(hash[:read_indicator])
-                              end
+      hash[:read_indicator] = set_read_indicator(hash[:direction], hash[:read_indicator])
       hash[:selected] = (hash[:smsg_refno] == filter.selected_message_smsg_refno) unless filter.nil?
+      hash[:attachments] = convert_attachments(hash)
       hash
+    end
+
+    # @!method self.set_read_indicator
+    # @param direction [String] The direction of the message
+    # @param read_indicator [String] has the message been read
+    # @return [String] the correct text to show on the page
+    private_class_method def self.set_read_indicator(direction, read_indicator)
+      if direction == 'I'
+        I18n.t('.sent', scope: [i18n_scope, model_name.i18n_key])
+      else
+        boolean_to_yesno(read_indicator)
+      end
+    end
+
+    # Convert the attachments data into resource item objects
+    private_class_method def self.convert_attachments(hash)
+      return if hash[:attachments].nil?
+
+      output = []
+      ServiceClient.iterate_element(hash.delete(:attachments)) do |resource_item_hash|
+        resource_item = ResourceItem.convert_attachment_back_office_hash(resource_item_hash)
+        output << resource_item
+      end
+      output
     end
 
     # @return a hash suitable for use in all message request
@@ -265,8 +286,8 @@ module Dashboard
     end
 
     # @return a hash suitable for use in a get attachment to the back office
-    private_class_method def self.request_get_attachment(requested_by, attachment_ref_no, attachment_type)
-      request_user(requested_by).merge!(AttachmentRefno: attachment_ref_no, AttachmentType: attachment_type)
+    private_class_method def self.request_get_attachment(requested_by, doc_refno, type)
+      request_user(requested_by).merge!(AttachmentRefno: doc_refno, AttachmentType: type)
     end
 
     private :request_add_attachment, :request_delete_attachment

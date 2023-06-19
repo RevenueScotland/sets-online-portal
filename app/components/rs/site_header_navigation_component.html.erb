@@ -1,0 +1,19 @@
+<% if format == :mobile %>
+  <nav id="mobile-navigation" class="ds_site-navigation  ds_site-navigation--mobile" data-module="ds-mobile-navigation-menu">
+  <% else %>
+    <nav class="ds_site-navigation">
+    <% end %>
+    <ul class="ds_site-navigation__list">
+      <% menu_items.each do |menu_item| %>
+        <% if menu_item[:current?]%>
+          <li class="ds_site-navigation__item">
+            <span class="ds_site-navigation__link  ds_current"><%= menu_item[:name] %></span>
+          </li>
+        <% else %>
+          <li class="ds_site-navigation__item">
+            <a href="<%= menu_item[:link] %>" class="ds_site-navigation__link" <%= "data-action=#{menu_item[:data_action]}" if menu_item[:data_action] %>><%= menu_item[:name] %></a>
+            </li>
+          <% end %>
+        <% end %>
+      </ul>
+    </nav>

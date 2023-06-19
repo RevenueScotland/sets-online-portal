@@ -1,0 +1,59 @@
+en:
+  home:
+    index:
+      title: "Index Page"
+      sign_in: "Sign in"
+      public_lbtt_lease_review: "LBTT Lease Review"
+      public_claim_repayment: "Repayment request"
+      public_slft_application: "SLFT application"
+    cookies_page:
+      title: "Cookies"
+      preamble: "A cookie lets a website recognise your device and store some information about your preferences or interactions."
+      why_cookies_header: "Why we use cookies"
+      why_cookies_text: "We use cookie tracking data to make informed decisions on whether the site is meeting your needs, which leads to us making improvements. For example, we monitor how much traffic each part of the site gets and work to improve areas which are not being found when they should be."
+      why_cookies_inset_html: "The cookies that we set on Scottish Electronic Tax System (SETS) can not be used to identify you personally. <a href=\"https://ico.org.uk/your-data-matters/online/cookies/\" data-navigation=\"inset-link\">Find out more about how to manage cookies for all websites</a>"
+      cookie_control_header: "Turn cookies on or off"
+      cookie_control_text: "We use 3 main types of cookie on our website. You can choose which cookies you’re happy for us to use. Any data collected is anonymous."
+      necessary_cookies_header: "Cookies needed for the website to work"
+      necessary_cookies_text: "These cookies do things like keep the website secure and remember your cookies choice. They always need to be on."
+      preferences_header: "Cookies that remember your settings"
+      preferences_text: "These cookies do things like remember pop-ups you’ve seen, so you're not shown them again."
+      analytics_header: "Cookies that measure website use"
+      analytics_text: "These cookies store information about how you use our website, such as what you click on."
+      onx: "On"
+      offx: "Off"
+      save_cookies: "Save cookie preferences"
+      google_analytics_header: "Google Analytics"
+      google_analytics_text_html:
+        "<p>We use Google Analytics to collect information about how you use SETS.</p>
+        <p>We store information about:</p>
+        <ul>
+        <li>the pages you visit and how long you spend on each page</li>
+        <li>how you got to SETS</li>
+        <li>what you click on while you’re visiting SETS</li>
+        </ul>
+        <p>We do not:</p>
+        <ul>
+        <li>allow the tools that we use to find out the identities of people visiting SETS</li>
+        <li>sell, trade or give your details to third parties, unless we are required to do it by law</li>
+        </ul>
+        <p>All information we get through cookies and analytics will be treated in confidence.</p>
+        <p><a href=\"https://support.google.com/analytics/answer/6004245\">Find out more about security and privacy in Google Analytics.</a></p>
+        <p>You can opt <a href=\"https://tools.google.com/dlpage/gaoptout\">out of Google analytics</a> cookies.</p>"
+      table_name: "Name"
+      table_description: "Information"
+      table_expiry: "Expiry"
+      rev_scot_session_description: "Tracks your current connection to keep you signed in."
+      rev_scot_session_expiry: "12 hours"
+      cookie_permissions_description: "Records your cookie preferences."
+      cookie_permissions_expiry: "12 months"
+      cookie_notification_description: "Records that you have acknowledged the cookie message."
+      cookie_notification_expiry: "12 months"
+      banner_description: "Records that you have acknowledged a banner message."
+      banner_expiry: "24 hours"
+      analytics_table_caption: "Google Analytics' cookies"
+      ga_description: "This is used to understand and differentiate between different users."
+      ga_expiry: "24 months"
+      ga_container_description: "Used to persist session state. This assists with plotting user journeys."
+      ga_container_expiry: "24 months"
+      

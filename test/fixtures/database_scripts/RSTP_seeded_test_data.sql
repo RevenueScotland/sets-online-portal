@@ -57,6 +57,7 @@ DECLARE
 
   -- The amendable and non amendable date need to be updated once a year at the beginning of august
   -- Then update the same dates in the dashboard_returns.feature
+  -- Also update the dates in the lbtt_returns.feature file
   AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2022';
   NON_AMENDABLE_DATE VARCHAR2(12) := '01-JUN-2020';
   -- This is set to a few days before the amendable date for older versions
@@ -1637,6 +1638,281 @@ BEGIN
     'AGENT','LBTT','RETURNPARTYLINKS',1,
     'Y','N','N',l_h_version);
     
+     -- Lease return has been disregarded (whole return)
+    INSERT INTO tax_returns
+      (tare_refno,tare_reference,tare_srv_code,tare_disregard_ind) 
+    VALUES 
+      (tare_seq.nextval,'RS3000003FFFF','LBTT','Y') 
+    RETURNING tare_refno INTO L_TARE_REFNO;
+
+     INSERT INTO lbtt_returns 
+      (lbtt_tare_refno,
+      lbtt_version,lbtt_source,lbtt_latest_draft_ind,lbtt_agent_reference,
+      lbtt_fpty_type,lbtt_fpty_frd_domain,lbtt_fpty_srv_code,lbtt_fpty_wrk_refno,
+      lbtt_flbt_type,lbtt_flbt_frd_domain,lbtt_flbt_srv_code,lbtt_flbt_wrk_refno,
+      lbtt_effective_date,lbtt_submitted_date,lbtt_relevant_date,lbtt_contract_date,
+      lbtt_business_ind,lbtt_moveables_ind,lbtt_stock_ind,lbtt_goodwill_ind,lbtt_other_ind,
+      lbtt_non_chargeable,lbtt_total_vat,lbtt_remaining_chargeable,lbtt_exchange_ind,
+      lbtt_uk_ind,lbtt_linked_ind,lbtt_previous_option_ind,lbtt_linked_consideration,
+      lbtt_total_consideration,lbtt_calculated,lbtt_due_before_reliefs,lbtt_total_reliefs,
+      lbtt_tax_due,lbtt_orig_calculated,lbtt_orig_due_before_reliefs,lbtt_orig_total_reliefs,
+      lbtt_orig_tax_due,lbtt_ads_due_ind,lbtt_ads_due,lbtt_orig_ads_due,lbtt_fpay_method,
+      lbtt_fpay_frd_domain,lbtt_fpay_srv_code,lbtt_fpay_wrk_refno,lbtt_disregard_ind) 
+     VALUES 
+      (l_tare_refno,1,'P','','YY/XXXXX02-99','3','PROPERTYTYPE','SYS',1, -- Non Residential
+      'LEASERET','RETURN TYPE','LBTT',1,'01-OCT-2019','01-OCT-2019','01-OCT-2019',
+      '01-OCT-2019','N','N','N','N','N',0,0,0,'N','N','N','N',0,100000,1000,1000,0,
+      1000,1000,1000,0,1000,'N',0,0,'BACS','PAYMENT TYPE','LBTT',1,'Y');
+
+     INSERT INTO properties 
+     (pro_lau_code,pro_lau_frd_domain,pro_lau_wrk_refno,pro_lau_srv_code) 
+     VALUES 
+      ('9055','LAU',1,'SYS') 
+     RETURNING pro_refno INTO l_pro_refno;
+
+     CREATE_OR_MAINTAIN_ADDRESS(p_refno=>l_pro_refno, p_fao_code=>'PRO', p_adr_address_line_1=>'1131 Thorn Avenue',
+     p_adr_address_line_2=>'', p_adr_town=>'Hemel Hempstead', p_adr_county=>'Hertfordshire', p_adr_postcode=>'HP2 7DX', p_adr_type=>'PHYSICAL');
+
+     HISTORY_TABLES_API.SNAPSHOT_PROPERTY(p_pro_refno=>l_pro_refno,
+      p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
+
+     INSERT INTO lbtt_properties 
+      (lppr_pro_refno,lppr_lbtt_tare_refno,lppr_lbtt_version,lppr_proh_version) 
+     VALUES 
+      (l_pro_refno,l_tare_refno,1,l_h_version);
+
+     INSERT INTO parties 
+      (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+     VALUES 
+      (par_refno_seq.nextval,'PER','Buyer-First','DISREGARD','N')
+     RETURNING par_refno INTO l_tmp_par_refno;
+
+     CREATE_OR_MAINTAIN_ADDRESS(p_refno=>l_tmp_par_refno, p_fao_code=>'PAR', p_adr_address_line_1=>'1132 Crown Street',
+     p_adr_address_line_2=>'Garden Village', p_adr_town=>'NORTHTOWN', p_adr_county=>'Northshire', p_adr_postcode=>'RG1 1PB');
+
+     HISTORY_TABLES_API.SNAPSHOT_PARTY(
+      p_par_refno=>l_tmp_par_refno,
+      p_snapshot_src_vn=>NULL,
+      p_parh_version=>l_h_version);
+
+     INSERT INTO lbtt_return_party_links 
+      (lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,
+      lpli_flpt_wrk_refno,lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version)
+     VALUES 
+      (l_tmp_par_refno,l_tare_refno,1,'BUYER','LBTT','RETURNPARTYLINKS',1,'N','N','N',l_h_version);
+
+     INSERT INTO parties 
+      (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+     VALUES 
+     (par_refno_seq.nextval,'PER','Seller-First','Disregard','N')
+     RETURNING par_refno INTO l_tmp_par_refno;
+
+     CREATE_OR_MAINTAIN_ADDRESS(p_refno=>l_tmp_par_refno, p_fao_code=>'PAR', p_adr_address_line_1=>'1132 Path Rd',
+     p_adr_address_line_2=>'Garden Village', p_adr_town=>'NORTHTOWN', p_adr_county=>'Northshire', p_adr_postcode=>'RG1 1PB');
+
+     HISTORY_TABLES_API.SNAPSHOT_PARTY(
+      p_par_refno=>l_tmp_par_refno,
+      p_snapshot_src_vn=>NULL,
+      p_parh_version=>l_h_version);
+
+     INSERT INTO lbtt_return_party_links 
+      (lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,lpli_flpt_type,lpli_flpt_srv_code,
+      lpli_flpt_frd_domain,lpli_flpt_wrk_refno,lpli_buyer_seller_linked_ind,lpli_authority_ind,
+      lpli_orig_authority_ind,lpli_parh_version) 
+     VALUES 
+      (l_tmp_par_refno,l_tare_refno,1,'SELLER','LBTT','RETURNPARTYLINKS',1,'N','N','N',l_h_version);
+
+    -- Insert the agent and the link to the account
+     HISTORY_TABLES_API.SNAPSHOT_PARTY(
+      p_par_refno=>l_par_refno,
+      p_snapshot_src_vn=>NULL,
+      p_parh_version=>l_h_version);
+
+     INSERT INTO lbtt_return_party_links 
+      (lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,
+      lpli_flpt_wrk_refno,lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version)
+     VALUES 
+      (l_par_refno,l_tare_refno,1,'AGENT','LBTT','RETURNPARTYLINKS',1,'Y','N','N',l_h_version);
+
+    -- Lease return has been disregarded (one verion)
+     INSERT INTO tax_returns 
+      (tare_refno,tare_reference,tare_srv_code)
+     VALUES 
+      (tare_seq.nextval,'RS3000003GGGG','LBTT') 
+     RETURNING TARE_REFNO INTO L_TARE_REFNO;
+
+     INSERT INTO lbtt_returns 
+      (lbtt_tare_refno,lbtt_version,lbtt_source,lbtt_latest_draft_ind,lbtt_agent_reference,lbtt_fpty_type,
+      lbtt_fpty_frd_domain,lbtt_fpty_srv_code,lbtt_fpty_wrk_refno,lbtt_flbt_type,lbtt_flbt_frd_domain,lbtt_flbt_srv_code,
+      lbtt_flbt_wrk_refno,lbtt_effective_date,lbtt_submitted_date,lbtt_relevant_date,lbtt_contract_date,lbtt_business_ind,
+      lbtt_moveables_ind,lbtt_stock_ind,lbtt_goodwill_ind,lbtt_other_ind,lbtt_non_chargeable,lbtt_total_vat,lbtt_remaining_chargeable,
+      lbtt_exchange_ind,lbtt_uk_ind,lbtt_linked_ind,lbtt_previous_option_ind,lbtt_linked_consideration,lbtt_total_consideration,
+      lbtt_calculated,lbtt_due_before_reliefs,lbtt_total_reliefs,lbtt_tax_due,lbtt_orig_calculated,lbtt_orig_due_before_reliefs,
+      lbtt_orig_total_reliefs,lbtt_orig_tax_due,lbtt_ads_due_ind,lbtt_ads_due,lbtt_orig_ads_due,lbtt_fpay_method,lbtt_fpay_frd_domain,
+      lbtt_fpay_srv_code,lbtt_fpay_wrk_refno)
+     VALUES 
+     (l_tare_refno,1,'P','L','YY/XXXXX02-99','3','PROPERTYTYPE','SYS',1, -- Non Residential
+      'LEASERET','RETURN TYPE','LBTT',1,'02-OCT-2019','02-OCT-2019','02-OCT-2019','02-OCT-2019',
+      'N','N','N','N','N',0,0,0,'N','N','N','N',0,100000,1000,1000,0,1000,1000,1000,0,1000,'N',0,0,
+      'BACS','PAYMENT TYPE','LBTT',1);
+
+     INSERT INTO properties 
+      (pro_lau_code,pro_lau_frd_domain,pro_lau_wrk_refno,pro_lau_srv_code)
+     VALUES 
+     ('9055','LAU',1,'SYS')
+     RETURNING pro_refno INTO l_pro_refno;
+
+     CREATE_OR_MAINTAIN_ADDRESS(p_refno=>l_pro_refno, p_fao_code=>'PRO', p_adr_address_line_1=>'2231 Thorn Avenue',
+     p_adr_address_line_2=>'', p_adr_town=>'Hemel Hempstead', p_adr_county=>'Hertfordshire', p_adr_postcode=>'HP2 7DX', p_adr_type=>'PHYSICAL');
+
+     HISTORY_TABLES_API.SNAPSHOT_PROPERTY(
+      p_pro_refno=>l_pro_refno,
+      p_snapshot_src_vn=>NULL,
+      p_proh_version=>l_h_version);
+
+     INSERT INTO lbtt_properties 
+      (lppr_pro_refno,lppr_lbtt_tare_refno,lppr_lbtt_version,lppr_proh_version)
+     VALUES 
+      (l_pro_refno,l_tare_refno,1,l_h_version);
+
+     INSERT INTO parties 
+      (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind) 
+     VALUES 
+      (par_refno_seq.nextval,'PER','Buyer-Second','DISREGARD','N') 
+     RETURNING par_refno INTO l_tmp_par_refno;
+
+     CREATE_OR_MAINTAIN_ADDRESS(p_refno=>l_tmp_par_refno, p_fao_code=>'PAR', p_adr_address_line_1=>'2232 Crown Street',
+     p_adr_address_line_2=>'Garden Village', p_adr_town=>'NORTHTOWN', p_adr_county=>'Northshire', p_adr_postcode=>'RG1 1PB');
+
+     HISTORY_TABLES_API.SNAPSHOT_PARTY(
+      p_par_refno=>l_tmp_par_refno,
+      p_snapshot_src_vn=>NULL,
+      p_parh_version=>l_h_version);
+
+     INSERT INTO lbtt_return_party_links 
+      (lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,
+      lpli_flpt_wrk_refno,lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version) 
+     VALUES 
+      (l_tmp_par_refno,l_tare_refno,1,'BUYER','LBTT','RETURNPARTYLINKS',1,'N','N','N',l_h_version);
+
+     INSERT INTO parties 
+      (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind) 
+     VALUES 
+      (par_refno_seq.nextval,'PER','Seller-Second','Disregard','N') 
+     RETURNING par_refno INTO l_tmp_par_refno;
+
+     CREATE_OR_MAINTAIN_ADDRESS(p_refno=>l_tmp_par_refno, p_fao_code=>'PAR', p_adr_address_line_1=>'2232 Path Rd',
+     p_adr_address_line_2=>'Garden Village', p_adr_town=>'NORTHTOWN', p_adr_county=>'Northshire', p_adr_postcode=>'RG1 1PB');
+
+     HISTORY_TABLES_API.SNAPSHOT_PARTY(
+      p_par_refno=>l_tmp_par_refno,
+      p_snapshot_src_vn=>NULL,
+      p_parh_version=>l_h_version);
+
+     INSERT INTO lbtt_return_party_links 
+      (lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,
+      lpli_flpt_wrk_refno,lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version)
+     VALUES 
+      (l_tmp_par_refno,l_tare_refno,1,'SELLER','LBTT','RETURNPARTYLINKS',1,'N','N','N',l_h_version);
+
+    -- Insert the agent and the link to the account
+     HISTORY_TABLES_API.SNAPSHOT_PARTY(
+      p_par_refno=>l_par_refno,
+      p_snapshot_src_vn=>NULL,
+      p_parh_version=>l_h_version);
+
+     INSERT INTO lbtt_return_party_links 
+      (lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,
+      lpli_flpt_wrk_refno,lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version)
+     VALUES 
+      (l_par_refno,l_tare_refno,1,'AGENT','LBTT','RETURNPARTYLINKS',1,'Y','N','N',l_h_version);
+
+    -- V2
+     INSERT INTO lbtt_returns 
+      (lbtt_tare_refno,lbtt_version,lbtt_source,lbtt_latest_draft_ind,lbtt_agent_reference,lbtt_fpty_type,lbtt_fpty_frd_domain,
+      lbtt_fpty_srv_code,lbtt_fpty_wrk_refno,lbtt_flbt_type,lbtt_flbt_frd_domain,lbtt_flbt_srv_code,lbtt_flbt_wrk_refno,lbtt_effective_date,
+      lbtt_submitted_date,lbtt_relevant_date,lbtt_contract_date,lbtt_business_ind,lbtt_moveables_ind,lbtt_stock_ind,lbtt_goodwill_ind,
+      lbtt_other_ind,lbtt_non_chargeable,lbtt_total_vat,lbtt_remaining_chargeable,lbtt_exchange_ind,lbtt_uk_ind,lbtt_linked_ind,
+      lbtt_previous_option_ind,lbtt_linked_consideration,lbtt_total_consideration,lbtt_calculated,lbtt_due_before_reliefs,lbtt_total_reliefs,
+      lbtt_tax_due,lbtt_orig_calculated,lbtt_orig_due_before_reliefs,lbtt_orig_total_reliefs,lbtt_orig_tax_due,lbtt_ads_due_ind,lbtt_ads_due,
+      lbtt_orig_ads_due,lbtt_fpay_method,lbtt_fpay_frd_domain,lbtt_fpay_srv_code,lbtt_fpay_wrk_refno,lbtt_disregard_ind) 
+     VALUES 
+      (L_TARE_REFNO,2,'P','','YY/XXXXX02-99','3','PROPERTYTYPE','SYS',1, -- Non Residential
+      'LEASERET','RETURN TYPE','LBTT',1,'03-OCT-2019','03-OCT-2019','03-OCT-2019','03-OCT-2019',
+      'N','N','N','N','N',0,0,0,'N','N','N','N',0,100000,1000,1000,0,1000,1000,1000,0,1000,'N',
+      0,0,'BACS','PAYMENT TYPE','LBTT',1,'Y');
+
+     INSERT INTO properties 
+      (pro_lau_code,pro_lau_frd_domain,pro_lau_wrk_refno,pro_lau_srv_code)
+     VALUES 
+      ('9055','LAU',1,'SYS') 
+     RETURNING pro_refno INTO l_pro_refno;
+
+     CREATE_OR_MAINTAIN_ADDRESS(p_refno=>l_pro_refno, p_fao_code=>'PRO', p_adr_address_line_1=>'2231 Thorn Avenue',
+      p_adr_address_line_2=>'', p_adr_town=>'Hemel Hempstead', p_adr_county=>'Hertfordshire', p_adr_postcode=>'HP2 7DX', p_adr_type=>'PHYSICAL');
+
+     HISTORY_TABLES_API.SNAPSHOT_PROPERTY(
+      p_pro_refno=>l_pro_refno,
+      p_snapshot_src_vn=>NULL,
+      p_proh_version=>l_h_version);
+
+     INSERT INTO lbtt_properties 
+      (lppr_pro_refno,lppr_lbtt_tare_refno,lppr_lbtt_version,lppr_proh_version)
+     VALUES 
+      (l_pro_refno,l_tare_refno,1,l_h_version);
+
+     INSERT INTO parties 
+      (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind) 
+     VALUES 
+      (par_refno_seq.nextval,'PER','Buyer-Second','DISREGARD','N')
+     RETURNING par_refno INTO l_tmp_par_refno;
+
+     CREATE_OR_MAINTAIN_ADDRESS(p_refno=>l_tmp_par_refno, p_fao_code=>'PAR', p_adr_address_line_1=>'2232 Crown Street',
+      p_adr_address_line_2=>'Garden Village', p_adr_town=>'NORTHTOWN', p_adr_county=>'Northshire', p_adr_postcode=>'RG1 1PB');
+
+     HISTORY_TABLES_API.SNAPSHOT_PARTY(
+      p_par_refno=>l_tmp_par_refno,
+      p_snapshot_src_vn=>NULL,
+      p_parh_version=>l_h_version);
+
+     INSERT INTO lbtt_return_party_links 
+      (lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,
+      lpli_flpt_wrk_refno,lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version) 
+     VALUES 
+      (l_tmp_par_refno,l_tare_refno,2,'BUYER','LBTT','RETURNPARTYLINKS',1,'N','N','N',l_h_version);
+
+     INSERT INTO parties 
+      (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+     VALUES 
+      (par_refno_seq.nextval,'PER','Seller-Second','Disregard','N') 
+     RETURNING par_refno INTO l_tmp_par_refno;
+
+     CREATE_OR_MAINTAIN_ADDRESS(P_refno=>l_tmp_par_refno, p_fao_code=>'PAR', P_Adr_address_line_1=>'2232 Path Rd',
+      p_adr_address_line_2=>'Garden Village', p_adr_town=>'NORTHTOWN', p_adr_county=>'Northshire', p_adr_postcode=>'RG1 1PB');
+
+     HISTORY_TABLES_API.SNAPSHOT_PARTY(
+      p_par_refno=>l_tmp_par_refno,
+      p_snapshot_src_vn=>NULL,
+      p_parh_version=>l_h_version);
+
+     INSERT INTO lbtt_return_party_links 
+      (lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,
+      lpli_flpt_wrk_refno,lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version)
+     VALUES 
+      (l_tmp_par_refno,l_tare_refno,2,'SELLER','LBTT','RETURNPARTYLINKS',1,'N','N','N',l_h_version);
+
+    -- Insert the agent and the link to the account
+     HISTORY_TABLES_API.SNAPSHOT_PARTY(
+      p_par_refno=>l_par_refno,
+      p_snapshot_src_vn=>NULL,
+      p_parh_version=>l_h_version);
+
+     INSERT INTO lbtt_return_party_links 
+      (lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,
+      lpli_flpt_wrk_refno,lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version) 
+     VALUES 
+      (l_par_refno,l_tare_refno,2,'AGENT','LBTT','RETURNPARTYLINKS',1,'Y','N','N',l_h_version);
+
     --*********************************
     -- Create the Financial accounts for the PORTAL.ONE account
     --*********************************

@@ -1,0 +1,12 @@
+/*------------------------------------*\
+    CURRENCY WRAPPER
+\*------------------------------------*/
+
+.rs_file_field {
+    border-width: 0px;
+
+    /* Restores the normal error width if there is also an error class */
+    &.ds_input--error {
+        border-width: $field-border-width--error;
+    }
+}

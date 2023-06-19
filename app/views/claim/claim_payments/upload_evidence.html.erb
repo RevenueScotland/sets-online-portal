@@ -1,18 +1,16 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.' + @claim_payment.translation_prefix + '_title') %>
+<% content_for(:page_title, t('.' + @claim_payment.translation_prefix + '_title')) %>
 <% type = @claim_payment.reason == 'ADS' ? 'ads' : 'non_ads'%>
-<% content_for :page_description, t(".#{type}_description") %>
-<%= form_for @claim_payment, url: @post_path,html: { multipart: true }, method: :post, local: true do |f| %>
-  <%= form_errors_for [@claim_payment, @resource_items_hash] %>
+<%= ds_paragraph{ t(".#{type}_description") } %>
+<%= ds_form_with(model: @claim_payment, url: @post_path, file_upload: true, method: :post ) do |f| %>
   <% if type == 'ads' %>
-    <%= render "/layouts/file_upload_component", file_upload_label: full_lazy_lookup_path('.label'),
-                                                 file_upload_hint: { hint_key: full_lazy_lookup_path('.hint'),
-                                                                     date_range_start: l(@claim_payment.effective_date - 18.months, format: :long),
-                                                                     date_range_end: l(@claim_payment.effective_date, format: :long) },
-                                                 hide_description: true, hide_size_hint: true %>
+    <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, description: false,
+                       supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb, 
+                       fieldset_key: translation_path, 
+                       interpolations: {date_range_start: l(@claim_payment.effective_date - 18.months, format: :long),
+                                        date_range_end: l(@claim_payment.effective_date, format: :long)}  ) %>
   <% else %>
-    <%= render "/layouts/file_upload_component", hide_size_hint: true %>
+    <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, description: false,
+                      optional: true, supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb) %>
   <% end %>
-  <%= display_paragraph_components(body: t(".#{type}_more_upload")) %>
-  <%= f.button 'continue', {:class => 'scot-rev-button file-upload-check'} %>
+  <%= ds_paragraph{ t(".#{type}_more_upload") } %>
 <% end %>

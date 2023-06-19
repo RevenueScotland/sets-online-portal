@@ -1,0 +1,17 @@
+  <% notifications.each do |notification| %>
+  <div id="<%= notification.code%>" class="ds_notification ds_reversed" data-module="ds-notification" data-controller="banner">
+    <div class="ds_wrapper">
+      <div class="ds_notification__content ds_notification__content--has-close">
+        <h2 class="visually-hidden"><%=t('.information')%></h2>
+        <div class="ds_notification__text">
+          <p><%=notification.title %><a href="<%= notification.link %>"><%= t('.more_info')%></a></p>
+        </div>
+        <%# Don't use the js-close-notification as we handle the closing of the banner in the controller %>
+        <button class="ds_notification__close" type="button" data-action="click->banner#persistClose">
+          <span class="visually-hidden"><%=t('.close')%></span>
+          <svg class="ds_icon  ds_icon--fill" aria-hidden="true" role="img"><use href="<%= image_path('assets/images/icons/icons.stack.svg#close') %>"></use></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+<% end %>

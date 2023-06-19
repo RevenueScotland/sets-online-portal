@@ -9,8 +9,6 @@ module UserLogin
   def logout_back_office
     # NOTE: the back office is case sensitive but this is from the model which is already upcase
     call_ok?(:log_off_user, Username: username)
-  rescue StandardError => e
-    Error::ErrorHandler.log_exception(e)
   end
 
   # @return true if the token is invalid, otherwise false

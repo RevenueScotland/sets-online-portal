@@ -58,19 +58,27 @@ en:
         UNAUTHENTICATED_email_address: "Email address"
         AUTHENTICATED_email_address: "Email address"
         claim_org_name: "Organisation name"
+    labels:
+      returns/lbtt/party:
+        agent_reference:
+          default: "%{label}"
+          declaration_submitted: "Your reference (if provided)"
+          receipt: "Agent reference (if provided)"
+    link:
+      returns/lbtt/party:
+        is_acting_as_trustee_link: "'representative partner'"       
 
     hints:
       returns/lbtt/party:
         agent_reference: "This is your reference for this return"
-        BUYER_buyer_seller_linked_ind: "The buyer and seller are connected if they have an existing personal or business relationship. See guidance on if the buyer and seller are connected (opens in a new window) for further details"
-        TENANT_buyer_seller_linked_ind: "The tenant and landlord are connected if they have an existing personal or business relationship. See guidance on if the tenant and landlord are connected (opens in a new window) for further details"
-        is_acting_as_trustee_BUYER: "See guidance on the meaning of 'representative partner' (opens in a new window) for further details"        
-        is_acting_as_trustee_TENANT: "See guidance on the meaning of 'representative partner' (opens in a new window) for further details"
+        BUYER_buyer_seller_linked_ind: "The buyer and seller are connected if they have an existing personal or business relationship. See guidance on if %{link} for further details"
+        TENANT_buyer_seller_linked_ind: "The tenant and landlord are connected if they have an existing personal or business relationship. See guidance on if %{link} for further details"
+        is_acting_as_trustee_BUYER: "See guidance on the meaning of %{link} for further details" 
+        is_acting_as_trustee_TENANT: "See guidance on the meaning of %{link} for further details"
         UNAUTHENTICATED_telephone: "To contact you in case we have any queries about this application"
         AUTHENTICATED_telephone: "To contact the tax payer in case we have any queries about this application"
         UNAUTHENTICATED_email_address: "We'll use this to send you an email confirmation"
         AUTHENTICATED_email_address: "We'll use this to send the tax payer an email confirmation"
-
     errors:
       models:
         returns/lbtt/party:
@@ -81,86 +89,3 @@ en:
               both_nino_and_alternate: "Don't provide the alternate reference if you provide a NINO"
             telephone:
               no_contact_details: "Provide a telephone number or an email address"
-  returns:
-    lbtt_parties:
-      about_the_party:
-        BUYER_title: "About the buyer"
-        SELLER_title: "About the seller"
-        LANDLORD_title: "About the landlord"
-        TENANT_title: "About the tenant"
-        NEWTENANT_title: "About the new tenant"
-      form:
-        address: "Address"
-      party_details:
-        BUYER_title: "Buyer details"
-        SELLER_title: "Seller details"
-        BUYER_show_hide: "Buyer does not have NINO"
-        SELLER_show_hide: "Seller does not have NINO"
-        LANDLORD_title: "Landlord details"
-        LANDLORD_show_hide: "Landlord does not have NINO"
-        TENANT_title: "Tenant details"
-        TENANT_show_hide: "Tenant does not have NINO"
-        NEWTENANT_title: "New tenant details"
-        NEWTENANT_show_hide: "New tenant does not have NINO"
-      party_address:
-        BUYER_title: "Buyer address"
-        BUYER_description: "Provide buyer address"
-        SELLER_title: "Seller address"
-        SELLER_description: "Provide seller address"
-        LANDLORD_title: "Landlord address"
-        LANDLORD_description: "Provide landlord address"
-        TENANT_title: "Tenant address"
-        TENANT_description: "Provide tenant address"
-        NEWTENANT_title: "New tenant address"
-        NEWTENANT_description: "Provide new tenant address"
-      party_alternate_address:
-        BUYER_title: "Buyer's contact address"
-        SELLER_title: "Seller's contact address"
-        LANDLORD_title: "Landlord's contact address"
-        TENANT_title: "Tenant's contact address"
-        NEWTENANT_title: "New tenant's contact address"
-      parties_relation:
-        BUYER_title: "Buyer details"
-        BUYER_buyer_seller_linked_ind: "the buyer and seller are connected (opens in a new window)"
-        TENANT_buyer_seller_linked_ind: "the tenant and landlord are connected (opens in a new window)"
-        SELLER_title: "Seller details"
-        LANDLORD_title: "Landlord details"
-        TENANT_title: "Tenant details"
-        NEWTENANT_title: "New tenant details"
-      acting_as_trustee:
-        BUYER_title: "Buyer details"
-        is_acting_as_trustee_partnership: "'representative partner' (opens in a new window)"        
-        TENANT_title: "Tenant details"
-        NEWTENANT_title: "New tenant details"
-      company_number:
-        title: "Registered company"
-        subtitle: "Registered company details"
-      organisation_contact_details:
-        title: "Contact details"
-      organisation_details:
-        PARTNER_title: "Partnership"
-        PARTNER_subtitle: "Partnership details"
-        TRUST_title: "Trust"
-        TRUST_subtitle: "Trust details"
-        CHARITY_title: "Charity"
-        CHARITY_subtitle: "Charity details"
-        CLUB_title: "Club"
-        CLUB_subtitle: "Club details"
-        COMPANYOTH_title: "Company"
-        COMPANYOTH_subtitle: "Company details"
-        OTHER_title: "Organisation details"
-        OTHER_subtitle: ""
-        address: "Address"
-      organisation_type_details:
-        title: "Organisation details"
-      representative_contact_details:
-        title: "Contact details"
-        PARTNER_description: "Enter the details of the representative partner that should be contact in relation to this tax return"
-        TRUST_description: "Enter the details of the trustee that should be contacted in relation to this tax return "
-        CHARITY_description: ""
-        CLUB_description: "Enter the details of the representative that should be contacted in relation to this tax return"
-        COMPANY_description: ""
-        COMPANYOTH_description: ""
-        OTHER_description: ""
-        address: "Address"
-        registered_address: "Registered address"

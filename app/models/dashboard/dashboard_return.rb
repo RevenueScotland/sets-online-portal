@@ -42,17 +42,17 @@ module Dashboard
 
     # The amend action code(s)
     def amend_action
-      AuthorisationHelper.const_get("#{srv_code}_AMEND")
+      RS::AuthorisationHelper.const_get("#{srv_code}_AMEND")
     end
 
     # The continue action code(s)
     def continue_action
-      AuthorisationHelper.const_get("#{srv_code}_CONTINUE")
+      RS::AuthorisationHelper.const_get("#{srv_code}_CONTINUE")
     end
 
     # The delete action code(s)
     def delete_action
-      AuthorisationHelper.const_get("#{srv_code}_DELETE")
+      RS::AuthorisationHelper.const_get("#{srv_code}_DELETE")
     end
 
     # Used to display a summary status
@@ -65,14 +65,14 @@ module Dashboard
     # Used for determining whether to show an action link when return latest_draft_dis_ind is 'L'.
     # @see TableHelper#include_action? this is used as value for :visible_for symbol
     # @return [Boolean] when the return latest_draft_dis_ind is 'L' then true (then it will be visible)
-    def indicator_is_latest
+    def indicator_is_latest?
       latest_draft_dis_ind == 'L'
     end
 
     # Used for determining whether to show an action link when return latest_draft_dis_ind is 'D'
     # @see TableHelper#include_action? this is used as value for :visible_for symbol
     # @return [Boolean] when the return latest_draft_dis_ind is 'D' then true (then it will be visible)
-    def indicator_is_draft
+    def indicator_is_draft?
       latest_draft_dis_ind == 'D'
     end
 
@@ -90,19 +90,19 @@ module Dashboard
     # @see TableHelper#include_action? this is used as value for :visible_for symbol
     # @return [Boolean] when the return receipt_available is true then true (then it will be visible)
     def receipt_indicator?
-      return false unless indicator_is_latest
+      return false unless indicator_is_latest?
 
       return true if receipt_available == true
 
       false
     end
 
-    # Used for determining whether to show an "Draft Present" text among action link when return draft_present is true
+    # Used for determining whether to show an "Draft present" text among action link when return draft_present is true
     # unless this is a draft version or is there an ongoing enquiry
     # @see TableHelper#include_action? this is used as value for :visible_for symbol
     # @return [Boolean] when the return draft_present is true then true (then it will be visible)
     def draft_present?
-      return true if draft_present == true && !indicator_is_draft && !enquiry_indicator?
+      return true if draft_present == true && !indicator_is_draft? && !enquiry_indicator?
 
       false
     end
@@ -128,7 +128,7 @@ module Dashboard
     # for a return that is Filed.
     # @see TableHelper#include_action? this is used as value for :visible_for symbol
     def return_is_amendable?
-      return false unless indicator_is_latest
+      return false unless indicator_is_latest?
 
       return false if enquiry_open == true
 
@@ -159,7 +159,7 @@ module Dashboard
     # submit a drafted return
     # @return [Boolean] true if the return is in final days(last 7 days) of configurable period
     def not_continuable_warning?
-      version.to_i > 1 && !remaining_amendable_period.negative? && indicator_is_draft &&
+      version.to_i > 1 && !remaining_amendable_period.negative? && indicator_is_draft? &&
         remaining_amendable_period <= Rails.configuration.x.returns.amendable_warning_days
     end
 
@@ -183,12 +183,17 @@ module Dashboard
     end
 
     # returns true or false to display claim link or not for returns
-    def return_is_claimable
-      return false unless indicator_is_latest
+    def return_is_claimable?
+      return false unless indicator_is_latest?
 
       filing_days_old = (Time.zone.today - filing_date).to_i.days
       # If the filing date is 365 days old or older then true (used for showing the claim)
       (filing_days_old >= Rails.configuration.x.returns.amendable_days)
+    end
+
+    # @return [Boolean] true if return is no longer continuable
+    def not_continuable_indicator?
+      version.to_i > 1 && indicator_is_draft? && remaining_amendable_period.negative?
     end
 
     # Finds a specific dashboard_return and returns it's details
@@ -349,13 +354,6 @@ module Dashboard
       # using cached_ref_data_codes.
       object.return_status ||= object.lookup_ref_data_value(:latest_draft_dis_ind, 'L')
       object
-    end
-
-    private
-
-    # @return [Boolean] true if return is no longer continuable
-    def not_continuable_indicator?
-      version.to_i > 1 && indicator_is_draft && remaining_amendable_period.negative?
     end
   end
 end

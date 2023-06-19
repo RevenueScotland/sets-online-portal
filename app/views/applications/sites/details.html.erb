@@ -1,13 +1,10 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_description, t('.description') %>
-<%= form_for @site, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @site %>
-  <%= f.text_field :sepa_license_number %>
-  <%= f.text_field :site_name %>
-  <% if @site.waste_producer_water_discount? %>
-    <%= f.text_field :landfill_operator %>
-    <%= f.text_field :slft_registration_number %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_paragraph{t('.description') } %>
+<%= ds_form_with(model: @site, url: @post_path) do |f| %>
+    <%= f.ds_text_field(method: :sepa_license_number) %>
+    <%= f.ds_text_field(method: :site_name) %>
+    <% if @site.waste_producer_water_discount? %>
+      <%= f.ds_text_field(method: :landfill_operator) %>
+      <%= f.ds_text_field(method: :slft_registration_number) %>
+    <% end %>
   <% end %>
-  <%= f.button %>
-<% end %>

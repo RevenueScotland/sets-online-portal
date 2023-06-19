@@ -1,24 +1,12 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <%= form_for @message, url:dashboard_messages_confirmation_path, html: { multipart: true }, method: :post, local: true do |f| %>
-      <%= form_errors_for [@message, @resource_items_hash] %>
-      <%= sub_heading %>
-      <p class="govuk-body">
-        <%= UtilityHelper.swap_texts(t('.paragraph2'),
-                                     text_links: { t('.paragraph2_link_text') =>
-                                                    link_to(t('.paragraph2_link_text'), external_link_url('HOME'), target: '_blank') }) %>
-      </p>
-      <% if can? AuthorisationHelper::CREATE_ATTACHMENT %>
-        <%= f.collection_radio_buttons_fields(:additional_file, ReferenceData::ReferenceValue.list('YESNO', 'SYS', 'RSTU')) %>
-        <%= f.hidden_field :smsg_refno %>
-        <div id="multiple-file-upload" class='govuk-radios__conditional govuk-radios__conditional--hidden' >
-          <%= render "/layouts/file_upload_component", multiple: true, file_upload_label: full_lazy_lookup_path('.file_upload_label') %>
-        </div>
-      <% end %>
-      <%= f.button 'finish', { :name => 'finish', autofocus: (@resource_items.length > 0 && !content_for?(:form_error_found)) , class: 'scot-rev-button file-upload-check'} %>
-    <% end %>
-  </div>
-</div>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_notification_panel(title: t('.title')) do %>
+  <%= ds_paragraph{t('.what_happens_next_html',
+  link: ds_link(url: external_link_url('HOME'), name: t('.what_happens_next_link'), target: '_blank'  ))} %>
+<% end %>
+<% if can? RS::AuthorisationHelper::CREATE_ATTACHMENT %>
+  <%= ds_form_with(model: @message, url: confirmation_dashboard_message_path, file_upload: true, button_action: :finish) do |f| %>
+    <%= f.ds_hidden_field(:smsg_refno) %>
+    <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, multiple: true, optional: true,
+                        supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb) %>
+  <% end %>
+<% end %>

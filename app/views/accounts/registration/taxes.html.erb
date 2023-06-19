@@ -1,8 +1,7 @@
 <% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @account, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @account %>
-  <%= f.collection_check_boxes_fields(:taxes, @account.list_ref_data(:taxes)) %>
-  <%= f.collection_radio_buttons_fields(:party_account_type, @account.list_ref_data(:party_account_type), { alignment: 'vertical' }) %>
-  <%= f.button %>
+<%= ds_form_with(model: @account, url: @post_path) do |f| %>
+  <%= f.ds_checkbox_group(method: :taxes, 
+        options_list:@account.list_ref_data(:taxes)) %>
+  <%= f.ds_radio_group(method: :party_account_type, 
+        options_list: @account.list_ref_data(:party_account_type) ) %>
 <% end %>

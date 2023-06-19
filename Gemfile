@@ -6,26 +6,27 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '>= 3.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0'
+gem 'rails', '~> 7.0'
 # Use Puma as the app server
-gem 'puma', '~> 5.0'
-# Use SASSC rails for stylesheets, sass-rails points to this gem now https://github.com/rails/sass-rails/pull/424
-gem 'sassc-rails'
-# Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
-gem 'webpacker', '~> 5.0'
-# See https://github.com/rails/execjs#readme for more supported runtimes
-gem 'duktape'
-# Use CoffeeScript for .coffee assets and views
-gem 'coffee-rails', '~> 5.0'
-# Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5.2'
+gem 'puma', '~> 6.0'
+# Use propshaft for asset management, currently using a forked version due to https://github.com/rails/propshaft/issues/103
+# gem 'propshaft', git: 'https://github.com/rails/propshaft', branch: 'asset-host'
+gem 'propshaft', git: 'https://github.com/markstanley-nps/propshaft', branch: 'relative-url-root'
+# gem 'propshaft', path: '../propshaft'
+# Transpile app-like JavaScript. Read more: https://github.com/rails/jsbundling-rails
+# We build the css using sass-loader so not cssbundling-rails
+gem 'jsbundling-rails'
+# Turbo https://github.com/hotwired/turbo-rails
+gem 'turbo-rails'
+# Stimulus https://github.com/hotwired/stimulus-rails
+gem 'stimulus-rails'
+# Include view component
+gem 'view_component'
+
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.9'
-gem 'jquery-rails'
-# @see Read more: https://github.com/jquery-ui-rails/jquery-ui-rails
-gem 'jquery-ui-rails'
 # Use Redis for caching and session storage
-gem 'redis', '~> 4.1'
+gem 'redis'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '~> 1.4', require: false
@@ -33,6 +34,7 @@ gem 'bootsnap', '~> 1.4', require: false
 # HTTP user agent parser
 gem 'useragent', '~> 0.16'
 # Used for making SOAP calls
+# Locked to 1.12 see RSTP-1065
 gem 'savon', '~> 2.12'
 # Wraps warden for security
 gem 'rails_warden', '~> 0.6'
@@ -60,6 +62,8 @@ group :development do
   gem 'brakeman', require: false
   gem 'rack-mini-profiler'
   gem 'rubocop', require: false
+  gem 'rubocop-capybara', require: false
+  gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '~> 4.0'

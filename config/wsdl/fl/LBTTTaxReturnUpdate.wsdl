@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 17-Oct-2013   Version 1.0  -->
-<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/LBTTTaxReturn" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.northgateps.com/RSTS/LBTTTaxReturn.wsdl" xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/LBTTTaxReturn.wsdl" name="LBTTTaxReturn">
+<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/LBTTTaxReturn"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.northgateps.com/RSTS/LBTTTaxReturn.wsdl"
+	xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/LBTTTaxReturn.wsdl" name="LBTTTaxReturn">
 	<wsdl:types>
-		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:complexType name="PersonNameType">
 				<xsd:sequence>
 					<xsd:element name="Title" minOccurs="0">
@@ -138,7 +145,9 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
-		<xs:schema xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/LBTTTaxReturn" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/LBTTTaxReturn" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xs:import namespace="http://northgate-is.com/FL/Core"/>
 			<xs:element name="LBTTTaxReturn">
 				<xs:annotation>
@@ -169,11 +178,11 @@
 									<xs:element name="FlbtType" minOccurs="0">
 										<xs:annotation>
 											<xs:documentation>Return Type -
-Conveyance Return
-Lease Return
-Lease Review
-Assignation
-Termination</xs:documentation>
+										Conveyance Return
+										Lease Return
+										Lease Review
+										Assignation
+										Termination</xs:documentation>
 										</xs:annotation>
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
@@ -458,6 +467,16 @@ Termination</xs:documentation>
 															</xs:element>
 															<xs:element name="Amount" type="xs:decimal" minOccurs="0"/>
 															<xs:element name="OrigAmount" type="xs:decimal" minOccurs="0"/>
+															<xs:element name="AmountAds" type="xs:integer" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation> Amount of ADS for this relief</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="OrigAmountAds" type="xs:integer" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation> Original amount of ADS for this relief</xs:documentation>
+																</xs:annotation>
+															</xs:element>
 															<xs:element name="MdrNumberDwellings" type="xs:integer" minOccurs="0">
 																<xs:annotation>
 																	<xs:documentation>Number of residential properties that the transaction relates to</xs:documentation>
@@ -533,6 +552,18 @@ Termination</xs:documentation>
 											<xs:documentation>ADS Sale Date</xs:documentation>
 										</xs:annotation>
 									</xs:element>
+									<xs:element name="NonNotifiableExplanation" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>
+										Explanation for filing non-notified return. NonNotifiableExplanation  must be provided to get 1st version of non-notified return  saved in back office.  
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="4000"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
@@ -542,7 +573,9 @@ Termination</xs:documentation>
 				</xs:complexType>
 			</xs:element>
 		</xs:schema>
-		<xs:schema xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/LBTTTaxReturn" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/LBTTTaxReturn"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/LBTTTaxReturn" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xs:import namespace="http://northgate-is.com/FL/Core"/>
 			<xs:element name="LBTTTaxReturnResponse">
 				<xs:complexType>
@@ -554,6 +587,28 @@ Termination</xs:documentation>
 								<xs:element name="Version" type="xs:integer" minOccurs="0"/>
 								<xs:element name="PaymentDate" type="xs:date" minOccurs="0"/>
 								<xs:element name="FilingDate" type="xs:date" minOccurs="0"/>
+								<xs:element name="NonNotifiable" type="core:YesNoType" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Non-notified indicator</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="NonNotifiableReasons" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="NonNotifiableReason" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="ReasonText" type="xs:string">
+															<xs:annotation>
+																<xs:documentation>Non Notified rule/reason text </xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
 							</xs:sequence>
 						</xs:extension>
 					</xs:complexContent>

@@ -1,95 +1,13 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%# <%= application_browser %>
-<% if account_has_service?(:lbtt) && can?(AuthorisationHelper::LBTT_SUMMARY) %>
-  <%= link_to(t('.lbtt_return'), returns_lbtt_return_type_path(new: true), class: 'scot-rev-button') %>
-<% end %>
-<% if account_has_service?(:slft) && can?(AuthorisationHelper::SLFT_SUMMARY)%>
-  <%= link_to(t('.slft_return'), returns_slft_summary_path(new: true), class: 'scot-rev-button') %>
-<% end %>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:navigation_link, :clear_stack) %>
 <% if account_has_no_service? %>
-  <%= display_paragraph_components(body: t('.no_services')) %>
+  <%= ds_warning{ t('.no_services')} %>
 <% end %>
-<%= link_to(t('.new_message'), new_dashboard_message_path, class: 'scot-rev-button', requires_action: AuthorisationHelper::CREATE_MESSAGE) %>
-<% if can? AuthorisationHelper::VIEW_MESSAGES %>
-  <%= section_break %>
-  <%= sub_heading(t('.title_unread_messages')) %>
-  <% if @messages.count >0 %>
-    <%= display_table(@messages,
-                      [:created_date, :full_name, :title, :reference, :subject_description, :has_attachment, :read_indicator],
-                      [
-                        { label: t('.show'), action: :show, link_options: { requires_action: AuthorisationHelper::VIEW_MESSAGE_DETAIL } }
-                      ],
-                      { created_date: {format: :datetime} }) %>
-    <%= paginate @messages_pagination, :message_page %>
-  <% end %>
-  <%= navigational_links [{ link: :messages, path: dashboard_messages_path }] %>
-<% end %>
-<% if can? AuthorisationHelper::VIEW_RETURNS %>
-  <%= section_break %>
-  <%= sub_heading(t('.title_draft_returns')) %>
-  <%= display_table(@dashboard_returns,
-                    [:tare_reference, :agent_reference, :description, :version],
-                    [
-                      { label: t('.continue'), path: :load_dashboard_dashboard_return_path,
-                                               visible_for: :return_is_continuable?,
-                                               link_options: { requires_action_path: :continue_action } },
-                      { label: t('.download_pdf'),  path: :download_pdf_dashboard_dashboard_return_path,
-                                                    options: { target: '_blank' },
-                                                    link_options: { requires_action: AuthorisationHelper::DOWNLOAD_RETURN_PDF } },
-                      { label: t('.download_waste'),  path: :download_waste_dashboard_dashboard_return_path,
-                                                      visible_for: :return_has_waste?,
-                                                      options: { target: '_blank' } },
-                      { label: t('.delete'),  action: :destroy, 
-                                              link_options: { requires_action_path: :delete_action },
-                                              options: {data: {confirm: 'Delete draft return?' }}},
-                      { label: t('.enquiry_open'), path: :display, visible_for: :enquiry_indicator? },
-                      { label: t('.draft_present'), path: :display, visible_for: :draft_present? },
-                      { label: t('.not_amendable'), path: :display, visible_for: :not_continuable_indicator? },
-                      { label: t('.amendable_period'), value_method: :amendable_cut_off_date, path: :display, visible_for: :not_continuable_warning? },
-                    ],
-                    { agent_reference: {break_characters: '/', add: account_has_service?(:lbtt)} },
-                    ) %>
-  <%= paginate @returns_pagination, :returns_page %>
-  <%= navigational_links [{ link: :dashboard_returns, path: dashboard_dashboard_returns_path }] %>
-<% end %>
-<%= section_break %>
-<%= sub_heading(t('.title_outstanding_transactions')) %>
-<%= display_table(@outstanding,
-                  [:tare_reference, :agent_reference, :return_date, :description, :version, :return_balance, :summary_status],
-                  [
-                    { label: t('.transactions'), path: :dashboard_financial_transactions_path,
-                                                 visible_for: :indicator_is_latest,
-                                                 query: { attributes: [ { label: :related_reference, attribute: :tare_reference } ],
-                                                          filter_model: :dashboard_financial_transaction_filter } },
-                    { label: t('.download_pdf'),  path: :download_pdf_dashboard_dashboard_return_path,
-                                                  options: { target: '_blank' },
-                                                    link_options: { requires_action: AuthorisationHelper::DOWNLOAD_RETURN_PDF } },
-                    { label: t('.download_waste'),  path: :download_waste_dashboard_dashboard_return_path,
-                                                      visible_for: :return_has_waste?,
-                                                      options: { target: '_blank' } },
-                    { label: t('.receipt'),  path: :download_receipt_dashboard_dashboard_return_path,
-                                             visible_for: :receipt_indicator?, options: { target: '_blank' },
-                                             link_options: { requires_action: AuthorisationHelper::DOWNLOAD_RECEIPT } },
-                    { label: t('.amend'), path: :load_dashboard_dashboard_return_path,
-                                               visible_for: :return_is_amendable?,
-                                               link_options: { requires_action_path: :amend_action } },
-                    { label: t('.message'), path: :dashboard_messages_path,
-                                            query: { attributes: [ { label: :reference, attribute: :tare_reference } ],
-                                                     filter_model: :dashboard_message_filter } },
-                    { label: t('.enquiry_open'), path: :display, visible_for: :enquiry_indicator? },
-                    { label: t('.draft_present'), path: :display, visible_for: :draft_present? }
-                  ],
-                  { return_date: {format: :date},
-                    agent_reference: {break_characters: '/', add: account_has_service?(:lbtt)},
-                    return_balance: {format: :money} }) %>
-<%= paginate @outstanding_pagination, :balance_page %>
-<%= navigational_links [{ link: :financial_transactions, path: dashboard_financial_transactions_path}] %>
-<br>
-<br>
-<br>
-<% links = [
-            { link: :lbtt_return, path: returns_lbtt_return_type_path },
-            { link: :slft_return_summary, path: returns_slft_summary_path }
-            ] %>
+<%= rs_message_table(messages: @messages, caption: t('.unread_messages'), id: 'unread_messages',
+  show_all_link: true, small_screen: 'scrolling', pagination_collection: @messages_pagination, page_name: 'message_page' ) %>
+<%= rs_return_table(returns: @dashboard_returns, caption: t('.draft_returns'),
+  show_link: :all_returns, id: 'draft_returns', small_screen: 'scrolling', pagination_collection: @returns_pagination,
+  page_name: 'returns_page', format: :draft ) %>
+<%= rs_return_table(returns: @outstanding, caption: t('.outstanding_balance'), 
+  show_link: :all_transactions, id: 'outstanding_balance', small_screen: 'scrolling', pagination_collection: @outstanding_pagination,
+  page_name: 'balance_page' ) %>

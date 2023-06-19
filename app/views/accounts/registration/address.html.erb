@@ -1,21 +1,22 @@
 <% content_for :page_title, t('.title') %>
 <% if AccountType.registered_organisation?(@account.account_type) %>
+  <%= ds_section_title(section_title: t('.section_title_reg')) %>
   <% content_for :page_subtitle, t('.subtitle_reg') %>
 <% elsif AccountType.other_organisation?(@account.account_type) %>
-  <% content_for :page_subtitle, t('.subtitle_org') %>
+  <%= ds_section_title(section_title: t('.section_title_org')) %>
 <% else %>
-  <% content_for :page_subtitle, t('.subtitle_ind') %>
+  <%= ds_section_title(section_title: t('.section_title_ind')) %>
 <% end %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @account, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for [@account, @address_summary, @address_detail] %>
+<%= ds_form_with(model: @account, url: @post_path) do |f| %>
   <% if AccountType.registered_organisation?(@account.account_type) %>
-    <%= f.collection_radio_buttons_fields(:reg_company_contact_address_yes_no, ReferenceData::ReferenceValue.list('YESNO', 'SYS', 'RSTU')) %>
-    <div id='hideable' class='govuk-radios__conditional'>
-      <%= render "/layouts/address" %>
-    </div>
+    <%= rs_conditional_visibility(visible_value: "N") do |c| %>
+      <% c.with_visibility_control_radio_group(builder: f.builder, method: :reg_company_contact_address_yes_no, 
+        options_list: ReferenceData::ReferenceValue.list('YESNO', 'SYS', 'RSTU'), alignment: :horizontal ) %>
+      <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail, 
+      show_address_detail: @show_manual_address, readonly: @address_read_only) %>
+    <% end %>
   <%else%>
-    <%= render "/layouts/address" %>
+    <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail, 
+      show_address_detail: @show_manual_address, readonly: @address_read_only) %>
   <% end %>
-  <%= f.button %>
 <% end %>

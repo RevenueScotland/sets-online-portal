@@ -51,7 +51,6 @@ en:
         subject_code: "Subject"
         subject_full_key_code: "Subject"
         subject_description: "Subject"
-        additional_file: Do you want to upload any more documents?
         full_name: Name
         original_filename: File
       dashboard/message_filter:
@@ -80,40 +79,3 @@ en:
               before_date_error: "%{attribute} must be before the created date to"
             to_datetime:
               after_date_error: "%{attribute} must be after the created date from"
-  dashboard:
-    messages:
-      index:
-        title: "Messages"
-        show: "View"
-        new: "New message"
-        link:
-          new: "New message"
-          dashboard: "Dashboard"
-        find: "Find"
-        no_data_found: "There are no messages to be shown..."
-        pagination:
-          context:
-            page: "all messages"
-      show:
-        title: "Message full details"
-        heading: "Related messages"
-        show: "View"
-        reply: "Reply"
-        link:
-          dashboard: "Dashboard"
-          messages: "Go to all messages"
-        pagination:
-          context:
-            page: "related messages"
-      new:
-        title: "New message"
-        created_datetime: "Date & Time"
-        send: "Send message"
-        file_upload_label_default: Upload a supporting file (optional)
-        file_upload_hint_default_html: You will be able to upload more documents on the next page
-      confirmation:
-        title: Thank you for your secure message.
-        heading: What happens next
-        paragraph2: We aim to respond as quickly as possible. In the meantime, full information and guidance is available on the Revenue Scotland website (opens in a new window).
-        paragraph2_link_text: website (opens in a new window)
-        file_upload_label_default: Upload a document to support your secure message

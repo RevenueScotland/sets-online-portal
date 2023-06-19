@@ -24,7 +24,7 @@ class ApplicationJob < ActiveJob::Base
   def perform
     job_action
   rescue StandardError => e
-    Error::ErrorHandler.log_exception(e)
+    Rails.logger.error("Job exception\n#{e.full_message}")
   ensure
     self.class.schedule_next_run
   end

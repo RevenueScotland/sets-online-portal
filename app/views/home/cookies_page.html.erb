@@ -1,0 +1,131 @@
+<% content_for(:show_cookie_success, params['cookie-preferences'].present? && params['cookie-statistics'].present?) %>
+<% content_for(:navigation_link, :skip_page) %>
+<% content_for(:page_title, t('.title')) %>
+<div class="ds_leader-first-paragraph">
+  <p><%= t('.preamble') %></p>
+  <h2 id="why-we-use-cookies"><%= t('.why_cookies_header') %></h2>
+  <p><%= t('.why_cookies_text') %></p>
+  <div class="ds_inset-text">
+    <span class="ds_inset-text__text">
+      <%= t('.why_cookies_inset_html') %>
+    </span>
+  </div>
+  <h2 id="turn-cookies-on-or-off"><%= t('.cookie_control_header') %></h2>
+  <p><%= t('.cookie_control_text') %>
+  </p>
+  <div class="ds_!_margin-top--4 ds_!_margin-bottom--8" data-module="cookie-preferences" id="cookie-form">
+    <form id="cookie-preferences" method="get" data-turbo="false">
+      <h3><%= t('.necessary_cookies_header') %></h3>
+      <p><%= t('.necessary_cookies_text') %></p>
+      <div class="ds_question">
+        <fieldset>
+          <legend><%= t('.preferences_header') %></legend>
+          <p><%= t('.preferences_text') %></p>
+          <div class="ds_field-group">
+            <div class="ds_radio">
+              <input class="ds_radio__input" id="preferences-yes" name="cookie-preferences" type="radio" value="true" data-form="radio-cookie-preferences-true" 
+             <%= 'checked=true' if storage_permission?('preferences', default: true) %> >
+              <label class="ds_radio__label" for="preferences-yes"><%= t('.onx') %></label>
+            </div>
+            <div class="ds_radio">
+              <input class="ds_radio__input" id="preferences-no" name="cookie-preferences" type="radio" value="false" data-form="radio-cookie-preferences-false"
+             <%= 'checked=true' unless storage_permission?('preferences', default: true) %> >
+              <label class="ds_radio__label" for="preferences-no"><%= t('.offx') %></label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <div class="ds_question">
+        <fieldset>
+          <legend><%= t('.analytics_header') %></legend>
+          <p><%= t('.analytics_text') %></p>
+          <div class="ds_field-group">
+            <div class="ds_radio">
+              <input class="ds_radio__input" id="statistics-yes" name="cookie-statistics" type="radio" value="true" data-form="radio-cookie-statistics-true"
+             <%= 'checked=true' if storage_permission?('statistics', default: true) %> >
+              <label class="ds_radio__label" for="statistics-yes"><%= t('.onx') %></label>
+            </div>
+            <div class="ds_radio">
+              <input class="ds_radio__input" id="statistics-no" name="cookie-statistics" type="radio" value="false" data-form="radio-cookie-statistics-false"
+             <%= 'checked=true' unless storage_permission?('statistics', default: true) %> >
+              <label class="ds_radio__label" for="statistics-no"><%= t('.offx') %></label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <button data-button="button-cookie-save" class="ds_button  ds_no-margin" type="submit"><%= t('.save_cookies') %></button>
+    </form>
+  </div>
+  <table class="ds_table">
+    <caption>
+      <h2 id="necessary"><%= t('.necessary_cookies_header') %></h2>
+    </caption>
+    <thead>
+      <tr>
+        <th><%= t(".table_name") %></th>
+        <th><%= t(".table_description") %></th>
+        <th><%= t(".table_expiry") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>_rev_scot_session</td>
+        <td><%= t(".rev_scot_session_description") %></td>
+        <td><%= t(".rev_scot_session_expiry") %></td>
+      </tr>
+      <tr>
+        <td>cookiePermissions</td>
+        <td><%= t(".cookie_permissions_description") %></td>
+        <td><%= t(".cookie_permissions_expiry") %></td>
+      </tr>
+      <tr>
+        <td>cookie-notification-acknowledged</td>
+        <td><%= t(".cookie_notification_description") %></td>
+        <td><%= t(".cookie_notification_expiry") %></td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="ds_table">
+    <caption>
+      <h2 id="preferences"><%= t('.preferences_header') %></h2>
+    </caption>
+    <thead>
+      <tr>
+        <th><%= t(".table_name") %></th>
+        <th><%= t(".table_description") %></th>
+        <th><%= t(".table_expiry") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>banner_&lt;id&gt;</td>
+        <td><%= t(".banner_description") %></td>
+        <td><%= t(".banner_expiry") %></td>
+      </tr>
+    </tbody>
+  </table>
+  <h2 id="google-analytics"><%= t('.google_analytics_header') %></h2>
+  <%= t(".google_analytics_text_html") %>
+  <table class="ds_table">
+    <caption><%= t(".analytics_table_caption") %></caption>
+    <thead>
+      <tr>
+        <th><%= t(".table_name") %></th>
+        <th><%= t(".table_description") %></th>
+        <th><%= t(".table_expiry") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>_ga</td>
+        <td><%= t(".ga_description") %></td>
+        <td><%= t(".ga_expiry") %></td>
+      </tr>
+      <tr>
+        <td>_ga_&lt;container_id&gt;</td>
+        <td><%= t(".ga_container_description") %></td>
+        <td><%= t(".ga_container_expiry") %></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

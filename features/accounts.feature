@@ -8,7 +8,7 @@ Feature: Account
 
     Scenario: View account details of a person
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
-        When I click on the "Account details" link
+        When I click on the "Account details" menu item
 
         Then I should see the "Sign up details" page
         And I should see the text "Email address"
@@ -22,13 +22,13 @@ Feature: Account
         And I should not see the text "To change your registered company details use the update option against the company number"
         And I should see the text "Username"
         And I should see the text "ADAM.PORTAL-TEST"
-        And I click on the "Create or update users" link
+        And I click on the "Create or update users for this account" link
 
         Then I should see the "Account users" page
 
     Scenario: View accounts details of a registered company
         Given I have signed in "PORTAL.NORTHGATE" and password "Password1!"
-        When I click on the "Account details" link
+        When I click on the "Account details" menu item
 
         Then I should see the "Sign up details" page
         And I should see the text "Email address"
@@ -47,7 +47,7 @@ Feature: Account
 
     Scenario: View accounts details of a non-registered company
         Given I have signed in
-        When I click on the "Account details" link
+        When I click on the "Account details" menu item
 
         Then I should see the "Sign up details" page
         And I should see the text "Email address"
@@ -64,7 +64,7 @@ Feature: Account
 
     Scenario: Update basic details of a person validation rules
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
-        When I click on the "Account details" link
+        When I click on the "Account details" menu item
 
         Then I should see the "Sign up details" page
         And I should see the text "Username"
@@ -93,16 +93,13 @@ Feature: Account
 
         Then I should see the "Update account" page
         Then I should receive the message "Email address does not match"
-        And I click on the "Back" link
 
-        Then I should see the "Update account" page
-        And I click on the "Back" link
-
+        When I click on the "Back" link
         Then I should see the "Sign up details" page
 
     Scenario: Update basic details of a person
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
-        When I click on the "Account details" link
+        When I click on the "Account details" menu item
 
         Then I should see the "Sign up details" page
         And I should see the text "Username"
@@ -126,7 +123,7 @@ Feature: Account
 
     Scenario: Update basic details of a registered company validation rules
         Given I have signed in "PORTAL.NORTHGATE" and password "Password1!"
-        When I click on the "Account details" link
+        When I click on the "Account details" menu item
 
         Then I should see the "Sign up details" page
         And I should see the text "Username"
@@ -150,7 +147,7 @@ Feature: Account
 
     Scenario: Update basic details of a registered company
         Given I have signed in "PORTAL.NORTHGATE" and password "Password1!"
-        When I click on the "Account details" link
+        When I click on the "Account details" menu item
 
         Then I should see the "Sign up details" page
         And I should see the text "Username"
@@ -169,7 +166,7 @@ Feature: Account
 
     Scenario: Update basic details of a other company validation rules
         Given I have signed in
-        When I click on the "Account details" link
+        When I click on the "Account details" menu item
 
         Then I should see the "Sign up details" page
         And I should see the text "Username"
@@ -195,7 +192,7 @@ Feature: Account
 
     Scenario: Update basic details of a other company
         Given I have signed in
-        When I click on the "Account details" link
+        When I click on the "Account details" menu item
 
         Then I should see the "Sign up details" page
         And I should see the text "Username"
@@ -217,96 +214,105 @@ Feature: Account
 
     Scenario: Update address details validation
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
-        When I click on the "Account details" link
+        When I click on the "Account details" menu item
 
         Then I should see the "Sign up details" page
         And I should see the text "Username"
         And I should see the text "ADAM.PORTAL-TEST"
-        And I click on the 2 nd "Update" link
 
+        When I click on the 1 st "Change" link
         Then I should see the "Update address" page
-        When I clear the "address_summary_postcode" field
-        And I click on the "Find Address" button
-        Then I should receive the message "Postcode can't be blank"
+
+        When I click on the "Return to postcode lookup" button
+        And I clear the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Update address" page
+        And I should receive the message "Postcode can't be blank"
         And I should receive the message "Postcode is too short (minimum is 6 characters)"
         And I should receive the message "Postcode is invalid"
-        And I enter "short" in the "address_summary_postcode" field
-        And I click on the "Find Address" button
-        Then I should receive the message "Postcode is too short (minimum is 6 characters)"
-        And I should receive the message "Postcode is invalid"
-        And I enter "wibble wobble" in the "address_summary_postcode" field
-        And I click on the "Find Address" button
-        Then I should receive the message "Postcode is too long (maximum is 8 characters)"
-        And I should receive the message "Postcode is invalid"
-        And I enter "wibble" in the "address_summary_postcode" field
-        And I click on the "Find Address" button
-        Then I should receive the message "Postcode is invalid"
-        And I enter "RG1 1AA" in the "address_summary_postcode" field
-        And I click on the "Find Address" button
-        Then I should receive the message "The postcode doesn't return any addresses"
-        When I click on the "Back" link
 
+        When I enter "short" in the "address_summary_postcode" field
+        And I click on the "Find address" button
         Then I should see the "Update address" page
-        And I click on the "Edit address" button
-        And I clear the "address_address_line1" field
+        And I should receive the message "Postcode is too short (minimum is 6 characters)"
+        And I should receive the message "Postcode is invalid"
+
+        When I enter "wibble wobble" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Update address" page
+        And I should receive the message "Postcode is too long (maximum is 8 characters)"
+        And I should receive the message "Postcode is invalid"
+
+        When I enter "wibble" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Update address" page
+        And I should receive the message "Postcode is invalid"
+
+        When I enter "RG1 1AA" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Update address" page
+        And I should receive the message "The postcode doesn't return any addresses"
+
+        When I click on the "Back" link
+        Then I should see the "Sign up details" page
+        When I click on the 1 st "Change" link
+        Then I should see the "Update address" page
+
+        When I click on the "Or edit the selected address" button
+        Then I should see the "Update address" page
+        When I clear the "address_address_line1" field
         And I clear the "address_address_line2" field
         And I clear the "address_address_line3" field
         And I clear the "address_address_line4" field
         And I clear the "address_town" field
         And I clear the "address_county" field
         And I clear the "address_postcode" field
-        When I click on the "Confirm" button
-
+        And I click on the "Confirm" button
         Then I should see the "Update address" page
-        Then I should receive the message "Building and street can't be blank"
-        Then I should receive the message "Town can't be blank"
+        And I should receive the message "Building and street can't be blank"
+        And I should receive the message "Town can't be blank"
         # postcode is optional on manual address
-        Then I should not receive the message "Postcode can't be blank"
+        And I should not receive the message "Postcode can't be blank"
 
-        Then I should see the "Update address" page
-        And I enter "16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegdfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwy" in the "address_address_line1" field
+        When I enter "16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegdfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwy" in the "address_address_line1" field
         And I enter "16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegdfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwy" in the "address_address_line2" field
         And I enter "16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegdfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwy" in the "address_address_line3" field
         And I enter "16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegd16 Lavender Laneewrhygfryuegdfyuwegdfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwyfyusfyugyurgwy" in the "address_address_line4" field
         And I enter "16 Lavender Laneewrhygfryuegdfyuwegdfyusfyugyurgwyfrgwyegfwygfsdgfhbvhugyuergfygrygfsgrfywergfywerfgqwertyuifghfg" in the "address_town" field
         And I enter "16 Lavender Laneewrhydfgfdfggfryuegdfyuwegdfyusfyugyurgwy16 Lavender Laneewrhygfryuegdfyuwegdfyusfyugyurgwy" in the "address_county" field
-        When I click on the "Confirm" button
-
+        And I click on the "Confirm" button
         Then I should see the "Update address" page
-        Then I should receive the message "Building and street is too long (maximum is 255 characters)"
-        Then I should receive the message "Address line 2 is too long (maximum is 255 characters)"
-        Then I should receive the message "Address line 3 is too long (maximum is 255 characters)"
-        Then I should receive the message "Address line 4 is too long (maximum is 255 characters)"
-        Then I should receive the message "County is too long (maximum is 50 characters)"
-        Then I should receive the message "Town is too long (maximum is 100 characters)"
+        And I should receive the message "Building and street is too long (maximum is 255 characters)"
+        And I should receive the message "Address line 2 is too long (maximum is 255 characters)"
+        And I should receive the message "Address line 3 is too long (maximum is 255 characters)"
+        And I should receive the message "Address line 4 is too long (maximum is 255 characters)"
+        And I should receive the message "County is too long (maximum is 50 characters)"
+        And I should receive the message "Town is too long (maximum is 100 characters)"
 
     Scenario: Update address details of a person
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
-        When I click on the "Account details" link
+        When I click on the "Account details" menu item
 
         Then I should see the "Sign up details" page
         And I should see the text "Username"
         And I should see the text "ADAM.PORTAL-TEST"
         And I should see the text "NORTHTOWN"
 
-        When I click on the 2 nd "Update" link
+        When I click on the 1 st "Change" link
         Then I should see the "Update address" page
 
-        When I click on the "Edit address" button
-        Then I should not see the button with text "Edit address"
+        When I click on the "Or edit the selected address" button
+        Then I should not see the button with text "Or edit the selected address"
 
         When I enter "SOUTHTOWN" in the "address_town" field
         And I click on the "Back" link
-        Then I should see the "Update address" page
-        And I should see the button with text "Edit address"
 
-        When I click on the "Back" link
         Then I should see the "Sign up details" page
         And I should see the text "NORTHTOWN"
-        When I click on the 2 nd "Update" link
+        When I click on the 1 st "Change" link
 
         Then I should see the "Update address" page
-        When I click on the "Edit address" button
+        When I click on the "Or edit the selected address" button
         And I flip "address_address_line1" field between "8 Park Lane" and "9 Park Lane" using marker "address_address_line1"
         And I click on the "Confirm" button
 
@@ -319,24 +325,24 @@ Feature: Account
         And I go to the "Account" page
         And I click on the "Change your password" link
 
-        Then I should see the "Change Password" page
+        Then I should see the "Change password" page
         # Mandatory validation
-        When I click on the "Change Password" button
+        When I click on the "Change password" button
         Then I should receive the message "Old password can't be blank"
         And I should receive the message "Password can't be blank"
         # Invalid password format
         When I enter "invalidpassword" in the "New password" field
-        And I click on the "Change Password" button
+        And I click on the "Change password" button
         # Mismatch password
         When I enter "Password1234" in the "New password" field
         And I enter "NoMatch1234" in the "Confirm new password" field
-        And I click on the "Change Password" button
+        And I click on the "Change password" button
         Then I should receive the message "Password does not match"
         # wrong old password
         When I enter "invalidpassword" in the "Old password" field
         And I enter "Password1234" in the "New password" field
         And I enter "Password1234" in the "Confirm new password" field
-        And I click on the "Change Password" button
+        And I click on the "Change password" button
         Then I should receive the message "Sign in credentials supplied are invalid"
 
     @mock_change_password
@@ -345,14 +351,15 @@ Feature: Account
         And I enter "VALID.USER" in the "Username" field
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
-        And I click on the "Account details" link
+        Then I should see the "Dashboard" page
+        When I click on the "Account details" menu item
         And I click on the "Change your password" link
 
-        Then I should see the "Change Password" page
+        Then I should see the "Change password" page
         And I enter "valid.password" in the "Old password" field
         And I enter "New.password1" in the "New password" field
         And I enter "New.password1" in the "Confirm new password" field
-        And I click on the "Change Password" button
+        And I click on the "Change password" button
 
         Then I should see the "Change password confirmation" page
 
@@ -365,7 +372,7 @@ Feature: Account
         Then I should receive the message "Registration token can't be blank"
         And I enter "invalid.registation.token" in the "Registration token" field
         And I click on the "Confirm" button
-        Then I should receive the message "The Registration Token supplied is invalid. If you wish to use this service you will need to register an account."
+        Then I should receive the message "The Registration Token supplied is invalid or has already been used. If your account is not active then use the forgotten password option to generate a new token"
 
     @mock_activate_account
     Scenario: Activating account to complete registration
@@ -375,79 +382,3 @@ Feature: Account
         And I click on the "Confirm" button
 
         Then I should see the "Completed registration" page
-
-    # Marked as wip as memorable word has been removed from the CIMP4 release
-    @wip
-    Scenario: Set memorable word and memorable hint for current user
-        Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
-
-        # Link should be visible with text "Create or update memorable word"
-        When I click on the "Account details" link
-        Then I should see the "Sign up details" page
-
-        When I click on the "Create or update memorable word" link
-        Then I should see the "Create or update memorable word" page
-        And I clear the "Memorable word" field
-        And I clear the "Memorable word hint" field
-
-        # Memorable hint is mandatory to fill if memorable word is provided
-        When I enter "1234" in the "Memorable word" field
-        And  I enter "Password1!" in the "Password" field
-
-        When I click on the "Submit" button
-        And I should receive the message "Memorable word hint can't be blank"
-
-        # Memorable word is mandetory to fill if memorable hint is provided
-        When I clear the "Memorable word" field
-        And  I enter "1234" in the "Memorable word hint" field
-        And  I enter "Password1!" in the "Password" field
-
-        When I click on the "Submit" button
-        Then I should receive the message "Memorable word can't be blank"
-
-        # Validation check on the length of word and hint
-        When I enter "RANDOM_text,101" in the "Memorable word" field
-        And  I enter "RANDOM_text,101" in the "Memorable word hint" field
-
-        When I click on the "Submit" button
-        Then I should receive the message "Memorable word is too long (maximum is 100 characters)"
-        And I should receive the message "Memorable word hint is too long (maximum is 100 characters)"
-        And I should receive the message "Password can't be blank"
-
-        When I enter "Test memorable word" in the "Memorable word" field
-        And  I enter "Test memorable word hint" in the "Memorable word hint" field
-        And  I enter "Password1!" in the "Password" field
-
-        When I click on the "Submit" button
-        Then I should see the "Change memorable word confirmation" page
-        And I should see the text "Your memorable word has been successfully changed"
-
-        When I click on the "Continue" button
-        Then I should see the "Sign up details" page
-        And I should see the text "Test memorable word"
-        And I should see the text "Test memorable word hint"
-
-        When I click on the "Create or update memorable word" link
-        Then I should see the "Create or update memorable word" page
-
-        # Check previously stored values are available in fields
-        And I should see the text "Test memorable word" in field "Memorable word"
-        And I should see the text "Test memorable word hint" in field "Memorable word hint"
-
-        # Memorable word and memorable hint can be blank together
-        And I clear the "Memorable word" field
-        And I clear the "Memorable word hint" field
-        And  I enter "Password1!" in the "Password" field
-
-        When I click on the "Submit" button
-        Then I should see the "Change memorable word confirmation" page
-        And I should see the text "Your memorable word has been successfully changed"
-
-        When I click on the "Continue" button
-        Then I should see the "Sign up details" page
-        And I should see the text "Memorable word"
-        And I should see the text "Memorable word hint"
-
-        # Check for the values been vanished from "Sign up details" page since Memorable word and hint been saved blank
-        And I should not see the text "Test memorable word"
-        And I should not see the text "Test memorable word hint"

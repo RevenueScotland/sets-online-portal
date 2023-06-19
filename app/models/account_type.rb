@@ -54,7 +54,12 @@ class AccountType
   # return a list of account registration types
   def self.list
     AccountType.registration_types
-               .map { |s| ReferenceData::ReferenceValue.new(code: s, value: I18n.t(s.to_s)) }
+               .map do |s|
+      ReferenceData::ReferenceValue.new(code: s,
+                                        value: I18n.t(
+                                          s.to_s, scope: model_name.i18n_key
+                                        ))
+    end
   end
 
   # Returns true if the supplied registration_type represents an individual

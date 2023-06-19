@@ -51,18 +51,21 @@ module PrintDataTestHelper
   def readable_print_data_json(model_json, printdata_json, layout = :print_layout)
     object = Serializer.from_json_to_object(model_json)
 
-    object_print_data_json = human_readable_json(object.print_data(layout, print_data_options(object, layout)))
+    # This allows you to set up any conditions (normally expectations)
+    # base don the loaded object
+    object_specific_setup(object)
+
+    object_print_data_json = human_readable_json(object.print_data(layout))
     expected_print_data_json = human_readable_json(printdata_json)
+
+    # The below writes are useful for debugging, so left but commented
+    # Rails.root.join('tmp/expected.json').write(expected_print_data_json)
+    # Rails.root.join('tmp/actual.json').write(object_print_data_json)
 
     [object_print_data_json, expected_print_data_json]
   end
 
-  # Used as the hash options of the print_data method. When calling print data from an object we may send in
-  # extra hash values derived elsewhere. This allows us to add them into the print data
-  # @note For the specific print_data_test this needs to be overridden if there are specific options needed.
-  def print_data_options(_object, _layout)
-    {}
-  end
+  def object_specific_setup(object); end
 
   # Add indentations to a json format string.
   # When debugging, this is very useful as it will show the developer exactly which lines

@@ -1,0 +1,12 @@
+<fieldset>
+  <% if legend %>
+    <legend><%= legend %></legend>
+  <% end %>
+  <% if hint %>
+    <p class="ds_hint-text"><%= hint %></p>
+  <% end %>
+  <div class="ds_field-group  <%= 'ds_field-group--inline' if alignment == :horizontal %>">
+    <!-- div class="ds_field-group" -->
+    <%= content %>
+  </div>
+</fieldset>

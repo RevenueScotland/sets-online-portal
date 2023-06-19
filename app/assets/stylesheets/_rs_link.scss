@@ -1,0 +1,10 @@
+/*------------------------------------*\
+    Extensions to the link styling
+\*------------------------------------*/
+
+.rs_link {
+    &--centered {
+        text-align: center;
+        display: block;
+    }
+}

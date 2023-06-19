@@ -1,9 +1,6 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_description, t('.description') %>
-<%= form_for @site, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @site %>
-  <%= f.text_area_field :type_of_waste_text %>
-  <%= f.text_field :estimated_tonnage %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_paragraph{t('.description') } %>
+<%= ds_form_with(model: @site, url: @post_path) do |f| %>
+  <%= f.ds_text_area(method: :type_of_waste_text) %>
+  <%= f.ds_text_field(method: :estimated_tonnage, width:10) %>
 <% end %>

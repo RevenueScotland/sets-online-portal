@@ -1,21 +1,26 @@
 # frozen_string_literal: true
 
-require 'request_summary_logging/log_middleware'
-require_relative '../cache'
+require 'active_support/core_ext/integer/time'
 
-Rails.application.configure do # rubocop:disable Metrics/BlockLength
+# The test environment is used exclusively to run your application's
+# test suite. You never need to work with it otherwise. Remember that
+# your test database is "scratch space" for the test suite and is wiped
+# and recreated between test runs. Don't rely on the data there!
+
+Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  # The test environment is used exclusively to run your application's
-  # test suite. You never need to work with it otherwise. Remember that
-  # your test database is "scratch space" for the test suite and is wiped
-  # and recreated between test runs. Don't rely on the data there!
+  # Turn false under Spring and add config.action_view.cache_template_loading = true.
   config.cache_classes = true
 
-  # Do not eager load code on boot. This avoids loading your whole application
-  # just for the purpose of running a single test. If you are using a tool that
-  # pre-loads Rails for running tests, you may have to set it to true.
-  config.eager_load = false
+  # For unit testing do not use REDIS as we do not have access, and we will be caching
+  # unit test data.
+  config.cache_store = :memory_store if ENV.key?('UNIT_TEST')
+
+  # Eager loading loads your whole application. When running a single test locally,
+  # this probably isn't necessary. It's a good idea to do in a continuous integration
+  # system, or in some way before deploying your code.
+  config.eager_load = ENV['CI'].present?
 
   # Configure public file server for tests with Cache-Control for performance.
   config.public_file_server.enabled = true
@@ -24,40 +29,31 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
   }
 
   # Show full error reports
-  config.consider_all_requests_local = true
-
-  # Turns caching on
+  config.consider_all_requests_local       = false
   config.action_controller.perform_caching = true
 
-  # use Redis for caching
-  config.cache_store = :redis_cache_store, cache_connection
-
-  # For now do not compress the css see https://github.com/sass/libsass/issues/2701
-  config.assets.css_compressor = nil
-
   # Raise exceptions instead of rendering exception templates.
-  config.action_dispatch.show_exceptions = false
+  #  config.action_dispatch.show_exceptions = false
 
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
 
-  # config.action_mailer.perform_caching = false
-
-  # Tell Action Mailer not to deliver emails to the real world.
-  # The :test delivery method accumulates sent emails in the
-  # ActionMailer::Base.deliveries array.
-  # config.action_mailer.delivery_method = :test
-
-  # Load the logging middleware
-  config.middleware.use RequestSummaryLogging::LogMiddleware
-
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
-  # Raises error for missing translations
-  # config.action_view.raise_on_missing_translations = true
+  # Raise exceptions for disallowed deprecations.
+  config.active_support.disallowed_deprecation = :raise
 
-  config.log_formatter = ::Logger::Formatter.new
+  # Tell Active Support which deprecation messages to disallow.
+  config.active_support.disallowed_deprecation_warnings = []
+
+  # Raises error for missing translations.
+  # config.i18n.raise_on_missing_translations = true
+
+  # Annotate rendered view with file names.
+  # config.action_view.annotate_rendered_view_with_filenames = true
+
+  config.log_formatter = Logger::Formatter.new
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
@@ -69,38 +65,13 @@ Rails.application.configure do # rubocop:disable Metrics/BlockLength
 
   # override the refresh so it doesn't run during the tests otherwise
   # it can break the savon mocking expectations
-  config.x.scheduled_jobs.refresh_ref_data_every = 120.minutes
-  config.x.scheduled_jobs.refresh_sys_params_every = 120.minutes
-  config.x.scheduled_jobs.refresh_pws_text_every = 120.minutes
-  config.x.scheduled_jobs.refresh_tax_relief_type_every = 120.minutes
-  config.x.scheduled_jobs.refresh_system_notice_every = 120.minutes
-  config.x.authorisation.cache_expiry = 120.minutes
+  config.x.scheduled_jobs.refresh_ref_data_every = 180.minutes
+  config.x.scheduled_jobs.refresh_sys_params_every = 180.minutes
+  config.x.scheduled_jobs.refresh_pws_text_every = 180.minutes
+  config.x.scheduled_jobs.refresh_tax_relief_type_every = 180.minutes
+  config.x.scheduled_jobs.refresh_system_notice_every = 180.minutes
+  config.x.authorisation.cache_expiry = 180.minutes
 
-  # Start ActiveJobs
-  config.after_initialize do
-    if ENV.fetch('PREVENT_JOBS_STARTING', nil) == 'Y' || ENV.key?('UNIT_TEST')
-      Rails.logger.info do
-        "Jobs not started PREVENT_JOBS_STARTING=#{ENV.fetch('PREVENT_JOBS_STARTING',
-                                                            nil)} UNIT_TEST=#{ENV.fetch('UNIT_TEST', nil)}"
-      end
-    else
-      # GetReferenceData/ReferenceValues refresh job
-      RefreshRefDataJob.schedule_next_run(1.second)
-
-      # getListSystemNotices refresh job
-      RefreshSystemNoticeJob.schedule_next_run(3.seconds)
-
-      # GetSystemParameters refresh job
-      RefreshSystemParametersJob.schedule_next_run(5.seconds)
-
-      # GetSystemParameters refresh job
-      RefreshPwsTextJob.schedule_next_run(7.seconds)
-
-      # Tax Relief Type refresh job
-      RefreshTaxReliefTypeJob.schedule_next_run(9.seconds)
-
-      # Delete the temporary files job
-      DeleteTempFilesJob.schedule_next_run(11.seconds)
-    end
-  end
+  # Prevent jobs running during unit tests
+  config.x.scheduled_jobs.job_offset = (ENV.key?('UNIT_TEST') ? 0.seconds : 2.seconds)
 end

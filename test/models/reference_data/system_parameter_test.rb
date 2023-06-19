@@ -1,20 +1,12 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'models/reference_data/memory_cache_helper'
 
 module ReferenceData
   # Tests caching ReferenceData::SystemParameter
   class SystemParameterTest < ActiveSupport::TestCase
-    include MemoryCacheHelper
-
-    # This tests caching behaviour so we need known cache state
     setup do
-      set_memory_cache
-    end
-
-    teardown do
-      restore_original_cache
+      Rails.cache.clear
     end
 
     # actual_cache[ReferenceData::SystemParameter.cache_key][COMP_KEY_1][HASH_KEY]=TEST_HASH_VALUE

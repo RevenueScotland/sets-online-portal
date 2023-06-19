@@ -1,9 +1,6 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.' + @claim_payment.translation_prefix + '_title') %>
-<% content_for :page_description, t('.' + @claim_payment.translation_prefix + '_address') %>
-<%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for [@claim_payment, @address_summary, @address_detail] %>
-  <br>
-  <%= render "/layouts/address" %>
-  <%= f.button %>
+<% content_for(:page_title, t('.' + @claim_payment.translation_prefix + '_title')) %>
+<%= ds_paragraph{ t('.' + @claim_payment.translation_prefix + '_address')} %>
+<%= ds_form_with(model: @claim_payment, url: @post_path, method: :post) do |f| %>
+  <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail,
+      show_address_detail: @show_manual_address, readonly: @address_read_only) %>
 <% end %>

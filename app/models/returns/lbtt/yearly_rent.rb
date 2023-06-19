@@ -45,8 +45,8 @@ module Returns
       # @return a hash suitable for use in a save request to the back office
       def request_save
         output = {}
-        output['ins1:Year'] = @year if @year.present?
-        output['ins1:RentAmount'] = @rent
+        output['ins0:Year'] = @year if @year.present?
+        output['ins0:RentAmount'] = @rent
         output
       end
 

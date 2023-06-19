@@ -2,7 +2,6 @@
 
 require 'test_helper'
 require 'print_data_test_helper'
-require 'models/reference_data/memory_cache_helper'
 require 'savon/mock/spec_helper'
 
 # Run tests that are included only in this file by:
@@ -16,12 +15,12 @@ module Claim
   # @note make sure that we're only including the attributes we need for the test case.
   class PrintDataTest < ActiveSupport::TestCase
     include PrintDataTestHelper
-    include ReferenceData::MemoryCacheHelper
 
     # This test relies on the cache so clear the cache first
     # and mock the calls to the back office to populate
     setup do
-      set_memory_cache
+      Rails.cache.clear
+
       @savon ||= Savon::SpecHelper::Interface.new
       @savon.mock!
 
@@ -32,7 +31,6 @@ module Claim
     teardown do
       @savon&.unmock!
       Rails.logger.debug { 'Mocking ended' }
-      restore_original_cache
 
       # Not all unit test has had their unauthenticated_declarations= modified, so we only need to do this for the ones
       # that had theirs modified. This reverts the ClaimPayment back to it's original.
@@ -129,17 +127,12 @@ module Claim
       @savon.expects(:get_reference_values_wsdl).returns(fixture)
     end
 
-    # Print data options specific to the claim
-    def print_data_options(object, layout)
+    # Object specific set up for this test
+    def object_specific_setup(object)
       # Some of the savon expectations are needed to be placed here as this is the area where the object can be
       # accessed, and there are information needed from the object to get the correct responses.
-      savon_expectations_user_setup(object.current_user, object.srv_code.downcase)
       savon_expectations_reference_values_setup
-
-      { print_layout: { account_type: User.account_type(object.current_user),
-                        translation_prefix: object.translation_prefix,
-                        translation_pdf_prefix: object.translation_prefix(:pdf_party_title) },
-        print_layout_receipt: { receipt: :receipt } }[layout]
+      savon_expectations_user_setup(object.current_user, object.srv_code.downcase)
     end
   end
 end

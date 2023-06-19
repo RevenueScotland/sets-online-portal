@@ -1,15 +1,14 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title,  t('signin') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @user, url: login_path, local: true do |f| %>
-  <%= form_errors_for @user %>
-  <%= notifications_for('PORTAL') %>
-  <%= f.text_field  :username, {}, {autocomplete: "username"} %>
-  <%= display_paragraph_components(body: navigational_links([{link: :forgotten_your_username, path: forgotten_username_path}])) %>
-  <%= f.password_field :password, {}, {autocomplete: "current-password"} %>
-  <%= display_paragraph_components(body: navigational_links([{link: :forgotten_your_password, path: forgotten_password_path}])) %>
-  <%= f.button 'signin'%>
-  <%= section_break %>
-  <%= display_paragraph_components(body: navigational_links([{link: :register_if_dont_have_account, path: accounts_registration_account_for_path}])) %>
-  <%= display_paragraph_components(body: navigational_links([{ link: :activate_account_link, path: activate_account_account_path, link_options: { sentence_for_swap_text: t('.activate_account_sentence') } }])) %>
+<% content_for(:page_title,  t('.title')) %>
+<% content_for(:navigation_link, :clear_stack) %>
+<% content_for(:notification_banner, rs_notification_banner(display_page: 'PORTAL')) %>
+<%= ds_form_with(model: @user, url: login_path, button_action: :signin) do |f| %>
+  <%= f.ds_text_field(method: :username, autocomplete: 'username') %>
+  <%= ds_paragraph { ds_link(url: forgotten_username_path, name: t('.forgotten_your_username'))} %>
+  <%= f.ds_password_field(method: :password, autocomplete: "current-password") %>
+  <%= ds_paragraph { ds_link(url: forgotten_password_path, name: t('.forgotten_your_password'))} %>
+  <br/>
+  <%= ds_paragraph { ds_link(url: accounts_registration_account_for_path, name: t('.register_if_dont_have_account'))} %>
+  <%= ds_paragraph do %>
+    <%= t('.activate_account_sentence', link: ds_link(url: activate_account_account_path, name: t('.activate_account_link'))).html_safe %>
+  <% end %>
 <% end %>

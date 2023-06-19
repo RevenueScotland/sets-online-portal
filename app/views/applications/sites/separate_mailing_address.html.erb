@@ -1,10 +1,9 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<%= form_for @site, url: @post_path, local: true do |f| %>
-  <%= form_errors_for [@site, @address_summary, @address_detail] %>
-  <%= f.collection_radio_buttons_fields(:operator_separate_mailing_address, @site.list_ref_data(:operator_separate_mailing_address)) %>
-    <div id= "hideable">
-      <%= render "/layouts/address" %>
-    </div>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @site, url: @post_path) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :operator_separate_mailing_address,
+                                options_list: @site.list_ref_data(:operator_separate_mailing_address), alignment: :horizontal) %>
+    <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail, 
+      show_address_detail: @show_manual_address, readonly: @address_read_only) %>
+  <% end %>
 <% end %>

@@ -1,72 +1,79 @@
-<% content_for :hide_back_link, :remove_param_new %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :page_description, t('.description') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<!-- Applies the CSS class 'external-link' to the navigation bar options, see return-form-dirty.js for details -->
-<% content_for :nav_bar_html_options, '{ class: "govuk-link external-link" }'.html_safe %>
-<!-- See return-form-dirty.js for details of the application of form-dirty-warning-message value of data property -->
-<%= form_for @slft_return, url: returns_slft_summary_path, method: :post, 
-            :data => { 'form-dirty-warning-message' => t('.form_dirty_warning_message') } , local: true do |f| %>
-  <%= form_errors_for @slft_return %>
-  <%= govuk_warning( t('.save_changes_warning') ) %>
-  <% transactions_nav_link = {
-    link: @slft_return.year.blank? ? :add_transaction_details : :edit_transaction_details,
-    path: returns_slft_transaction_period_path,
-    link_options: { id: 'add_return_period' } } %>
-  <%= display_region( {
-    header: { label: t('.transaction_subtitle') }.merge(transactions_nav_link),
-    data: [ { model: @slft_return,
-              attributes: [ { attribute: :year, format: :lookup_ref, skip: :if_blank },
-                            { attribute: :fape_period, format: :lookup_ref, skip: :if_blank },
-                            { attribute: :non_disposal_add_ind, format: :lookup_ref, skip: :if_blank },
-                            { attribute: :non_disposal_delete_ind, format: :lookup_ref, skip: :if_blank } ] } ]
-    },
-    { header: { link_cell_class: 'text_align_right' },
-      data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
-  %>
-  <% sites_description = @slft_return.sites.blank? ? { region_description: t('.no_sites_description_html') } : {} %>
-  <%= display_table_region( { 
-      header: { label: t('.sites_subtitle') }, 
-      description: sites_description,
-      table: { models: @slft_return.sites&.values, attributes: [:site_name, :net_lower_tonnage, :net_standard_tonnage, :exempt_tonnage, :total_tonnage],
-               actions: [ { label: t('.add_waste_details'), path: :returns_slft_site_waste_summary_path } ],
-               options: { summary: { total: { attributes: %i[net_lower_tonnage net_standard_tonnage exempt_tonnage total_tonnage], label: { cell: :site_name, text: t('.total') } }
-                                      } } } 
-      }, 
-      { header: { link_cell_class: 'text_align_right' } } ) %>
+<% content_for(:navigation_link, request.path) %>
+<% content_for(:back_link_data_action, "cancel-warning#displayWarning") %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_paragraph{t('.description')} %>
+<%= ds_form_with(model: @slft_return, url: returns_slft_summary_path, method: :post,
+                   button_action: :calculate_return, button_label: t('.calculate')) do |f| %>
+  <%= ds_warning{t('.save_changes_warning') } %>
+  <%= ds_table(caption: tag.h2(t('.transaction_subtitle'),class: 'ds_!_margin-bottom--0'),
+               id: 'return_period', small_screen: 'scrolling') do |table| %>
+    <% table.with_link( name: (@slft_return.year.blank? ? t('.add_transaction_details') : t('.edit_transaction_details')),
+               url: returns_slft_transaction_period_path) %>
+    <% table.with_row(model: @slft_return) do |row| %>
+      <% row.with_cell(method: :year, header: :label) %>
+      <% row.with_cell(method: :year, type: :lookup) %>
+    <% end %>
+    <% table.with_row(model: @slft_return) do |row| %>
+      <% row.with_cell(method: :fape_period, header: :label) %>
+      <% row.with_cell(method: :fape_period, type: :lookup) %>
+    <% end %>
+    <% table.with_row(model: @slft_return) do |row| %>
+      <% row.with_cell(method: :non_disposal_add_ind, header: :label) %>
+      <% row.with_cell(method: :non_disposal_add_ind, type: :lookup) %>
+    <% end %>
+    <% table.with_row(model: @slft_return) do |row| %>
+      <% row.with_cell(method: :non_disposal_delete_ind, header: :label) %>
+      <% row.with_cell(method: :non_disposal_delete_ind, type: :lookup) %>
+    <% end %>
+  <% end %>
+  <%= rs_site_table(sites: @slft_return.sites, caption: t('.sites_subtitle'), id: 'slft_sites', small_screen: 'scrolling') %>
   <% unless (@slft_return.deleted_sites||{}).count.zero? %>
-    <%= display_table_region( { 
-        header: { label: t('.deleted_sites_subtitle') }, 
-        description: { region_description: t('.deleted_sites_description') },
-        table: { models: @slft_return.deleted_sites&.values, attributes: [:site_name, :net_lower_tonnage, :net_standard_tonnage, :exempt_tonnage, :total_tonnage],
-                 options: {  } }
-        }, 
-        { header: { link_cell_class: 'text_align_right' } } ) %>
+    <%= rs_site_table(sites: @slft_return.deleted_sites, caption: t('.deleted_sites_subtitle'), id: 'deleted_sites', small_screen: 'scrolling', format: :deleted_sites) %>
   <% end %>
-  <% credits_nav_link = {
-    link: @slft_return.slcf_yes_no.blank? ? :add_credits_details : :edit_credits_details,
-    path: returns_slft_credit_environmental_path,
-    link_options: { id: 'add_credit_details' } } %>
-  <%= display_region( {
-    header: { label: t('.credits_subtitle') }.merge(credits_nav_link),
-    data: [ { model: @slft_return,
-              attributes: [ { attribute: :slcf_yes_no, format: :lookup_ref, skip: @slft_return.slcf_yes_no != 'N' },
-                            { attribute: :slcf_contribution, format: :money, skip: :if_blank },
-                            { attribute: :slcf_credit_claimed, format: :money, skip: :if_blank },
-                            { attribute: :bad_debt_yes_no, format: :lookup_ref, skip: @slft_return.bad_debt_yes_no != 'N' },
-                            { attribute: :bad_debt_credit, format: :money, skip: :if_blank },
-                            { attribute: :removal_credit_yes_no, format: :lookup_ref, skip: @slft_return.removal_credit_yes_no != 'N' },
-                            { attribute: :removal_credit, format: :money, skip: :if_blank } ] }
-          ]
-    }, 
-    { header: { link_cell_class: 'text_align_right' },
-      data: { heading_cell_class: 'region_data_heading', data_cell_class: 'text_align_right' } } )
-  %>
-  <% if can? AuthorisationHelper::SLFT_SAVE %>
-    <%= f.button 'save_draft', { :name => 'save_draft' }  %>
+  <%= ds_table(caption: tag.h2(t('.credits_subtitle'),class: 'ds_!_margin-bottom--0'),
+      id: 'credits_claimed', small_screen: 'scrolling') do |table| %>
+    <% table.with_link(name: (@slft_return.slcf_yes_no.blank? ? t('.add_credits_details') : t('.edit_credits_details')),
+                       url: returns_slft_credit_environmental_path) %>
+    <% if @slft_return.slcf_yes_no == 'N' %>
+      <% table.with_row(model: @slft_return) do |row| %>
+        <% row.with_cell(method: :slcf_yes_no, header: :label) %>
+        <% row.with_cell(method: :slcf_yes_no, type: :lookup) %>
+      <% end %>
+    <% else %>
+      <% table.with_row(model: @slft_return) do |row| %>
+        <% row.with_cell(method: :slcf_contribution, header: :label) %>
+        <% row.with_cell(method: :slcf_contribution, type: :currency) %>
+      <% end %>
+      <% table.with_row(model: @slft_return) do |row| %>
+        <% row.with_cell(method: :slcf_credit_claimed, header: :label) %>
+        <% row.with_cell(method: :slcf_credit_claimed, type: :currency) %>
+      <% end %>
+    <% end %>
+    <% if @slft_return.bad_debt_yes_no == 'N' %>
+      <% table.with_row(model: @slft_return) do |row| %>
+        <% row.with_cell(method: :bad_debt_yes_no, header: :label) %>
+        <% row.with_cell(method: :bad_debt_yes_no, type: :lookup) %>
+      <% end %>
+    <% else %>
+      <% table.with_row(model: @slft_return) do |row| %>
+        <% row.with_cell(method: :bad_debt_credit, header: :label) %>
+        <% row.with_cell(method: :bad_debt_credit, type: :currency) %>
+      <% end %>
+    <% end %>
+    <% if @slft_return.removal_credit_yes_no == 'N' %>
+      <% table.with_row(model: @slft_return) do |row| %>
+        <% row.with_cell(method: :removal_credit_yes_no, header: :label) %>
+        <% row.with_cell(method: :removal_credit_yes_no, type: :lookup) %>
+      <% end %>
+    <% else %>
+      <% table.with_row(model: @slft_return) do |row| %>
+        <% row.with_cell(method: :removal_credit, header: :label) %>
+        <% row.with_cell(method: :removal_credit, type: :currency) %>
+      <% end %>
+    <% end %>
   <% end %>
-  <% if can? AuthorisationHelper::SLFT_SUBMIT %>
-    <%= f.button 'calculate_return', { :name => 'calculate_return' }  %>
+  <% if can? RS::AuthorisationHelper::SLFT_SAVE %>
+    <%= f.ds_submit(button_action: 'save_draft', button_label: t('.save_draft'), type: :secondary) %>
   <% end %>
 <% end %>

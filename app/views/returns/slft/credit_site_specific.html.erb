@@ -1,11 +1,7 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @slft_return, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @slft_return %>
-  <%= f.collection_radio_buttons_fields(:removal_credit_yes_no, @slft_return.list_ref_data(:removal_credit_yes_no)) %>
-  <div id='hideable' class='govuk-radios__conditional'>
-    <%= f.currency_field :removal_credit %>
-  </div>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @slft_return, url: @post_path, method: :post) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :removal_credit_yes_no, options_list: @slft_return.list_ref_data(:removal_credit_yes_no), alignment: :horizontal) %>
+    <%= f.ds_currency(method: :removal_credit) %>
+  <% end %>
 <% end %>

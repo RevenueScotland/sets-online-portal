@@ -19,7 +19,7 @@ module Returns
     # returns/lbtt/calculation Allows editing the tax calculation.
     # Always goes to summary after successful editing
     def calculation
-      wizard_step(returns_lbtt_summary_path)
+      wizard_step(nil) { { next_step: :calculate_next_step, cache_index: LbttController } }
     end
 
     # returns/lbtt/calc_already_paid step to collect info about tax already paid.  Is optionally
@@ -60,6 +60,15 @@ module Returns
       required = :returns_lbtt_tax
       attribute_list = Lbtt::Tax.attribute_list
       params.require(required).permit(attribute_list) if params[required]
+    end
+
+    # change the page flow depending if reliefs are present or not
+    def calculate_next_step
+      if @lbtt_return.relief_claims.present?
+        returns_lbtt_reliefs_calculation_path
+      else
+        returns_lbtt_summary_path
+      end
     end
   end
 end

@@ -1,0 +1,72 @@
+en:
+  applications:  
+    slft:
+      public_landing:
+        title: "Online SLfT application form"
+        application_info_heading: "Use this online form to submit a new or review form for the following:"
+        application_info_description_html:
+          <ul>
+          <li>Water discount applications for waste producer or landfill operator</li>
+          <li>Full or partial restoration notifications</li>
+          <li>Non disposal applications</li>
+          <li>Alternative weighing method applications</li>
+          </ul>
+      applicant_type:
+        title: What is your role in the application?
+      application_type:
+        pdf_title: Application
+        title: Choose required application
+      existing_agreement:
+        title_LO: Review or new application
+        title_WP: Water discount renewal, review or new
+      applicant_details:
+        title: Landfill operator details
+        description: Provide the details of the landfill operator making this application
+      applicant_address:
+        title: Landfill operator address
+        description: Provide the address of the landfill operator making this application
+      supporting_documents:
+        title: Supporting documentation
+        description: Select all relevant documentation which you will be attaching to this application
+      waste_producer_details:
+        title: Waste producer details
+        description: Provide the details of the waste producer for this application
+      waste_producer_address:
+        title: Waste producer address
+        description: Provide the address of the waste producer for this application
+      about_waste_water:
+        title: About the waste water
+      banned_from_landfill:
+        title: Banned liquid waste
+        description: Confirm the following declaration
+      about_the_waste:
+        title: Tell us about the waste
+      about_water_content:
+        title: Tell us about the water content
+      water_treatment:
+        title: Water treatment
+        description: Have you carried out treatment to the waste to reduce or remove water content?
+      start_date:
+        title: Start date
+      declaration:
+        title: Declarations
+        description: List all relevant documentation which you will be attaching to this application
+        warning: "If you give false information, you may face penalties and/or prosecution"
+        declare: I declare that
+        submit: "Submit"
+      confirmation_and_document_upload:
+        title: Your application has been sent to Revenue Scotland
+        confirmation_email: A confirmation email has been sent to the email addresses provided.        
+        submitted_date: The submission date is %{system_date}
+        contact_us_html: We will aim to respond within 20 working days. In the meantime, full information and guidance is available on the %{link}. We will contact you if we need further information.
+        contact_us_link: "Revenue Scotland website"
+        print: Print confirmation details
+        evidence_heading: Upload evidence to support your application
+        evidence_body: The documents that you specified within the application
+        file_upload_hint_default: Failure to upload the supporting documents for all relevant sites at this stage may result in the application needing to be repeated.
+        download_application_pdf: Download details of application
+        code: Number
+        value: Document
+        
+        
+          

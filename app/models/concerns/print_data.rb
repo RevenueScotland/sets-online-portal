@@ -28,8 +28,8 @@
 #           :money - Passed to docmosis to use a money format with a pound sign
 #           :date - The value is a date to be formatted as dd Month YYYY
 #           :list - When the value is an array, and there is a lookup list,  format as Yes/No against each lookup value
-#   key_scope: If passed overrides the standard scope for getting the item label, otherwise the standard
-#              object scope is used, note the translation obeys the translation attributes overrides
+#   action_name: Get the label based on the action name (the view name)
+#   label: Override the default label, use false to suppress the label
 #   placeholder: If passed overrides the standard value from the attribute. This is of the form <%STRING%>
 #                this is replace by the back office before the format is save. The list is agreed with the back
 #                office and is used to insert values that we don't have e.g. reference
@@ -94,19 +94,19 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     # @param section_options [Hash] the hash being used to render this section
     # @param objects [Array] an array of objects when rendering a table
     # @param parent_section_options [Hash] the hash for the parent section when processing objects
-    # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
+    # @param object_index [Integer] If processing objects the index of the object
     # @return [SectionData] an instance of section data
-    def initialize(object, section_options, objects = nil, parent_section_options = nil, extra_data = nil)
+    def initialize(object, section_options, objects = nil, parent_section_options = nil, object_index: nil)
       use_parent_title = (parent_section_options || {})[:use_parent_title]
       # Pass the parent options down for initialisation if needed
       initialize_section_options(section_options, (use_parent_title ? parent_section_options : {}))
 
-      @sectiontitle = object.section_name(section_options, parent_section_options, extra_data)
+      @sectiontitle = object.section_name(section_options, parent_section_options)
 
       if sectiontype == :list
-        list_specific_items(object, section_options, extra_data)
+        list_specific_items(object, section_options, object_index: object_index)
       else
-        table_specific_items(objects, extra_data)
+        table_specific_items(objects)
       end
     end
 
@@ -154,30 +154,28 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     # For tables, loops around the array of objects and gets a row of data for each object
     # The data is split into row cells
     # @param objects [Array] an array of objects when rendering a table
-    # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
     # @return [Array] an array of strings with one entry per object
-    def tablerow_array(objects, extra_data)
+    def tablerow_array(objects)
       tablerow = []
       objects.each do |object|
-        tablerow << RowData.new(object.row_cells(extra_data))
+        tablerow << RowData.new(object.row_cells)
       end
       tablerow
     end
 
     # sets the list specific items
     # @param section_options [Hash] the hash being used to render this section
-    # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
-    def list_specific_items(object, section_options, extra_data)
-      @listitem = object.list_items(section_options[:list_items], extra_data)
+    # @param object_index [Integer] If processing objects the index of the object
+    def list_specific_items(object, section_options, object_index: nil)
+      @listitem = object.list_items(section_options[:list_items], object_index: object_index)
       @itemcount = @listitem.count
     end
 
     # Creates the table specific items
     # @param objects [Array] an array of objects when rendering a table
-    # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
-    def table_specific_items(objects, extra_data)
-      @tableheadings, @tablecolumncount = objects[0].table_headings(extra_data)
-      @tablerow = tablerow_array(objects, extra_data)
+    def table_specific_items(objects)
+      @tableheadings, @tablecolumncount = objects[0].table_headings
+      @tablerow = tablerow_array(objects)
       @tablerowcount = @tablerow.count
     end
   end
@@ -192,14 +190,12 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     # creates an item
     # @param object [Object] the object being rendered
     # @param item_options [Hash] the hash being used to render this item
-    # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
     # @return [ItemData] an instance of item data
-    def initialize(object, item_options, extra_data)
+    def initialize(object, item_options)
       @itemcode = item_options[:code]
       @itemformat = item_options[:format]
-      unless item_options[:nolabel]
-        @itemlabel = object.this_label(item_options[:code], item_options[:key_scope], item_options,
-                                       extra_data)
+      unless item_options[:label] == false
+        @itemlabel = object.this_label(item_options[:code], item_options[:action_name], item_options[:label])
       end
 
       @itemdata = object.this_value(item_options[:code], item_options[:lookup],
@@ -231,15 +227,15 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     # blank items must still have a place holder
     # @param object [Object] the object being rendered
     # @param list_items [Array] the one or more items in this cell
-    # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
+    # @param object_index [Integer] If processing objects the index of the object
     # @return [RowCell] an instance of the cell which is an array of strings
-    def initialize(object, list_items, extra_data)
+    def initialize(object, list_items, object_index: nil)
       list_items_count = list_items.count
       @rowcell = []
       list_items.each do |item|
-        next unless object.include_item_or_section?(item[:when], item[:is], item[:is_not], extra_data)
+        next unless object.include_item_or_section?(item[:when], item[:is], item[:is_not], object_index: object_index)
 
-        @rowcell << rowcell_value(object, item, list_items_count, extra_data)
+        @rowcell << rowcell_value(object, item, list_items_count)
       end
     end
 
@@ -249,15 +245,14 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     # @param object [Object] the object being rendered
     # @param item [Hash] the hash containing an individual item
     # @param item_count [Integer] the number of items in this cell
-    # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
     # @return [String] the formatted string for this item
-    def rowcell_value(object, item, item_count, extra_data)
+    def rowcell_value(object, item, item_count)
       this_value = object.this_value(item[:code], item[:lookup], item[:format],
                                      item[:placeholder])
-      if item_count == 1 || item[:nolabel]
+      if item_count == 1 || item[:label] == false
         this_value
       else
-        "#{object.this_label(item[:code], item[:key_scope], item, extra_data)} : #{this_value}"
+        "#{object.this_label(item[:code], item[:action_name], item[:label])} : #{this_value}"
       end
     end
   end
@@ -266,21 +261,20 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # basically it just adds the out wrapping section tag for the JSON
   # The translation options enables extra values to be passed in to assist in
   # looking up the translation keys
-  # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
   # @param layout [Symbol] The method to call on the model for the layout, the default is :print_layout
   # @return [Json] The json format of the wrapped sections for the printing
-  def print_data(layout = :print_layout, extra_data = nil)
-    PrintData.new(sections(layout, extra_data)).to_json
+  def print_data(layout = :print_layout)
+    PrintData.new(sections(layout)).to_json
   end
 
   # This is the main routine is loops through the sections defined on the underlying object from
   # the #print_layout method and then builds the sections and the items/tables that make it up.
   # @param layout [Symbol] The method to call on the model for the layout, the default is :print_layout
-  # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
   # @param parent_section [Hash] The options for the parent section used when processing objects
   # @param first_object [Boolean] Set if processing objects and this is the first object, used to control headings
+  # @param object_index [Integer] If processing objects the index of the object
   # @return [hash] the sections to be printed; may be merged into a parent object
-  def sections(layout, extra_data, parent_section = nil, first_object: false)
+  def sections(layout, parent_section = nil, first_object: false, object_index: nil)
     layout_print = send(layout)
 
     section_list = []
@@ -289,34 +283,32 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     layout_print.each_with_index do |section, i|
       next if section.nil?
 
-      Rails.logger.debug { "Section #{section[:code]} Type #{section[:type]} Extra Data #{extra_data.inspect}" }
-      next if skip_section(section, parent_section, extra_data)
+      Rails.logger.debug { "Section #{section[:code]} Type #{section[:type]} Object Index: #{object_index}" }
+      next if skip_section(section, parent_section, object_index: object_index)
 
-      section_list += process_section(layout, section, extra_data, parent_section,
-                                      (first_object && i.zero?))
+      section_list += process_section(layout, section, parent_section,
+                                      (first_object && i.zero?), object_index: object_index)
     end
     section_list # return the section list
   end
 
   # Creates the row headings for a table for this object by looping round the items and extracting the labels
-  # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
-  def table_headings(extra_data)
+  def table_headings
     tableheadings = []
     print_layout.each do |section|
       row_cells = section[:row_cells]
       raise Error::AppError.new('table_headings', 'No Row Cells defined') if row_cells.nil?
 
-      tableheadings += table_cell_headers(row_cells, extra_data)
+      tableheadings += table_cell_headers(row_cells)
     end
     [tableheadings, tableheadings.count]
   end
 
   # Creates the data row for a table for this object by looping round the items and extracting the values
-  # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
-  def row_cells(extra_data)
+  def row_cells
     rowdata = []
     print_layout.each do |section|
-      rowdata += row_cell_items(section[:row_cells], extra_data)
+      rowdata += row_cell_items(section[:row_cells])
     end
     rowdata
   end
@@ -327,45 +319,43 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param section_options [Hash] the hash being used to render this section
   # @param parent_section_options [Hash] the hash for the parent section if an object
   # @return [string] the section name to use
-  def section_name(section_options, parent_section_options, extra_data)
+  def section_name(section_options, parent_section_options)
     section_name = extract_name(parent_section_options)
-    section_name = extract_name(replace_section_name(section_options, extra_data)) if section_name.nil?
+    section_name = extract_name(replace_section_name(section_options)) if section_name.nil?
     section_name
   end
 
   # Returns the array of attributes and values (the list items) for this object based on the items list passed in
   # The item can contain a visibility check @see include_item_or_section?
   # @param list_items [Array] The array of item hashes being used to render this section
-  # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
+  # @param object_index [Integer] If processing objects the index of the object
   # @return [Array] the array of items to render
-  def list_items(list_items, extra_data)
+  def list_items(list_items, object_index: nil)
     list = []
     list_items.each do |item|
-      next unless include_item_or_section?(item[:when], item[:is], item[:is_not], extra_data)
+      next unless include_item_or_section?(item[:when], item[:is], item[:is_not], object_index: object_index)
 
-      list << ItemData.new(self, item, extra_data)
+      list << ItemData.new(self, item)
     end
     list
   end
 
   # Derives the label for this item, takes account of any overrides
   # defined in the #translation_attribute method on the object
-  # @param code [string] The name of the attribute
-  # @param key_scope [string] The scope for the translation
-  # @param options [Hash] The hash of options
-  # @param extra_data [Hash] a hash of extra translation options keyed on a value
+  # @param code [String] The name of the attribute
+  # @param action_name [Symbol] A specific action name to get the description for
+  # @param override_label [String] A specific label, used to show value of a code
+  #   if not a lookup
   # @return [string] the label for this item
-  def this_label(code, key_scope, options, extra_data)
-    options ||= {}
-    # Set the value of the translations options if a key was passed in to the item that is present in the extra data
-    unless options[:translation_extra].nil? || extra_data.nil?
-      options[:translation_options] = extra_data[options[:translation_extra]]
-    end
-    options[:key_scope] = i18n_item_scope(key_scope)
+  def this_label(code, action_name, override_label)
+    return override_label if override_label
 
-    label = UtilityHelper.label_text(self, code, **options)
+    label = Core::LabellerDelegate.new(klass_or_model: self, method: code,
+                                       action_name: action_name).label_text
     # Make sure breaks turn into returns for printing
     label = label.gsub('<br>', "\n")
+    # Remove any visually hidden spans
+    label = label.gsub(%r{<span class="visually-hidden">.*</span>}, '')
     # strip any other HTML out of the labels
     sanitizer = Rails::Html::FullSanitizer.new
     sanitizer.sanitize(label)
@@ -397,15 +387,15 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param when_method [Symbol] The method to be called, or the extra data key
   # @param is_array [Array] The array of values to check the result against positively, or the symbol nil
   # @param is_not_array [Array] The array of values to check the result against negatively, or the symbol nil
-  # @param extra_data [Hash] a hash of extra translation options keyed on a value
+  # @param object_index [Integer] The index of the object, returned if the method is object_index
   # @return [Boolean] should this value be included
-  def include_item_or_section?(when_method, is_array, is_not_array, extra_data)
+  def include_item_or_section?(when_method, is_array, is_not_array, object_index: nil)
     return true if when_method.nil?
 
-    value = include_item_or_section_value(when_method, extra_data)
+    value = include_item_or_section_value(when_method, object_index: object_index)
     response = value_is_in_check(value, is_array, true) && !value_is_in_check(value, is_not_array, false)
     Rails.logger.debug do
-      "Include Check #{when_method} Value #{value} is in #{is_array} is not in #{is_not_array} response: is #{response}"
+      "Include check #{response} [method #{when_method} value #{value} is in #{is_array} is not in #{is_not_array}]"
     end
     response
   end
@@ -450,27 +440,25 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # Returns the array of values for a row for this object based on the items list passed in
   # The item can contain a visibility check @see include_item_or_section? but if not visible an empty string is returned
   # @param cell_items [Array] The array of cell hashes being used to render this section
-  # @param extra_data [Hash] a hash of extra translation options keyed on a value
   # @return [Array] the array of values
-  def row_cell_items(cell_items, extra_data)
+  def row_cell_items(cell_items)
     list = []
     cell_items.each do |cell|
-      list << RowCell.new(self, cell[:list_items], extra_data)
+      list << RowCell.new(self, cell[:list_items])
     end
     list
   end
 
   # Returns the array of headers for a row for this object based on the items list passed in
   # @param row_cells [Array] The array of row_cells being used to render this section
-  # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
   # @return [Array] the array of header labels
-  def table_cell_headers(row_cells, extra_data)
+  def table_cell_headers(row_cells)
     list = []
 
     row_cells.each do |cell|
       list << if cell[:list_items].count == 1
                 item = cell[:list_items][0]
-                this_label(item[:code], item[:key_scope], item, extra_data) unless item[:nolabel]
+                this_label(item[:code], item[:action_name], item[:label]) unless item[:label] == false
               else
                 ''
               end
@@ -478,22 +466,15 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     list
   end
 
-  # Derives the scope for label translations either using teh key_scope passed in or based on the underlying model
-  # @param key_scope [Array] The key scope passed in from the config
-  # @return [string] the key scope that will be used
-  def i18n_item_scope(key_scope)
-    key_scope || [i18n_scope, :attributes, model_name.i18n_key]
-  end
-
   # Processes an individual section based on the options passed in
   # note that it returns an array as the section may be based on a list of objects
   # in which case each object is a section
   # @param section_options [Hash] The options to be used for this section
-  # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
   # @param parent_section_options [Hash] The options for the parent section when this is an object
   # @param use_parent_title [Boolean] Should you use the parent section to generate the section headers
+  # @param object_index [Integer] The index of the object in process objects
   # @return [Array] the sections rendered
-  def process_section(layout, section_options, extra_data, parent_section_options, use_parent_title)
+  def process_section(layout, section_options, parent_section_options, use_parent_title, object_index: nil)
     # for table and object types get the list of objects
     # skip if there are none
     if %i[object table].include?(section_options[:type])
@@ -505,9 +486,9 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     if %i[list table].include?(section_options[:type])
       # always return an array so wrap this in an array
       parent_section_options[:use_parent_title] = use_parent_title unless parent_section_options.nil?
-      [SectionData.new(self, section_options, objects, parent_section_options, extra_data)]
+      [SectionData.new(self, section_options, objects, parent_section_options, object_index: object_index)]
     else # object
-      process_objects_section(replace_section_name(section_options, extra_data), layout, objects, extra_data)
+      process_objects_section(replace_section_name(section_options), layout, objects)
     end
   end
 
@@ -527,18 +508,13 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # Processes an object section by looping around the objects
   # @param parent_section [Hash] The parent section being processed
   # @param objects [Array] the array of objects to be iterated around
-  # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
   # @return [Array] the sections rendered
-  def process_objects_section(parent_section, layout, objects, extra_data)
+  def process_objects_section(parent_section, layout, objects)
     return if objects.nil?
 
     section_list = []
     objects.each_with_index do |object, i|
-      extra_data ||= {}
-      # We're passing in the index of the object so that we can use it with things like showing or hiding a row of data
-      # depending on the index of the object.
-      extra_data[:object_index] = i
-      section_list += object.sections(layout, extra_data, parent_section, first_object: i.zero?)
+      section_list += object.sections(layout, parent_section, first_object: i.zero?, object_index: i)
     end
     section_list
   end
@@ -551,6 +527,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @return [string] the expanded value for this item
   def expand_value(code, value, lookup, format)
     return nil if value.blank?
+
     return lookup_ref_data_value(code, value) if lookup
     return value.to_date.strftime('%d %B %Y') if format == :date
 
@@ -558,21 +535,19 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   end
 
   # Gets the value for the include item processing
-  # @param when_method [Symbol] The method to be called, or the extra data key
-  # @param extra_data [Hash] a hash of extra translation options keyed on a value
+  # @param when_method [Symbol] The method to be called
+  # @param object_index [Integer] The index of the object, returned if the method is object_index
   # @return [Object] The value to be checked
-  def include_item_or_section_value(when_method, extra_data)
-    Rails.logger.debug { "When Method #{when_method} (#{respond_to?(when_method)}) Extra Data #{extra_data.inspect}" }
+  def include_item_or_section_value(when_method, object_index: nil)
+    Rails.logger.debug { "When Method #{when_method} (#{respond_to?(when_method)}) object_index is [#{object_index}]" }
 
-    if !extra_data.nil? && extra_data.key?(when_method)
-      extra_data[when_method]
-    else
-      unless respond_to?(when_method)
-        raise Error::AppError.new('include_item_or_section_value', "#{when_method} is not defined")
-      end
+    return object_index if when_method == :object_index
 
-      send(when_method)
+    unless respond_to?(when_method)
+      raise Error::AppError.new('include_item_or_section_value', "#{when_method} is not defined")
     end
+
+    send(when_method)
   end
 
   # Derives if this item should be included some items are only included when a
@@ -615,23 +590,21 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # It turns a key with a replace #key_value# into a string and a name method into the value
   # @param section_options [Hash] the hash being used to render this section
   # @return [Hash] the revised hash
-  def replace_section_name(section_options, extra_data)
-    section_options = replace_section_name_key(section_options, extra_data)
+  def replace_section_name(section_options)
+    section_options = replace_section_name_key(section_options)
     replace_section_name_name(section_options)
   end
 
   # This turns a key with a replace #key_value# into a string
   # @param section_options [Hash] the hash being used to render this section
   # @return [Hash] the revised hash
-  def replace_section_name_key(section_options, extra_data)
+  def replace_section_name_key(section_options)
     # If the key is a string replace value and turn it into a symbol
     unless section_options[:key].nil?
       # The :key_value can be used as the method to be called from the model OR
       # it can be called from the print_data's extra_data parameter.
       key_value = section_options.delete(:key_value)
-      unless key_value.nil?
-        value = extra_data.blank? || extra_data[key_value].nil? ? send(key_value) : extra_data[key_value]
-      end
+      value = send(key_value) unless key_value.nil?
       key = section_options[:key]
       section_options[:key] = key.sub('#key_value#', value).to_sym if key.is_a? String
     end
@@ -661,15 +634,16 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   #    The visibility rules exclude it
   # @param section [Hash] the section being processed
   # @param parent_section [Hash] The options for the parent section used when processing objects
-  # @param extra_data [Hash] a hash of extra data keyed on an arbitrary value
+  # @param object_index [Integer] The index of the object, returned if the method is object_index
   # @return [true] Should the section be skipped
-  def skip_section(section, parent_section, extra_data)
+  def skip_section(section, parent_section, object_index:)
     return true if section.nil? # allows for suppressed sections
     # Skip sections which are restricted to certain parent codes for objects
     return true unless section[:parent_codes].nil? || parent_section.nil? ||
                        section[:parent_codes].include?(parent_section[:code])
     # Skip sections which have visibility rules
-    return true unless include_item_or_section?(section[:when], section[:is], section[:is_not], extra_data)
+    return true unless include_item_or_section?(section[:when], section[:is], section[:is_not],
+                                                object_index: object_index)
 
     Rails.logger.debug { "Section #{section[:code]} Not Skipped" }
     false

@@ -4,7 +4,15 @@
 # note that most actions should be done in the context of the
 # current user
 class UsersController < ApplicationController
-  authorise route: %i[new create show index edit update], requires: AuthorisationHelper::CREATE_USERS
+  authorise route: %i[new create show index edit update], requires: RS::AuthorisationHelper::CREATE_USERS
+
+  # Renders a list of all users for the current user's account, optionally filtered by UserFilter.
+  def index
+    @user_filter = UserFilter.new(UserFilter.params(params))
+    @users, @pagination_collection = current_user.list_users(params[:page], @user_filter)
+    # Determines when the find functionality is executed in index page of financial transactions
+    @on_filter_find = !params[:user_filter].nil?
+  end
 
   # Support a show route and redirect to users list to avoid no route issue when using refresh after update
   def show
@@ -16,6 +24,11 @@ class UsersController < ApplicationController
     @user = User.new
   end
 
+  # Returns an existing user for editing
+  def edit
+    @user = find_user(params[:username])
+  end
+
   # Calls create for a new user
   def create
     @user = User.new(user_params)
@@ -24,16 +37,8 @@ class UsersController < ApplicationController
     if @user.save(current_user)
       redirect_to users_path
     else
-      render 'new'
+      render('new', status: :unprocessable_entity)
     end
-  end
-
-  # Renders a list of all users for the current user's account, optionally filtered by UserFilter.
-  def index
-    @user_filter = UserFilter.new(UserFilter.params(params))
-    @users, @pagination_collection = current_user.list_users(params[:page], @user_filter)
-    # Determines when the find functionality is executed in index page of financial transactions
-    @on_filter_find = !params[:user_filter].nil?
   end
 
   # Show change your password form.
@@ -49,7 +54,7 @@ class UsersController < ApplicationController
     if @user.update_password(password_params)
       redirect_after_successful_password_update
     else
-      render 'change_password'
+      render('change_password', status: :unprocessable_entity)
     end
   end
 
@@ -60,19 +65,17 @@ class UsersController < ApplicationController
 
   # Confirm the user has read the t&cs with the back office, and redirect to the
   # dashboard if that's successful
-  def confirm_update_tcs
+  def process_update_tcs
     @user = current_user
 
     if @user.confirm_tcs(tcs_params)
+      # Store the fact Ts and Cs are signed in the warden session
+      current_user.user_is_signed_ta_cs = 'Y'
+      request.env['warden'].set_user(current_user)
       redirect_to dashboard_path
     else
-      render 'update_tcs'
+      render('update_tcs', status: :unprocessable_entity)
     end
-  end
-
-  # Returns an existing user for editing
-  def edit
-    @user = find_user(params[:username])
   end
 
   # Calls update for an existing user.
@@ -84,23 +87,7 @@ class UsersController < ApplicationController
     if @user.update(user_params, current_user)
       redirect_to users_path
     else
-      render 'edit'
-    end
-  end
-
-  # Set up Memorable word and hint related to it
-  def memorable_word
-    @user = find_user(current_user.username)
-  end
-
-  # Actually attempt to save or update memorable word and hint for current_user
-  def update_memorable_word
-    @user = find_user(current_user.username)
-    # update_memorable_word assigns params to user object
-    if @user.update_memorable_word(memorable_word_params, current_user)
-      render 'memorable_word_confirmation'
-    else
-      render 'memorable_word'
+      render('edit', status: :unprocessable_entity)
     end
   end
 
@@ -133,17 +120,12 @@ class UsersController < ApplicationController
     params.require(:user).permit(:username, :user_is_signed_ta_cs)
   end
 
-  # controls the permitted parameters to this controller for confirming tcs related operations
-  def memorable_word_params
-    params.require(:user).permit(:memorable_question, :memorable_answer, :password)
-  end
-
   # Redirect to logout if a password change is required on the current user else show the change_password_confirmation.
   def redirect_after_successful_password_update
     if current_user.check_password_change_required?
       redirect_to logout_path
     else
-      render 'change_password_confirmation'
+      redirect_to user_change_password_confirmation_url
     end
   end
 end

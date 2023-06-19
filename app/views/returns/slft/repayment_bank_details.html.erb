@@ -1,10 +1,7 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @slft_return, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @slft_return %>
-  <%= f.text_field(:account_holder) %>
-  <%= f.text_field(:bank_account_no) %>
-  <%= f.text_field(:bank_sort_code) %>
-  <%= f.text_field(:bank_name) %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @slft_return, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_text_field(method: :account_holder) %>
+  <%= f.ds_text_field(method: :bank_account_no) %>
+  <%= f.ds_text_field(method: :bank_sort_code) %>
+  <%= f.ds_text_field(method: :bank_name) %>
 <% end %>

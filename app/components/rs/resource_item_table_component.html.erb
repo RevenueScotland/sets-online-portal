@@ -1,0 +1,29 @@
+<div class="ds_!_margin-bottom--2">
+  <%= ds_table(caption: caption, id: id, small_screen: small_screen) do |table| %>
+    <% table.with_header(klass: ResourceItem) do |header| %>
+      <% header.with_cell(method: :file_name) %>
+      <% header.with_cell(method: :description) if description %>
+      <% header.with_cell if delete %>
+    <% end %>
+    <% resource_items.each do |resource_item| %>
+      <% table.with_row(model: resource_item) do |row| %>
+        <% row.with_cell do %>
+          <% if download_actions.nil? || can?(download_actions) %>
+            <%= ds_link(name: resource_item.original_filename || resource_item.file_name,
+             url: derive_path(resource_item)
+             ) %>
+          <% else %>
+            <%= resource_item.file_name %>
+          <% end %>
+        <% end %>
+        <% row.with_cell do %>
+          <%= resource_item.description %>
+        <% end if description %>
+        <% row.with_cell do %>
+          <%= button_tag t('.delete_resource'), { :name => 'delete_resource', :class => 'ds_link', :id => 'DeleteResource', :value => resource_item.doc_refno } %>
+        <% end if delete %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= ds_pagination(collection: pagination_collection, region_name: region_name, page_name: page_name, anchor: id) %>
+</div>

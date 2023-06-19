@@ -1,9 +1,6 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<%= form_for @slft_application, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @slft_application %>
-  <%= f.text_area_field :type_of_waste_text %>
-  <%= f.text_area_field :how_produced %>
-  <%= f.text_area_field :how_added %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with( model: @slft_application, url: @post_path) do |f| %>
+  <%= f.ds_text_area(method: :type_of_waste_text) %>
+  <%= f.ds_text_area(method: :how_produced) %>
+  <%= f.ds_text_area(method: :how_added) %>
 <% end %>

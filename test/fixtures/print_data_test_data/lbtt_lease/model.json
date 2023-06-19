@@ -1,6 +1,6 @@
 {
     "json_class": "Returns::Lbtt::LbttReturn",
-    "is_public": false,
+    "user_account_type": "AGENT",
     "new_record": true,
     "tax": {
         "json_class": "Returns::Lbtt::Tax",
@@ -91,7 +91,7 @@
         }
     ],
     "linked_ind": "Y",
-    "non_ads_relief_claims": [
+    "relief_claims": [
         {
             "json_class": "Returns::Lbtt::ReliefClaim",
             "new_record": false,
@@ -114,7 +114,6 @@
             "relief_override_amount": "63"
         }
     ],
-    "non_ads_reliefclaim_option_ind": "Y",
     "declaration": "Y",
     "lease_declaration": "Y",
     "fpay_method": "DDEBIT",
@@ -226,5 +225,7 @@
     "rent_for_all_years": "N",
     "linked_lease_premium": "5300",
     "premium_paid": "Y",
-    "relevant_rent": "1240"
+    "relevant_rent": "1240",
+    "non_notifiable_submit_ind": "Y",
+    "non_notifiable_explanation": "Test"
 }

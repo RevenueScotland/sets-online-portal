@@ -1,8 +1,4 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.' + @claim_payment.translation_prefix + '_title') %>
-<%= form_for @claim_payment, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @claim_payment %>
-  <% f.current_browser = application_browser %>
-  <%= f.date_field :date_of_sale  %>
-  <%= f.button %>
+<% content_for(:page_title, t('.' + @claim_payment.translation_prefix + '_title')) %>
+<%= ds_form_with(model: @claim_payment, url: @post_path ) do |f| %>  
+  <%= f.ds_date_picker(method: :date_of_sale) %>
 <%end%>

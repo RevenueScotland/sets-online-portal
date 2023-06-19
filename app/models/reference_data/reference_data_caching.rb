@@ -75,7 +75,7 @@ module ReferenceData
 
       return Rails.logger.info("No #{name} data found for #{comp_key}") if safe_lookup
 
-      raise Error::AppError.new(500, "No #{name} #{type} data found for #{comp_key}")
+      raise Error::AppError.new(500, "No #{name} data found for #{comp_key}")
     end
 
     # Returns lists of reference data value arrays indexed by their composite keys ie so you only hit the cache once.

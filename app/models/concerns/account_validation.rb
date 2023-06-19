@@ -71,7 +71,6 @@ module AccountValidation
 
     errors.add(:forename, :cant_be_blank) if forename.to_s.empty?
     errors.add(:surname, :cant_be_blank) if surname.to_s.empty?
-
     names_length_valid?
   end
 
