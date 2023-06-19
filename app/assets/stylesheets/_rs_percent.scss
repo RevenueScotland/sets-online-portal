@@ -1,0 +1,37 @@
+/*------------------------------------*\
+    PERCENT WRAPPER (from CURRENCY)
+\*------------------------------------*/
+
+$input-height: 48px;
+
+.rs_percent-wrapper {
+    position: relative;
+
+    &::after {
+        @include ds_large-size;
+        content: '%';
+        height: $input-height;
+        font-weight: $bold;
+        line-height: $input-height !important;
+        pointer-events: none;
+        position: absolute;
+        text-align: center;
+        top: 0;
+        width: $input-height;
+        left: calc(7em - 8px);
+    }
+
+    &[data-symbol]::after {
+        content: attr(data-symbol);
+    }
+
+    &>.ds_input {
+        padding-right: 40px;
+    }
+
+    &>.ds_input:focus {
+        padding-right: 39px;
+    }
+
+
+}

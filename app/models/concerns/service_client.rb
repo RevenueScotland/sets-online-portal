@@ -32,8 +32,9 @@ module ServiceClient # rubocop:disable Metrics/ModuleLength
     return if body.nil?
 
     # this extracts the values for the hash, if these are an array then we have an array of an array so
-    # so flatten removes one of the arrays
-    body.values.flatten.each(&block)
+    # so flatten removes one of the arrays.
+    # the BO may send a blank entry so we remove it
+    body.values.flatten.compact.each(&block)
   end
 
   # class method to call the client returning the success flag
@@ -193,10 +194,10 @@ module ServiceClient # rubocop:disable Metrics/ModuleLength
   def ensure_message_on_fail(success, response)
     return if success || response.key?(:messages)
 
+    # We use the ORA code to trigger the standard try again message in update_ora_error_message
     response[:messages] = { message: {
-      code: 'NONE',
-      text: I18n.t('errors.error_report',
-                   error_ref: Error::ErrorHandler.log_message('Success == false no messages'))
+      code: 'ORA-0000',
+      text: 'Success == false no messages'
     } }
   end
 
@@ -218,8 +219,11 @@ module ServiceClient # rubocop:disable Metrics/ModuleLength
     return unless mess[:code].starts_with?('ORA-') ||
                   (mess[:code].starts_with?('DB-') && mess[:text] == 'An unexpected error occurred')
 
-    mess[:text] = I18n.t('errors.error_report',
-                         error_ref: Error::ErrorHandler.log_message("#{mess[:code]} #{mess[:text]}"))
+    error_reference = "E#{Time.now.to_i.to_s[5, 10]}"
+
+    Rails.logger.error("#{error_reference} for #{mess[:code]} #{mess[:text]}")
+
+    mess[:text] = I18n.t('errors.error_report', error_ref: error_reference)
   end
 
   # Adds a message to the correct model when received from the back office
@@ -230,8 +234,10 @@ module ServiceClient # rubocop:disable Metrics/ModuleLength
     attribute_name, model_name = translate_back_office_attribute(back_office_name)
 
     if model_name.nil?
+      Rails.logger.debug { "Adding error #{message} to #{self.class.name}" }
       errors.add(attribute_name, back_office_code.to_sym, message: message)
     else
+      Rails.logger.debug { "Adding error #{message} to #{model_name}" }
       send(model_name).errors.add(attribute_name, back_office_code.to_sym, message: message)
     end
   end

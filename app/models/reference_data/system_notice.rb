@@ -43,6 +43,12 @@ module ReferenceData
       @title
     end
 
+    # sort key, code is the order they are created
+    def sort_key
+      # Make sure sequence is at least 12 long to maintain numeric sorting
+      @code&.rjust(12, '0')
+    end
+
     # Calls the correct service and specifies where the results are in the response body
     private_class_method def self.back_office_data
       lookup_back_office_data(:list_system_notices, { WorkplaceCode: 'RSTU', TargetSystem: 'PWS', CurrentOnly: true },

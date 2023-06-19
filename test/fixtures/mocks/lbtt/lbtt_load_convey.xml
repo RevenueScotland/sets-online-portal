@@ -152,7 +152,7 @@
 						</Relief>
 						<Relief>
 							<Type>ADSFAMUNIT</Type>
-							<Amount>40</Amount>
+							<AmountAds>40</AmountAds>
 						</Relief>
 					</Reliefs>
 					<Calculated>106090.82</Calculated>

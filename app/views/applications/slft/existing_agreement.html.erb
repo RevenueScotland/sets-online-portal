@@ -1,13 +1,12 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title_' + @slft_application.applicant_type) %>
-<%= form_for @slft_application, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @slft_application %>
-  <%= f.collection_radio_buttons_fields(:existing_agreement, @slft_application.list_ref_data(:existing_agreement)) %>
-  <div id= "hideable">
+<% content_for(:page_title, t('.title_' + @slft_application.applicant_type)) %>
+<%= ds_form_with( model: @slft_application, url: @post_path, method: :post) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :existing_agreement, 
+      options_list:@slft_application.list_ref_data(:existing_agreement), alignment: :horizontal) %>
     <% if @slft_application.waste_producer_water_discount? %>
-      <%= f.collection_radio_buttons_fields(:renewal_or_review, @slft_application.list_ref_data(:renewal_or_review)) %>
+      <%= f.ds_radio_group(method: :renewal_or_review, options_list: @slft_application.list_ref_data(:renewal_or_review),
+                           alignment: :horizontal) %>
     <% end %>
-    <%= f.text_field :previous_case_reference %>
-  </div>
-  <%= f.button %>
+    <%= f.ds_text_field(method: :previous_case_reference, width:20) %>
+  <% end %>
 <% end %>

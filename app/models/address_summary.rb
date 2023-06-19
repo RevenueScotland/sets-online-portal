@@ -24,7 +24,7 @@ class AddressSummary < FLApplicationRecord
     return nil unless valid?(:search)
 
     success, addresses = call_address_service
-    errors.add(:postcode, (I18n.t '.no_address_search_results')) unless success && !addresses.empty?
+    errors.add(:postcode, :no_address_search_results) unless success && !addresses.empty?
     addresses if success && !addresses.empty?
   end
 

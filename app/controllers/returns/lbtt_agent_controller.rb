@@ -7,7 +7,7 @@ module Returns
     include Wizard
     include WizardAddressHelper
 
-    authorise requires: AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
     # Allow unauthenticated/public access to parties actions
     skip_before_action :require_user
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env ruby.exe
 # frozen_string_literal: true
 
 require 'fileutils'
@@ -17,10 +17,8 @@ FileUtils.chdir APP_ROOT do
 
   puts '== Installing dependencies =='
   system! 'gem install bundler --conservative'
+  system! 'bundle config mirror.https://rubygems.org http://vm-bld-ruby01.global.internal:9292'
   system('bundle check') || system!('bundle install')
-
-  # Install JavaScript dependencies
-  system! 'bin/yarn'
 
   puts "\n== Removing old logs and tempfiles =="
   system! 'bin/rails log:clear tmp:clear'

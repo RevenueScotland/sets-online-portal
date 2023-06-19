@@ -1,0 +1,45 @@
+<div class="ds_question<%= ' ds_question--error' if error_list.present? %>">
+  <% case  %>
+  <% when type == :date %>
+  <div data-module="ds-datepicker" class="ds_datepicker">
+    <% when field_group_type? %>
+    <fieldset id=<%=id%> <%= 'aria-invalid="true"' if error_list.present? %>>
+    <% end %>
+    <% if one_question %>
+      <% content_for(:label_as_title, label_text) %>
+      <header class="ds_page-header ds_!_margin-bottom--1">
+        <h1 class="ds_page-header__title">
+        <% end%>
+        <% if field_group_type? %>
+          <legend <%= 'class=visually-hidden' if label_visually_hidden||!show_label %>><%=label_text %></legend>
+          <% else %>
+            <%= builder.label(method, label_text, class: "ds_label#{' visually-hidden' if label_visually_hidden||!show_label}") %>
+          <% end %>
+          <% if one_question %>
+          </h1>
+        </header>
+      <% end %>
+      <% if hint_text.present? %>
+        <p id="<%=hint_id%>" class=<%= "ds_hint-text#{' visually-hidden' if label_visually_hidden||!show_label}"%>>
+          <%= hint_text %>
+        </p>
+      <% end %>
+      <% if error_list.present? %>
+        <p id="<%= error_id%>" class="ds_question__error-message">
+          <%=error_list.join("<br/>").html_safe%>
+        </p>
+      <% end %>
+      <% if field_group_type? %>
+        <div class="ds_field-group<%= ' ds_field-group--inline' if type== :field_group_inline %>">
+        <% end %>
+        <%= content %>
+        <% if field_group_type? %>
+        </div>
+      <% end %>
+      <% case %>
+      <% when type == :date %>
+    </div>
+    <% when field_group_type?%>
+  </fieldset>
+<% end %>
+</div>

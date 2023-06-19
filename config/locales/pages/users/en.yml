@@ -1,0 +1,27 @@
+en:
+  users:
+    index:
+      title: "Account users"
+      find: "Find"
+      caption: "List of all users"
+      new_user: "Create a new user for your account"
+    new:
+      title: "New user"
+      user_details: "User details"
+      contact_details: "Contact details"
+    edit:
+      title: "Update user"
+    show:
+      title: "User"
+    change_password:
+      title: "Change password"
+      change_password: "Change password"
+      title_expired_password: "Password expired"
+      description: "Your password has expired and must be changed to a new value. Once completed you will then need to login using your new password in order to access the system"
+    change_password_confirmation:
+      title: "Change password confirmation"
+      description: "Your Password has been successfully changed"
+      continue: "Continue"
+    update_tcs:
+      title: "Terms and conditions"
+      description: "In order to proceed you must read and accept the terms and conditions"

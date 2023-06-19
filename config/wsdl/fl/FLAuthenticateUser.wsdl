@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 17-Oct-2013   Version 1.0  -->
-<wsdl:definitions xmlns:ns="http://northgate-is.com/FL/AuthenticateUser" 
-	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
-	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
-	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+<wsdl:definitions xmlns:ns="http://northgate-is.com/FL/AuthenticateUser"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:tns="http://northgate-is.com/FL/AuthenticateUser.wsdl" targetNamespace="http://northgate-is.com/FL/AuthenticateUser.wsdl" name="AuthenticateUser">
 	<wsdl:types>
-		<xsd:schema xmlns="http://northgate-is.com/FL/Core" 
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
 			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:complexType name="PersonNameType">
 				<xsd:sequence>
@@ -134,8 +134,8 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
-		<xsd:schema xmlns="http://northgate-is.com/FL/AuthenticateUser" 
-			xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+		<xsd:schema xmlns="http://northgate-is.com/FL/AuthenticateUser"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://northgate-is.com/FL/AuthenticateUser" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:import namespace="http://northgate-is.com/FL/Core"/>
 			<xsd:complexType name="UserRolesType">

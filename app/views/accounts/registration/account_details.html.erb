@@ -1,4 +1,12 @@
 <% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= render "/layouts/account/basic", reg_organisation: false, other_organisation: false %>
+<%= ds_section_title(section_title: t('.section_title')) %>
+<%= ds_form_with(model: @account, url: @post_path) do |f| %>
+  <%= f.ds_fields_for(:current_user, @account.current_user) do |u| %>
+    <%= u.ds_text_field(method: :forename, autocomplete: 'given-name') %>
+    <%= u.ds_text_field(method: :surname, autocomplete: 'family-name') %>
+  <% end %>
+  <%= f.ds_text_field(method: :nino) if AccountType.individual?(@account.account_type) || AccountType.other_organisation?(@account.account_type)%>
+  <%= f.ds_text_field(method: :email_address, autocomplete: 'email') %>
+  <%= f.ds_text_field(method: :email_address_confirmation, autocomplete: 'email') %>
+  <%= f.ds_text_field(method: :contact_number, autocomplete: 'tel') %>
+<% end %>

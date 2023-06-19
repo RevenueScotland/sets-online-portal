@@ -1,11 +1,8 @@
-<% content_for :page_title, t('.title' , waste: @waste.ewc_code, site_name: @waste.site_name )  %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @waste, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @waste %>
-  <%= f.text_field :standard_tonnage %>
-  <%= f.text_field :lower_tonnage %>
-  <%= f.text_field :exempt_tonnage %>
-  <%= f.text_field :water_tonnage %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title' , waste: @waste.ewc_code, site_name: @waste.site_name ) ) %>
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_form_with(model: @waste, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_text_field( method: :standard_tonnage, width:20) %>
+  <%= f.ds_text_field( method: :lower_tonnage, width:20) %>
+  <%= f.ds_text_field( method: :exempt_tonnage, width:20) %>
+  <%= f.ds_text_field( method: :water_tonnage, width:20) %>
 <% end %>

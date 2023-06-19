@@ -12,11 +12,14 @@ When('I set a period of {string} and {string}') do |year, quarter|
   else
     click_link('Edit return period')
   end
+  step 'I should see the "What accounting period is this return for?" page'
   select year, from: 'year'
   choose(quarter, visible: false)
   click_button('Continue')
+  step 'I should see the "Non disposal area information" page'
   choose('No', visible: false)
   click_button('Continue')
+  step 'I should see the "Non disposal area information" page'
   choose('No', visible: false)
   click_button('Continue')
 end

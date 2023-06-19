@@ -8,17 +8,26 @@ module RegistrationAccountsCommon
 
   # controls the permitted parameters for account registration
   def register_account_params
-    filtered_params = params.require(:account).permit(Account.attribute_list.reject { |attr| attr == :taxes })
-    filtered_params.merge!(params.require(:account).permit(taxes: []))
-    filtered_params.merge!(register_account_type_params)
-    filtered_params
+    account_type_params = register_account_type_params
+
+    # Allow for taxes
+    permitted = Account.attribute_list.map { |attr| (attr == :taxes ? { taxes: [] } : attr) }
+
+    parameter_types = %w[current_user account_type company]
+    # current user is processed separately so reject it
+    account_params = params.require(:account).reject do |param|
+      parameter_types.include?(param)
+    end.permit(permitted)
+    account_params.merge(account_type_params)
   end
 
-  # Returns the account_type parameters
+  # controls the permitted parameters for account type on registration
   def register_account_type_params
-    return {} unless params[:account][:account_type]
-
-    params.require(:account).require(:account_type).permit(AccountType.attribute_list)
+    if params[:account][:account_type]
+      params.require(:account).require(:account_type).permit(AccountType.attribute_list)
+    else
+      {}
+    end
   end
 
   # Return the parameter list filtered for the attributes of the registration model, that apply

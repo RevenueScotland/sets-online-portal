@@ -1,36 +1,60 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :hide_back_link, true %>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <div class="govuk-panel govuk-panel--confirmation">
-      <%# On this page, the page_title above has been set to nil so that this is the only h1 tag that's on this page %>
-      <h1 class="govuk-panel__title">
-        <%= t('.return_submitted') %>
-      </h1>
-    </div>
-    <% if @lbtt_return.version == "1"
-          if @lbtt_return.flbt_type == 'CONVEY' 
-            return_type = 'LBTT_CONVEYANCE' 
-          elsif @lbtt_return.flbt_type == 'LEASERET' 
-            return_type = 'LBTT_LEASE'  
-          else
-            return_type = 'LBTT'
-          end
-        else
-          return_type = 'AMEND_LBTT'
-        end
-    %>
-    <%= render "/layouts/tax_return_submit_text", return_type: return_type,
-                                                  return_reference: @lbtt_return.tare_reference,
-                                                  payment_method: @lbtt_return.lookup_ref_data_value(:fpay_method),
-                                                  payment_due_date: @lbtt_return.payment_date %>
-    <p class="govuk-body">
-      <%= link_to t('go_to_dashboard'), dashboard_path if current_user %> <br>
-      <% link = [
-        { link: :public_landing_return_page, path: external_link_url('CANCEL_HOME') }
-        ] %>
-      <%= navigational_links(link) unless current_user%>
-    </p>
-  </div>
-</div>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_notification_panel(title: t('.return_submitted'), reference: @lbtt_return.tare_reference, success: true) %>
+<% if @lbtt_return.version == "1" %>
+  <%= ds_paragraph{t('return.submit.lbtt.heading_text')} %>
+<% else %>
+  <%= ds_paragraph{t('return.submit.lbtt.amend_return_reference_text')} %>
+<% end %>
+<%= ds_paragraph{t('return.submit.common.date_text', system_date: DateFormatting.to_display_date_format(Date.today))} %>
+<%= ds_summary_list(model: @lbtt_return, show_border: false) do |s| %>
+  <% s.with_item_method(method: :tare_reference) %>
+  <% s.with_item_method(method: :full_title_number, model: @lbtt_return.primary_property) %>
+  <% s.with_item_method(method: :full_address, model: @lbtt_return.primary_property.address) %>
+  <% s.with_item_method(method: :full_name, model: @lbtt_return.primary_party) %>
+  <% s.with_item_method(method: :flbt_type, type: :lookup) %>
+  <% s.with_item_method(method: :effective_date, type: :date) %>
+  <% s.with_item_method(method: :agent_reference, model: @lbtt_return.agent) if @lbtt_return.agent.present? %>
+<% end %>
+<% if @lbtt_return.version == "1" %>
+  <%= ds_paragraph{t('return.submit.lbtt.payment_due_text')} %>
+  <%= ds_paragraph{ t('return.submit.lbtt.payment_method_html',
+                      payment_method: @lbtt_return.lookup_ref_data_value(:fpay_method), link: 
+                      ds_link(name: t('return.submit.lbtt.payment_method_link'), url: external_link_url('LBTT_PAYMENT'), target: '_blank')) } %>
+<% else %>
+  <%= ds_paragraph{ t('return.submit.lbtt.amend_payment_method_html',
+                                     payment_method: @lbtt_return.lookup_ref_data_value(:fpay_method),
+                                     link: ds_link(name: t('return.submit.lbtt.payment_method_link'), url: external_link_url('LBTT_PAYMENT'))) } %>
+<% end %>
+<%= ds_paragraph{t('return.submit.lbtt.penalties_html',
+                                    penalties_link: ds_link(name: t('return.submit.lbtt.liable_to_penalties_link'), url: external_link_url('PENALTY')),
+                                    interest_link: ds_link(name: t('return.submit.lbtt.liable_to_interest_link'), url: external_link_url('INTEREST')) )} %>
+<% if !@lbtt_return.flbt_type == 'CONVEY' && @lbtt_return.version == "1" %>
+  <%= ds_paragraph{t('return.submit.lbtt.lease_html')} %>
+  <%= ds_paragraph{t('return.submit.lbtt.lease_further_information_html', 
+                                     link: ds_link(name: t('return.submit.lbtt.lease_further_information_link'), url: external_link_url('LEASE')) )} %>
+<% end %>
+<% if @lbtt_return.version > "1" %>
+  <%= ds_paragraph{t('return.submit.common.queries_contact_text_amend')} %>
+<% else %>
+  <%= ds_paragraph{t('return.submit.common.queries_contact_text')} if current_user %>
+<% end %>
+<%= ds_paragraph{ t('.include_transaction_ref_html') } %>
+<% if can? RS::AuthorisationHelper::DOWNLOAD_RECEIPT %>
+  <%= ds_link(name: t('return.submit.common.print_confirmation_text'), url: returns_lbtt_download_receipt_path, target: "_blank") %><br>
+<% end %>
+<%= ds_link(name: t('return.submit.common.send_secure_message_text'), url: new_dashboard_message_path(reference: @lbtt_return.tare_reference)) if current_user %> <br>
+<%= ds_link(name: t('go_to_dashboard'), url: dashboard_path) if current_user %> <br>
+<% ds_link(name: t('.public_landing_return_page'), url: external_link_url('CANCEL_HOME')) unless current_user %>
+<% link_target = if current_user
+                        case @lbtt_return.flbt_type 
+                          when 'CONVEY'
+                               'FDBK_CONVEY'
+                          when 'LEASERET'
+                               'FDBK_ORIG_LEASE'
+                          else 'FDBK_A_RVASTER'
+                          end
+                     else 'FDBK_UA_RVASTER'
+                     end
+ %>
+<%= ds_paragraph { ds_link(name: t('give_feed_back'), url: external_link_url(link_target),
+                             target: '_blank', subtype: :centered)} %>

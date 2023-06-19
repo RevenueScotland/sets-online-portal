@@ -1,9 +1,6 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @party, url: @post_path, method: :post, local: true do |f| %>
-  <% content_for :page_title, t('.'+@party.party_type+ '_title') %>
-  <%= form_errors_for @party %>
-  <%= f.collection_radio_buttons_fields(:is_acting_as_trustee, @party.list_ref_data(:is_acting_as_trustee),
-                                        text_links: { t('.is_acting_as_trustee_partnership') =>
-                                                    link_to(t('.is_acting_as_trustee_partnership'), external_link_url('REP_PARTNER'), target: '_blank')}) %>
-  <%= f.button %>
+<% content_for(:page_title, t('.'+@party.party_type+ '_title')) %>
+<%= ds_form_with(model: @party, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_radio_group(method: :is_acting_as_trustee, 
+        options_list: @party.list_ref_data(:is_acting_as_trustee),alignment: :horizontal,
+        interpolations: {link: ds_link(url: external_link_url('REP_PARTNER'), name: t('.is_acting_as_trustee_partnership'), target: '_blank') } ) %>
 <% end %>

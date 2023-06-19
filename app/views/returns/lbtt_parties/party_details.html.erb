@@ -1,24 +1,21 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @party, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @party %>
-  <% content_for :page_title, t('.'+@party.party_type+ '_title') %>
-  <%= f.select :title, @party.list_ref_data(:title), { optional:true }, {} %>
-  <%= f.text_field :firstname %>
-  <%= f.text_field :surname %>
+<% content_for(:page_title, t('.'+@party.party_type+ '_title')) %>
+<%= ds_form_with(model: @party, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_select(method: :title, select_options: @party.list_ref_data(:title), width: 10, optional: true) %>
+  <%= f.ds_text_field(method: :firstname) %>
+  <%= f.ds_text_field(method: :surname) %>
   <% if !%w[SELLER LANDLORD].include?(@party.party_type) %>
     <% if @party.party_type != 'NEWTENANT'%>
-      <%= f.text_field :telephone %>
-      <%= f.text_field :email_address %>
-      <%= f.text_field :nino%>
-      <%= render '/layouts/hideable_details/', { clickable_text: t('.'+@party.party_type+'_show_hide') } do %>
-        <%= f.select :alrt_type, @party.list_ref_data(:alrt_type), { include_blank: true }, {} %>
-        <%= f.select :ref_country, @party.list_ref_data(:ref_country), { text_auto_complete: true }, {} %>
-        <%= f.text_field :alrt_reference %>
+      <%= f.ds_text_field(method: :telephone) %>
+      <%= f.ds_text_field(method: :email_address) %>
+      <%= f.ds_text_field(method: :nino) %>
+      <%= ds_details(header: t('.'+@party.party_type+'_show_hide')) do %>
+        <%= f.ds_select(method: :alrt_type, select_options: @party.list_ref_data(:alrt_type), width: 10) %>
+        <%= f.ds_select(method: :ref_country, select_options: @party.list_ref_data(:ref_country), use_search: true) %>
+        <%= f.ds_text_field(method: :alrt_reference) %>
       <% end %>
     <% else %>
-      <%= f.text_field :telephone, { optional:true } %>
-      <%= f.text_field :email_address, { optional:true } %>
+      <%= f.ds_text_field(method: :telephone, optional:true) %>
+      <%= f.ds_text_field(method: :email_address, optional:true) %>
     <% end %>
   <% end %>
-  <%= f.button %>
 <% end %>

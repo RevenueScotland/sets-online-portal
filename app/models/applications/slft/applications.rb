@@ -346,7 +346,7 @@ module Applications
       # @return a hash suitable for use in download pdf request to the back office
       def request_pdf_elements
         # One submission may create more than one case but the PDF is the same for all so just pick the first one
-        { Authenticated: 'no', 'ins1:CaseRefno': @case_ref_nos[0], 'ins1:CaseReference': @case_references[0] }
+        { Authenticated: 'no', CaseRefno: @case_ref_nos[0], CaseReference: @case_references[0] }
       end
 
       # @return [Hash] of waste producer details
@@ -356,7 +356,7 @@ module Applications
         { 'ins1:OrganisationName': waste_producer.organisation_name,
           'ins1:TelephoneNumber': waste_producer.telephone_number,
           'ins1:EmailAddress': waste_producer.email_address,
-          'ins1:ContactAddress': waste_producer.address.format_to_back_office_address }
+          'ins1:ContactAddress': waste_producer.address.format_to_back_office_address('ins0') }
       end
 
       # @return [Hash] of added all sites and their details
@@ -371,7 +371,7 @@ module Applications
           'ins1:SiteName': site.site_name,
           'ins1:LandfillOpName': site.landfill_operator,
           'ins1:LandfillOpRegNumber': site.slft_registration_number,
-          'ins1:SiteAddress': site.address.format_to_back_office_address }
+          'ins1:SiteAddress': site.address.format_to_back_office_address('ins0') }
       end
 
       # @return [Hash] of landfill operator details
@@ -382,7 +382,7 @@ module Applications
           'ins1:LandfillOpRegNumber': landfill_operator.slft_registration_number,
           'ins1:LandfillOpPhoneNumber': landfill_operator.telephone_number,
           'ins1:LandfillOpEmail': landfill_operator.email_address,
-          'ins1:LandfillOpAddress': landfill_operator.address.format_to_back_office_address }
+          'ins1:LandfillOpAddress': landfill_operator.address.format_to_back_office_address('ins0') }
       end
 
       # @return [Hash] elements used to specify the declaration details data we want to send to the back office

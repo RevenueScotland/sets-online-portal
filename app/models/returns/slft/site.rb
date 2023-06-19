@@ -7,6 +7,7 @@ module Returns
     class Site < FLApplicationRecord
       include PrintData
       include CsvHelper
+      include Slft::SiteCsvImporting
 
       # Attributes for this class, in list so can re-use
       def self.attribute_list
@@ -96,14 +97,14 @@ module Returns
       # @return a hash suitable for use in a save request to the back office
       def request_save
         # doesn't include '@total_tonnage as that's always derived
-        output = { 'ins1:SiteName': site_name, 'ins1:LASIRefno': @lasi_refno,
-                   'ins1:TotalLowerTonnage': net_lower_tonnage, 'ins1:TotalStandardTonnage': net_standard_tonnage,
-                   'ins1:TotalExemptTonnage': exempt_tonnage, 'ins1:TotalWaterTonnage': water_tonnage }
+        output = { 'ins0:SiteName': site_name, 'ins0:LASIRefno': @lasi_refno,
+                   'ins0:TotalLowerTonnage': net_lower_tonnage, 'ins0:TotalStandardTonnage': net_standard_tonnage,
+                   'ins0:TotalExemptTonnage': exempt_tonnage, 'ins0:TotalWaterTonnage': water_tonnage }
 
         # don't include wastes section if there's no wastes data
         return output if wastes.blank?
 
-        output['ins1:SiteSpecificWastes'] = { 'ins1:SiteSpecificWaste': wastes.values.map(&:request_save) }
+        output['ins0:SiteSpecificWastes'] = { 'ins0:SiteSpecificWaste': wastes.values.map(&:request_save) }
         output
       end
 
@@ -111,15 +112,6 @@ module Returns
       def request_calc
         { 'ins1:SiteID': lasi_refno, 'ins1:StandardTonnage': net_standard_tonnage,
           'ins1:LowerTonnage': net_lower_tonnage }
-      end
-
-      # Loads the CSV file into an array of rows, which are themselves arrays of data.
-      # @param resource_item [Object] A resource item that represents the CSV file to be imported, any errors
-      #   at a file level (can't open file, not a well formed CSV file) will be added to this resource_item
-      # return [Array] array of imported data
-      def import_waste_csv_data(resource_item)
-        csv_import resource_item, Returns::Slft::Waste
-        @imported
       end
 
       # Export the site's wastes details as separate CSV files into the supplied parent folder
@@ -190,7 +182,7 @@ module Returns
       # @param filename [String] the filename to sanitise
       # @return [String] the sanitised filename
       def sanitise_filename(filename)
-        filename.gsub(/[^a-z0-9\-]+/i, '_')
+        filename.gsub(/[^a-z0-9-]+/i, '_')
       end
     end
   end

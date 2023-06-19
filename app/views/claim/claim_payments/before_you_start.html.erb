@@ -1,12 +1,7 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @claim_payment %>
-  <%= display_paragraph_components(heading: t('.info_needed_heading'), body: t('.info_needed_description_html')) %>
-  <%# = display_paragraph_components(heading: t('.form_completion_heading'), body: t('.form_completion_description_html', ref_link: link_to(t('.ref_message'), login_path))) %>
-  <%= display_paragraph_components(heading: t('.form_completion_heading'), 
-                                   body:  UtilityHelper.swap_texts(t('.form_completion_description_html'), 
-                                            text_links: { t('.form_completion_description_link') => 
-                                              link_to(t('.form_completion_description_link'), login_path) } )) %>
-  <%= f.button 'start_now', { :name => 'continue' }  %>
-<% end %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_section_title(section_title: t('.info_needed_heading')) %>
+<%= ds_paragraph{ t('.info_needed_description_html')} %>
+<%= ds_section_title(section_title: t('.form_completion_heading')) %>
+<%= ds_paragraph{t('.form_completion_description_html',
+   link: ds_link(url: login_path, name: t('.form_completion_description_link') ))} %>
+<%= ds_button(name: t('.startnow'), url: claim_claim_payments_return_reference_number_path ) %>

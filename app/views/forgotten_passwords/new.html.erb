@@ -1,13 +1,10 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_description, t('.description') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @forgotten_password, url: forgotten_password_path, local: true do |f| %>
-  <%= form_errors_for @forgotten_password %>
-  <%= f.text_field :email_address, {}, {autocomplete: "email"} %>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_paragraph {t('.description')} %>
+<%= ds_form_with(model: @forgotten_password, url: forgotten_password_path, button_action: :change_password) do |f| %>
+  <%= f.ds_text_field(method: :email_address,autocomplete: "email") %>
   <%# We don't use autocomplete on the username field as chromium based browsers populate it with the email when the email field is populated %>
-  <%= f.text_field :username %>
-  <%= f.password_field :new_password, {}, {autocomplete: "new-password"} %>
-  <%= f.password_field :new_password_confirmation, {}, {autocomplete: "new-password"} %>
-  <%= f.button '.change_password' %>
+  <%= f.ds_text_field(method: :username) %>
+  <%= f.ds_password_field(method: :new_password, autocomplete: "new-password") %>
+  <%= f.ds_password_field(method: :new_password_confirmation, autocomplete: "new-password") %>
 <% end %>

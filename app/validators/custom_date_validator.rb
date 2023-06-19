@@ -20,7 +20,7 @@ class CustomDateValidator < ActiveModel::EachValidator
   # @example In LbttReturn model, to validate value in the effective_date is valid date or not
   #   validates :effective_date, custom_date: true, presence: true, on: :effective_date
   def validate_each(record, attribute, value)
-    return if value.blank?
+    return if value.blank? || value.is_a?(Date)
 
     # Check the date is parsable
     record.errors.add(attribute, :is_invalid) && return unless date_parsable? value

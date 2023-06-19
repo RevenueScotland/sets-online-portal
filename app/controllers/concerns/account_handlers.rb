@@ -7,7 +7,7 @@ module AccountHandlers
 
   # Allow pages to be unauthenticated
   included do
-    skip_before_action :require_user, only: %I[activate_account process_activate_account]
+    skip_before_action :require_user, only: %I[activate_account process_activate_account activate_account_confirmation]
   end
 
   # show account details
@@ -23,6 +23,7 @@ module AccountHandlers
   def edit_basic
     @account = Account.find(current_user)
     @user = @account.current_user
+    # Below is used to control post on generic layout
     @post_path = update_basic_account_path
   end
 
@@ -32,8 +33,9 @@ module AccountHandlers
     @account = Account.new(update_params)
     return redirect_to account_path if @account.update_basic(update_params, current_user)
 
+    # Below is used to control post on generic layout
     @post_path = update_basic_account_path
-    render 'edit_basic'
+    render('edit_basic', status: :unprocessable_entity)
   end
 
   # display the address page
@@ -51,7 +53,7 @@ module AccountHandlers
     elsif @account.update_address(address_params, current_user, address_validation_contexts)
       redirect_to account_path
     else
-      render 'edit_address'
+      render('edit_address', status: :unprocessable_entity)
     end
   end
 
@@ -63,8 +65,13 @@ module AccountHandlers
   # Perform activate account processing
   def process_activate_account
     @account = Account.new(params.require(:account).permit(:registration_token))
-    return render 'activate_account_confirmation' if @account.activate
-
-    render 'activate_account'
+    if @account.activate
+      redirect_to activate_account_confirmation_account_url
+    else
+      render('activate_account', status: :unprocessable_entity)
+    end
   end
+
+  # confirmation page
+  def activate_account_confirmation; end
 end

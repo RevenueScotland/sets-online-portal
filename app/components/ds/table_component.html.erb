@@ -1,0 +1,17 @@
+<table class="ds_table" <%= "data-smallscreen=#{small_screen}" if small_screen %> <%= "id=#{id}" if id %>>
+  <caption class="ds_!_margin-bottom--0">
+    <%= caption %>
+    <% if content %>
+      <p> <%= content %> </p>
+    <% end %>
+    <%= link if link? %>
+  </caption>
+  <thead>
+    <%= header %>
+  </thead>
+  <tbody>
+    <% rows.each do |row| %>
+      <%= row %>
+    <% end %>
+  </tbody>
+</table>

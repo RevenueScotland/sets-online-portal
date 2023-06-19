@@ -1,4 +1,20 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<%= render "/layouts/account/basic", confirm: true, reg_organisation: registered_organisation?,
-    other_organisation: other_organisation?, use_account_for_name: true, inc_reg_type: true, edit: true %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @account, button_action: :confirm, action_name: :confirm, url: @post_path, autocomplete: 'on') do |f| %>
+  <%= f.ds_fields_for(@account.account_type) do |at| %>
+    <%= at.ds_hidden_field(:registration_type) %>
+  <% end %>
+  <% if AccountType.other_organisation?(@account.account_type) %>
+    <%= f.ds_fields_for(@account.company) do |c| %>
+      <%= c.ds_text_field(method: :company_name) %>
+    <% end %>
+  <% elsif !AccountType.registered_organisation?(@account.account_type) %>
+    <%= f.ds_text_field(method: :forename) %>
+    <%= f.ds_text_field(method: :surname) %>
+  <% end %>
+  <%= f.ds_text_field(method: :email_address) %>
+  <%= f.ds_text_field(method: :email_address_confirmation) %>
+  <%= f.ds_text_field(method: :contact_number) %>
+  <% unless AccountType.registered_organisation?(@account.account_type)%>
+    <%= f.ds_text_field(method: :nino) %>
+  <% end %>
+<% end %>

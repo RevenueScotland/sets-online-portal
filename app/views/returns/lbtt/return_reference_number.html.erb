@@ -1,7 +1,6 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title')%>
-<%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
-  <%= f.text_field :orig_return_reference %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title'))%>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post, local: true, action: :confirm) do |f| %>
+  <%= f.ds_text_field(method: :orig_return_reference) %>
+  <%= f.ds_date_picker(method: :orig_effective_date, interpolations: { link: ds_link(name: t('.orig_effective_date'), url: external_link_url('EFFECTIVE_DATE'), target: '_blank') } 
+  ) %>
 <% end %>

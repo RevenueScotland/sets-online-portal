@@ -47,7 +47,7 @@ class Company # rubocop:disable Metrics/ClassLength
        list_items: [{ code: :company_number },
                     { code: :company_name },
                     { code: :address_line1 },
-                    { code: :address_line2, nolabel: true },
+                    { code: :address_line2, label: false },
                     { code: :locality },
                     { code: :county },
                     { code: :postcode },
@@ -64,7 +64,7 @@ class Company # rubocop:disable Metrics/ClassLength
     return nil unless valid?(:search)
 
     success = call_company_service
-    errors.add(:company_number, (I18n.t '.no_company_search_results')) if success && !company_name?
+    errors.add(:company_number, :no_company_search_results) if success && !company_name?
     success
   end
 
@@ -96,11 +96,12 @@ class Company # rubocop:disable Metrics/ClassLength
   # Returns a translation attribute where a given attribute may have more than one name based on e.g. a type
   # it also allows for a different attribute name for the error region for e.g. long labels
   # @param attribute [Symbol] the name of the attribute to translate
-  # @param extra [Object] in this case the account type being processed passed from the page
+  # @param _translation_options [Object] extra information passed from the page
   # @return [Symbol] the name of the translation attribute
-  def translation_attribute(attribute, extra = nil)
+  def translation_attribute(attribute, _translation_options = nil)
     return attribute unless attribute == :company_name
-    return :OTHER_company_name if attribute == :company_name && !extra.nil? && AccountType.other_organisation?(extra)
+
+    return :OTHER_company_name unless company_number?
 
     :COMPANY_company_name
   end

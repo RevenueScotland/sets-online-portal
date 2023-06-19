@@ -1,42 +1,26 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= sub_heading %>
-<%= form_for @transaction_filter, url: dashboard_financial_transactions_path, :method => 'get', local: true do |form| %>
-  <%= form_errors_for @transaction_filter %>
-  <% form.current_browser = application_browser %>
-  <%= form.text_field :related_reference %>
-  <%= render '/layouts/hideable_details/', { clickable_text: [t('filter_show'), t('filter_hide')] } do %>
-    <%= form.currency_field :amount %>
-    <%= render '/layouts/fields_range/' do %>
-      <%= form.currency_field :minimum_amount, { width: 'two-thirds' } %>
-      <%= form.currency_field :maximum_amount, { width: 'two-thirds' } %>
+<% content_for(:navigation_link, :clear_stack) %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @transaction_filter, url: dashboard_financial_transactions_path, method: :get, 
+                 button_action: :find, autofocus: @on_filter_find) do |f| %>
+  <%= f.ds_text_field(method: :related_reference) %>
+  <%= ds_details(header: t('.filter_show')) do %>
+    <%= f.ds_currency(method: :amount) %>
+    <%= ds_field_set do %>
+      <%= f.ds_currency(method: :minimum_amount) %>
+      <%= f.ds_currency(method: :maximum_amount) %>
     <% end %>
-    <%= form.date_field :actual_date %>
-    <%= render '/layouts/fields_range/' do %>
-      <%= form.date_field :actual_date_from, { width: 'full' } %>
-      <%= form.date_field :actual_date_to, { width: 'full' } %>
+    <%= f.ds_date_picker(method: :actual_date) %>
+    <%= ds_field_set do %>
+      <%= f.ds_date_picker(method: :actual_date_from) %>
+      <%= f.ds_date_picker(method: :actual_date_to) %>
     <% end %>
-    <%= form.date_field :effective_date, value: @transaction_filter.effective_date %>
-    <%= render '/layouts/fields_range/' do %>
-      <%= form.date_field :effective_date_from, { width: 'full' } %>
-      <%= form.date_field :effective_date_to, { width: 'full' } %>
+    <%= f.ds_date_picker(method: :effective_date) %>
+    <%= ds_field_set do %>
+      <%= f.ds_date_picker(method: :effective_date_from) %>
+      <%= f.ds_date_picker(method: :effective_date_to) %>
     <% end %>
   <% end %>
-  <br>
-  <%= form.button t('.find'), autofocus: (@on_filter_find && !content_for?(:form_error_found)) %>
 <% end %>
 <br>
-<%= display_table(@transactions,
-                  [:actual_date, :effective_date, :related_reference, :description, :amount, :outstanding_balance],
-                  [
-                    { label: t('.show'), action: :show }
-                  ],
-                  { actual_date: {format: :date},
-                    effective_date: {format: :date},
-                    amount: {format: :money},
-                    outstanding_balance: {format: :money} }) %>
-<%= paginate @pagination_collection %>
-<% if @transactions.nil? %>
-  <%= display_paragraph_components(body: t('.no_data_found')) %>
-<% end %>
+<%= rs_financial_transaction_table(financial_transactions:@transactions, caption: t('.caption'), id: 'financial_transactions',
+                                   small_screen: 'scrolling', pagination_collection: @pagination_collection)%>

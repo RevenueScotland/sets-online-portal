@@ -1,16 +1,16 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
 <% count = params[:sub_object_index].to_i %>
-<% content_for :page_title, t('.' + @claim_payment.translation_prefix(:party_title) + '_title', count: count, total: @claim_payment.number_of_buyers) %>
-<% content_for :page_description, t(translation_for_index('.' + @claim_payment.translation_prefix + '_description', count)) %>
-<%= form_for @party, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for [@party, @address_summary, @address_detail, @claim_payment] %>
+<% content_for(:page_title, t('.' + @claim_payment.translation_prefix(:party_title) + '_title', count: count, total: @claim_payment.number_of_buyers)) %>
+<%= ds_paragraph{t(translation_for_index('.' + @claim_payment.translation_prefix + '_description', count))}%>
+<%= ds_form_with( model: @party, url: @post_path, method: :post) do |f| %>
   <% if count > 1 %>
-    <%= f.collection_radio_buttons_fields(:same_address, @party.list_ref_data(:same_address), translation_options: @claim_payment.translation_prefix, alignment: 'vertical') %>
-    <div id= "hideable" class='govuk-radios__conditional'>
-      <%= render "/layouts/address" %>
-    </div>
+    <%= rs_conditional_visibility(visible_value: "N") do |c| %>
+      <% c.with_visibility_control_radio_group(builder: f.builder, method: :same_address, 
+      options_list:@party.list_ref_data(:same_address), alignment: :horizontal ) %>
+      <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail,
+      show_address_detail: @show_manual_address, readonly: @address_read_only) %>
+    <% end %>
   <% else %>
-    <%= render "/layouts/address" %>
+    <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail,
+      show_address_detail: @show_manual_address, readonly: @address_read_only) %>
   <% end %>
-  <%= f.button %>
 <% end %>

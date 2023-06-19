@@ -1,0 +1,33 @@
+en:
+  applications:
+    sites:
+      summary:
+        title: "Landfill sites"
+        description: "Add the details of the landfill site(s) that are applicable to this application"
+        edit_row: "Edit"
+        delete_row: "Remove"
+        add_site: "Add site"
+      details:
+        title: "Landfill site details"
+        description: "Provide the details of the landfill site"
+      address:
+        title: "Site address"
+        description: "Provide the address of the landfill site"
+      non_disposal_details:
+        title: "Non-disposal area site details"
+      wastes:
+        title_LO-RA: "Site restoration details"
+        title_LO-WD: "Site waste details"
+        wastes_LO-RA: "Provide an estimate of the total tonnage and specific type of material required to restore the area(s) included in the agreement"
+        wastes_LO-WD: "Enter details of the types of waste that you will receive at the site and state whether they will contribute to leachate"
+        type_of_waste: "Type of waste"
+        estimated_tonnage: "Estimated tonnage"
+        final_destination: "Final destination"
+        use: "Use"
+        RA_table_heading: "Provide an estimate of the total tonnage and specific type of material required to restore the area(s) included in the agreement"
+        LO-WD_table_heading: "Provide details of the types of waste that you will receive at this site and the final destination and use of the waste in the landfill ? (i.e. will this contribute to leachate?)"
+      separate_mailing_address: 
+        title: "Separate mailing address for landfill operator"
+      type_of_waste:
+        title: "Site waste details"
+        description: "Provide the details of the waste for this site"

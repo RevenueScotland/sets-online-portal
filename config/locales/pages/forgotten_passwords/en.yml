@@ -1,0 +1,8 @@
+en:
+  forgotten_passwords:
+    new:
+      title: "Forgotten password"
+      description: "Enter your email address, username and the new password details below. If the email address and username you enter are valid, you will be sent an email containing an activation token with further instructions."
+    confirmation:
+      title: "Forgotten password confirmation"
+      description: "If the username you entered was valid, you will have been sent an email confirming what you need to do next to re-activate your account."

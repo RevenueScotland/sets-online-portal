@@ -1,15 +1,9 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.'+@party.party_type+ '_title') %>
-<%= form_for @party, url: @post_path, :method => 'post', local: true do |f| %>
-  <%= form_errors_for @party %>
-  <% # Note: The text will have one of the two text linkes values the appropriate one will be replaced depending on the actual text%>
-  <%= f.collection_radio_buttons_fields(:buyer_seller_linked_ind, @party.list_ref_data(:buyer_seller_linked_ind),
-                                         text_links: { t('.BUYER_buyer_seller_linked_ind') =>
-                                                    link_to( t('.BUYER_buyer_seller_linked_ind'), external_link_url('BUYER_SELLER'), target: '_blank'),
-                                                     t('.TENANT_buyer_seller_linked_ind') =>
-                                                    link_to( t('.TENANT_buyer_seller_linked_ind'), external_link_url('BUYER_SELLER'), target: '_blank')}) %>
-  <div id='buyer_seller_linked_desc_details' class='govuk-radios__conditional govuk-radios__conditional--hidden'>
-    <%= f.text_field :buyer_seller_linked_desc, { width: 'one-half' } %>
-  </div>
-  <%= f.button %>
+<% content_for(:page_title, t('.'+@party.party_type+ '_title')) %>
+<%= ds_form_with(model: @party, url: @post_path, method: :post) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :buyer_seller_linked_ind, 
+    options_list: @party.list_ref_data(:buyer_seller_linked_ind), alignment: :horizontal,
+    interpolations: {link: ds_link(url: external_link_url('BUYER_SELLER'), name: t('.buyer_seller_linked_ind'), target: '_blank') }) %>
+    <%= f.ds_text_field(method: :buyer_seller_linked_desc) %>
+  <% end %>
 <% end %>

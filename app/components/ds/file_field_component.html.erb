@@ -1,0 +1,4 @@
+<%= ds_field_wrapper(method: method, one_question: one_question, optional: optional, show_label: show_label, 
+                     interpolations: interpolations) do |wrapper| %>
+  <%= builder.file_field(method, wrapper.add_ds_html_options(add_html_options({class: "ds_input rs_file_field"}), ds_width_class: ds_width_class)) %>
+<% end %>

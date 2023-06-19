@@ -9,7 +9,7 @@ module Returns
     include WizardAddressHelper
     include LbttTaxHelper
 
-    authorise requires: AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
     # Allow unauthenticated/public access to properties actions
     skip_before_action :require_user
 
@@ -45,7 +45,7 @@ module Returns
     def destroy
       lbtt_return = load_return
       look_for_property(params[:property_id], lbtt_return, delete: true)
-      redirect_to returns_lbtt_summary_path
+      redirect_to(returns_lbtt_summary_path, status: :see_other)
     end
 
     private

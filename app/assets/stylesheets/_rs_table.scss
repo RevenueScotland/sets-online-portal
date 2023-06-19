@@ -1,0 +1,32 @@
+/*------------------------------------*\
+    Extensions to the table styling for RS
+\*------------------------------------*/
+
+.rs_empty_cell_width {
+    width: 25%;
+}
+
+/* setting the caption to relative so we can position within it */
+.ds_table caption {
+    position: relative;
+}
+
+.ds_table caption p,
+.ds_table caption a {
+    font-weight: normal;
+    font-size: px-to-rem($root-font-size); // 1rem
+}
+
+.ds_table caption a {
+    position: absolute;
+    right: 0px;
+    top: 0.5rem;
+}
+
+@include ds_media-query(medium) {
+
+    .ds_table caption p,
+    .ds_table caption a {
+        font-size: px-to-rem($root-font-size--medium);
+    }
+}

@@ -1,23 +1,52 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
 <% content_for :page_title, t('.title_' + @site.application_type) %>
-<%= form_for @site, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @site %>
-  <%# On add or delete row, we will set the focus to the last object %>
-  <% options = (params[:add_row] || params[:delete_row]) ? { autofocus_record: :last } : {} %>
+<%= ds_form_with(model: @site, url: @post_path) do |f| %>
   <% if @site.restoration_agreement? %>
-    <%= f.collection_radio_buttons_fields(:full_or_part, @site.list_ref_data(:full_or_part)) %>
-    <%= f.text_field :estimated_timescale %>
-    <%= f.table_fields(@site, :wastes, options) do |table_form| %>
-      <%= table_form.text_field(:type_of_waste, { width: 'two-thirds' }) %>
-      <%= table_form.text_field(:estimated_tonnage, { width: 'one-quarter' }) %>
-    <% end %>
-  <% else %>
-    <%= f.table_fields(@site, :wastes, options) do |table_form| %>
-      <%= table_form.text_area_field(:type_of_waste, { width: 'one-half' }) %>
-      <%= table_form.text_area_field(:final_destination) %>
-      <%= table_form.text_area_field(:use) %>
-    <% end %>
-    <%= f.text_area_field :further_treatment %>
+    <%= f.ds_radio_group(method: :full_or_part, options_list: @site.list_ref_data(:full_or_part), alignment: :horizontal) %>
+    <%= f.ds_text_field(method: :estimated_timescale) %>
   <% end %>
-  <%= f.button %>
+  <%= f.ds_table_form(caption: t('.wastes_' + @site.application_type), add_link: true, delete_links: true) do |table| %>
+    <% table.with_header(klass: Applications::Slft::Wastes) do |header| %>
+      <% header.with_cell(method: :type_of_waste) %>
+      <% if @site.restoration_agreement? %>
+        <% header.with_cell(method: :estimated_tonnage) %>
+      <% else %>
+        <% header.with_cell(method: :final_destination) %>
+        <% header.with_cell(method: :use) %>
+      <% end %>
+    <% end %>
+    <% @site.wastes.each_with_index do |waste, index| %>
+      <% table.with_form_row(model: waste, index: index, delete_link: (true if @site.wastes.count > 1)) do |row| %>
+        <% if @site.restoration_agreement? %>
+          <% row.with_cell do |c| %>
+            <%# TODO: RSTP-1154 remove the capture %>
+            <% capture do %>
+              <%= c.ds_text_field(method: :type_of_waste) %>
+            <% end %>
+          <% end %>
+          <% row.with_cell do |c| %>
+            <% capture do %>
+              <%= c.ds_text_field(method: :estimated_tonnage) %>
+            <% end %>
+          <% end %>
+        <% else %>
+          <% row.with_cell do |c| %>
+            <% capture do %>
+              <%= c.ds_text_area(method: :type_of_waste, rows: 2) %>
+            <% end %>
+          <% end %>
+          <% row.with_cell do |c| %>
+            <% capture do %>
+              <%= c.ds_text_area(method: :final_destination, rows: 2) %>
+            <% end %>
+          <% end %>
+          <% row.with_cell do |c| %>
+            <% capture do %>
+              <%= c.ds_text_area(method: :use, rows: 2) %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %><br>
+  <%= f.ds_text_area(method: :further_treatment) unless @site.restoration_agreement? %>
 <% end %>

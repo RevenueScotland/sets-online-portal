@@ -1,20 +1,15 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :page_description, t('.description') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @account, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @account %>
-  <%= f.fields_for :current_user, @account.current_user do |u| %>
-    <%= u.text_field :new_username, {}, {autocomplete: "username"} %>
-    <%= u.password_field :new_password, {translation_options: :new_user}, {autocomplete: "new-password"} %>
-    <%= u.password_field :new_password_confirmation, {translation_options: :new_user}, {autocomplete: "new-password"} %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_section_title(section_title: t('.section_title')) %>
+<%= ds_paragraph { t('.description') }%>
+<%= ds_form_with(model: @account, url: @post_path, button_action: :confirm) do |f| %>
+  <%= f.ds_fields_for :current_user, @account.current_user do |u| %>
+    <%= u.ds_text_field(method: :new_username, autocomplete: "username") %>
+    <%= u.ds_password_field(method: :new_password, autocomplete: "new-password") %>
+    <%= u.ds_password_field(method: :new_password_confirmation, autocomplete: "new-password") %>
   <% end %>
-  <%= f.check_box_field :terms_and_conditions,
-                          text_links: { t('term_and_cons') => link_to(t('term_and_cons'), website_text_path('REGTSANDCS'), 
-                          target: '_blank') } %>
-  <br>
-  <%= f.collection_radio_buttons_fields(:email_data_ind, @account.list_ref_data(:email_data_ind),
-      text_links: { t('sec_doc') => link_to(t('sec_doc'), website_text_path('EMAILAGREE'), target: '_blank') }) %>
-  <br>
-  <%= f.button 'confirm', {:name => 'continue'}  %>
+  <%= f.ds_checkbox(method: :terms_and_conditions, 
+        interpolations: {link: ds_link(url: website_text_path('REGTSANDCS', clear_stack: true),  name: t('activemodel.labels.account.terms_and_conditions_link'), target: '_blank') }) %>
+  <%= f.ds_radio_group(method: :email_data_ind, options_list: @account.list_ref_data(:email_data_ind),
+        alignment: :horizontal, 
+        interpolations: {link: ds_link(url: website_text_path('EMAILAGREE', clear_stack: true), name: t('activemodel.labels.account.email_data_ind_link'), target: '_blank') })%>
 <% end %>

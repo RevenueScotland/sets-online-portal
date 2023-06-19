@@ -1,0 +1,9 @@
+en:
+  account_type:
+    registered_organisation: "Companies House registered body"
+    other_organisation: "Non registered body"
+    individual: "Individual/Sole trader"
+  activemodel:
+    attributes:
+      account_type: 
+        registration_type:  "Who are you signing up on behalf of"

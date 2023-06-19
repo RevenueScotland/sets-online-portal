@@ -3,7 +3,7 @@
 module Dashboard
   # DashboardHomeController handles all the dashboard home related things.
   class DashboardHomeController < ApplicationController
-    authorise requires_all: AuthorisationHelper::DASHBOARD_HOME
+    authorise requires_all: RS::AuthorisationHelper::DASHBOARD_HOME
 
     # This processes what main dashboard would show in terms of the list of messages, returns and transactions.
     def index
@@ -31,7 +31,7 @@ module Dashboard
 
     # get the messages
     def load_messages
-      return unless can? AuthorisationHelper::VIEW_MESSAGES
+      return unless can? RS::AuthorisationHelper::VIEW_MESSAGES
 
       @messages, @messages_pagination =
         Message.list_paginated_messages(current_user, message_page, MessageFilter.new(unread_only: 'yes'), 3)
@@ -39,7 +39,7 @@ module Dashboard
 
     # get the returns
     def load_returns
-      return unless can? AuthorisationHelper::VIEW_RETURNS
+      return unless can? RS::AuthorisationHelper::VIEW_RETURNS
 
       @dashboard_returns, @returns_pagination =
         DashboardReturn.list_all_returns(current_user, returns_page, DashboardReturnFilter.new(draft_only: 'Y'), 3)

@@ -1,0 +1,43 @@
+<div class="ds_!_margin-bottom--2">
+  <%= ds_table(caption: tag.h2(t(".add_#{party_type}_description"), class: 'ds_!_margin-bottom--0'), id: id, small_screen: small_screen) do |table| %>
+    <% case party_type %>
+    <% when :agent %>
+    <%# Note the (party_id: 'new') below is needed, without it when the return is new the user cannot edit the agent (loops on summary screen)  %>
+    <% table.with_link(name: t(".add_#{party_type}"), url: returns_lbtt_agent_details_path(party_id: 'new')) %>
+  <% else %>
+    <% table.with_link(name: t(".add_#{party_type}"), url: returns_lbtt_about_the_party_path(party_id: 'new', party_type: party_type.to_s.upcase)) %>
+  <% end %>
+  <% table.with_header(klass: Returns::Lbtt::Party) do |header| %>
+    <% header.with_cell(method: :full_name) %>
+    <% case party_type %>
+    <% when :agent %>
+    <% header.with_cell(method: :agent_reference_or_not_provided) %>
+  <% else %>
+    <% header.with_cell(method: :display_type)%>
+    <% header.with_cell(method: :display_address)%>
+  <% end %>
+<% end %>
+<% if parties.present?%>
+  <% parties.each do |party| %>
+    <% table.with_row(model: party) do |row| %>
+      <% row.with_cell(method: :full_name) %>
+      <% case party_type %>
+      <% when :agent %>
+      <% row.with_cell(method: :agent_reference_or_not_provided)%>
+    <% else %>
+      <% row.with_cell(method: :display_type)%>
+      <% row.with_cell(method: :display_address)%>
+    <% end %>
+  <% end %>
+  <% unless party_type == :agent%>
+    <% table.with_row do |row| %>
+      <% row.with_cell(colspan:  3) do %>
+        <%= ds_link(name: t('.edit_row'), url: returns_lbtt_about_the_party_path(party_id: party), subtype: :padded) %>
+        <%= ds_link(name: t('.delete_row'), url: returns_party_path(party_id: party), delete: true, confirm_message:  t(".delete_#{party_type}"), subtype: :padded)%>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+<% end %>
+<% end %>
+</div>

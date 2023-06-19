@@ -1,9 +1,8 @@
-<% content_for :page_title, t('returns.lbtt_ads.title') %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @ads, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @ads %>
-  <%= display_field @lbtt_return.tax,:ads_due , format: :money, translation_options: :original %>
-  <%= f.currency_field :ads_repay_amount_claimed %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_section_title(section_title: t('.section_title')) %>
+<%= ds_form_with(model: @ads, url: @post_path, method: :post) do |f| %>
+  <%= ds_summary_list(model: @lbtt_return.tax, show_border: false) do |s| %>
+    <% s.with_item_method(method: :ads_due, type: :currency) %>
+  <% end %>
+  <%= f.ds_currency(method: :ads_repay_amount_claimed) %>
 <% end %>

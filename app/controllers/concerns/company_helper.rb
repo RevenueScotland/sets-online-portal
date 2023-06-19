@@ -31,16 +31,14 @@ module CompanyHelper
     @company = company || Company.new
   end
 
-  # Performs a company search based on the search parameters and displays the results (if any)
-  # @param redirect_to [String/Symbol] page to redirect to if supplied
-  def company_search(redirect_to = nil)
+  # Performs a company search based on the search parameters
+  def company_search
     return unless params[:company_search]
 
     @company = Company.new(company_search_params)
     @company.search
     # Used for focusing on the search button when company search has been made and then the page reloaded
     @on_company_search = true
-    render redirect_to unless redirect_to.nil?
   end
 
   # re-populate company summary and company details data from request param

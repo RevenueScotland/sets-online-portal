@@ -1,14 +1,10 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @slft_return, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @slft_return %>
-  <%= f.collection_radio_buttons_fields(:fpay_method, @slft_return.list_payment_types(account_has_dd_instruction: account_has_dd_instruction?), alignment: 'vertical') %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @slft_return, url: @post_path, method: :post, button_label: t('.submit_return')) do |f| %>
+  <%= f.ds_radio_group(method: :fpay_method, options_list: @slft_return.list_payment_types(account_has_dd_instruction: account_has_dd_instruction?)) %>
   <% if @slft_return.dd_not_available(account_has_dd_instruction: account_has_dd_instruction?) %>
-    <%= display_paragraph_components( body: t('.dd_not_available') ) %>
+    <%= ds_paragraph{ t('.dd_not_available') } %>
   <% end %>
-  <%= govuk_warning( t('.SLFT_additional_Warning') ) %>
-  <%= govuk_warning( t('.warning') ) %>
-  <%= f.check_box_field(:declaration) %>
-  <br>
-  <%= f.submit 'submit_return', { :name => 'continue' } %>
+  <%= ds_warning{ t('.SLFT_additional_Warning') } %>
+  <%= ds_warning{ t('.warning') } %>
+  <%= f.ds_checkbox(method: :declaration) %>
 <% end %>

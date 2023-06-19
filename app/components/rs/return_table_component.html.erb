@@ -1,0 +1,92 @@
+<div class="ds_!_margin-bottom--2">
+  <%= ds_table(caption: tag.h2(caption, class: 'ds_!_margin-bottom--0'), id: id, small_screen: small_screen) do |table| %>
+    <% case show_link %>
+    <% when :all_returns %>
+    <% table.with_link(name: t('.all_returns'), url: dashboard_dashboard_returns_path) if can?(RS::AuthorisationHelper::VIEW_RETURNS) %>
+    <% when :all_transactions %>
+    <% table.with_link(name: t('.all_transactions'), url: dashboard_financial_transactions_path) if can?(RS::AuthorisationHelper::VIEW_RETURNS) %>
+  <% end %>
+  <% table.with_header(klass: Dashboard::DashboardReturn) do |header| %>
+    <% case format %>
+    <% when :draft %>
+    <% header.with_cell(method: :tare_reference) %>
+    <% header.with_cell(method: :agent_reference) %>
+    <% header.with_cell(method: :description) %>
+    <% header.with_cell(method: :version)%>
+  <% else %>
+    <% header.with_cell(method: :tare_reference) %>
+    <% header.with_cell(method: :agent_reference) %>
+    <% header.with_cell(method: :return_date) %>
+    <% header.with_cell(method: :description) %>
+    <% header.with_cell(method: :version)%>
+    <% header.with_cell(method: :return_balance, align: :right )%>
+    <% header.with_cell(method: :summary_status)%>
+  <% end %>
+<% end %>
+<% returns&.each do |dashboard_return| %>
+  <% table.with_row(model: dashboard_return) do |row| %>
+    <% case format %>
+    <% when :draft %>
+    <% row.with_cell(method: :tare_reference) %>
+    <% row.with_cell(method: :agent_reference, type: :breakable) %>
+    <% row.with_cell(method: :description)%>
+    <% row.with_cell(method: :version) %>
+  <% else %>
+    <% row.with_cell(method: :tare_reference) %>
+    <% row.with_cell(method: :agent_reference, type: :breakable) %>
+    <% row.with_cell(method: :return_date) %>
+    <% row.with_cell(method: :description)%>
+    <% row.with_cell(method: :version) %>
+    <% row.with_cell(method: :return_balance, type: :currency, align: :right) %>
+    <% row.with_cell(method: :summary_status) %>
+  <% end %>
+<% end %>
+<% table.with_row do |row| %>
+  <% row.with_cell(colspan: (format == :draft ? 4 : 7)) do %>
+    <%= ds_link(name: t('.continue'),
+             url: load_dashboard_dashboard_return_path(dashboard_return),
+             subtype: :padded) if dashboard_return.return_is_continuable? && can?(dashboard_return.continue_action) %>
+    <%= ds_link(name: t('.transactions'),
+             url: dashboard_financial_transactions_path("dashboard_financial_transaction_filter[related_reference]": dashboard_return.tare_reference),
+             subtype: :padded) if dashboard_return.indicator_is_latest? %>
+    <%= ds_link(name: t('.download_pdf'),
+             url: download_pdf_dashboard_dashboard_return_path(dashboard_return),
+             target: '_blank',
+             show_new_window: false,
+             subtype: :padded) if can?(RS::AuthorisationHelper::DOWNLOAD_RETURN_PDF) %>
+    <%= ds_link(name: t('.download_waste'),
+             url: download_waste_dashboard_dashboard_return_path(dashboard_return),
+             target: '_blank',
+             show_new_window: false,
+             subtype: :padded) if dashboard_return.return_has_waste? %>
+    <%= ds_link(name: t('.receipt'),
+             url: download_receipt_dashboard_dashboard_return_path(dashboard_return),
+             target: '_blank',
+             show_new_window: false,
+             subtype: :padded) if dashboard_return.receipt_indicator? && can?(RS::AuthorisationHelper::DOWNLOAD_RECEIPT) %>
+    <%= ds_link(name: t('.amend'),
+             url: load_dashboard_dashboard_return_path(dashboard_return),
+             subtype: :padded) if dashboard_return.return_is_amendable? && can?(dashboard_return.amend_action) %>
+    <%= ds_link(name: t('.claim'),
+             url: claim_claim_payments_claim_reason_path(tare_refno: dashboard_return.tare_refno,
+             version: dashboard_return.version,srv_code: dashboard_return.srv_code,
+              reference: dashboard_return.tare_reference, new: true ),
+             subtype: :padded) if dashboard_return.return_is_claimable? && can?(RS::AuthorisationHelper::CLAIM_REPAYMENT) %>
+    <%= ds_link(name: t('.message'),
+             url: dashboard_messages_path("dashboard_message_filter[reference]": dashboard_return.tare_reference),
+             subtype: :padded) if dashboard_return.indicator_is_latest? %>
+    <%= ds_link(name: t('.delete'),
+             url: dashboard_dashboard_return_path(dashboard_return),
+             delete: true,
+             confirm_message: t('.delete_draft'),
+             subtype: :padded) if dashboard_return.indicator_is_draft? &&  can?(dashboard_return.delete_action) %>
+    <%= '&nbsp;'.html_safe + t('.enquiry_open') if dashboard_return.enquiry_indicator? %>
+    <%= '&nbsp;'.html_safe + t('.draft_present') if dashboard_return.draft_present? %>
+    <%= '&nbsp;'.html_safe + t('.not_amendable') if dashboard_return.not_continuable_indicator? %>
+    <%= '&nbsp;'.html_safe + t('.amendable_period', value: dashboard_return.amendable_cut_off_date) if dashboard_return.not_continuable_warning? %>
+  <% end %>
+<% end %>
+<% end %>
+<% end %>
+<%= ds_pagination(collection: pagination_collection, region_name: caption, page_name: page_name, anchor: id) %>
+</div>

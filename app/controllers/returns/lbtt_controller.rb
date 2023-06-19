@@ -8,20 +8,18 @@ module Returns
   # It also keeps all details of the properties.
   class LbttController < ApplicationController # rubocop:disable Metrics/ClassLength
     include Wizard
-    include WizardListHelper
     include ControllerHelper
     include LbttControllerHelper
     include LbttControllerDateWarningHelper
-    include LbttTaxHelper
     include DownloadHelper
 
     # all public pages, not just wizard steps for the public part of LBTT
     PUBLIC_PAGES = %I[public_landing public_return_type return_reference_number summary
-                      declaration declaration_submitted].freeze
+                      declaration declaration_submitted ].freeze
 
-    authorise requires: AuthorisationHelper::LBTT_SUMMARY
-    authorise routes: PUBLIC_PAGES, requires: AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
-    authorise route: :save_draft, requires: AuthorisationHelper::LBTT_SAVE
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY
+    authorise routes: PUBLIC_PAGES, requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise route: :save_draft, requires: RS::AuthorisationHelper::LBTT_SAVE
     # Allow unauthenticated/public access to specific actions - NB do not put return_type here, want that
     # to require authentication so we don't mix the two up
     skip_before_action :require_user, only: PUBLIC_PAGES
@@ -41,14 +39,6 @@ module Returns
     # this can't be defined in authorise.rb, otherwise rails throws an error
     helper_method :public
 
-    # reliefs calculation
-    def reliefs_calculation
-      wizard_list_step(returns_lbtt_summary_url,
-                       list_validation_context: :relief_override_amount,
-                       after_merge: :update_relief_type_calculation,
-                       list_attribute: :relief_claims, new_list_item_instance: :new_list_item_relief_claims)
-    end
-
     # Summary of returns.
     def summary
       load_step
@@ -63,7 +53,7 @@ module Returns
       wizard_save(@lbtt_return)
 
       # manage the buttons AFTER wizard_save so we don't save the validation errors
-      return if manage_draft(@lbtt_return) || manage_submit
+      manage_draft(@lbtt_return) || manage_submit
     end
 
     # Setting lbtt return type - custom step which clears the wizard cache before it starts a new return
@@ -106,10 +96,6 @@ module Returns
 
       # Download the file
       send_file_from_attachment(attachment[:document_return])
-    rescue StandardError => e
-      error_ref = Error::ErrorHandler.log_exception(e)
-
-      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     # Cleans and saves the return by sending to the back office.
@@ -166,7 +152,7 @@ module Returns
       # The current_flbt_type is set to flbt_type to reset it.
       @lbtt_return = Lbtt::LbttReturn.new(flbt_type: flbt_type, current_flbt_type: flbt_type,
                                           orig_return_reference: @lbtt_return.orig_return_reference,
-                                          is_public: current_user.nil?)
+                                          user_account_type: User.account_type(current_user))
       setup_sub_models
     end
 
@@ -201,16 +187,17 @@ module Returns
     # Checks if submit button was pressed & redirects to the appropriate action if validation passes.
     # @return true if button was pressed, else false.
     def manage_submit
-      if params[:submit_return]
-        Rails.logger.debug('submit_return pressed')
-        if @lbtt_return.valid?(:submit)
-          Rails.logger.debug('validation passed')
-          redirect_submit
-          return true
-        end
-      end
+      return true unless params[:submit_return]
 
-      false
+      Rails.logger.debug('submit_return pressed')
+      if @lbtt_return.valid?(:submit)
+        Rails.logger.debug('validation passed')
+        redirect_submit
+        true
+      else
+        render(status: :unprocessable_entity)
+        false
+      end
     end
 
     # Redirect after a valid submit
@@ -230,7 +217,7 @@ module Returns
     # @return [LbttReturn] the model for wizard saving
     def setup_step
       @post_path = wizard_post_path
-      @lbtt_return = wizard_load || Lbtt::LbttReturn.new(is_public: current_user.nil?)
+      @lbtt_return = wizard_load || Lbtt::LbttReturn.new(user_account_type: User.account_type(current_user))
 
       setup_sub_models(save_wizard: false)
 
@@ -253,12 +240,6 @@ module Returns
       @post_path = wizard_post_path
       # redirects to the dashboard or public landing as needed
       @lbtt_return = wizard_load_or_redirect(current_user.nil? ? returns_lbtt_public_landing_url : dashboard_url)
-    end
-
-    # Used in wizard_list_step as part of the merging of data.
-    # @return [Object] new instance of ReliefClaim class that has attributes with value.
-    def new_list_item_relief_claims
-      Lbtt::ReliefClaim.new
     end
 
     # Return the parameter list filtered for the attributes in list_attribute

@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/GetLBTTCalc" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.northgateps.com/RSTS/GetLBTTCalc.wsdl" targetNamespace="http://www.northgateps.com/RSTS/GetLBTTCalc.wsdl">
+<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/GetLBTTCalc"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+	xmlns:tns="http://www.northgateps.com/RSTS/GetLBTTCalc.wsdl" targetNamespace="http://www.northgateps.com/RSTS/GetLBTTCalc.wsdl">
 	<wsdl:types>
-		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:complexType name="PersonNameType">
 				<xsd:sequence>
 					<xsd:element name="Title" minOccurs="0">
@@ -137,7 +145,9 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
-		<xs:schema xmlns="http://www.northgateps.com/RSTS/GetLBTTCalc" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/GetLBTTCalc" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/GetLBTTCalc"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/GetLBTTCalc" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xs:import namespace="http://northgate-is.com/FL/Core"/>
 			<xs:element name="LBTTCalcRequest">
 				<xs:annotation>
@@ -430,7 +440,7 @@
 													<xs:annotation>
 														<xs:documentation>
              LBTT before any reliefs are deducted. LBTT_RETURNS.LBTT_CALCULATED
-            </xs:documentation>
+														</xs:documentation>
 													</xs:annotation>
 													<xs:simpleType>
 														<xs:restriction base="xs:decimal"/>
@@ -509,7 +519,7 @@
 									</xs:element>
 									<xs:element name="ReliefAmount" minOccurs="0">
 										<xs:annotation>
-											<xs:documentation>Original Relief amount. LBTT_RELIEFS.LBRL_ORIG_AMOUNT</xs:documentation>
+											<xs:documentation>Original Relief amount in LBTT_RELIEFS.LBRL_ORIG_AMOUNT</xs:documentation>
 										</xs:annotation>
 										<xs:simpleType>
 											<xs:restriction base="xs:decimal"/>
@@ -517,7 +527,23 @@
 									</xs:element>
 									<xs:element name="ReliefOverrideAmount" minOccurs="0">
 										<xs:annotation>
-											<xs:documentation>overridden relief amount. LBTT_RELIEFS.LBRL_AMOUNT</xs:documentation>
+											<xs:documentation>overridden relief amount in LBTT_RELIEFS.LBRL_AMOUNT</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:decimal"/>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="ReliefAmountAds" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Original Ads Relief amount in LBTT_RELIEFS.LBRL_ORIG_AMOUNT_ADS</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:decimal"/>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="ReliefOverrideAmountAds" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>overridden Ads relief amount  in LBTT_RELIEFS.LBRL_AMOUNT_ADS</xs:documentation>
 										</xs:annotation>
 										<xs:simpleType>
 											<xs:restriction base="xs:decimal"/>

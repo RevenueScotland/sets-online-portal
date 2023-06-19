@@ -2,45 +2,37 @@
 
 # Be sure to restart your server when you modify this file.
 
-# Define an application-wide content security policy
-# For further information see the following documentation
-# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
-Rails.application.config.content_security_policy do |policy|
-  policy.default_src :none
-  policy.font_src    :self, 'https://fonts.gstatic.com/'
-  policy.img_src     :self, 'https://www.google-analytics.com/'
-  policy.object_src  :none
-  policy.script_src  :self, 'https://www.googletagmanager.com/', 'https://www.google-analytics.com/'
-  if Rails.env.development?
-    policy.style_src   :self, 'https://fonts.googleapis.com/',
-                       # hash to allow turbolinks progress bar
-                       "'sha256-voXja0NHK+kj/CO6kVFGewEz+qyDFbxR+WW6e9vfN3o='",
-                       # For development only allow the hashes for the performance button
-                       "'unsafe-hashes'", "'sha256-XzJlZKVo+ff9ozww9Sr2p/2TbJXITZuaWMZ9p53zN1U='",
-                       "'sha256-De7agAeYqm6ANIVvRRW6HFWi52AJW8inhFE0gSdgXnI='"
-  else
-    policy.style_src   :self, 'https://fonts.googleapis.com/',
-                       # hash to allow turbolinks progress bar
-                       "'sha256-voXja0NHK+kj/CO6kVFGewEz+qyDFbxR+WW6e9vfN3o='"
+# Define an application-wide content security policy.
+# See the Securing Rails Applications Guide for more information:
+# https://guides.rubyonrails.org/security.html#content-security-policy-header
+# Also see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+Rails.application.configure do
+  config.content_security_policy do |policy|
+    policy.default_src :self
+    policy.font_src    :self
+    policy.img_src     :self, 'https://*.google-analytics.com', 'https://*.googletagmanager.com'
+    policy.object_src  :none
+    policy.script_src  :self, 'https://www.googletagmanager.com/'
+    policy.connect_src :self, 'https://*.google-analytics.com', 'https://*.analytics.google.com', ' https://*.googletagmanager.com'
+    policy.style_src :self,
+                     # Turbo hash
+                     "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='",
+                     # Hash for SVG inline styles (Digital Scotland)
+                     # Use for the close icon
+                     "'sha256-HGGQBrwGJbmD2CnNIF3WBZgIUPoQBAyz43oky8CvV8s='",
+                     # Below two are for the calendar
+                     "'sha256-+QNAvwhfofBEu7McgI/DjPryU7YCUE89/EXjCODjXfg='",
+                     "'sha256-Hcxnl5aSD1LytYlqL4UFkBx7fCQ1nGIqlyrDUM+dI8s='",
+                     # Below two require unsafe hashes to work
+                     "'unsafe-hashes'",
+                     "'sha256-pOs4WtGebp+eyReRBDGzfPPLgZ8ztF12Yco/k2zyEMA='",
+                     "'sha256-JGT1Gg3BRTrnd02vUlW2kiGzb3yZbcmN2ZK3qiGJMSA='"
   end
-  if Rails.env.development?
-    # If you are using webpack-dev-server then specify webpack-dev-server host
-    policy.connect_src :self, 'https://*.google-analytics.com/', 'http://localhost:3035', 'ws://localhost:3035'
-  else
-    policy.connect_src :self, 'https://*.google-analytics.com/'
-  end
-
-  # Specify URI for violation reports
-  # policy.report_uri '/csp-violation-report-endpoint'
+  #
+  #   # Generate session nonces for permitted importmap and inline scripts
+  config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
+  #   config.content_security_policy_nonce_directives = %w(script-src)
+  #
+  #   # Report violations without enforcing the policy.
+  #   # config.content_security_policy_report_only = true
 end
-
-# If you are using UJS then enable automatic nonce generation
-Rails.application.config.content_security_policy_nonce_generator = ->(_request) { SecureRandom.base64(16) }
-
-# Set the nonce only to specific directives
-# Rails.application.config.content_security_policy_nonce_directives = %w(script-src)
-
-# Report CSP violations to a specified URI
-# For further information see the following documentation:
-# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy-Report-Only
-# Rails.application.config.content_security_policy_report_only = true

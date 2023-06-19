@@ -471,13 +471,13 @@ module Returns
         # NB the order is thought to be important to the back office
         # have to have '' around symbols as they need to contain ':' characters for output to be correct
         output = { SLFTReturnDetails: {
-          'ins1:Year': year, 'ins1:FapePeriod': fape_period, # Fape stands for FL Accounting Period
-          'ins1:NDA': save_nda_hash,
-          'ins1:Sites': { 'ins1:Site': sites.values.map(&:request_save) }, # calls @see Site#request_save
-          'ins1:CreditClaim': save_credit_claimed_hash
+          'ins0:Year': year, 'ins0:FapePeriod': fape_period, # Fape stands for FL Accounting Period
+          'ins0:NDA': save_nda_hash,
+          'ins0:Sites': { 'ins0:Site': sites.values.map(&:request_save) }, # calls @see Site#request_save
+          'ins0:CreditClaim': save_credit_claimed_hash
         } }
 
-        output[:SLFTReturnDetails]['ins1:TaxPayable'] = save_tax_payable_hash(form_type) unless @tax_payable.nil?
+        output[:SLFTReturnDetails]['ins0:TaxPayable'] = save_tax_payable_hash(form_type) unless @tax_payable.nil?
 
         # add optional repayment details
         output[:ClaimDetails] = save_repayment_hash if repayment_yes_no == 'Y'
@@ -514,8 +514,8 @@ module Returns
       # returns the NDA details
       def save_nda_hash
         {
-          'ins1:NonDisposalAddText': non_disposal_add_text,
-          'ins1:NonDisposalDeleteText': non_disposal_delete_text
+          'ins0:NonDisposalAddText': non_disposal_add_text,
+          'ins0:NonDisposalDeleteText': non_disposal_delete_text
         }
       end
 
@@ -523,10 +523,10 @@ module Returns
       def save_credit_claimed_hash
         { # NOTE: we specifically return 0 for an N so we can restore on load
           # know the difference between they weren't asked (nil) and they answered no (0)
-          'ins1:SLCFContribution': slcf_contribution(return_zero: true),
-          'ins1:SLCFCreditClaimed': slcf_credit_claimed(return_zero: true),
-          'ins1:BadDebtCredit': bad_debt_credit(return_zero: true),
-          'ins1:RemovalCredit': removal_credit(return_zero: true)
+          'ins0:SLCFContribution': slcf_contribution(return_zero: true),
+          'ins0:SLCFCreditClaimed': slcf_credit_claimed(return_zero: true),
+          'ins0:BadDebtCredit': bad_debt_credit(return_zero: true),
+          'ins0:RemovalCredit': removal_credit(return_zero: true)
         }
       end
 
@@ -534,12 +534,12 @@ module Returns
       # @param form_type [string] D(raft) or L(atest)
       def save_tax_payable_hash(form_type)
         {
-          'ins1:TotalTaxDue': total_tax_due,
-          'ins1:TotalCredit': total_credit,
-          'ins1:TaxPayable': tax_payable,
-          'ins1:Declaration': declaration,
+          'ins0:TotalTaxDue': total_tax_due,
+          'ins0:TotalCredit': total_credit,
+          'ins0:TaxPayable': tax_payable,
+          'ins0:Declaration': declaration,
           # Make sure previous payment method is saved to back office for a draft so we don't lose track of it
-          'ins1:FPAYMethod': (form_type == 'D' ? previous_fpay_method : fpay_method)
+          'ins0:FPAYMethod': (form_type == 'D' ? previous_fpay_method : fpay_method)
         }
       end
 
@@ -547,13 +547,13 @@ module Returns
       # also hard coding ClaimType
       def save_repayment_hash
         {
-          'ins1:ClaimType': 'PRE12MONTH',
-          'ins1:FrerReason': 'CLAIM',
-          'ins1:AmountClaimed': amount_claimed,
-          'ins1:AccountHolder': account_holder,
-          'ins1:BankAccountNo': bank_account_no,
-          'ins1:BankSortCode': bank_sort_code,
-          'ins1:BankName': bank_name
+          'ins0:ClaimType': 'PRE12MONTH',
+          'ins0:FrerReason': 'CLAIM',
+          'ins0:AmountClaimed': amount_claimed,
+          'ins0:AccountHolder': account_holder,
+          'ins0:BankAccountNo': bank_account_no,
+          'ins0:BankSortCode': bank_sort_code,
+          'ins0:BankName': bank_name
         }
       end
 

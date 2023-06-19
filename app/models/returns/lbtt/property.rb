@@ -54,7 +54,12 @@ module Returns
 
       # @return the title code + the title number
       def full_title_number
-        "#{title_code} #{title_number}"
+        "#{lookup_ref_data_value(:title_code)} #{title_number}"
+      end
+
+      # @return the parent title code + the title number
+      def full_parent_title_number
+        "#{lookup_ref_data_value(:parent_title_code)} #{parent_title_number}"
       end
 
       # Layout to print the data in this model
@@ -67,11 +72,8 @@ module Returns
            display_title: true, # Is the title to be displayed
            type: :list, # type list = the list of attributes to follow
            list_items: [{ code: :lau_code, lookup: true },
-                        { code: :title_code, lookup: true, key_scope: %i[returns lbtt_properties about_the_property] },
-                        { code: :title_number, nolabel: true },
-                        { code: :parent_title_code, lookup: true,
-                          key_scope: %i[returns lbtt_properties about_the_property] },
-                        { code: :parent_title_number, nolabel: true },
+                        { code: :full_title_number, action_name: :print },
+                        { code: :full_parent_title_number },
                         { code: :ads_due_ind, lookup: true, when: :flbt_type, is: ['CONVEY'] }] },
          { code: :address,
            key: :title, # key for the title translation
@@ -87,8 +89,8 @@ module Returns
            key_scope: %i[returns lbtt_properties about_the_property], # scope for the title translation
            display_title: true, # Is the title to be displayed
            type: :list, # type list = the list of attributes to follow
-           list_items: [{ code: :full_title_number, key_scope: %i[return submit lbtt] },
-                        { code: :full_address, key_scope: %i[return submit lbtt] }] }]
+           list_items: [{ code: :full_title_number, key_scope: %i[activemodel attributes returns/lbtt/property] },
+                        { code: :full_address, key_scope: %i[activemodel attributes returns/lbtt/property] }] }]
       end
 
       # Key information to display section error.(see @LbttReturnValidator)
@@ -101,14 +103,14 @@ module Returns
 
       # @return a hash suitable for use in a save request to the back office
       def request_save
-        (@pro_refno.blank? ? {} : { 'ins1:ProRefno': @pro_refno }).merge(
-          'ins1:LauCode': @lau_code,
-          'ins1:Address': @address.format_to_back_office_address,
-          'ins1:FtpfCode': @title_code, # title_prefix
-          'ins1:TitleNumber': @title_number,
-          'ins1:ParentFtpfCode': @parent_title_code, # parent_title_prefix
-          'ins1:ParentTitleNumber': @parent_title_number,
-          'ins1:AdsDueInd': convert_to_backoffice_yes_no_value(@ads_due_ind)
+        (@pro_refno.blank? ? {} : { 'ins0:ProRefno': @pro_refno }).merge(
+          'ins0:LauCode': @lau_code,
+          'ins0:Address': @address.format_to_back_office_address,
+          'ins0:FtpfCode': @title_code, # title_prefix
+          'ins0:TitleNumber': @title_number,
+          'ins0:ParentFtpfCode': @parent_title_code, # parent_title_prefix
+          'ins0:ParentTitleNumber': @parent_title_number,
+          'ins0:AdsDueInd': convert_to_backoffice_yes_no_value(@ads_due_ind)
         )
       end
 

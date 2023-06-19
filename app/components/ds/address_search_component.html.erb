@@ -1,0 +1,107 @@
+<% unless show_address_detail %>
+  <%= ds_fields_for(address_summary) do |as| %>
+    <%# Displaying previously used addresses list %>
+    <% if address_list.present? %>
+      <dl class="ds_prefilled-value-list" aria-label="<%= t('.previous_addresses') %>">
+        <%  address_list.each_with_index do |addr, ind| %>
+          <dd class="ds_prefilled-value-list__value">
+            <%= button_tag "pick_address_#{ind}", { :class => 'ds_link  ds_prefilled-value-list__value-actions', :name => "pick_address_#{ind}" } do
+            t('.select_address', address: addr.full_address) 
+         end %>
+          </dd>
+        <% end %>
+      </dl>
+    <% end %>
+    <% if show_postcode_as_label %>
+      <dl class="ds_prefilled-value-list" aria-label="Your current answers">
+        <dt class="ds_prefilled-value-list__key"><%= t('.postcode') %></dt>
+        <dd class="ds_prefilled-value-list__value">
+          <div><%= address_summary.postcode %></div>
+          <%= button_tag "change_postcode", { :class => 'ds_link  ds_prefilled-value-list__value-actions', :name => 'change_postcode' } do
+            t('.change_postcode_html')
+         end %>
+        </dd>
+      </dl>
+    <% else %>
+      <fieldset>
+        <%= as.ds_text_field(method: :postcode, width: 10) %>
+        <%= button_tag "search", { :class => 'ds_button  ds_no-margin--top', :name => 'search' } do
+            t('.search')
+         end %>
+      </fieldset>
+    <% end %>
+    <% unless search_results.nil? %>
+      <div class="ds_question" data-controller="select">
+        <%= label_tag "search_results", t('.address_select'), class: 'ds_label' %>
+        <%# An autofocus is added here so that when the user has clicked on the "Find Address" button, 
+          which should show the select field, it would then focus on the select field. %>
+        <div class="ds_select-wrapper">
+          <%= select_tag "search_results", options_for_select(search_results.collect { |v| [v.formatted_address, v.address_identifier] }),
+                     {class: 'ds_select', include_blank: true, autofocus: true, "data-action": "select#clickTarget" } %>
+          <span class="ds_select-arrow" aria-hidden="true"></span>
+        </div>
+        <div>
+          <%= button_tag "select", { :class => 'ds_button ds_no-margin', :name => 'select', "data-select-target": "button"} do
+            t('.select')
+         end %>
+        </div>
+      </div>
+    <% end %>
+    <p>
+      <%= button_tag "manual_address", { :class => 'ds_link ds_no-margin', :name => 'manual_address' } do
+            t('.manual_address')
+         end %>
+    </p>
+  <% end %>
+  <%# Need to round trip the default country %>
+  <%= fields_for(address) do |builder| %>
+    <%= builder.hidden_field :default_country %>
+  <% end %>
+<% end %>
+<%# always include the hidden field tags to round trip state %>
+<%= hidden_field_tag 'show_manual_address', show_address_detail %>
+<%= hidden_field_tag 'address_read_only', readonly %>
+<% if address_list.present? %>
+  <%  address_list.each_with_index do |addr, ind| %>
+    <%= hidden_field_tag "address_list_#{ind}", addr.to_json%>
+  <% end %>
+<% end %>
+<% if show_address_detail %>
+  <%= ds_fields_for(address) do |a| %>
+    <p>
+      <%= button_tag "change_postcode", { :class => 'ds_link ds_no-margin', :name => 'change_postcode' } do
+            t('.return_to_postcode')
+         end %>
+    </p>
+    <% if readonly %>
+      <p>
+        <%= button_tag "manual_address", { :class => 'ds_link ds_no-margin', :name => 'manual_address' } do
+            t('.edit_address')
+         end %>
+      </p>
+    <% end %>
+    <fieldset>
+      <% if readonly %>
+        <legend><%= t('.selected_address') %></legend>
+      <% else %>
+        <legend><%= t('.tell_us_your_full_address') %></legend>
+      <% end %>
+      <%= a.ds_text_field(method: :address_line1, readonly: readonly) %>
+      <%= a.ds_text_field(method: :address_line2, readonly: readonly) %>
+      <%= a.ds_text_field(method: :address_line3, readonly: readonly) %>
+      <%= a.ds_text_field(method: :address_line4, readonly: readonly) %>
+      <%= a.ds_text_field(method: :town, readonly: readonly) %>
+      <%= a.ds_text_field(method: :county, readonly: readonly) %>
+      <% if country_code_required %>
+        <%= a.ds_select(method: :country, select_options: address.list_ref_data(:country), use_search: true, readonly: readonly) %>
+      <% else %>
+        <%= a.ds_hidden_field(:country) %>
+      <% end %>
+      <%= a.ds_text_field(method: :postcode, width: 10, readonly: readonly) %>
+      <%= a.ds_hidden_field(:default_country) %>
+      <%= a.ds_hidden_field(:address_identifier) %>
+    <% end %>
+  </fieldset>
+  <%= hidden_field_tag 'show_manual_address', show_address_detail %>
+  <%= hidden_field_tag 'address_read_only', readonly %>
+<% end %>

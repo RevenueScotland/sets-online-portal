@@ -1,0 +1,28 @@
+<div class="ds_!_margin-bottom--2">
+  <%= ds_table(caption: caption, id: id, small_screen: small_screen) do |table| %>
+    <% table.with_header(klass: User) do |header| %>
+      <% header.with_cell(method: :username) %>
+      <% header.with_cell(method: :user_is_current) %>
+      <% header.with_cell(method: :full_name) %>
+      <% header.with_cell(method: :email_address)%>
+      <% header.with_cell(method: :phone_number) %>
+    <% end %>
+    <% users&.each do |user| %>
+      <% table.with_row(model: user) do |row| %>
+        <% row.with_cell(method: :username) %>
+        <% row.with_cell(method: :user_is_current) %>
+        <% row.with_cell(method: :full_name) %>
+        <% row.with_cell(method: :email_address)%>
+        <% row.with_cell(method: :phone_number) %>
+      <% end %>
+      <% table.with_row do |row| %>
+        <% row.with_cell(colspan: 7) do %>
+          <%= ds_link(name: t('.edit'), url: edit_user_path(user),
+           subtype: :padded) if can?(RS::AuthorisationHelper::CREATE_USERS) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= ds_pagination(collection: pagination_collection, region_name: region_name, page_name: page_name, anchor: id) %>
+  <%= link %>
+</div>

@@ -1,0 +1,7 @@
+en:
+  forgotten_usernames:
+    new:
+      title: "Forgotten username"
+    confirmation:
+      title: "Forgotten username confirmation"
+      description: "Check your email, your username information has been sent to the registered email address."

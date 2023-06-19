@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 # Class used to store upload resource details
-class ResourceItem
-  include ActiveModel::Model
-  include ActiveModel::Translation
-
+class ResourceItem < FLApplicationRecord
   attr_accessor :original_filename, :file_name, :content_type, :description, :file_data, :uploaded_by, :upload_datetime,
-                :doc_refno, :size, :type
+                :doc_refno, :size, :type, :attachment_type, :file_type
 
   validates :description, length: { maximum: 200 }
   validates :original_filename, length: { maximum: 500 }
@@ -65,6 +62,13 @@ class ResourceItem
     dir_name = File.join(dir_name, type.to_s, sub_directory)
     FileUtils.mkdir_p(dir_name) unless File.directory?(dir_name)
     File.join(dir_name, file_name)
+  end
+
+  # Create a new instance based on a back office style hash for attachments
+  # @param raw_hash [Hash] the hash from the back office for an individual attachment
+  def self.convert_attachment_back_office_hash(raw_hash)
+    # Create new instance
+    ResourceItem.new_from_fl(raw_hash.transform_keys(attachment_refno: :doc_refno, attachment_type: :type))
   end
 
   private

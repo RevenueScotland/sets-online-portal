@@ -6,23 +6,14 @@ module ReferenceData
     attr_accessor :code, :service, :description, :current_ind, :transaction_type, :transaction_service,
                   :transaction_work_ref_no, :type_class, :upper_limit, :full_relief_ind, :return_types
 
-    # Get ADS specific relief type from cache
+    # Get relief type from cache
     # @param return_type [String] filter criteria for return type
-    # @param current_only [Boolean] it set means ony shown me current or non current else show all
-    # @return [Array] a list for ADS relief type
-    def self.list_ads(return_type, current_only = nil)
+    # @param current_only [Boolean] if set means ony shown me current else show all
+    # @param show_ads_reliefs [Boolean] if set means shown all relief types else show all but ads relief types
+    # @return [Array] a list for all relief types
+    def self.filtered_list(return_type, current_only: false, show_ads_reliefs: false)
       list('RELIEF_TYPES', 'LBTT', 'RSTU').select do |r|
-        r.filter_relief('ADS', return_type, current_only)
-      end
-    end
-
-    # Get STANDARD relief type from cache
-    # @param return_type [String] filter criteria for return type
-    # @param current_only [Boolean] it set means ony shown me current or non current else show all
-    # @return [Array] a list for STANDARD relief type
-    def self.list_standard(return_type, current_only = nil)
-      list('RELIEF_TYPES', 'LBTT', 'RSTU').select do |r|
-        r.filter_relief('STANDARD', return_type, current_only)
+        r.filter_relief(return_type, current_only: current_only, show_ads_reliefs: show_ads_reliefs)
       end
     end
 
@@ -36,16 +27,16 @@ module ReferenceData
     # Returns a code used to index in the list method
     # overrides default in ReferenceDataCaching
     # @return [String] Value suitable for indexing
-    def code_auto
+    def code_expanded
       return nil if @code.nil?
 
-      "#{code}>$<#{auto_calculated?}"
+      "#{code}>$<#{auto_calculated?}>$<#{@type_class}"
     end
 
-    # Split the auto code into tax relief type and auto calculated flag
-    def self.split_code_auto(value)
+    # Split the auto code into tax relief type and auto calculated/ads flag
+    def self.split_code_expanded(value)
       data = value.split('>$<')
-      [data[0], data[1] == 'true']
+      [data[0], data[1] == 'true', data[2]]
     end
 
     # Return indicator if relief claim amount auto calculated or not.
@@ -54,12 +45,13 @@ module ReferenceData
     end
 
     # Filter the relief based on the criteria passed
-    # @param type_class [String] Class required
     # @param return_type [String] Return type to filter for
-    # @param current_only [Boolean] it set means ony shown me current or non current else show all
+    # @param current_only [Boolean] if set means ony shown me current else show all
+    # @param show_ads_reliefs [Boolean] if set means shown all relief types else show all but ads relief types
     # @return [Boolean] True if this is to be included
-    def filter_relief(type_class, return_type, current_only)
-      return false if @type_class != type_class || (current_only && @current_ind != 'yes')
+    def filter_relief(return_type, current_only: false, show_ads_reliefs: false)
+      return false if current_only && @current_ind != 'yes'
+      return false if @type_class == 'ADS' && show_ads_reliefs == false
       return false if !@return_types.nil? && @return_types.split(':').exclude?(return_type)
 
       true

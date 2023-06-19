@@ -3,17 +3,15 @@
 # Controller for the main home page
 class HomeController < ApplicationController
   # No authentication for these pages
-  skip_before_action :require_user, only: %I[index error forbidden new_page_error]
+  skip_before_action :require_user
 
   # Index page
   def index; end
 
-  # Standalone something has gone wrong page
-  def error; end
+  # Cookies page note can't use cookies as that overrides the cookies method
+  def cookies_page
+    return unless params['cookie-preferences'].present? && params['cookie-statistics'].present?
 
-  # Standalone authorisation failure page
-  def forbidden; end
-
-  # handle file download error
-  def new_page_error; end
+    set_storage_permissions(preferences: params['cookie-preferences'], statistics: params['cookie-statistics'])
+  end
 end

@@ -1,13 +1,12 @@
-<% content_for :page_title, t('.title' , waste: @waste.ewc_code, site_name: @waste.site_name )  %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :hide_back_link, :slft_waste_description_url %>
-<%= form_for @waste, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @waste %>
-  <%= f.select :ewc_code, @waste.list_ref_data(:ewc_code), { :code => :code, :value => :to_s, text_auto_complete: true }, {} %>
-  <%= f.text_field :description %>
-  <%= f.select :lau_code, @waste.list_ref_data(:lau_code), {}, {} %>
-  <%= f.select :fmme_method,  @waste.list_ref_data(:fmme_method), {}, {} %>
-  <%= f.collection_radio_buttons_fields(:from_non_disposal_ind, @waste.list_ref_data(:from_non_disposal_ind)) %>
-  <%= f.button %>
+<% content_for(:navigation_link, request.path.chomp('/new')) %>
+<% content_for(:page_title, t('.title' , waste: @waste.ewc_code, site_name: @waste.site_name )) %>
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_form_with(model: @waste, url: @post_path, method: :post) do |f| %>  
+  <%= f.ds_select(method: :ewc_code, select_options: @waste.list_ref_data(:ewc_code).collect{ 
+                    |c| [c.to_s, c.code]}, use_search: true) %>  
+  <%= f.ds_text_field( method: :description) %>
+  <%= f.ds_select(method: :lau_code, select_options: @waste.list_ref_data(:lau_code)) %>
+  <%= f.ds_select(method: :fmme_method, select_options: @waste.list_ref_data(:fmme_method)) %>
+  <%= f.ds_radio_group(builder: f.builder, method: :from_non_disposal_ind,
+                    options_list:@waste.list_ref_data(:from_non_disposal_ind), alignment: :horizontal ) %>
 <% end %>

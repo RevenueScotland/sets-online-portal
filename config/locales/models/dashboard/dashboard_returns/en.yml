@@ -42,7 +42,6 @@ en:
         balance_status: "Balance status"
         summary_status: "Status"
         version: "Version"
-
       dashboard/dashboard_return_filter:
         tare_reference: "Return reference"
         agent_reference: "Your reference"
@@ -65,26 +64,3 @@ en:
               before_date_error: "%{attribute} must be before the submitted to return date"
             to_return_date:
               after_date_error: "%{attribute} must be after the submitted from return date"
-  dashboard:
-    dashboard_returns:
-      index:
-        title: "All returns"
-        heading: "List of all submitted returns"
-        transactions: "Transactions"
-        download_pdf: "Download PDF"
-        download_waste: "Download waste details"
-        amend: "Amend"
-        claim: "Claim"
-        message: "Message"
-        continue: "Continue"
-        delete: "Delete"
-        find: "Find"
-        no_data_found: "There are no returns to be shown..."
-        enquiry_open: "Ongoing Enquiry"
-        draft_present: "Draft Present"
-        not_amendable: "This return is no longer amendable, use the claim option"
-        amendable_period: "You have until %{value} to complete this draft"
-        receipt: "Receipt"
-        pagination:
-          context:
-            page: "all submitted returns"

@@ -3,10 +3,9 @@
 Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   root to: 'home#index'
   scope '(:locale)', Locale: /en|cy/ do # rubocop:disable Metrics/BlockLength
-    get 'home/index'
-    get 'home/error', to: 'home#error'
-    get 'home/new-page-error', to: 'home#new_page_error'
-    get 'home/forbidden', to: 'home#forbidden'
+    get 'index', to: 'home#index'
+    get 'cookies', to: 'home#cookies_page'
+    get '406', to: 'ds/exceptions#show406'
 
     # This is generic page to display public website text retrieve from back office
     # Depending on the code, text on the page changes
@@ -18,19 +17,19 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :users, param: :username, except: %i[destroy], constraints: { username: %r{[^/]+} }
 
     get 'user/change-password', to: 'users#change_password'
+    get 'user/change-password/confirmation', to: 'users#change_password_confirmation'
     post 'user/update-password', to: 'users#update_password'
 
     get 'user/update-tcs', to: 'users#update_tcs'
-    post 'user/confirm-update-tcs', to: 'users#confirm_update_tcs'
-
-    get 'user/memorable-word', to: 'users#memorable_word'
-    patch 'user/update-memorable-word', to: 'users#update_memorable_word'
+    post 'user/process-update-tcs', to: 'users#process_update_tcs'
 
     resource 'account', controller: :accounts, only: :show, as: :account do
       collection do
-        get 'activate_account'
-        get 'process-activate-account'
+        get 'activate-account'
+        get 'activate-account/confirmation', to: 'accounts#activate_account_confirmation'
         post 'process-activate-account'
+        # We allow get as well in order to support link in e-mail
+        get 'process-activate-account'
         get  'edit-basic'
         post 'update-basic'
         get  'edit-address'
@@ -43,21 +42,23 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     get '/logout',                    to: 'login#destroy'
     get '/logout-session-expired',    to: 'login#session_expired'
 
-    get '/forgotten-password',        to: 'forgotten_passwords#new'
-    post '/forgotten-password',       to: 'forgotten_passwords#create'
+    get '/forgotten-password',              to: 'forgotten_passwords#new'
+    get '/forgotten-password/confirmation', to: 'forgotten_passwords#confirmation'
+    post '/forgotten-password',             to: 'forgotten_passwords#create'
 
-    get  '/forgotten-username',       to: 'forgotten_usernames#new'
-    post '/forgotten-username',       to: 'forgotten_usernames#create'
+    get  '/forgotten-username',              to: 'forgotten_usernames#new'
+    get  '/forgotten-username/confirmation', to: 'forgotten_usernames#confirmation'
+    post '/forgotten-username',              to: 'forgotten_usernames#create'
 
-    get '/dashboard',                 to: 'dashboard/dashboard_home#index'
+    get '/dashboard', to: 'dashboard/dashboard_home#index'
 
     namespace :dashboard do
-      get 'messages/download-file',            to: 'messages#download_file'
-      match 'messages/confirmation',           to: 'messages#confirmation', via: %i[get post]
-
+      get 'messages/download-file',           to: 'messages#download_file'
       resources :messages, except: %i[destroy update edit], param: :smsg_refno do
         member do
           get 'retrieve-file-attachment'
+          get 'download-file', to: 'messages#download_file'
+          match 'confirmation', to: 'messages#confirmation', via: %i[get patch]
         end
       end
       resources :financial_transactions, only: %i[index show]
@@ -92,9 +93,14 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'lbtt/return_reference_number',        to: 'lbtt#return_reference_number',                via: %i[get post]
       get 'lbtt/save_draft', to: 'lbtt#save_draft'
       get 'lbtt/public_landing', to: 'lbtt#public_landing'
-      match 'lbtt/public_return_type',             to: 'lbtt#public_return_type',                     via: %i[get post]
-      match 'lbtt/reliefs_calculation',            to: 'lbtt#reliefs_calculation',                    via: %i[get post]
+      match 'lbtt/public_return_type',             to: 'lbtt#public_return_type', via: %i[get post]
       get 'lbtt/download-receipt',                 to: 'lbtt#download_receipt'
+
+      match 'lbtt/reliefs_calculation',            to: 'lbtt_reliefs#reliefs_calculation',
+                                                   via: %i[get post]
+      match 'lbtt/reliefs_on_transaction',         to: 'lbtt_reliefs#reliefs_on_transaction', via: %i[get post]
+      match 'lbtt/multiple_dwellings_relief/(:sub_object_index)',
+            to: 'lbtt_reliefs#multiple_dwellings_relief', via: %i[get post]
 
       match 'lbtt/about_the_party(/:party_id)',    to: 'lbtt_parties#about_the_party',
                                                    as: 'lbtt_about_the_party',                        via: %i[get post]
@@ -123,7 +129,6 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'lbtt/ads_dwellings',                  to: 'lbtt_ads#ads_dwellings',                      via: %i[get post]
       match 'lbtt/ads_amount',                     to: 'lbtt_ads#ads_amount',                         via: %i[get post]
       match 'lbtt/ads_intending_sell',             to: 'lbtt_ads#ads_intending_sell',                 via: %i[get post]
-      match 'lbtt/ads_reliefs',                    to: 'lbtt_ads#ads_reliefs',                        via: %i[get post]
 
       match 'lbtt/ads_repay_reason',               to: 'lbtt_ads#ads_repay_reason',                   via: %i[get post]
       match 'lbtt/ads_repay_date',                 to: 'lbtt_ads#ads_repay_date',                     via: %i[get post]
@@ -145,6 +150,10 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
                                                    via: %i[get post]
       match 'lbtt/declaration_submitted',          to: 'lbtt_submit#declaration_submitted',
                                                    via: %i[get post]
+      match 'lbtt/non_notifiable',                 to: 'lbtt_submit#non_notifiable',
+                                                   via: %i[get post]
+      match 'lbtt/non_notifiable_reason',          to: 'lbtt_submit#non_notifiable_reason',
+                                                   via: %i[get post]
 
       match 'lbtt/property-type',                  to: 'lbtt_transactions#property_type',             via: %i[get post]
       match 'lbtt/transaction-dates',              to: 'lbtt_transactions#transaction_dates',         via: %i[get post]
@@ -154,9 +163,6 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'lbtt/about-the-calculation',          to: 'lbtt_transactions#about_the_calculation',     via: %i[get post]
       match 'lbtt/about-the-transaction',          to: 'lbtt_transactions#about_the_transaction',     via: %i[get post]
       match 'lbtt/linked-transactions',            to: 'lbtt_transactions#linked_transactions',       via: %i[get post]
-      match 'lbtt/reliefs_on_transaction',         to: 'lbtt_transactions#reliefs_on_transaction',    via: %i[get post]
-      match 'lbtt/multiple_dwellings_relief/(:sub_object_index)',
-            to: 'lbtt_transactions#multiple_dwellings_relief', via: %i[get post]
       match 'lbtt/lease_values',                   to: 'lbtt_transactions#lease_values',              via: %i[get post]
       match 'lbtt/rental_years',                   to: 'lbtt_transactions#rental_years',              via: %i[get post]
       match 'lbtt/premium_paid',                   to: 'lbtt_transactions#premium_paid',              via: %i[get post]
@@ -174,7 +180,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'slft/credit_site_specific',            to: 'slft#credit_site_specific',            via: %i[get post]
 
       match 'slft/site_waste_summary(/:site)',      to: 'slft_sites_waste#site_waste_summary',
-                                                    as: 'slft_site_waste_summary',              via: %i[get post]
+                                                    as: 'slft_site_waste_summary',              via: %i[get post delete]
       match 'slft/waste_description(/:waste)',      to: 'slft_sites_waste#waste_description',
                                                     as: 'slft_waste_description',               via: %i[get post]
       match 'slft/waste_exemption',                 to: 'slft_sites_waste#waste_exemption',     via: %i[get post]

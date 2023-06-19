@@ -1,0 +1,14 @@
+<table class="ds_table" <%= "data-smallscreen=#{small_screen}" if small_screen %> <%= "id=#{id}" if id %>>
+  <% if caption %>
+    <caption class="ds_!_margin-bottom--0"><%= caption %></caption>
+  <% end %>
+  <thead>
+    <%= header %>
+  </thead>
+  <tbody>
+    <% form_rows.each do |form_row| %>
+      <%= form_row %>
+    <% end %>
+  </tbody>
+</table>
+<%= tag.div(add_link) if add_link? %>

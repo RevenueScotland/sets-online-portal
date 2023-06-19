@@ -1,20 +1,20 @@
-<% content_for :page_title, t('.title' , waste: @waste.ewc_code, site_name: @waste.site_name )  %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @waste, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @waste %>
-  <%= f.collection_radio_buttons_fields(:nda_ex_yes_no, @waste.list_ref_data(:nda_ex_yes_no)) %>
-  <div id='hide_nda' class='govuk-radios__conditional'>
-    <%= f.text_field :nda_ex_tonnage %>
-  </div>
-  <%= f.collection_radio_buttons_fields(:restoration_ex_yes_no,  @waste.list_ref_data(:restoration_ex_yes_no)) %>
-  <div id='hide_restoration' class='govuk-radios__conditional'>
-    <%= f.text_field :restoration_ex_tonnage %>
-  </div>
-  <%= f.collection_radio_buttons_fields(:other_ex_yes_no, @waste.list_ref_data(:other_ex_yes_no)) %>
-  <div id='hide_other' class='govuk-radios__conditional'>
-    <%= f.text_field :other_ex_tonnage %>
-    <%= f.text_field :other_ex_description %>
-  </div>
-  <%= f.button %>
+<% content_for(:page_title, t('.title' , waste: @waste.ewc_code, site_name: @waste.site_name )) %>
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_form_with(model: @waste, url: @post_path, method: :post) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :nda_ex_yes_no, 
+                                            options_list:@waste.list_ref_data(:nda_ex_yes_no), alignment: :horizontal ) %>    
+    <%= f.ds_text_field( method: :nda_ex_tonnage) %>
+  <% end %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :restoration_ex_yes_no, 
+                                            options_list:@waste.list_ref_data(:restoration_ex_yes_no), alignment: :horizontal ) %>    
+    <%= f.ds_text_field( method: :restoration_ex_tonnage) %>    
+  <% end %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :other_ex_yes_no, 
+                                             options_list:@waste.list_ref_data(:other_ex_yes_no), alignment: :horizontal ) %>
+    <%= f.ds_text_field( method: :other_ex_tonnage) %>
+    <%= f.ds_text_field( method: :other_ex_description) %>
+  <% end %>
 <% end %>

@@ -1,14 +1,12 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
-  <%= f.collection_radio_buttons_fields(:contingents_event_ind, @lbtt_return.list_ref_data(:contingents_event_ind), text_links: { t('.contingents_event_ind') =>
-                                                    link_to(t('.contingents_event_ind'), external_link_url('CONTINGENT'), target: '_blank')}) %>
-  <div id='deferral_agreed_details' class='govuk-radios__conditional govuk-radios__conditional--hidden' >
-    <%= f.collection_radio_buttons_fields(:deferral_agreed_ind, @lbtt_return.list_ref_data(:deferral_agreed_ind)) %>
-    <div id='deferral_reference_details' class='govuk-radios__conditional govuk-radios__conditional--hidden'>
-      <%= f.text_field :deferral_reference %>
-    </div>
-  </div>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :contingents_event_ind,
+                   options_list: @lbtt_return.list_ref_data(:contingents_event_ind),
+                   interpolations: { link: ds_link(name: t('.contingents_event_ind_link'), url: external_link_url('CONTINGENT'), target: '_blank')}, alignment: :horizontal) %>
+    <%= rs_conditional_visibility(visible_value: "Y") do |r| %>
+      <% r.with_visibility_control_radio_group(builder: f.builder, method: :deferral_agreed_ind, options_list: @lbtt_return.list_ref_data(:deferral_agreed_ind), alignment: :horizontal) %>
+      <%= f.ds_text_field(method: :deferral_reference) %>
+    <% end %>
+  <% end %>
 <% end %>

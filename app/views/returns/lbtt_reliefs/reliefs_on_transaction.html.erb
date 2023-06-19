@@ -1,0 +1,41 @@
+<% content_for(:page_title, t('.title')) %>
+<%= ds_paragraph{ t('.description_1_html', link: 
+                 ds_link(name: t('.description_1_link'), url: external_link_url('TAX_RELIEFS'), target: '_blank'))}%>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f|  %>
+  <%= f.ds_table_form(add_link: true, delete_links: true) do |table| %>
+    <% table.with_header(klass: Returns::Lbtt::ReliefClaim) do |header| %>
+      <% header.with_cell(method: :relief_type_expanded) %>
+      <% header.with_cell(method: :relief_amount) %>
+      <% if @lbtt_return.show_ads?%>
+        <% header.with_cell(method: :relief_amount_ads) %>
+      <% end %>
+    <% end %>
+    <% @lbtt_return.relief_claims.each_with_index do |relief_claim, index| %>
+      <% table.with_form_row(model: relief_claim, index: index,
+                             data_options: {"controller": 'reliefs',
+                                            "calculated-text": Returns::Lbtt::ReliefClaim.calculated_text,
+                                            "na-text": Returns::Lbtt::ReliefClaim.na_text} ) do |row| %>
+        <% row.with_cell do |c| %>
+          <%# TODO: RSTP-1154 remove the capture %>
+          <% capture do %>
+            <%= c.ds_select(method: :relief_type_expanded, select_options: @relief_types.collect { |v| [v.description, v.code_expanded] }, data_options: {"action": "reliefs#setFields"}) %>
+          <% end %>
+        <% end %>
+        <% row.with_cell do |c| %>
+          <% capture do %>
+            <%= c.ds_currency(method: :relief_amount, readonly: relief_claim.auto_calculated?||!relief_claim.lbtt_relief?,
+                              data_options: {"reliefs-target": "lbttAmount"}) %>
+          <% end %>
+        <% end %>
+        <% if @lbtt_return.show_ads?%>
+          <% row.with_cell do |c| %>
+            <% capture do %>
+              <%= c.ds_currency(method: :relief_amount_ads, readonly: relief_claim.auto_calculated?||!relief_claim.ads_relief?,
+                                data_options: {"reliefs-target": "adsAmount"}) %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

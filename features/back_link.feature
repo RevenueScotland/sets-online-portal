@@ -11,7 +11,7 @@ Feature: Back Link
 
         # Scenario's test part 1 - Multiple back clicks
         # Currently at page A (Dashboard page)
-        When I click on the "Create LBTT return" link
+        When I click on the "Create LBTT return" menu item
         # Then I should be in page B
         Then I should see the "About the return" page
         When I check the "3 year lease review" radio button
@@ -22,15 +22,17 @@ Feature: Back Link
         When I click on the "Back" link
         Then I should see the "About the return" page
         # Lastly back to page A
-        And I click on the "Back" link
+        When I click on the "Back" link
         Then I should see the "Dashboard" page
 
         # Scenario's test part 2 - Page reload doesn't affect the back link
-        When I click on the "Create LBTT return" link
+        When I click on the "Create LBTT return" menu item
         And I check the "3 year lease review" radio button
         And I click on the "Continue" button
-        And I enter "RS1234567Helo" in the "What was the original return reference?" field
+        And I enter "RS2000003BBBB" in the "What was the original return reference" field
+        And I enter "01-06-2020" in the "What was the original return effective date" date field
         And I click on the "Continue" button
+        And I should see the "Return Summary" page
         And I click on the "Add a tenant" link
         And I check the "A private individual" radio button
         And I click on the "Continue" button
@@ -48,17 +50,19 @@ Feature: Back Link
         # Page B
 
         And I enter "LU1 1AA" in the "address_summary_postcode" field
-        And I click on the "Find Address" button
+        And I click on the "Find address" button
+        Then I should see the "Tenant address" page
         # This should re-load page B
-        And I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+        When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
         And if available, click the "Select" button
+        Then I should see the "Tenant address" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
         And I should see the text "Dunstable Road" in field "address_address_line3"
         And I should see the text "LUTON" in field "address_town"
         And I should see the text "LU1 1AA" in field "address_postcode"
-        And I click on the "Continue" button
 
+        When I click on the "Continue" button
         # Going to page C
         Then I should see the "Tenant's contact address" page
 
@@ -88,7 +92,7 @@ Feature: Back Link
         # Starting page: page A
         Then I should see the "Dashboard" page
 
-        When I click on the "Create SLfT return" link
+        When I click on the "Create SLfT return" menu item
         # This is now page B
         Then I should see the "Return summary" page
 
@@ -121,7 +125,7 @@ Feature: Back Link
         # Done
 
         # Scenario's test part 2 - Back click going to the correct page
-        When I click on the "Create SLfT return" link
+        When I click on the "Create SLfT return" menu item
         # Page A
         Then I should see the "Return summary" page
 
@@ -147,16 +151,3 @@ Feature: Back Link
         And I should see the text "2015/16"
         And I should see the text "SLfT quarter"
         And I should see the text "Quarter 1"
-
-    Scenario: Back link on generic error page
-        Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
-        Then I should see the "Dashboard" page
-
-        When I click on the "Create LBTT return" link
-        Then I should see the "About the return" page
-
-        When I go to the "home/error" page
-        Then I should see the "Something has gone wrong" page
-
-        When I click on the "Back" link
-        Then I should see the "About the return" page

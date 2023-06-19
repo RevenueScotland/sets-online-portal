@@ -15,14 +15,13 @@ module Returns
       def self.attribute_list
         %i[orig_return_reference flbt_type buyers sellers agent landlords tenants new_tenants properties property_type
            effective_date relevant_date contract_date lease_start_date lease_end_date business_ind exchange_ind
-           previous_option_ind uk_ind sale_include_option non_ads_relief_claims non_ads_reliefclaim_option_ind
-           lease_premium premium_paid linked_ind linked_consideration linked_lease_premium link_transactions
-           annual_rent yearly_rents rent_for_all_years total_consideration total_vat remaining_chargeable
-           contingents_event_ind deferral_agreed_ind non_chargeable deferral_reference relevant_rent
-           bank_name account_number branch_code account_holder_name fpay_method
-           authority_ind declaration lease_declaration parties payment_date filing_date current_flbt_type
+           previous_option_ind uk_ind sale_include_option relief_claims lease_premium premium_paid linked_ind
+           linked_consideration linked_lease_premium link_transactions annual_rent yearly_rents rent_for_all_years
+           total_consideration total_vat remaining_chargeable contingents_event_ind deferral_agreed_ind
+           non_chargeable deferral_reference relevant_rent bank_name account_number branch_code account_holder_name
+           fpay_method authority_ind declaration lease_declaration parties payment_date filing_date current_flbt_type
            repayment_ind repayment_amount_claimed repayment_declaration repayment_agent_declaration account_type
-           ads change_reason]
+           ads change_reason orig_effective_date non_notifiable_submit_ind non_notifiable_explanation]
       end
 
       attribute_list.each { |attr| attr_accessor attr }
@@ -33,14 +32,16 @@ module Returns
                        :annual_rent, :relevant_rent, :repayment_amount_claimed, :account_number
 
       # Holds items that are internal and not set by the user
-      # The attribute is_public is used to determine if the return was made as a public, in other words, a
-      # user who is not logged in. This needs to be populated on a new instance of a lbtt_return object.
+      # The attribute user_account_type is used to determine current_user account type, in other words, a
+      # user who is submitting return. This needs to be populated on a new instance of a lbtt_return object.
       # LBTT tax calculations object to manage and store tax calculation results.
       # Not including in the attribute_list so it can't be posted to, ie not user editable from this object
-      attr_accessor :tax, :is_public
+      attr_accessor :tax, :user_account_type
 
       validates :flbt_type, presence: true, on: :flbt_type
       validates :orig_return_reference, presence: true, reference_number: true, on: :orig_return_reference
+      validates :orig_effective_date, custom_date: true, presence: true, compare_date: true, on: :orig_effective_date
+      validate  :validate_return_reference, on: :orig_return_reference
 
       # Transaction validation
       validates :property_type, presence: true, on: :property_type
@@ -96,9 +97,7 @@ module Returns
                                      unless: :convey?
 
       # reliefs validation
-      validates :non_ads_reliefclaim_option_ind, presence: true, on: :non_ads_reliefclaim_option_ind,
-                                                 unless: :any_lease_review?
-      validates :non_ads_relief_claims, relief_type_unique: true, on: :non_ads_reliefclaim_option_ind
+      validates :relief_claims, relief_type_unique: true, on: :relief_claims
 
       # other than conveyance type calculations
       validates :annual_rent, numericality: { greater_than_or_equal_to: 0, less_than: 1_000_000_000_000_000_000,
@@ -142,9 +141,34 @@ module Returns
       # declaration validation
       validates :fpay_method, presence: true, on: :fpay_method
       validates :authority_ind, presence: true, on: :authority_ind
+      validates :non_notifiable_submit_ind, presence: true, on: :non_notifiable_submit_ind
+      validates :non_notifiable_explanation, presence: true, length: { maximum: 4000 }, on: :non_notifiable_explanation
       validates :declaration, acceptance: { accept: ['Y'] }, on: :fpay_method
       validates :lease_declaration, acceptance: { accept: ['Y'] }, on: :fpay_method,
                                     if: :lease?
+
+      # @return a hash suitable for use in validateReturnReference request to the back office
+      def request_validate_element(current_user)
+        if current_user.blank?
+          { UnAuthenticated: true, TareReference: @orig_return_reference, IncludeDisregardedReturns: true }
+        else
+          { Username: current_user.username, ParRefNo:  current_user.party_refno,
+            UnAuthenticated: false, TareReference: @orig_return_reference, IncludeDisregardedReturns: true }
+        end
+      end
+
+      # calls back office and returns hash which is used to validate the return reference and effective date
+      def validate_return_reference
+        return if errors.any? # don't check validation unless model already valid
+
+        call_ok?(:validate_return_reference, request_validate_element(@current_user)) do |response|
+          if not_filed_lease(response)
+            errors.add(:orig_return_reference, :return_not_filed_lease)
+          elsif response[:status] == 'Y'
+            errors.add(:orig_return_reference, :return_disregarded)
+          end
+        end
+      end
 
       # Return the property type attribute, but if this is one of the lease reviews set to non residential
       # as we don't ask the question
@@ -178,16 +202,22 @@ module Returns
       # @return [Array] The array of MD reliefs, we are only expecting one
       def md_relief
         md_relief = []
-        md_relief = @non_ads_relief_claims.select(&:md_relief?) if
-                              @non_ads_relief_claims.present? && @non_ads_reliefclaim_option_ind == 'Y'
+        md_relief = @relief_claims.select(&:md_relief?) if
+                              @relief_claims.present?
         md_relief
       end
 
       # Updates the ads_due flag on any linked reliefs and returns the mutated instance
       # @return [Array] The array of non ads relief claims with the latest ads due flag
       def synchronising_ads_due_on_reliefs!
+        # Get adds up front as it is expensive
         ads_value = show_ads?
-        @non_ads_relief_claims.each { |r| r.lbtt_return_ads_due = ads_value } if @non_ads_relief_claims.present?
+        if @relief_claims.present?
+          @relief_claims.each do |r|
+            r.lbtt_return_ads_due = ads_value
+            r.lbtt_return_flbt_type = flbt_type
+          end
+        end
         self
       end
 
@@ -269,14 +299,15 @@ module Returns
       # Define the ref data codes associated with the attributes but which won't be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
       def uncached_ref_data_codes
-        { authority_ind: YESNO_COMP_KEY, non_ads_reliefclaim_option_ind: YESNO_COMP_KEY,
+        { authority_ind: YESNO_COMP_KEY,
           previous_option_ind: YESNO_COMP_KEY, repayment_ind: YESNO_COMP_KEY,
           exchange_ind: YESNO_COMP_KEY, uk_ind: YESNO_COMP_KEY,
           linked_ind: YESNO_COMP_KEY, business_ind: YESNO_COMP_KEY,
           contingents_event_ind: YESNO_COMP_KEY, deferral_agreed_ind: YESNO_COMP_KEY,
           rent_for_all_years: YESNO_COMP_KEY, premium_paid: YESNO_COMP_KEY,
           declaration: YESNO_COMP_KEY, lease_declaration: YESNO_COMP_KEY,
-          repayment_declaration: YESNO_COMP_KEY, repayment_agent_declaration: YESNO_COMP_KEY }
+          repayment_declaration: YESNO_COMP_KEY, repayment_agent_declaration: YESNO_COMP_KEY,
+          non_notifiable_submit_ind: YESNO_COMP_KEY }
       end
 
       # Layout to print the data in this model
@@ -296,8 +327,8 @@ module Returns
                         { code: :flbt_type, lookup: true },
                         { code: :orig_return_reference, when: :any_lease_review?, is: [true] }] },
          { code: :agent,
-           when: :is_public,
-           is_not: [true],
+           when: :user_account_type,
+           is_not: ['PUBLIC'],
            key: :title, # key for the title translation
            key_scope: %i[returns lbtt_agent agent_details], # scope for the title translation
            type: :object },
@@ -312,8 +343,6 @@ module Returns
          { code: :new_tenants,
            type: :object },
          { code: :properties,
-           type: :object },
-         { code: :ads,
            type: :object },
          { code: :about_the_transaction, # section code
            key: :title, # key for the title translation
@@ -353,21 +382,6 @@ module Returns
            type: :list, # type list = the list of attributes to follow
            list_items: [{ code: :business_ind, lookup: true },
                         { code: :sale_include_option, lookup: true }] },
-         { code: :non_ads_relief_claim_ind, # section code
-           key: :title, # key for the title translation
-           key_scope: %i[returns lbtt_transactions reliefs_on_transaction], # scope for the title translation
-           divider: false, # should we have a section divider
-           display_title: true, # Is the title to be displayed
-           when: :any_lease_review?,
-           is: [false],
-           type: :list, # type list = the list of attributes to follow
-           list_items: [{ code: :non_ads_reliefclaim_option_ind, lookup: true }] },
-         { code: :non_ads_relief_claims, # section code
-           divider: false, # should we have a section divider
-           display_title: false, # Is the title to be displayed
-           when: :non_ads_reliefclaim_option_ind,
-           is: ['Y'],
-           type: :object }, #         unless @version.blank?
          { code: :lease_values, # section code
            key: :title, # key for the title translation
            key_scope: %i[returns lbtt_transactions lease_values], # scope for the title translation
@@ -396,6 +410,17 @@ module Returns
                         { code: :lease_premium, format: :money },
                         { code: :linked_lease_premium, format: :money },
                         { code: :relevant_rent, format: :money }] },
+         { code: :non_notifiable, # section code
+           key: :title, # key for the title translation
+           key_scope: %i[returns lbtt_transactions non_notifiable], # scope for the title translation
+           divider: false, # should we have a section divider
+           display_title: true, # Is the title to be displayed
+           when: :non_notifiable_submit_ind?,
+           is: [true],
+           type: :list, # type list = the list of attributes to follow
+           list_items: [{ code: :non_notifiable_submit_ind, lookup: true,
+                          when: :non_notifiable_submit_ind?, is: [true] },
+                        { code: :non_notifiable_explanation, when: :non_notifiable_submit_ind?, is: [true] }] },
          { code: :about_the_calculation, # section code
            key: :title, # key for the title translation
            key_scope: %i[returns lbtt_transactions about_the_calculation], # scope for the title translation
@@ -420,6 +445,18 @@ module Returns
                         { code: :linked_consideration, format: :money },
                         { code: :non_chargeable, format: :money },
                         { code: :remaining_chargeable, format: :money }] },
+         if show_ads?
+           { code: :ads, # section code
+             type: :object } # key for the title translation
+         end,
+         { code: :relief_claims, # section code
+           key: :title, # key for the title translation
+           key_scope: %i[returns lbtt_reliefs reliefs_calculation], # scope for the title translation
+           divider: true, # should we have a section divider
+           display_title: true, # Is the title to be displayed
+           when: :any_lease_review?,
+           is: [false],
+           type: :object }, #         unless @version.blank?
          { code: :tax, # section code
            type: :object }, # key for the title translation
          # if the repayment ind is nil/blank they never got asked the question i.e. not an amend
@@ -437,7 +474,7 @@ module Returns
                           { code: :account_number, when: :repayment_ind, is: ['Y'] },
                           { code: :branch_code, when: :repayment_ind, is: ['Y'] },
                           { code: :bank_name, when: :repayment_ind, is: ['Y'] },
-                          { code: :repayment_declaration, lookup: true, translation_extra: :account_type,
+                          { code: :repayment_declaration, lookup: true,
                             when: :repayment_ind, is: ['Y'] },
                           { code: :repayment_agent_declaration, lookup: true,
                             when: :repayment_ind, is: ['Y'] }] }
@@ -456,9 +493,8 @@ module Returns
            display_title: true, # Is the title to be displayed
            type: :list, # type list = the list of attributes to follow
            list_items: [{ code: :authority_ind, lookup: true, when: :account_type, is: ['AGENT'] },
-                        { code: :declaration, lookup: true, translation_extra: :account_type },
-                        { code: :lease_declaration, lookup: true, when: :lease?, is: [true],
-                          translation_extra: :account_type }] }]
+                        { code: :declaration, lookup: true },
+                        { code: :lease_declaration, lookup: true, when: :lease?, is: [true] }] }]
       end
 
       # Layout to print the receipt data in this model
@@ -547,6 +583,11 @@ module Returns
         @repayment_ind == 'Y'
       end
 
+      # condition to check non_notifiable_submit_ind is set to Yes
+      def non_notifiable_submit_ind?
+        @non_notifiable_submit_ind == 'Y'
+      end
+
       # Combine list of parties together
       def all_parties
         output = {}
@@ -605,12 +646,6 @@ module Returns
         return false if @buyers.blank?
 
         @buyers.values.detect { |buyer| buyer.type != 'PRIVATE' }.present?
-      end
-
-      # The relief claim should only show if user has entered ADS and transaction details
-      # and we have calculated the amounts, which we can determine by checking the override amount
-      def show_relief_calc?
-        relief_claims.present? && relief_claims[0].relief_override_amount.present?
       end
 
       # For a repayment then for lbtt the return needs to be an amendment
@@ -685,7 +720,7 @@ module Returns
         end
 
         # tax and reliefs
-        output.merge!(convert_to_relief_claims(output[:reliefs])) if output[:reliefs].present?
+        output[:relief_claims] = convert_to_relief_claims(output[:reliefs]) if output[:reliefs].present?
 
         # convert back office yes/no to Y/N
         yes_nos_to_yns(output, %i[previous_option_ind exchange_ind uk_ind contingents_event_ind])
@@ -699,9 +734,10 @@ module Returns
 
         # don't want to load the repayment details, throw this lot away
         # also the ads due ind as we get this at the property level
-
+        # don't load the non notifiable explantation as we don't show it anywhere
         delete = %i[repayment_bank_name repay_account_holder repay_bank_account_no repay_bank_sort_code repayment_ind
-                    repayment_agent_auth_ind repayment_amount_claimed ads_due_ind change_reason]
+                    repayment_agent_auth_ind repayment_amount_claimed ads_due_ind change_reason
+                    non_notifiable_explanation]
 
         # clean up leftover indexes that we've converted/renamed/moved but not used the delete method to do so
         # ie this is not a list of data we're throwing away
@@ -731,14 +767,11 @@ module Returns
       # note must still be in the correct order with the other indicators
       private_class_method def self.derive_common_yes_nos_in(lbtt)
         # Note the below in the order they are asked
-        non_ads_reliefclaim_option_ind = derive_yes_no(value: lbtt[:non_ads_relief_claims],
-                                                       default_n: lbtt[:deferral_agreed_ind].present? ||
-                                                                  lbtt[:annual_rent].present?)
         business_ind = derive_yes_no(value: lbtt[:sale_include_option],
-                                     default_n: non_ads_reliefclaim_option_ind.present?)
+                                     default_n: lbtt[:deferral_agreed_ind].present? ||
+                                                lbtt[:annual_rent].present?)
         lbtt[:linked_ind] = derive_yes_no(value: lbtt[:link_transactions],
-                                          default_n: business_ind.present? || non_ads_reliefclaim_option_ind.present?)
-        lbtt[:non_ads_reliefclaim_option_ind] = non_ads_reliefclaim_option_ind
+                                          default_n: business_ind.present?)
         lbtt[:business_ind] = business_ind
       end
 
@@ -751,9 +784,9 @@ module Returns
       # Returns a translation attribute where a given attribute may have more than one name based on e.g. a type
       # it also allows for a different attribute name for the error region for e.g. long labels
       # @param attribute [Symbol] the name of the attribute to translate
-      # @param translation_options [Object] in this case the party type being processed passed from the page
+      # @param _translation_options [Object] in this case the party type being processed passed from the page
       # @return [Symbol] the name of the translation attribute
-      def translation_attribute(attribute, translation_options = nil)
+      def translation_attribute(attribute, _translation_options = nil)
         #  Depending on the property type, this changes the attribute to match the specific attribute
         #  that has the translation text that we want for when it's 'Residential to be displayed.
         return :total_consideration_residential if attribute == :total_consideration && @property_type == '1'
@@ -762,7 +795,7 @@ module Returns
         return attribute unless %i[authority_ind repayment_agent_declaration lease_declaration
                                    declaration repayment_declaration].include?(attribute)
 
-        translation_attribute_declarations(attribute, translation_options)
+        translation_attribute_declarations(attribute)
       end
 
       # Convert the parties data received from back-office to our model specific format
@@ -805,28 +838,16 @@ module Returns
         output
       end
 
-      # Convert the relief_claim data into non ads relief object see ads model for ads_relief_claims
-      # @return [Hash] reliefs with indexes :non_ads_relief_claims.
+      # Convert the relief_claim data into relief object
+      # @return [Hash] reliefs with indexes :relief_claims.
       private_class_method def self.convert_to_relief_claims(reliefs_data)
         return nil if reliefs_data.nil? || reliefs_data[:relief].nil?
 
-        # convert to array if it isn't already
-        reliefs_data[:relief] = [reliefs_data[:relief]] unless reliefs_data[:relief].is_a? Array
-
-        output = { non_ads_relief_claims: [] }
-        reliefs_data[:relief].each do |raw_hash|
-          convert_and_organise_relief(raw_hash, output)
+        output = []
+        ServiceClient.iterate_element(reliefs_data) do |raw_hash|
+          output << ReliefClaim.convert_back_office_hash(raw_hash)
         end
-        # delete empty parts of the reliefs hash.
-        output.delete(:non_ads_relief_claims) if output[:non_ads_relief_claims].empty?
         output
-      end
-
-      # Separated out of #convert_to_relief_claims.
-      # @param raw_hash [Hash] data loaded from the back office about a relief
-      private_class_method def self.convert_and_organise_relief(raw_hash, output)
-        relief = ReliefClaim.convert_back_office_hash(raw_hash)
-        output[:non_ads_relief_claims] << relief unless relief.ads?
       end
 
       # Check to run before attempting a minimal Lbtt::Tax calculation request (ie anything the back office
@@ -868,27 +889,6 @@ module Returns
         @public_return_types.values.sort_by(&:sort_key)
       end
 
-      # Custom setter for relief claim that splits into the two lists for ads and non ads
-      # @param value [Array] and array of relief claims
-      def relief_claims=(value)
-        return if value.nil?
-
-        # Note that the select returns a blank array so we check for and set to nil for these
-        ads_relief_claims = value.select(&:ads?)
-        @ads.ads_relief_claims = (ads_relief_claims.empty? ? nil : ads_relief_claims)
-
-        non_ads_relief_claims = value.reject(&:ads?)
-        @non_ads_relief_claims = (non_ads_relief_claims.empty? ? nil : non_ads_relief_claims)
-      end
-
-      # Add the ADS and non-ADS reliefs together
-      # not that we have to check the flags are set otherwise we need to ignore any data in the arrays
-      def relief_claims
-        non_ads_relief_claims = (@non_ads_reliefclaim_option_ind == 'Y' ? @non_ads_relief_claims : [])
-        ads_relief_claims = (@ads.ads_reliefclaim_option_ind == 'Y' ? @ads.ads_relief_claims : [])
-        (non_ads_relief_claims || []) + (ads_relief_claims || [])
-      end
-
       private
 
       # check the correct amounts are present for the tax calc
@@ -897,6 +897,12 @@ module Returns
         # Note we use the remaining chargeable method not the actual attribute as values are defaulted
         ((convey? && @total_consideration.present? && remaining_chargeable.present?) ||
           (!convey? && @premium_paid.present?))
+      end
+
+      # check that the validate return response is for the suitable lease
+      def not_filed_lease(response)
+        response.blank? || response[:flbt_type] != 'LEASERET' ||
+          response[:effective_date].to_date != orig_effective_date.to_date
       end
 
       # Called by @see Returns::AbstractReturn#save
@@ -916,29 +922,32 @@ module Returns
       end
 
       # Called by @see Returns::AbstractReturn#save
-      # @param requested_by [Object] details for the current user
+      # @param _requested_by [Object] details for the current user
       # @param form_type [string] D(raft) or L(atest)
       # @return a hash suitable for use in a save request to the back office
-      def request_save(requested_by, form_type:) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      def request_save(_requested_by, form_type:) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         output = {
-          'ins1:FlbtType': @flbt_type, 'ins1:PropertyType': property_type
+          'ins0:FlbtType': @flbt_type, 'ins0:PropertyType': property_type
         }
-        output['ins1:ChangeReason'] = @change_reason if amendment?
-        output['ins1:OrigReturnReference'] = @orig_return_reference if any_lease_review?
-        output.merge!('ins1:EffectiveDate': DateFormatting.to_xml_date_format(@effective_date),
-                      'ins1:RelevantDate': DateFormatting.to_xml_date_format(@relevant_date),
-                      'ins1:ContractDate': DateFormatting.to_xml_date_format(@contract_date))
+        output['ins0:ChangeReason'] = @change_reason if amendment?
+        output['ins0:OrigReturnReference'] = @orig_return_reference if any_lease_review?
+        output.merge!('ins0:EffectiveDate': DateFormatting.to_xml_date_format(@effective_date),
+                      'ins0:RelevantDate': DateFormatting.to_xml_date_format(@relevant_date),
+                      'ins0:ContractDate': DateFormatting.to_xml_date_format(@contract_date))
         unless convey?
-          output[:'ins1:LeaseStartDate'] = DateFormatting.to_xml_date_format(@lease_start_date)
-          output[:'ins1:LeaseEndDate'] = DateFormatting.to_xml_date_format(@lease_end_date)
+          output['ins0:LeaseStartDate'] = DateFormatting.to_xml_date_format(@lease_start_date)
+          output['ins0:LeaseEndDate'] = DateFormatting.to_xml_date_format(@lease_end_date)
         end
-        output.merge!('ins1:PreviousOptionInd': convert_to_backoffice_yes_no_value(@previous_option_ind),
-                      'ins1:ExchangeInd': convert_to_backoffice_yes_no_value(@exchange_ind),
-                      'ins1:UKInd': convert_to_backoffice_yes_no_value(@uk_ind))
-        xml_element_if_present(output, 'ins1:AgentReference', @agent.agent_reference) unless @agent.nil?
+
+        output['ins0:NonNotifiableExplanation'] = @non_notifiable_explanation if non_notifiable_submit_ind?
+
+        output.merge!('ins0:PreviousOptionInd': convert_to_backoffice_yes_no_value(@previous_option_ind),
+                      'ins0:ExchangeInd': convert_to_backoffice_yes_no_value(@exchange_ind),
+                      'ins0:UKInd': convert_to_backoffice_yes_no_value(@uk_ind))
+        xml_element_if_present(output, 'ins0:AgentReference', @agent.agent_reference) unless @agent.nil?
         parties_hash = all_parties.values
         parties_hash.push(@agent) unless @agent.nil?
-        output['ins1:Parties'] = { 'ins1:Party': parties_hash.map { |p| p.request_save(authority_ind) } }
+        output['ins0:Parties'] = { 'ins0:Party': parties_hash.map { |p| p.request_save(authority_ind) } }
 
         if @linked_ind == 'Y'
           linked_array = []
@@ -946,121 +955,105 @@ module Returns
 
           # flatten and compact to ensure we create the right format output for the request without any empty entries
           if linked_array.present?
-            output['ins1:LinkedTransactions'] = { 'ins1:LinkedTransaction': linked_array.flatten&.compact }
+            output['ins0:LinkedTransactions'] = { 'ins0:LinkedTransaction': linked_array.flatten&.compact }
           end
         end
 
         if convey?
           # set to 0 if there are no linked transactions
-          output['ins1:LinkedConsideration'] = linked_consideration
+          output['ins0:LinkedConsideration'] = linked_consideration
         else
-          output['ins1:LinkedLeasePremium'] = linked_lease_premium
-          output['ins1:AnnualRent'] = @annual_rent
-          output['ins1:SameRentEachYearInd'] = convert_to_backoffice_yes_no_value(@rent_for_all_years)
+          output['ins0:LinkedLeasePremium'] = linked_lease_premium
+          output['ins0:AnnualRent'] = @annual_rent
+          output['ins0:SameRentEachYearInd'] = convert_to_backoffice_yes_no_value(@rent_for_all_years)
           if @rent_for_all_years == 'N' && @yearly_rents.present?
-            output['ins1:Rent'] = { 'ins1:YearlyRents': @yearly_rents.map(&:request_save) }
-            output['ins1:Rent'] = output['ins1:Rent'].compact
+            output['ins0:Rent'] = { 'ins0:YearlyRents': @yearly_rents.map(&:request_save) }
+            output['ins0:Rent'] = output['ins0:Rent'].compact
           end
-          output['ins1:LeasePremium'] = @lease_premium
-          output['ins1:RelevantRent'] = @relevant_rent
-          output.delete('ins1:ConsiderationAmount')
+          output['ins0:LeasePremium'] = @lease_premium
+          output['ins0:RelevantRent'] = @relevant_rent
+          output.delete('ins0:ConsiderationAmount')
         end
 
-        output['ins1:Properties'] = { 'ins1:Property': @properties.values.map(&:request_save) } unless @properties.nil?
+        output['ins0:Properties'] = { 'ins0:Property': @properties.values.map(&:request_save) } unless @properties.nil?
 
-        output['ins1:BusinessInd'] = convert_to_backoffice_yes_no_value(@business_ind)
+        output['ins0:BusinessInd'] = convert_to_backoffice_yes_no_value(@business_ind)
         if business_ind == 'Y'
-          output['ins1:IncludeInSale'] = {
-            'ins1:StockInd': @sale_include_option.include?('STOCK') ? 'yes' : 'no',
-            'ins1:GoodwillInd': @sale_include_option.include?('GOODWILL') ? 'yes' : 'no',
-            'ins1:MoveablesInd': @sale_include_option.include?('MOVEABLES') ? 'yes' : 'no',
-            'ins1:OtherInd': @sale_include_option.include?('OTHER') ? 'yes' : 'no'
+          output['ins0:IncludeInSale'] = {
+            'ins0:StockInd': @sale_include_option.include?('STOCK') ? 'yes' : 'no',
+            'ins0:GoodwillInd': @sale_include_option.include?('GOODWILL') ? 'yes' : 'no',
+            'ins0:MoveablesInd': @sale_include_option.include?('MOVEABLES') ? 'yes' : 'no',
+            'ins0:OtherInd': @sale_include_option.include?('OTHER') ? 'yes' : 'no'
           }
         end
 
         if convey?
-          output['ins1:TotalConsideration'] = @total_consideration
-          output['ins1:TotalVat'] = total_vat
-          output['ins1:NonChargeable'] = non_chargeable
-          output['ins1:RemainingChargeable'] = remaining_chargeable
+          output['ins0:TotalConsideration'] = @total_consideration
+          output['ins0:TotalVat'] = total_vat
+          output['ins0:NonChargeable'] = non_chargeable
+          output['ins0:RemainingChargeable'] = remaining_chargeable
         end
 
-        # merge ADS and non-ADS reliefs into one and use that unless it's blank
-        reliefs = merge_reliefs
-
-        xml_element_if_present(output, 'ins1:Reliefs', reliefs)
+        if @relief_claims.present?
+          xml_element_if_present(output, 'ins0:Reliefs',
+                                 { 'ins0:Relief': @relief_claims.map(&:request_save) })
+        end
         @tax.request_save(output, !convey?)
-        output['ins1:AdsDueInd'] = (show_ads? ? 'yes' : 'no')
-        output['ins1:ContingentsEventInd'] = convert_to_backoffice_yes_no_value(@contingents_event_ind)
+        output['ins0:AdsDueInd'] = (show_ads? ? 'yes' : 'no')
+        output['ins0:ContingentsEventInd'] = convert_to_backoffice_yes_no_value(@contingents_event_ind)
         if @contingents_event_ind == 'Y'
-          xml_element_if_present(output, 'ins1:DeferralReference', @deferral_reference)
-          output['ins1:DeferralReference'] = @deferral_reference if @deferral_reference.present?
-          output['ins1:DeferralAgreedInd'] = convert_to_backoffice_yes_no_value(@deferral_agreed_ind)
+          xml_element_if_present(output, 'ins0:DeferralReference', @deferral_reference)
+          output['ins0:DeferralReference'] = @deferral_reference if @deferral_reference.present?
+          output['ins0:DeferralAgreedInd'] = convert_to_backoffice_yes_no_value(@deferral_agreed_ind)
         end
 
         # Make sure previous payment method is saved to back office for a draft so we don't lose track of it
-        xml_element_if_present(output, 'ins1:FPAYMethod', (form_type == 'D' ? @previous_fpay_method : @fpay_method))
+        xml_element_if_present(output, 'ins0:FPAYMethod', (form_type == 'D' ? @previous_fpay_method : @fpay_method))
 
         # repayments
         if @repayment_ind == 'Y'
 
           claim_reason_code = @ads.ads_sold_main_yes_no == 'Y' ? 'ADS' : 'OTHER'
 
-          output.merge!('ins1:ClaimType': 'PRE12MONTH',
-                        'ins1:ClaimReasonCode': claim_reason_code,
-                        'ins1:RepaymentInd': 'yes',
-                        'ins1:RepayAccountHolder': @account_holder_name,
-                        'ins1:RepayBankAccountNo': @account_number,
-                        'ins1:RepayBankSortCode': @branch_code,
-                        'ins1:RepaymentBankName': @bank_name,
-                        'ins1:RepayAmountClaimed': @repayment_amount_claimed,
-                        'ins1:RepaymentAgentAuthInd': @repayment_declaration == 'Y' ? 'yes' : 'no')
+          output.merge!('ins0:ClaimType': 'PRE12MONTH',
+                        'ins0:ClaimReasonCode': claim_reason_code,
+                        'ins0:RepaymentInd': 'yes',
+                        'ins0:RepayAccountHolder': @account_holder_name,
+                        'ins0:RepayBankAccountNo': @account_number,
+                        'ins0:RepayBankSortCode': @branch_code,
+                        'ins0:RepaymentBankName': @bank_name,
+                        'ins0:RepayAmountClaimed': @repayment_amount_claimed,
+                        'ins0:RepaymentAgentAuthInd': @repayment_declaration == 'Y' ? 'yes' : 'no')
         # They haven't yet claimed a repayment but have said they sold the property
         elsif @repayment_ind.nil? && @ads.ads_sold_main_yes_no == 'Y'
-          output.merge!('ins1:ClaimType': 'PRE12MONTH',
-                        'ins1:ClaimReasonCode': 'ADS',
-                        'ins1:RepayAmountClaimed': @ads.ads_repay_amount_claimed)
+          output.merge!('ins0:ClaimType': 'PRE12MONTH',
+                        'ins0:ClaimReasonCode': 'ADS',
+                        'ins0:RepayAmountClaimed': @ads.ads_repay_amount_claimed)
         elsif @repayment_ind == 'N'
-          output['ins1:RepaymentInd'] = 'no'
+          output['ins0:RepaymentInd'] = 'no'
         end
-
-        # is the ADS section currently available to the user
-        show_ads = show_ads?
 
         # include ADS fields only if the user is currently shown the ADS wizard option (ie it could have been hidden
         # since ADS data was added)
-        @ads.request_save(output) if show_ads
+        @ads.request_save(output) if show_ads?
 
         # put the top tag in place and add the print data
         # The print data needs to be in this routine as it has specific information based on the return type
-        { 'ins1:LBTTReturnDetails': output,
-          'ins1:PrintData': print_data(:print_layout, account_type: User.account_type(requested_by),
-                                                      flbt_type: @flbt_type),
-          'ins1:PrintDataReceipt': print_data(:print_layout_receipt, receipt: :receipt) }
+        { 'ins0:LBTTReturnDetails': output,
+          'ins0:PrintData': print_data(:print_layout),
+          'ins0:PrintDataReceipt': print_data(:print_layout_receipt) }
       end
 
-      # Add the ADS and non-ADS reliefs together for submission if their respective indicators are 'Y'.
-      def merge_reliefs
-        output = []
-        output << @non_ads_relief_claims.map(&:request_save) if @non_ads_reliefclaim_option_ind == 'Y'
-        output << @ads.ads_relief_claims.map(&:request_save) if @ads.ads_reliefclaim_option_ind == 'Y'
-
-        # flatten and compact to ensure we create the right format output for the request without any empty entries
-        { 'ins1:Relief': output.flatten&.compact }
-      end
-
-      # Dynamically returns the translation key based on the translation_options provided by the page if it exists
-      # or else the flbt_type.
+      # Dynamically returns the translation key based on the flbt_type or user_account_type
       # @param attribute [Symbol] the name of the attribute to translate
-      # @param translation_options [Object] in this case the party type being processed passed from the page
       # @return [Symbol] "attribute_" + extra information to make the translation key
-      def translation_attribute_declarations(attribute, translation_options = nil)
+      def translation_attribute_declarations(attribute)
         suffix = if %i[authority_ind repayment_agent_declaration].include?(attribute)
                    flbt_type
-                 elsif %i[lease_declaration].include?(attribute) && !translation_options.nil?
-                   translation_options
+                 elsif %i[lease_declaration].include?(attribute)
+                   user_account_type
                  elsif %i[declaration repayment_declaration].include?(attribute)
-                   "#{flbt_type}_#{translation_options}"
+                   "#{flbt_type}_#{user_account_type}"
                  end
 
         "#{attribute}_#{suffix}".to_sym
@@ -1081,15 +1074,15 @@ module Returns
           divider: true, # should we have a section divider
           display_title: false, # Is the title to be displayed
           type: :list, # type list = the list of attributes to follow
-          list_items: [{ code: :flbt_type, key_scope: %i[returns lbtt return_type], lookup: true },
+          list_items: [{ code: :flbt_type, action_name: :declaration_submitted, lookup: true },
                        { code: :effective_date, format: :date }] }
       end
 
       # print data for Agent object
       def print_layout_receipt_agent
         { code: :agent,
-          when: :is_public,
-          is_not: [true],
+          when: :user_account_type,
+          is_not: ['PUBLIC'],
           display_title: false,
           type: :object }
       end

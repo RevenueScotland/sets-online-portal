@@ -1,10 +1,12 @@
-<% content_for :hide_back_link, true %>
-<% content_for :public_landing_return_link, t('cancel')%>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<%= notifications_for('REPAYMENT') %>
-<%= display_paragraph_components(heading: t('.ads_heading'), body: t('.ads_description')) %>
-<%= display_paragraph_components(heading: t('.eligibility_heading'), body: t('.eligibility_description')) %>
-<%= display_paragraph_components(heading: t('.receive_repayment_heading'), body: t('.receive_repayment_description')) %>
-<br/>
-<%= link_to(t('continue'), claim_claim_payments_eligibility_path(new: true), class: 'scot-rev-button') %>
+<% content_for(:navigation_link, :clear_stack) %>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:public_landing_return_link, t('cancel'))%>
+<% content_for(:notification_banner, rs_notification_banner(display_page: 'REPAYMENT')) %>
+<%= ds_section_title(section_title: t('.ads_heading')) %>
+<%= ds_paragraph{ t('.ads_description')} %>
+<%= ds_section_title(section_title: t('.eligibility_heading')) %>
+<%= ds_paragraph{ t('.eligibility_description')} %>
+<%= ds_section_title(section_title: t('.receive_repayment_heading')) %>
+<%= ds_paragraph{ t('.receive_repayment_description')} %>
+<%= ds_button(name: t('cancel'), url: external_link_url('CANCEL_HOME'),type: :cancel ) %>
+<%= ds_button(name: t('continue'), url: claim_claim_payments_eligibility_path(new: true) ) %>

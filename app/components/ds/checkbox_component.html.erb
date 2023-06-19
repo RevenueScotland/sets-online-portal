@@ -1,0 +1,22 @@
+<div class="ds_question <%= 'ds_question--error' if error_list.present? %>">
+  <fieldset <%= "aria-describedby=\"#{hint_id}\"" if hint_text.present?%>>
+    <% if hint_text.present? %>
+      <p id="<%=hint_id%>" class="ds_hint-text">
+        <%= hint_text %>
+      </p>
+    <% end %>
+    <% if error_list.present? %>
+      <p id="<%= error_id%>" class="ds_question__error-message">
+        <% error_list.each do |error| %>
+          <%=error%>
+        <% end %>
+      </p>
+    <% end %>
+    <div class="ds_field-group">
+      <div class="ds_checkbox">
+        <%= builder.check_box(method, add_html_options({class: "ds_checkbox__input"}), checked_value, unchecked_value) %>
+        <%= builder.label(method, label_text, class: "ds_checkbox__label") %>
+      </div>
+    </div>
+  </fieldset>
+</div>

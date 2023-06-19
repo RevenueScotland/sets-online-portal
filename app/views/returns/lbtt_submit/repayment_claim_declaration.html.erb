@@ -1,11 +1,5 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
-  <% account_type = User.account_type(current_user) %>
-  <%= f.hidden_field :account_type, {}, { :value => account_type } %>
-  <%= f.check_box_field :repayment_agent_declaration if account_type == 'AGENT' %>
-  <%= f.check_box_field(:repayment_declaration, { translation_options: account_type } ) %>
-  <br>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_checkbox(method: :repayment_agent_declaration) if @lbtt_return.user_account_type == 'AGENT' %>
+  <%= f.ds_checkbox(method: :repayment_declaration) %>
 <% end %>

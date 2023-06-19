@@ -51,7 +51,7 @@
 #
 # Conventions :
 #  1) @example view excerpt
-#       <%= form_for @your_object, url: @post_path, method: :post, local: true do |f| %>
+#       <%= old_form_for @your_object, url: @post_path, method: :post, local: true do |f| %>
 #     where @your_object and @post_path are set both set up by a common controller method called by the wizard code
 #     usually called load_step (the default) or setup_step for the 1st step which will create objects (that way
 #     starting a wizard part way through will fail @see #wizard_load_or_redirect).
@@ -166,7 +166,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     overrides = block_given? ? yield : {}
 
     # First half of the step, optionally clear the wizard cache, then finish (so page can display)
-    unless params[:continue]
+    if request.get?
       wizard_handle_clear_cache(overrides)
 
       # sets up _AFTER_ allowing cache to be cleared
@@ -175,7 +175,9 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     end
 
     # Second half - when step is submitted
-    wizard_step_submitted(steps, overrides)
+    return if wizard_step_submitted(steps, overrides)
+
+    render(status: :unprocessable_entity)
   end
 
   # Clears the cache and ends the wizard as per the overrides
@@ -427,6 +429,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   # @see #wizard_step for more details.
   # @param steps [List] @see #wizard_step
   # @param overrides [Hash] @see #wizard_step
+  # @return [Boolean] true if the submission was successful
   def wizard_step_submitted(steps, overrides = {})
     wizard_cached_object, wizard_page_object = wizard_setup_step(overrides)
 
@@ -436,7 +439,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     # add submitted params to the cached object and save if validation passes
     # if validation fails then returns without doing the navigation
     # # overrides[:after_merge], overrides[:cache_index]) do
-    return unless wizard_merge_and_save(wizard_cached_object, wizard_page_object, wizard_params, overrides) do
+    return false unless wizard_merge_and_save(wizard_cached_object, wizard_page_object, wizard_params, overrides) do
       # validate object (@note this is a block called by #wizard_merge_and_save)
       wizard_valid?(wizard_cached_object, wizard_params, overrides)
     end
@@ -447,7 +450,9 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     # redirect to the next step unless there were errors added by the after_merge section
     # if the merge fails then we would have returned above
     # (in which case we fall out the bottom of the wizard process to re-display the current view)
-    wizard_navigation_step(steps, overrides, sub_object_size) unless wizard_page_object.errors.any?
+    return false if wizard_page_object.errors.any?
+
+    wizard_navigation_step(steps, overrides, sub_object_size)
   end
 
   # Counts the total size of the collection of sub-objects in the cached object, if the found collection turns out
@@ -527,6 +532,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   # @param total_objects [Integer|nil] defaults to nil but may also contain nil. This is used for a type of wizard
   #   pages that has the feature to loop back to a starting page, it is used to determine if the looping cycle
   #   should continue or break.
+  # @return [Boolean] true if the navigation is redirected
   # @see http://localhost:3000/rails/info/routes but consider if it'd be better todo something like :
   #      ['current_action', STEPS.first] which is another option.
   def wizard_navigation_step(steps, overrides, total_objects = nil)
@@ -537,13 +543,14 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     # normal case - find next step in list and redirect to that action (on current controller)
     if steps.is_a?(Array)
       # @see wizard_object_index to know how the :sub_object_index is being taken
-      wizard_navigation_from_list_next_step(steps, loop_instruction, wizard_object_index, total_objects) && return
+      return wizard_navigation_from_list_next_step(steps, loop_instruction, wizard_object_index, total_objects)
     end
 
     # redirect to a specific path eg returns_slft_declaration_repayment_path
     calculated_next_step = steps
     Rails.logger.debug { "Redirecting to specific location: #{calculated_next_step}" }
     redirect_to calculated_next_step
+    true
   end
 
   # Creates the next step according to the override value found in the next_step.
@@ -553,23 +560,25 @@ module Wizard # rubocop:disable Metrics/ModuleLength
 
     next_step = send(next_step)
 
-    # The next_step containing an Array is processed elsewhere so we need to break off this method
-    return next_step if next_step.is_a?(Array)
-
     # Normally the next_step is the already-built path, however, when using it with the loop feature then
     # that path should be the symbol version of it. So that the index can be passed.
-    loop_instruction == :start_next_step ? send(next_step, 1) : next_step
+    if loop_instruction == :start_next_step && !next_step.is_a?(Array) && respond_to?(next_step)
+      return send(next_step, 1)
+    end
+
+    next_step
   end
 
   # Navigates the wizard to redirect to a page by looking at the array of steps and figuring out which would the
   # next step be. This may also add an index according to the loop_instruction.
+  # @return [Boolean] true if the navigation is redirected
   def wizard_navigation_from_list_next_step(steps, loop_instruction, current_index, total_objects)
     calculated_next_step = next_step_in_list(steps)
-    Rails.logger.debug { "Redirecting to next step/action: #{calculated_next_step}" }
     action, index = build_action_and_index(calculated_next_step, loop_instruction, current_index, total_objects)
-
     # Next step with index, or the normal next step
+    Rails.logger.debug { "Redirecting to next step/action: #{calculated_next_step} #{action} #{index}}" }
     index.present? ? redirect_to(action: action, sub_object_index: index) : redirect_to(action: action)
+    true
   end
 
   # Builds the action and index for the next step, which is only used for the array of steps.

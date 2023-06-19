@@ -1,8 +1,5 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @slft_return, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @slft_return %>
-  <%= f.select(:year, @slft_return.list_ref_data(:year)) %>
-  <%= f.collection_radio_buttons_fields(:fape_period, @slft_return.list_ref_data(:fape_period), alignment: 'vertical') %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @slft_return, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_select(method: :year, select_options: @slft_return.list_ref_data(:year)) %>
+  <%= f.ds_radio_group(method: :fape_period, options_list: @slft_return.list_ref_data(:fape_period)) %>
 <% end %>

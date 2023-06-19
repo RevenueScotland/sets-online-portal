@@ -1,9 +1,6 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @property, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @property %>
-  <%= f.collection_radio_buttons_fields(:ads_due_ind, @property.list_ref_data(:ads_due_ind),
-                                        text_links: { t('.ads_due_ind_link') =>
-                                                    link_to(t('.ads_due_ind_link'), external_link_url('LBTT_ADS'), target: '_blank') }) %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @property, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_radio_group(method: :ads_due_ind, options_list: @property.list_ref_data(:ads_due_ind),
+                                        interpolations: { link:
+                                                    ds_link(name: t('.ads_due_ind_link'), url: external_link_url('LBTT_ADS'), target: '_blank') }, alignment: :horizontal) %>
 <% end %>

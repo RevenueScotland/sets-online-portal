@@ -1,9 +1,7 @@
-<% content_for :hide_back_link, true %>
-<% content_for :public_landing_return_link, t('cancel')%>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<%= notifications_for('LBTTREVIEW') %>
-<%= display_paragraph_components(body: t('.info_needed_html')) %>
-<%= display_paragraph_components(body: t('.start_warning')) %>
-<br>
-<p><%= link_to(t('start_now'), returns_lbtt_public_return_type_path, class: 'scot-rev-button') %></p>
+<% content_for(:navigation_link, :clear_stack) %>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:notification_banner, rs_notification_banner(display_page: 'LBTTREVIEW')) %>
+<%= ds_paragraph{ t('.info_needed_html')} %>
+<%= ds_paragraph{ t('.start_warning')} %>
+<%= ds_button(name: t('cancel'), url: external_link_url('CANCEL_HOME'), type: :cancel ) %>
+<%= ds_button(name: t('start_now'), url: returns_lbtt_public_return_type_path ) %>

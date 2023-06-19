@@ -1,8 +1,6 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_description, t('.description') %>
-<%= form_for @waste_producer, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for [@waste_producer, @address_summary, @address_detail] %>
-  <%= render "/layouts/address" %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_paragraph {t('.description')} %>
+<%= ds_form_with(model: @waste_producer, url: @post_path, method: :post)  do |f| %>
+  <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail,
+      show_address_detail: @show_manual_address, readonly: @address_read_only) %>
 <% end %>

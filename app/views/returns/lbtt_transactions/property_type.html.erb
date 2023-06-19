@@ -1,11 +1,9 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @lbtt_return, url: returns_lbtt_property_type_path, :method => 'post', local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
-  <%= f.collection_radio_buttons_fields(:property_type, @lbtt_return.list_ref_data(:property_type),
-                                         text_links: { t('.property_type_residential') =>
-                                                    link_to(t('.property_type_residential'), external_link_url('RESIDENTIAL'), target: '_blank'),
-                                                     t('.property_type_non_residential') =>
-                                                    link_to(t('.property_type_non_residential'), external_link_url('NON_RESIDENTIAL'), target: '_blank')}) %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @lbtt_return, url: returns_lbtt_property_type_path, method: :post) do |f| %>
+  <%= f.ds_radio_group(method: :property_type, options_list: @lbtt_return.list_ref_data(:property_type),
+                                         interpolations: { residential_link: ds_link(name: t('.property_type_residential_link'),
+                                          url: external_link_url('RESIDENTIAL'), target: '_blank'),
+                                                     non_residential_link: ds_link(name: t('.property_type_non_residential_link'),
+                                                      url: external_link_url('NON_RESIDENTIAL'), target: '_blank')},
+                                                       alignment: :horizontal) %>
 <% end %>

@@ -1,12 +1,10 @@
-<% content_for :page_title, t('returns.lbtt_ads.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @ads, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for [@ads, @address_summary, @address_detail] %>
-  <%= f.collection_radio_buttons_fields(:ads_sell_residence_ind, @ads.list_ref_data(:ads_sell_residence_ind)) %>
-  <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden' >
-    <%= sub_heading(t('.address'), class: 'govuk-fieldset__heading' ) %>
-    <br>
-    <%= render "/layouts/address" %>
-  </div>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @ads, url: @post_path, method: :post) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :ads_sell_residence_ind,
+               options_list: @ads.list_ref_data(:ads_sell_residence_ind), alignment: :horizontal) %>
+    <%= ds_section_title(section_title: t('.address')) %>
+    <%= f.ds_address_search(address_summary: @address_summary, search_results: @search_results ,
+       address: @address_detail, show_address_detail: @show_manual_address, readonly: @address_read_only) %>
+  <% end %>
 <% end %>

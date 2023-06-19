@@ -34,11 +34,11 @@ module Dashboard
 
     # Provides permitted filter request params
     def self.params(params)
-      params.permit(dashboard_financial_transaction_filter:
-        %i[related_reference
-           minimum_amount maximum_amount amount
-           actual_date actual_date_from actual_date_to
-           effective_date effective_date_from effective_date_to])[:dashboard_financial_transaction_filter]
+      params.fetch(:dashboard_financial_transaction_filter, {}).permit(
+        :related_reference, :minimum_amount, :maximum_amount, :amount,
+        :actual_date, :actual_date_from, :actual_date_to,
+        :effective_date, :effective_date_from, :effective_date_to
+      )
     end
 
     # Financial transaction filter elements to be passed onto backoffice calls

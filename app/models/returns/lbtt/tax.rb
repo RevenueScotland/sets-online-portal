@@ -138,7 +138,7 @@ module Returns
 
       def print_layout # rubocop:disable Metrics/MethodLength
         [{ code: :calculation,
-           key: :edit_calculation, # key for the title translation
+           key: :about_calculation, # key for the title translation
            key_scope: %i[returns lbtt summary], # scope for the title translation
            divider: true, # should we have a section divider
            display_title: true, # Is the title to be displayed
@@ -272,12 +272,12 @@ module Returns
       # @return a hash suitable for use in a save request to the back office
       def request_save(output, type_not_conveyance)
         type_not_conveyance_request(output, type_not_conveyance)
-        output['ins1:Calculated'] = @calculated
-        output['ins1:AdsDue'] = @ads_due
-        output['ins1:DueBeforeReliefs'] = due_before_reliefs
-        output['ins1:TotalReliefs'] = @total_reliefs
-        output['ins1:TotalADSReliefs'] = @total_ads_reliefs
-        output['ins1:TaxDue'] = tax_due
+        output['ins0:Calculated'] = @calculated
+        output['ins0:AdsDue'] = @ads_due
+        output['ins0:DueBeforeReliefs'] = due_before_reliefs
+        output['ins0:TotalReliefs'] = @total_reliefs
+        output['ins0:TotalADSReliefs'] = @total_ads_reliefs
+        output['ins0:TaxDue'] = tax_due
         original_tax_value_request(output)
         request_flbt_type(output)
       end
@@ -289,8 +289,8 @@ module Returns
       def request_flbt_type(output)
         return unless %w[LEASEREV ASSIGN TERMINATE].include? @flbt_type
 
-        output['ins1:AmountAlreadyPaid'] = @amount_already_paid
-        output['ins1:TaxDueForReturn'] = tax_due_for_return
+        output['ins0:AmountAlreadyPaid'] = @amount_already_paid
+        output['ins0:TaxDueForReturn'] = tax_due_for_return
       end
 
       # request save for not conveyance
@@ -301,31 +301,32 @@ module Returns
         return unless type_not_conveyance
 
         # sends 0 for linked npv if there are no linked transactions
-        output['ins1:LinkedNPV'] = @linked_npv
-        output['ins1:NetPresentValue'] = @npv
-        output['ins1:PremiumTaxDue'] = @premium_tax_due
-        output['ins1:NpvTaxDue'] = @npv_tax_due
-        output['ins1:OrigNpvTaxDue'] = @orig_npv_tax_due
+        output['ins0:LinkedNPV'] = @linked_npv
+        output['ins0:NetPresentValue'] = @npv
+        output['ins0:PremiumTaxDue'] = @premium_tax_due
+        output['ins0:NpvTaxDue'] = @npv_tax_due
+        output['ins0:OrigNpvTaxDue'] = @orig_npv_tax_due
       end
 
       # request save specific to tax original value
       # @param output [Hash] the hash from the back office for an tax property
       # @return a hash suitable for use in a save request to the back office
       def original_tax_value_request(output)
-        output['ins1:OrigCalculated'] = @orig_calculated
-        output['ins1:OrigAdsDue'] = @orig_ads_due
-        output['ins1:OrigDueBeforeReliefs'] = orig_due_before_reliefs
-        output['ins1:OrigTotalReliefs'] = @orig_total_reliefs
-        output['ins1:OrigTaxDue'] = orig_tax_due
-        output['ins1:OrigNetPresentValue'] = @orig_npv
-        output['ins1:OrigTotalADSReliefs'] = @orig_total_ads_reliefs
-        output['ins1:OrigPremiumTaxDue'] = @orig_premium_tax_due
+        output['ins0:OrigCalculated'] = @orig_calculated
+        output['ins0:OrigAdsDue'] = @orig_ads_due
+        output['ins0:OrigDueBeforeReliefs'] = orig_due_before_reliefs
+        output['ins0:OrigTotalReliefs'] = @orig_total_reliefs
+        output['ins0:OrigTaxDue'] = orig_tax_due
+        output['ins0:OrigNetPresentValue'] = @orig_npv
+        output['ins0:OrigTotalADSReliefs'] = @orig_total_ads_reliefs
+        output['ins0:OrigPremiumTaxDue'] = @orig_premium_tax_due
       end
 
       # Extract relief details from the tax response to create the relief items
       # and assigned to the lbtt_return which will split into ads and non ads reliefs
       def convert_calc_relief_claim_back_office_hash(body, lbtt)
         reliefs_hash = (body.key?(:conv_tax_payable) ? body[:conv_tax_payable] : body[:lease_tax_payable])[:reliefs]
+        return unless reliefs_hash.present? && reliefs_hash[:relief].present?
 
         reliefs = []
         ServiceClient.iterate_element(reliefs_hash) do |relief|

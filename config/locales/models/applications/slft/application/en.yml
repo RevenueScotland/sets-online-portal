@@ -1,0 +1,57 @@
+en:
+  helpers:
+    submit:
+      applications_slft_applications:
+        create: "Submit"
+  activemodel:
+    attributes:
+      applications/slft/applications:
+        applicant_type: Select the relevant option that describes your role
+        application_type: What application are you completing
+        existing_agreement: Is there an existing agreement
+        existing_agreement_LO: Is this application a review of an existing agreement
+        existing_agreement_WP: Does this form relate to an existing water discount agreement
+        renewal_or_review: Is this a renewal or review of an existing water discount agreement
+        previous_case_reference: Existing agreement number
+        previous_case_reference_LO: Provide the existing agreement number
+        previous_case_reference_WP: Provide the previously approved water discount agreement number
+        supporting_document_other_description: "Other description"
+        why_water_present: Choose the relevant options below which describes how the water to be discounted relates to the waste
+        not_banned_waste: None of the waste material is a liquid waste and banned from landfill sites
+        type_of_waste_text: What type of waste is produced
+        how_produced: How is the waste produced
+        how_added: How is water added
+        naturally_occurring: Is there naturally occurring water in the waste
+        naturally_occurring_percentage: What percentage is naturally occurring
+        waste_percentage: What is the water content of the waste
+        added_water_percentage: What is the added water content
+        treatment: If yes, what treatment have you undertaken
+        reason_for_no_treatment: If no, what reasons are there for treatment not to have been possible
+        start_date: Provide the date the agreement should start from
+        declaration: The declaration
+        declaration_LO-RA: The information I have given in this application and in the supporting documents is complete, correct and accurate to the best of my knowledge
+        declaration_LO-ND: The information I have given in this application and in the supporting documents is complete, correct and accurate to the best of my knowledge
+        declaration_LO-WB: The information I have given in this application and in the supporting documents is complete, correct and accurate to the best of my knowledge
+        declaration_WP-WD: The information I have given in this application and in the supporting documents is complete, correct and accurate to the best of my knowledge
+        declaration_LO-WD: I declare that I apply to operate the scheme which allows discounting of water content for Scottish landfill tax purposes, of certain water materials produced by the waste producer, named within, subject to discount being approved by Revenue Scotland
+        change_declaration: In the event of any of the information in this application ceasing to be correct or complete, I will notify Revenue Scotland immediately about all changes or alterations
+        declaration_name: Full name
+        declaration_position: Job title or position
+        declaration_telephone_number: Telephone
+        declaration_email_address: Email address        
+    hints:
+      applications/slft/applications: 
+        waste_percentage: Include natural water content
+        added_water_percentage: Water content of the waste minus natural water content
+    errors:
+      models:
+        applications/slft/applications:
+          attributes:
+            change_declaration:
+              accepted: "The requirement to notify declaration must be accepted"
+            base:
+              missing_sites_entries: "Please fill in at least one site"
+              required_for_WP_WD: "Evidence of the water content (naturally and added) of the waste must be accepted"
+    hidden_label:
+      applications/slft/applications:
+        supporting_document_other_description: "Other description"

@@ -17,7 +17,7 @@ module Claim
                       final_declaration confirmation_of_payment download_claim download_file
                       view_claim_pdf eligibility].freeze
 
-    authorise requires: AuthorisationHelper::CLAIM_REPAYMENT + AuthorisationHelper::CLAIM_REPAYMENT_ATTACHMENT,
+    authorise requires: RS::AuthorisationHelper::CLAIM_REPAYMENT + RS::AuthorisationHelper::CLAIM_REPAYMENT_ATTACHMENT,
               allow_if: :public
 
     # to require authentication so we don't mix the two up
@@ -94,7 +94,7 @@ module Claim
     # Gets the tax payer address details
     def taxpayer_address
       options = { sub_object_attribute: :taxpayers, loop: :taxpayer_details }
-      options.merge!(address_not_required: :same_address) if params[:sub_object_index].to_i != 1
+      options[:address_not_required] = :same_address if params[:sub_object_index].to_i != 1
 
       wizard_address_step(NEW_STEPS, options)
     end
@@ -112,26 +112,43 @@ module Claim
       # second && condition to avoid clear cache on back
       file_upload_end if request.get? && @claim_payment.evidence_files.nil?
 
-      handle_file_upload(nil, types: evidence_files_file_types)
-
-      save_evidence_files_in_model
-
-      wizard_step(NEW_STEPS) { { validates: :evidence_files } }
+      if handle_file_upload(parent_param: :claim_claim_payment, types: evidence_files_file_types)
+        # files were uploaded so keep on this page
+        save_evidence_files_in_model
+        render(status: :unprocessable_entity)
+      else
+        wizard_step(NEW_STEPS) { { validates: :evidence_files } }
+      end
     end
+
+    # To use translation on page description
+    # Effectively this returns the t(.<key>) Rails operation
+    # @param key [String] the key to be used and @param index of buyer
+    def translation_for_index(key, index)
+      "#{key}_#{index.to_i > 4 ? 'other' : index.to_s}"
+    end
+
+    helper_method :translation_for_index
 
     # Last step in the authenticated and unauthenticated claim
     def confirmation_of_payment
-      wizard_step(NEW_STEPS)
       # if unauthenticated then set the response header for clear site data to wild card
       response.set_header('Clear-Site-Data', '"storage"') if current_user.blank?
+
+      # As the last page not a standard page, but need to load the model
+      @claim_payment ||= load_step
 
       # Clear the cache to remove previously upload resource files
       # This means if the user refreshes the page they lose the list of files uploaded
       # but prevents files being shown incorrectly
-      handle_file_upload('confirmation_of_payment',
-                         before_add: :add_additional_document,
-                         before_delete: :delete_additional_document,
-                         clear_cache: request.get?)
+      if handle_file_upload(parent_param: :claim_claim_payment,
+                            before_add: :add_additional_document,
+                            before_delete: :delete_additional_document,
+                            clear_cache: request.get?)
+        render(status: :unprocessable_entity)
+      else
+        end_claim_flow
+      end
     end
 
     # For all types do the declaration, this also triggers the submit
@@ -152,10 +169,6 @@ module Claim
 
       # Download the file
       send_file_from_attachment(claim_pdf[:document_claim])
-    rescue StandardError => e
-      error_ref = Error::ErrorHandler.log_exception(e)
-
-      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     private
@@ -179,6 +192,8 @@ module Claim
     # explicitly save the data as the model is updated with details
     # @return [Boolean] was the after merge process successful
     def save_data_in_back_office
+      return false unless @claim_payment.prepare_to_save
+
       @claim_payment.save(current_user)
       wizard_save(@claim_payment)
     end
@@ -308,6 +323,14 @@ module Claim
       return %i[portal_sale occupancy] if !current_user.nil? && @claim_payment.reason == 'ADS'
 
       nil
+    end
+
+    # Processing for ending the claim flow
+    def end_claim_flow
+      return unless params[:finish]
+
+      clear_resource_items # clear cache
+      redirect_to dashboard_path # For a non logged in user the button is replaced with a link on the page
     end
   end
 end

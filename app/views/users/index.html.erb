@@ -1,18 +1,8 @@
-<% content_for :hide_back_link, true %>
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @user_filter, url: users_path, :method => 'get', local: true do |form| %>
-  <%= form_errors_for @user_filter %>
-  <%= form.text_field :full_name %>
-  <%= form.select :user_is_current, @user_filter.list_ref_data(:user_is_current), { include_blank: true, width: 'width-10' } %>
-  <%= form.button t('.find'), autofocus: (@on_filter_find && !content_for?(:form_error_found)) %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @user_filter, url: users_path, method: :get, button_action: :find) do |f| %>
+  <%= f.ds_text_field(method: :full_name) %>
+  <%= f.ds_select(method: :user_is_current, select_options: @user_filter.list_ref_data(:user_is_current), width: 5 ) %>
 <% end %>
-<%= display_table(@users,
-                  [:username, :user_is_current, :full_name, :email_address, :phone_number],
-                  [
-                    { label: t('edit_row'), action: :edit }
-                  ]) %>
-<%= paginate @pagination_collection %>
-<% if !account_has_no_service? %>
-  <%= navigational_links [{link: :new_user, path: new_user_path}] %>
-<% end %>
+<%= rs_user_table(users:@users, caption: t('.caption'), id: 'users',
+      link: (ds_link(name: t('.new_user'), url: new_user_path) if !account_has_no_service?),
+      small_screen: 'scrolling',pagination_collection: @pagination_collection) %>

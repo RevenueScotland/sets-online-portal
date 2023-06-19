@@ -1,21 +1,16 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.'+@party.org_type+ '_title') %>
-<% content_for :page_subtitle, t('.'+@party.org_type+ '_subtitle') %>
-<%= form_for @party, url: @post_path, :method => 'post', local: true do |f| %>
-  <%= form_errors_for [@party, @address_summary, @address_detail] %>
-  <%= f.text_field :org_name %>
+<% content_for(:page_title, t('.'+@party.org_type+ '_title')) %>
+<%= ds_section_title(section_title: t('.'+@party.org_type+ '_subtitle')) %>
+<%= ds_form_with(model: @party, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_text_field(method: :org_name)%>
   <% if @party.type == 'REG_COM' %>
-    <%= sub_sub_heading(t('.registered_address')) %>
-  <% elsif @party.org_type == 'OTHER' %>
-    <%# This has to be h2 because this path doesn't have a h2 %>
-    <%= sub_heading(t('.address')) %>
+    <%= ds_section_sub_title(section_sub_title: t('.registered_address')) %>
   <% else %>
-    <%= sub_sub_heading(t('.address')) %>
+    <%= ds_section_sub_title(section_sub_title: t('.address')) %>
   <% end %>
-  <%= render "/layouts/address" %>
+  <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail, 
+      show_address_detail: @show_manual_address, readonly: @address_read_only, address_list: @address_list) %>
   <% if @party.org_type == 'CHARITY' %>
-    <%= f.text_field :charity_number %>
+    <%= f.ds_text_field(method: :charity_number) %>
   <% end %>
-  <%= f.select :com_jurisdiction, @party.list_ref_data(:com_jurisdiction), { text_auto_complete: true }, { } %>
-  <%= f.button %>
+  <%= f.ds_select(method: :com_jurisdiction, select_options: @party.list_ref_data(:com_jurisdiction), use_search: true) %>
 <% end %>

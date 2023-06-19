@@ -1,7 +1,5 @@
-<% content_for :page_title, t('returns.lbtt_ads.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @ads, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @ads %>
-  <%= f.collection_radio_buttons_fields(:ads_consideration_yes_no, @ads.list_ref_data(:ads_consideration_yes_no)) %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @ads, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_radio_group(method: :ads_consideration_yes_no, options_list: @ads.list_ref_data(:ads_consideration_yes_no),
+                       alignment: :horizontal) %>
 <% end %>

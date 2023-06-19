@@ -3,7 +3,6 @@
 require 'test_helper'
 require 'print_data_test_helper'
 require 'savon/mock/spec_helper'
-require 'models/reference_data/memory_cache_helper'
 
 # Run tests that are included only in this file by:
 #   $ ruby -I test test/models/returns/slft/print_data_test.rb
@@ -12,13 +11,12 @@ module Returns
   module Slft
     # Tests PrintData data
     class PrintDataTest < ActiveSupport::TestCase
-      include ReferenceData::MemoryCacheHelper
       include PrintDataTestHelper
 
       # This test relies on the cache so clear the cache first
       # and mock the calls to the back office to populate
       setup do
-        set_memory_cache
+        Rails.cache.clear
 
         @savon ||= Savon::SpecHelper::Interface.new
         @savon.mock!
@@ -27,6 +25,9 @@ module Returns
         fixture = File.read('test/fixtures/mocks/reference_data/system_parameters_response.xml')
         @savon.expects(:get_system_parameters_wsdl).returns(fixture)
         Rails.logger.debug { 'Mocking started' }
+        # Force cache population for ref data and system parameters
+        ReferenceData::ReferenceValue.lookup('TITLES', 'SYS', 'RSTU')
+        ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU')
 
         # Overriding the setup_sites method as it calls the back office
         # We can't mock it as the object load ends up loading the site reference as a string while the webservice
@@ -43,7 +44,6 @@ module Returns
       teardown do
         @savon&.unmock!
         Rails.logger.debug { 'Mocking ended' }
-        restore_original_cache
 
         # Reset the set up sites
         SlftReturn.class_eval do

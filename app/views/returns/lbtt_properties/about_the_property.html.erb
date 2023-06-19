@@ -1,16 +1,14 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, t('.subtitle') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @property, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @property %>
-  <%= f.select :lau_code, @property.list_ref_data(:lau_code), {}, {} %>
-  <%= f.fieldset_fields({ label: t('.title_code') }) do |field_set| %>
-    <%= field_set.select(:title_code, @property.list_ref_data(:title_code)) %>
-    <%= field_set.text_field(:title_number) %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_section_title(section_title: t('.section_title')) %>
+<%= ds_form_with(model: @property, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_select(method: :lau_code, select_options: @property.list_ref_data(:lau_code)) %>
+  <%= ds_field_set( legend: t('.title_code'), alignment: :vertical) do %>
+    <%= f.ds_select(method: :title_code, select_options: @property.list_ref_data(:title_code), show_label: false, width: 5) %>
+    <%= f.ds_text_field(method: :title_number, show_label: false) %>
   <% end %>
-  <%= f.fieldset_fields({ label: t('.parent_title_code'), hint: t('.parent_title_hint') }) do |field_set| %>
-    <%= field_set.select(:parent_title_code, @property.list_ref_data(:parent_title_code)) %>
-    <%= field_set.text_field(:parent_title_number) %>
+  <%= ds_field_set( legend: t('.parent_title_code'), hint: t('.parent_title_hint'), alignment: :vertical) do %>
+    <%= f.ds_select(method: :parent_title_code, select_options: @property.list_ref_data(:parent_title_code),
+                         show_label: false, width: 5) %>
+    <%= f.ds_text_field(method: :parent_title_number, show_label: false) %>
   <% end %>
-  <%= f.button %>
 <% end %>

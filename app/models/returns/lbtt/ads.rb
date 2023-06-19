@@ -13,8 +13,7 @@ module Returns
       # Attributes for this class, in list so can re-use as permitted params list in the controller
       def self.attribute_list
         %i[ads_consideration_yes_no ads_amount_liable ads_sell_residence_ind ads_consideration ads_main_address
-           ads_reliefclaim_option_ind ads_relief_claims rrep_ads_sold_date ads_sold_main_yes_no
-           rrep_ads_sold_address ads_repay_amount_claimed]
+           rrep_ads_sold_date ads_sold_main_yes_no rrep_ads_sold_address ads_repay_amount_claimed]
       end
       attribute_list.each { |attr| attr_accessor attr }
 
@@ -34,8 +33,6 @@ module Returns
                                                     allow_blank: true }, presence: true,
                                     two_dp_pattern: true, on: :ads_amount_liable,
                                     if: :ads_consideration?
-      validates :ads_reliefclaim_option_ind, presence: true, on: :ads_reliefclaim_option_ind
-      validates :ads_relief_claims, relief_type_unique: true, on: :ads_reliefclaim_option_ind
       # ADS claim repayment validation
       validates :ads_sold_main_yes_no, presence: true, on: :ads_sold_main_yes_no
       validates :rrep_ads_sold_date, presence: true, on: :rrep_ads_sold_date, custom_date: true,
@@ -59,8 +56,7 @@ module Returns
       # Define the ref data codes associated with the attributes but which won't be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
       def uncached_ref_data_codes
-        { ads_reliefclaim_option_ind: YESNO_COMP_KEY,
-          ads_consideration_yes_no: YESNO_COMP_KEY,
+        { ads_consideration_yes_no: YESNO_COMP_KEY,
           ads_sell_residence_ind: YESNO_COMP_KEY,
           ads_sold_main_yes_no: YESNO_COMP_KEY }
       end
@@ -87,21 +83,6 @@ module Returns
            display_title: true, # Is the title to be displayed
            when: :flbt_type,
            is: ['CONVEY'],
-           type: :object },
-         { code: :ads_relief_claim_ind, # section code
-           key: :title, # key for the title translation
-           key_scope: %i[returns lbtt_ads ads_reliefs], # scope for the title translation
-           divider: false, # should we have a section divider
-           display_title: true, # Is the title to be displayed
-           type: :list, # type list = the list of attributes to follow
-           when: :flbt_type,
-           is: ['CONVEY'],
-           list_items: [{ code: :ads_reliefclaim_option_ind, lookup: true }] },
-         { code: :ads_relief_claims, # section code
-           divider: false, # should we have a section divider
-           display_title: false, # Is the title to be displayed
-           when: :ads_reliefclaim_option_ind,
-           is: ['Y'],
            type: :object },
          { code: :ads_repayment, # section code
            key: :title, # key for the title translation
@@ -145,17 +126,17 @@ module Returns
         # include ADS fields only if the user is currently shown the ADS wizard option (ie it could have been hidden
         # since ADS data was added)
         # is the ADS section currently available to the user
-        output['ins1:AdsSellResidenceInd'] = convert_to_backoffice_yes_no_value(@ads_sell_residence_ind)
-        output['ins1:AdsAddress'] = @ads_main_address.format_to_back_office_address if @ads_main_address.present?
-        xml_element_if_present(output, 'ins1:AdsConsideration', @ads_consideration)
-        xml_element_if_present(output, 'ins1:AdsAmountLiable', @ads_amount_liable)
+        output['ins0:AdsSellResidenceInd'] = convert_to_backoffice_yes_no_value(@ads_sell_residence_ind)
+        output['ins0:AdsAddress'] = @ads_main_address.format_to_back_office_address if @ads_main_address.present?
+        xml_element_if_present(output, 'ins0:AdsConsideration', @ads_consideration)
+        xml_element_if_present(output, 'ins0:AdsAmountLiable', @ads_amount_liable)
         # Note that the ads reliefs are merged in as part of the parent return
         if @rrep_ads_sold_address.present?
-          output['ins1:AdsSoldAddress'] = @rrep_ads_sold_address.format_to_back_office_address
+          output['ins0:AdsSoldAddress'] = @rrep_ads_sold_address.format_to_back_office_address
         end
         return if @rrep_ads_sold_date.blank?
 
-        output['ins1:AdsSoldDate'] = DateFormatting.to_xml_date_format(@rrep_ads_sold_date)
+        output['ins0:AdsSoldDate'] = DateFormatting.to_xml_date_format(@rrep_ads_sold_date)
         # see lbtt_return for saving of the repayment amount
       end
 
@@ -167,7 +148,6 @@ module Returns
           ads_output[:ads_main_address] = Address.convert_hash_to_address(output[:ads_address])
         end
         yes_nos_to_yns(output, %i[ads_sell_residence_ind])
-        ads_output.merge!(convert_to_reliefs_claims(output[:reliefs])) if output[:reliefs].present?
         ads_output[:ads_sell_residence_ind] = output.delete(:ads_sell_residence_ind)
         ads_output[:ads_consideration_yes_no] = output.delete(:ads_consideration_yes_no)
         ads_output[:ads_consideration] = output.delete(:ads_consideration)
@@ -188,36 +168,8 @@ module Returns
 
       # Some attributes yes_no type depending on some other attribute value, so here we are setting them
       private_class_method def self.derive_yes_nos_in(lbtt)
-        lbtt[:ads_reliefclaim_option_ind] = derive_yes_no(value: lbtt[:ads_relief_claims],
-                                                          default_n: lbtt[:ads_sell_residence_ind].present?)
         lbtt[:ads_consideration_yes_no] = derive_yes_no(value: lbtt[:ads_consideration],
                                                         default_n: lbtt[:ads_sell_residence_ind].present?)
-      end
-
-      # Convert the relief_claim data into relief objects separated into ADS and non-ADS reliefs.
-      # @return [Hash] reliefs with indexes :non_ads_relief_claims and :ads_relief_claims.
-      private_class_method def self.convert_to_reliefs_claims(reliefs_data)
-        return nil if reliefs_data.nil? || reliefs_data[:relief].nil?
-
-        # convert to array if it isn't already
-        reliefs_data[:relief] = [reliefs_data[:relief]] unless reliefs_data[:relief].is_a? Array
-
-        return nil if reliefs_data[:relief].empty?
-
-        output = { ads_relief_claims: [] }
-        reliefs_data[:relief].each do |raw_hash|
-          convert_and_organise_relief(raw_hash, output)
-        end
-        # delete empty parts of the reliefs hash.
-        output.delete(:ads_relief_claims) if output[:ads_relief_claims].empty?
-        output
-      end
-
-      # Separated out of #convert_to_relief_claims.
-      # @param raw_hash [Hash] data loaded from the back office about a relief
-      private_class_method def self.convert_and_organise_relief(raw_hash, output)
-        relief = ReliefClaim.convert_back_office_hash(raw_hash)
-        output[:ads_relief_claims] << relief if relief.ads?
       end
     end
   end

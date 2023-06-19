@@ -1,0 +1,14 @@
+en:
+  login:
+    new:
+      title: "Sign in"
+      forgotten_your_username: "Forgotten your username?"
+      forgotten_your_password: "Forgotten your password?"
+      register_if_dont_have_account: "Register if you don't have an account"
+      activate_account_sentence: "%{link} if you have created an account and have an email about confirming your account creation."
+      activate_account_link: "Activate your account"
+    session_expired:
+      title: "Your session has been ended"
+      message: "To protect your privacy you have been logged out."
+    token:
+      title: "Sign in"

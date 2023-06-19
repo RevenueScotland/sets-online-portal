@@ -14,8 +14,8 @@ module Returns
     include ControllerHelper
     include DownloadHelper
 
-    authorise requires: AuthorisationHelper::SLFT_SUMMARY
-    authorise route: :save_draft, requires: AuthorisationHelper::SLFT_SAVE
+    authorise requires: RS::AuthorisationHelper::SLFT_SUMMARY
+    authorise route: :save_draft, requires: RS::AuthorisationHelper::SLFT_SAVE
 
     # wizard steps for the CREDIT simple wizard in order; to end a wizard go to summary
     CREDIT_STEPS = %w[credit_environmental credit_bad_debt credit_site_specific summary].freeze
@@ -26,7 +26,7 @@ module Returns
     # wizard steps for the REPAYMENT wizard
     REPAYMENT_STEPS = %w[declaration_repayment repayment_bank_details repayment_declaration declaration].freeze
 
-    authorise route: DECLARATION_STEPS, requires: AuthorisationHelper::SLFT_SUBMIT
+    authorise route: DECLARATION_STEPS, requires: RS::AuthorisationHelper::SLFT_SUBMIT
 
     # Define simple wizard actions, ie each of these makes a wizard_step calling action
     standard_wizard_step_actions(CREDIT_STEPS, %i[credit_environmental credit_bad_debt credit_site_specific])
@@ -102,10 +102,6 @@ module Returns
 
       # Download the file
       send_file_from_attachment(attachment[:document_return])
-    rescue StandardError => e
-      error_ref = Error::ErrorHandler.log_exception(e)
-
-      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     # Cleans and saves the return by sending to the back office.

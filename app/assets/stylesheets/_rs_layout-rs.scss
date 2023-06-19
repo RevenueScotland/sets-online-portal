@@ -1,0 +1,50 @@
+@include media-query(large) {
+    .rs_layout--rs {
+        .ds_layout__content {
+            float: left;
+            @include colwidth(12);
+        }
+    }
+}
+
+@include media-query(medium) {
+    .rs_layout--rs {
+        .ds_layout__content {
+            float: left;
+            @include colwidth(12);
+        }
+    }
+}
+
+@include media-query(large) {
+    .rs_layout--rs {
+        .ds_layout__content {
+            float: left;
+            @include colwidth(12);
+        }
+    }
+}
+
+@include media-query(small) {
+    .rs_layout--rs {
+        grid-template-areas:
+            'h h h h h h h h h h h h'
+            'c c c c c c c c c c c c';
+    }
+}
+
+@include media-query(medium) {
+    .rs_layout--rs {
+        grid-template-areas:
+            'h h h h h h h h h h h h'
+            'c c c c c c c c c c c c';
+    }
+}
+
+@include media-query(large) {
+    .rs_layout--rs {
+        grid-template-areas:
+            'h h h h h h h h h h h h'
+            'c c c c c c c c c c c c';
+    }
+}

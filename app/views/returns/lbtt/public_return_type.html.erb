@@ -1,7 +1,5 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<%= form_for @lbtt_return, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
-  <%= f.collection_radio_buttons_fields(:flbt_type, @lbtt_return.public_flbt_type_list, alignment: 'vertical') %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post, action_name: :confirm) do |f| %>
+  <%= f.ds_hidden_field(method: :current_flbt_type, value: @lbtt_return.flbt_type) %>
+  <%= f.ds_radio_group(method: :flbt_type, options_list: @lbtt_return.public_flbt_type_list ) %>
 <% end %>

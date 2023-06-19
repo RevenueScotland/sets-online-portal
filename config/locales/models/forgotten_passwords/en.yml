@@ -41,11 +41,3 @@ en:
       forgotten_password:
         email_address: "This must be the email address your registered with."
         new_password: "This must be a minimum of 9 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character, like, +, $, !"
-  forgotten_passwords:
-    new:
-      title: "Forgotten password"
-      description: "Enter your email address, username and the new password details below. If the email address and username you enter are valid, you will be sent an email containing an activation token with further instructions."
-      change_password: "Change Password"
-    new-confirmation:
-      title: "Forgotten password confirmation"
-      description: "If the username you entered was valid, you will have been sent an email confirming what you need to do next to re-activate your account."

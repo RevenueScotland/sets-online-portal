@@ -1,0 +1,31 @@
+en:
+  activemodel:
+    attributes:
+      applications/slft/sites:
+        site_name: Site name
+        landfill_operator: Landfill operator
+        slft_registration_number: Landfill operator SLfT registration number
+        add_site: Add site
+        sepa_license_number: SEPA licence number
+        type_of_waste_text: Type of waste
+        # Non disposal area site details
+        intended_use: Specify the intended use of the area(s) to which material will be temporarily deposited
+        estimated_timescale_LO-ND: Provide the length of time the material will be temporarily stored
+        type_of_waste_text_LO-ND: Provide the types of material to be temporarily stored (i.e. EWC and waste description)
+        start_date: Confirm the start date for the non-disposal area(s)
+        # Restoration application
+        full_or_part: Is this a part or full site restoration
+        estimated_timescale_LO-RA: Provide an estimate of the timescale for the restoration exercise
+        # Water Discount
+        further_treatment: Will the waste undergo further treatment at the landfill site to reduce the water content
+        # Waste producer
+        operator_separate_mailing_address: Does the landfill site operator have a separate mailing address
+        type_of_waste_text_WP-WD: What type of waste will be sent to this site
+        estimated_tonnage: Provide an estimate of the weight in tonnes which will be sent to this site annually
+
+    hidden_label:
+      applications/slft/sites:
+        type_of_waste: Type of waste
+        estimated_tonnage: Estimated tonnage
+        final_destination: Final destination
+        use: Use

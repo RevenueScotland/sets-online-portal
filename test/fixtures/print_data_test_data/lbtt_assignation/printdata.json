@@ -520,29 +520,19 @@
                     "itemdata": "Dundee"
                 },
                 {
-                    "itemcode": "title_code",
+                    "itemcode": "full_title_number",
                     "itemformat": null,
-                    "itemlabel": "Title number (optional)",
+                    "itemlabel": "Title number",
                     "itemdata": ""
                 },
                 {
-                    "itemcode": "title_number",
+                    "itemcode": "full_parent_title_number",
                     "itemformat": null,
-                    "itemdata": ""
-                },
-                {
-                    "itemcode": "parent_title_code",
-                    "itemformat": null,
-                    "itemlabel": "Parent title number (optional)",
-                    "itemdata": "FFE"
-                },
-                {
-                    "itemcode": "parent_title_number",
-                    "itemformat": null,
-                    "itemdata": "129083"
+                    "itemlabel": "Parent title number",
+                    "itemdata": "FFE 129083"
                 }
             ],
-            "itemcount": 5
+            "itemcount": 3
         },
         {
             "sectioncode": "address",
@@ -810,7 +800,7 @@
                 {
                     "itemcode": "declaration",
                     "itemformat": null,
-                    "itemlabel": "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): \n (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and \n (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct",
+                    "itemlabel": "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete",
                     "itemdata": "Yes"
                 }
             ],

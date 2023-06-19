@@ -1,34 +1,47 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_subtitle, t('.subtitle' ,site_name: @site.site_name ) %>
-<% content_for :page_view, render_page_view(__FILE__) %>
+<% content_for(:page_title, t('.title')) %>
+<% if @site_summary_save_reference.present? %>
+  <%= ds_notification_panel(title: t('.return_saved'), reference:  @site_summary_save_reference, success: true, header: false) do %>
+    <%= ds_paragraph{t('.information')} %>
+  <% end %>
+<% end %>
 <%# See the {#waste.<=>} to learn more about how the sorting works for @site.wastes&.values.sort %>
 <%# See also export_waste_csv_data as the sorts need to be the same %>
-<%= display_table(
-  @site.wastes&.values.sort,
-  [:ewc_code_and_description, :lower_tonnage_display, :standard_tonnage_display, :exempt_tonnage_display, :water_tonnage_display, :total_tonnage],  
-  [ { label: t('.edit_row'), path: :returns_slft_waste_description_path },
-    # For the contents of the data: { confirm: [<...>] } see table_helper's action_options method
-    { label: t('.delete_row'), path: :returns_waste_path, action: :destroy, options: { data: { confirm: ['.delete', :ewc_code_and_description] } } } ],
-  { ewc_code_and_description: { label: t('.description'), cell_class: 'govuk-!-width-one-third' } }
-) %>
-<%= navigational_links [{ link: '.add_new_waste_type', path: returns_slft_waste_description_path(waste: 'new') },
-                        { link: '.delete_all_waste_types', path: returns_slft_site_waste_summary_path(site: @site, delete_all: true), link_html_options: { data: { confirm: t('.delete_all') } } }] %>
-<br>
-<%= form_for :csv_upload, url: returns_slft_site_waste_summary_path(site: @site, csv_upload: true), html: { multipart: true } , method: :post, local: true do |f| %>
-  <%= form_errors_for @resource_items_hash %>
-  <%= render "/layouts/file_upload_component", file_upload_label: full_lazy_lookup_path('.file_upload_label'), hide_description: true %>
-<% end %>
-<br>
-<%= link_to t('back_to_return_summary'), returns_slft_summary_path %>
-<% if can? AuthorisationHelper::SLFT_SAVE %>
-  <br>
-  <%= form_with url: returns_slft_site_waste_summary_path(site: @site, save_draft: true), method: :post, local: true do |f| %>
-    <%= form_errors_for @slft_return %>
-    <%= f.button 'save_draft', { :name => 'continue' } %>
-    <% if @site_summary_save_reference.present? %>
-      <%= t('returns.slft.save_draft.return_html') %>
-      <b><span id="ret_ref_val"><%= @site_summary_save_reference %></span>.</b>
-      <%= t('returns.slft.save_draft.reference_html') %>
+<%= ds_table(caption: tag.h2(t('.subtitle' ,site_name: @site.site_name ), class: 'ds_!_margin-bottom--0'), id: 'site_waste') do |table| %>
+  <% table.with_link(name: t('.add_new_waste_type'),url: returns_slft_waste_description_path(waste: 'new')) %>
+  <% table.with_header(klass: Returns::Slft::Waste) do |header| %>
+    <% header.with_cell(method: :ewc_code) %>
+    <% header.with_cell(method: :lower_tonnage_display) %>
+    <% header.with_cell(method: :standard_tonnage_display)%>
+    <% header.with_cell(method: :exempt_tonnage_display)%>
+    <% header.with_cell(method: :water_tonnage_display)%>
+    <% header.with_cell(method: :total_tonnage)%>
+  <% end %>
+  <% @site.wastes&.values.sort&.each do |waste| %>
+    <% table.with_row(model: waste) do |row| %>
+      <% row.with_cell(method: :ewc_code_and_description) %>
+      <% row.with_cell(method: :lower_tonnage_display)%>
+      <% row.with_cell(method: :standard_tonnage_display)%>
+      <% row.with_cell(method: :exempt_tonnage_display) %>
+      <% row.with_cell(method: :water_tonnage_display) %>
+      <% row.with_cell(method: :total_tonnage) %>
+    <% end %>
+    <% table.with_row do |row| %>
+      <% row.with_cell(colspan: 6) do %>
+        <%= ds_link(name: t('.edit_row'), url: returns_slft_waste_description_path(waste: waste), subtype: :padded) %>
+        <%= ds_link(name: t('.delete_row'), url: returns_waste_path(waste: waste), delete: true, confirm_message: t('.delete' , value: waste.ewc_code_and_description ), subtype: :padded) %>
+      <% end %>
     <% end %>
   <% end %>
+<% end %>
+<%= ds_paragraph {ds_link(name: t('.delete_all_waste_types'), url: returns_slft_site_waste_summary_path(site: @site),
+                          delete: true, confirm_message: t('.delete_all'))} %>
+<%= ds_form_with(model: @site, url: returns_slft_site_waste_summary_path(site: @site),
+                 file_upload: true, method: :post, 
+                 button_action: :none) do |f| %>
+  <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, multiple: false, optional: true,
+                     description: false,  supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb) %>
+  <% if can?(RS::AuthorisationHelper::SLFT_SAVE) %>
+    <%= f.ds_submit(button_action: 'save_draft', button_label: t('.save_draft'), type: :secondary) %>
+  <% end %>
+  <%= ds_button(name: t('.return_summary'), url: returns_slft_summary_path) %>
 <% end %>

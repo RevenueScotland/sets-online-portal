@@ -1,10 +1,7 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
-  <%= f.collection_radio_buttons_fields(:business_ind, @lbtt_return.list_ref_data(:business_ind)) %>
-  <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden'>
-    <%= f.collection_check_boxes_fields(:sale_include_option, @lbtt_return.list_ref_data(:sale_include_option)) %>
-  </div>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :business_ind, options_list: @lbtt_return.list_ref_data(:business_ind), alignment: :horizontal) %>
+    <%= f.ds_checkbox_group(method: :sale_include_option, options_list: @lbtt_return.list_ref_data(:sale_include_option)) %>
+  <% end %>
 <% end %>

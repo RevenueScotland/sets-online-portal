@@ -36,10 +36,11 @@ Feature: Login and authentication
     Scenario: User logs out and cannot access authenticate page
         Given I have signed in
         And I go to the "Users" page
-        When I click on the "Sign out" link
+        When I click on the "Sign out" menu item
+        Then I should see the "Sign in" page
         And I go to the "Users" page
         Then I should see the "Sign in" page
-        When I click on the "Cookies" link and switch to that window
+        When I click on the "Cookies" link
         Then I should see the "Cookies" page
 
     @mock_locked_user
@@ -64,7 +65,7 @@ Feature: Login and authentication
         And I enter "expired.password" in the "Username" field
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
-        Then I should see the text "Password Expired"
+        Then I should see the text "Password expired"
 
     @mock_forced_password_change
     Scenario: Force password change
@@ -72,7 +73,7 @@ Feature: Login and authentication
         And I enter "forced.password.change.user" in the "Username" field
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
-        Then I should see the "Change Password" page
+        Then I should see the "Change password" page
 
     @mock_due_password
     Scenario: Displaying password expired in n days
@@ -80,7 +81,9 @@ Feature: Login and authentication
         And I enter "due.password" in the "Username" field
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
-        And I go to the "Account" page
+        Then I should see the "Dashboard" page
+
+        When I go to the "Account" page
         Then I should see the "Sign up details" page
         And I should see the text "Your password expires in 4 days"
 
@@ -91,11 +94,11 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the "Terms and Conditions" page
+        Then I should see the "Terms and conditions" page
         And I should see the text "In order to proceed you must read and accept the terms and conditions"
         And I click on the "Confirm" button
 
-        Then I should see the "Terms and Conditions" page
+        Then I should see the "Terms and conditions" page
         And I should receive the message "The terms and conditions must be accepted"
         And I check the "I confirm that I have read and understood the terms & conditions" checkbox
         And I click on the "Confirm" button
@@ -193,7 +196,7 @@ Feature: Login and authentication
         And I enter "valid.token" in the "Token" field
         And I click on the "Sign in" button
 
-        Then I should see the "Password Expired" page
+        Then I should see the "Password expired" page
 
     @mock_two_factor_login_force_password_change
     Scenario: User provides the correct detail for a 2 factor login but the user is forced to change their password
@@ -206,7 +209,7 @@ Feature: Login and authentication
         And I enter "valid.token" in the "Token" field
         And I click on the "Sign in" button
 
-        Then I should see the "Change Password" page
+        Then I should see the "Change password" page
 
     @mock_two_factor_confirm_tcs
     Scenario: User needs to confirm the terms and conditions
@@ -219,7 +222,7 @@ Feature: Login and authentication
         And I enter "valid.token" in the "Token" field
         And I click on the "Sign in" button
 
-        Then I should see the "Terms and Conditions" page
+        Then I should see the "Terms and conditions" page
 
     @mock_force_password_change_and_tc_limited_permissions
     Scenario: User with limited permissions needs to change their password and confirm the terms and conditions
@@ -228,22 +231,22 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the "Change Password" page
+        Then I should see the "Change password" page
         And I enter "valid.password" in the "Old password" field
         And I enter "New.password1" in the "New password" field
         And I enter "New.password1" in the "Confirm new password" field
-        And I click on the "Change Password" button
+        And I click on the "Change password" button
 
         Then I should see the "Sign in" page
         When I enter "valid.user" in the "Username" field
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the "Terms and Conditions" page
+        Then I should see the "Terms and conditions" page
         And I should see the text "In order to proceed you must read and accept the terms and conditions"
         And I click on the "Confirm" button
 
-        Then I should see the "Terms and Conditions" page
+        Then I should see the "Terms and conditions" page
         And I should receive the message "The terms and conditions must be accepted"
         And I check the "I confirm that I have read and understood the terms & conditions" checkbox
         And I click on the "Confirm" button

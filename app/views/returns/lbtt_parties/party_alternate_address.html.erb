@@ -1,10 +1,9 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @party, url: @post_path, method: :post, local: true do |f| %>
-  <% content_for :page_title, t('.'+@party.party_type+ '_title') %>
-  <%= form_errors_for [@party, @address_summary, @address_detail] %>
-  <%= f.collection_radio_buttons_fields(:is_contact_address_different, @party.list_ref_data(:is_contact_address_different)) %>
-  <div id='hideable' class='govuk-radios__conditional'>
-    <%= render "/layouts/address" %>
-  </div>
-  <%= f.button %>
+<% content_for(:page_title, t('.'+@party.party_type+ '_title')) %>
+<%= ds_form_with(model: @party, url: @post_path,method: :post) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :is_contact_address_different, 
+        options_list: @party.list_ref_data(:is_contact_address_different), alignment: :horizontal ) %>
+    <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail, 
+      show_address_detail: @show_manual_address, readonly: @address_read_only) %>
+  <% end %>
 <% end %>

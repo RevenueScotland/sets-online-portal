@@ -8,11 +8,11 @@ module Dashboard
     include FileUploadHandler
     include DownloadHelper
 
-    authorise requires: AuthorisationHelper::VIEW_RETURNS
-    authorise route: :load, requires: AuthorisationHelper::LBTT_LOAD
-    authorise route: :load, requires: AuthorisationHelper::SLFT_LOAD
-    authorise route: :download_pdf, requires: AuthorisationHelper::DOWNLOAD_RETURN_PDF
-    authorise route: :download_receipt, requires: AuthorisationHelper::DOWNLOAD_RECEIPT
+    authorise requires: RS::AuthorisationHelper::VIEW_RETURNS
+    authorise route: :load, requires: RS::AuthorisationHelper::LBTT_LOAD
+    authorise route: :load, requires: RS::AuthorisationHelper::SLFT_LOAD
+    authorise route: :download_pdf, requires: RS::AuthorisationHelper::DOWNLOAD_RETURN_PDF
+    authorise route: :download_receipt, requires: RS::AuthorisationHelper::DOWNLOAD_RECEIPT
 
     # The index page which would be used for showing the data for all returns and the pagination
     def index
@@ -32,11 +32,16 @@ module Dashboard
                                   else
                                     [Returns::Slft::SlftReturn.find(@data, current_user), Returns::SlftController]
                                   end
-      return_object.is_public = false if @srv_code == 'lbtt' # if we are loading it can't be public
+      return_object.user_account_type = account_type if @srv_code == 'lbtt' # if we are loading it can't be public
       wizard_save(return_object, controller)
       Rails.logger.info("Loaded #{@srv_code.capitalize} #{return_object}")
 
       redirect_to controller: "returns/#{@srv_code}", action: :summary
+    end
+
+    # get the current user account type
+    def account_type
+      User.account_type(current_user)
     end
 
     # The method used to retrieve the pdf summary of the receipt
@@ -62,17 +67,13 @@ module Dashboard
       send_file_from_path zip_file,
                           filename: "#{tare_reference}-#{version}#{File.extname(zip_file)}",
                           disposition: 'attachment'
-    rescue StandardError => e
-      error_ref = Error::ErrorHandler.log_exception(e)
-
-      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     # Delete the return specified by params[:id]
     # call the back-office
     def destroy
       Dashboard::DashboardReturn.delete_return(current_user, dashboard_return_params)
-      redirect_to dashboard_path
+      redirect_to(dashboard_path, status: :see_other)
     end
 
     private
@@ -93,16 +94,12 @@ module Dashboard
 
       # Download the file
       send_file_from_attachment(attachment[:document_return])
-    rescue StandardError => e
-      error_ref = Error::ErrorHandler.log_exception(e)
-
-      redirect_to_error_page(error_ref, home_new_page_error_url)
     end
 
     # Gets the contents of the params[:id] and splits it up to convert the string into a hash
     # @return [Hash] contents of the id, see {Dashboard::DashboardReturn.split_param_values}
     def dashboard_return_params
-      id = params.permit(:id)[:id]
+      id = params.require(:id)
       Dashboard::DashboardReturn.split_param_values(id)
     end
   end

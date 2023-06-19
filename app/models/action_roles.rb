@@ -40,8 +40,8 @@ class ActionRoles < FLApplicationRecord
   # @return [Hash] a hash of search parameters
   private_class_method def self.make_request(domain_code, role_action)
     request = {}
-    request['ins1:DomainCode'] = domain_code unless domain_code.to_s.empty?
-    request['ins1:RoleActionCode'] = role_action unless role_action.to_s.empty?
+    request[:DomainCode] = domain_code unless domain_code.to_s.empty?
+    request[:RoleActionCode] = role_action unless role_action.to_s.empty?
     request
   end
 

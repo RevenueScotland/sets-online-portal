@@ -39,7 +39,7 @@ module Claim
     # Note validation context @see ClaimPaymentsController#authenticated_declaration2
     validates :authenticated_declaration1, :authenticated_declaration2, acceptance: { accept: ['Y'] },
                                                                         on: :declaration, unless: :claim_public?
-    validates :tare_reference, presence: true, reference_number: true, on: :return_reference
+    validates :tare_reference, presence: true, reference_number: true, on: %i[tare_reference back_office_call]
 
     validate :validate_return_reference, on: :tare_reference
     validate :validate_amount, on: :claiming_amount, if: :ads_included
@@ -101,7 +101,9 @@ module Claim
 
     # Validates that the evidence files are attached for ADS claim
     def validate_evidence_files
-      errors.add(:evidence_files, :evidence_files_missing_categories) if @evidence_files.size < 2 && @reason == 'ADS'
+      return unless (@evidence_files&.size || 0) < 2 && @reason == 'ADS'
+
+      errors.add(:evidence_files, :evidence_files_missing_categories)
     end
 
     # Validates that the reason chosen is valid
@@ -169,9 +171,8 @@ module Claim
     def validate_return_reference
       return if errors.any?
 
-      # if we don't have the service then the return reference can't exist or we weren't called correctly from the
-      # dashboard page
-      return errors.add(:tare_reference, :return_does_not_exist) if @srv_code.blank?
+      # if we don't have the submitted date then the return reference can't exist
+      return errors.add(:tare_reference, :return_does_not_exist) if @submitted_date.blank?
 
       # Check RS no. belongs to a conveyancing return with ADS
       return errors.add(:tare_reference, :not_ads_return_reference) if @ads_included == false || @flbt_type != 'CONVEY'
@@ -181,11 +182,13 @@ module Claim
     def tare_reference=(value)
       @tare_reference = value
       # We only call validate reference for LBTT or if we don't have a service set from the dashboard page
-      if (@srv_code.nil? || @srv_code == 'LBTT') && valid?(:return_reference)
+      if (@srv_code.nil? || @srv_code == 'LBTT') && valid?(:back_office_call)
         # Get the other info from the back office for LBTT
         call_ok?(:validate_return_reference, request_validate_element(@current_user)) do |response|
           response.blank? ? clear_back_office_data : assign_back_office_data(response)
         end
+      else
+        clear_back_office_data
       end
       @number_of_buyers = 1 if @number_of_buyers.nil?
       taxpayers_object(@number_of_buyers)
@@ -193,7 +196,9 @@ module Claim
 
     # initialize taxpayers array and create an party objects for multiple buyers or taxpayers
     def taxpayers_object(number_of_buyers)
-      @taxpayers = Array.new(number_of_buyers) { Returns::Lbtt::Party.new(party_type: 'CLAIMANT') }
+      @taxpayers = Array.new(number_of_buyers) do
+        Returns::Lbtt::Party.new(party_type: claim_public? ? 'UNAUTH_CLAIMANT' : 'CLAIMANT')
+      end
     end
 
     # store individual document to back office
@@ -210,7 +215,6 @@ module Claim
     # saving data came from back office in response of validate_return_reference service
     def clear_back_office_data
       @flbt_type = nil
-      @srv_code = nil
       @version = nil
       @submitted_date = nil
       @effective_date = nil
@@ -231,6 +235,16 @@ module Claim
       @number_of_buyers = response[:no_of_buyers].to_i
       @ads_included = (response[:ads_included] == 'Y')
       @ads_amount = response[:ads_amount]
+    end
+
+    # Gets the claim ready to save
+    # primarily checks if it is being/has already been submitted and raises an error if it has
+    # This is doing optimistic locking where we assume the save latest will work. We have to do this in case the user
+    # loses the connection. The claim needs to be saved to the cache after calling this routine
+    # @return [Boolean] true if the claim is prepared
+    def prepare_to_save
+      errors.add(:base, :has_already_been_submitted) && (return false) if @already_submitted
+      @already_submitted = true
     end
 
     # Is this claim within 12 months of the filed date
@@ -281,10 +295,10 @@ module Claim
     # @return a hash suitable for use in validateReturnReference request to the back office
     def request_validate_element(current_user)
       if current_user.blank?
-        { 'ins1:UnAuthenticated': true, TareReference: @tare_reference, IncludeDrafts: false }
+        { UnAuthenticated: true, TareReference: @tare_reference, IncludeDisregardedReturns: false }
       else
         { Username: current_user.username, ParRefNo:  current_user.party_refno,
-          'ins1:UnAuthenticated': false, TareReference: @tare_reference, IncludeDrafts: false }
+          UnAuthenticated: false, TareReference: @tare_reference, IncludeDisregardedReturns: false }
       end
     end
 
@@ -335,20 +349,20 @@ module Claim
     # @return a hash suitable for use in download pdf request to the back office
     def request_pdf_elements
       if claim_public?
-        { Authenticated: 'no', 'ins1:RepaymentRefNo': @repayment_ref_no }
+        { Authenticated: 'no', RepaymentRefNo: @repayment_ref_no }
       else
         { ParRefNo: @current_user.party_refno, Username: @current_user.username, Authenticated: 'yes',
-          'ins1:RepaymentRefNo': @repayment_ref_no }
+          RepaymentRefNo: @repayment_ref_no }
       end
     end
 
     # @return [Hash] elements used to specify what data we want to get from the back office
     def request_elements(current_user)
       if current_user.blank?
-        { 'ins1:Authenticated': 'no' }.merge!(request_save(current_user))
+        { 'ins1:Authenticated': 'no' }.merge!(request_save)
       else
         { 'ins1:ParRefNo': current_user.party_refno,
-          Username: current_user.username }.merge!(request_save(current_user))
+          Username: current_user.username }.merge!(request_save)
       end
     end
 
@@ -376,13 +390,13 @@ module Claim
     end
 
     # @return [Hash] elements used to specify what data we want to send to the back office
-    def request_save(current_user)
+    def request_save
       output = {}
       output.merge!(request_save_elements)
       # address- LBTT for ADS main Address
       output.merge!(save_ads_elements) if @reason == 'ADS'
 
-      output.merge!(print_data_element(current_user))
+      output.merge!(print_data_element)
 
       output[:TaxPayer] = taxpayer_details(@taxpayers[0])
 
@@ -393,12 +407,15 @@ module Claim
       output
     end
 
+    # @return [String] returns the account type three possible values are ['PUBLIC', 'TAXPAYER', 'AGENT']
+    def account_type
+      User.account_type(@current_user)
+    end
+
     # @return [Hash] elements used to specify the print data element that we want to save in the back office
     #   for this return.
-    def print_data_element(current_user)
-      { PrintData: print_data(:print_layout, account_type: User.account_type(current_user),
-                                             translation_prefix: translation_prefix,
-                                             translation_pdf_prefix: translation_prefix(:pdf_party_title)) }
+    def print_data_element
+      { PrintData: print_data(:print_layout) }
     end
 
     # @return [Hash] elements used to specify what data we want to send to the back office
@@ -410,7 +427,7 @@ module Claim
 
     # @return [Hash] elements used to specify what data we want to send to the back office
     def save_ads_elements
-      { ADSSoldAddress: @address.format_to_back_office_address,
+      { ADSSoldAddress: @address.format_to_back_office_address('ins0'),
         ADSSoldDate: DateFormatting.to_xml_date_format(@date_of_sale) }
     end
 
@@ -424,7 +441,7 @@ module Claim
     # if taxpayers[x] address is same as taxpayers[0] it returns same address as first taxpayers
     def taxpayer_address(taxpayer)
       current_taxpayer = taxpayer.same_address == 'N' ? taxpayer : taxpayers[0]
-      { 'ins1:ContactAddress': current_taxpayer.address.format_to_back_office_address }
+      { 'ins1:ContactAddress': current_taxpayer.address.format_to_back_office_address('ins0') }
     end
 
     # @return [hash] of taxpayer
@@ -432,8 +449,8 @@ module Claim
       output = { 'ins1:TaxPayerType':
          (@reason == 'ADS' || taxpayer.org_name.blank? ? 'Individual' : 'Organisation') }
       output.merge!(taxpayer_address(taxpayer))
-      output.merge!('ins1:ContactTelNo': taxpayer.telephone,
-                    'ins1:ContactEmailAddress': taxpayer.email_address)
+      output[:'ins1:ContactTelNo'] = taxpayer.telephone
+      output[:'ins1:ContactEmailAddress'] = taxpayer.email_address
       output.merge!(taxpayer_more_data(taxpayer))
       output if @srv_code == 'LBTT'
     end
@@ -458,14 +475,12 @@ module Claim
     # The prefix used as part of the translation key.
     # @param context [Symbol] put :party_title as the context when being used in the view section
     #   as the title part of claim party pages title section.
-    #   and put :pdf_party_title as the context when being used in the pdf title part of claim party pages title section
     # @return [String] as a prefix for translation key on basis of claim is AUTHENTICATED or not.
     def translation_prefix(context = :any)
       prefix = claim_public? ? 'UNAUTHENTICATED' : 'AUTHENTICATED'
 
       # If we only have 1 buyer, then the key used should be for a single buyer only.
       return "#{prefix}_SINGLE" if @number_of_buyers == 1 && context == :party_title
-      return "#{prefix}_PDF" if context == :pdf_party_title
 
       prefix
     end
@@ -473,14 +488,14 @@ module Claim
     # Dynamically returns the translation key based on the translation_options provided by the page if it exists
     # or else the flbt_type.
     # @param attribute [Symbol] the name of the attribute to translate
-    # @param translation_options [Object] in this case the party type being processed passed from the page
+    # @param _translation_options [Object] in this case the party type being processed passed from the page
     # @return [Symbol] "attribute_" + extra information to make the translation key
-    def translation_attribute(attribute, translation_options = nil)
+    def translation_attribute(attribute, _translation_options = nil)
       return amount_date_translation_attribute(attribute) if %i[claiming_amount date_of_sale
                                                                 full_repayment_of_ads].include?(attribute)
 
-      return "#{attribute}_#{translation_options}".to_sym if %i[authenticated_declaration1
-                                                                authenticated_declaration2].include?(attribute)
+      return "#{attribute}_#{account_type}".to_sym if %i[authenticated_declaration1
+                                                         authenticated_declaration2].include?(attribute)
 
       attribute
     end
@@ -590,8 +605,8 @@ module Claim
         divider: true, # should we have a section divider
         display_title: true, # Is the title to be displayed
         type: :list, # type list = the list of attributes to follow
-        list_items: [{ code: :authenticated_declaration1, lookup: true, translation_extra: :account_type },
-                     { code: :authenticated_declaration2, lookup: true, translation_extra: :account_type }] }
+        list_items: [{ code: :authenticated_declaration1, lookup: true },
+                     { code: :authenticated_declaration2, lookup: true }] }
     end
 
     # layout for the unauthenticated (ads) declarations

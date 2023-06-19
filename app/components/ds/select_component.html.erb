@@ -1,0 +1,40 @@
+  <% if use_search && !readonly %>
+  <div data-controller="autocomplete" data-autocomplete-extra-hint-value="<%= t('.extra_hint') %>">
+  <% end %>
+  <%= ds_field_wrapper(method: method, one_question: one_question, optional: optional, show_label: show_label, 
+                     interpolations: interpolations) do |wrapper| %>
+    <% if use_search && !readonly %>
+      <div class="ds_autocomplete">
+        <div class="fully-hidden" data-autocomplete-target="search">
+          <div id="autocomplete-status" class="visually-hidden"></div>
+          <div class="ds_input__wrapper  ds_input__wrapper--has-icon">
+            <%= builder.text_field(method,
+           wrapper.add_ds_html_options(add_html_options({class: "ds_input js-autocomplete-input", 
+             "aria-autocomplete": "list","aria-expanded": "false", "aria-owns": "autocomplete-suggestions",
+             "data-action": "blur->autocomplete#copySelected"}),
+             ds_width_class: ds_width_class)) %>
+            <a href="#" class="ds_button" id="show_all">
+              <span class="visually-hidden"><%=t('.show_all')%></span>
+              <svg class="ds_icon" aria-hidden="true" role="img">
+                <use href="<%= image_path('assets/images/icons/icons.stack.svg#list') %>"></use>
+              </svg>
+            </a>
+            <div id="autocomplete-suggestions" class="ds_autocomplete__suggestions rs_autocomplete__suggestions <%=ds_width_class%>">
+              <ol class="ds_autocomplete__suggestions-list" role="listbox" aria-labelledby="<%= wrapper.id %>"></ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <%# The order is important as both the search above the the select share the same name 
+        we rely on the select being the one that is sent in the request, so it must come second %>
+    <div class="ds_select-wrapper <%= ds_width_class %>" data-autocomplete-target="select">
+      <%= builder.select(method, select_options, {include_blank: include_blank}, add_html_options({class: "ds_select"})) %>
+      <span class="ds_select-arrow" aria-hidden="true"></span>
+      <%# we disable rather than set a select to read only as the user can still open the select and then include a hidden field %>
+      <%= builder.hidden_field(method) if readonly %>
+    </div>
+  <% end %>
+  <% if use_search && !readonly %>
+  </div>
+<% end %>

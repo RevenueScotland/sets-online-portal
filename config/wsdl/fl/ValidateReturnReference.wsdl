@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/ValidateReturnReference" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.northgateps.com/RSTS/ValidateReturnReference.wsdl" xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/ValidateReturnReference.wsdl">
+<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/ValidateReturnReference"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+	xmlns:tns="http://www.northgateps.com/RSTS/ValidateReturnReference.wsdl"
+	xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/ValidateReturnReference.wsdl">
 	<wsdl:types>
-		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:complexType name="PersonNameType">
 				<xsd:sequence>
 					<xsd:element name="Title" minOccurs="0">
@@ -137,7 +146,9 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
-		<xs:schema xmlns="http://www.northgateps.com/RSTS/ValidateReturnReference" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/ValidateReturnReference" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/ValidateReturnReference"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/ValidateReturnReference" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xs:import namespace="http://northgate-is.com/FL/Core"/>
 			<xs:element name="ValidateReturnReferenceRequest">
 				<xs:complexType>
@@ -162,9 +173,9 @@
 								<xs:documentation>Return Reference which requires to be validated</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="IncludeDrafts" type="xs:boolean" default="false">
+						<xs:element name="IncludeDisregardedReturns" type="xs:boolean" default="false">
 							<xs:annotation>
-								<xs:documentation>Indicates if draft returns are to be included</xs:documentation>
+								<xs:documentation>Indicates if disregarded returns are to be included</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 					</xs:sequence>

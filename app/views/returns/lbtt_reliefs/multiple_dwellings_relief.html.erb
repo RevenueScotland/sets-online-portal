@@ -1,0 +1,9 @@
+<% content_for(:page_title, t('.title')) %>
+<%= ds_section_title(section_title: t('.section_title')) %>
+<%= ds_paragraph{ t('.description_html', link: 
+                 ds_link(name: t('.description_link'), url: external_link_url('MDR'), target: '_blank'))} %>
+<%= ds_form_with(model: @relief_claim, url: @post_path, method: :post) do |f|  %>
+  <%= f.ds_text_field(method: :mdr_number_dwellings) %>
+  <%= f.ds_text_field(method: :mdr_number_dwellings_ads) %>
+  <%= f.ds_currency(method: :mdr_total_consideration) %>
+<% end %>

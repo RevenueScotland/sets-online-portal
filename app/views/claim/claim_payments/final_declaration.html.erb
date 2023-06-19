@@ -1,17 +1,13 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
 <% declaration_label = 'single_declaration_'  if @claim_payment.number_of_buyers == 1 && current_user.nil?%>
-<% content_for :page_title, t('.' + declaration_label.to_s + 'title') %>
-<%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @claim_payment %>
-  <div id='hideable'>
-    <%= govuk_warning( t('.warning') ) %>
-    <% account_type = User.account_type(current_user) %>
-    <% if account_type == 'PUBLIC' %>
-      <%= f.collection_check_boxes_fields(:unauthenticated_declarations_ids, @claim_payment.unauthenticated_declarations, value_method: :index, text_method: :text, label: '') %>
-    <% else %>
-      <%= f.check_box_field(:authenticated_declaration1, { translation_options: account_type } ) %>
-      <%= f.check_box_field(:authenticated_declaration2, { translation_options: account_type } ) %>
-    <% end %>
-  </div>
-  <%= f.button %>
+<% content_for(:page_title, t('.' + declaration_label.to_s + 'title')) %>
+<%= ds_form_with( model: @claim_payment, url: @post_path, method: :post) do |f| %>
+  <%= ds_warning { t('.warning') } %>
+  <% account_type = User.account_type(current_user) %>
+  <% if account_type == 'PUBLIC' %>
+    <%= f.ds_checkbox_group( method: :unauthenticated_declarations_ids, options_list:@claim_payment.unauthenticated_declarations,
+                             show_label: false, code_method: :index, value_method: :text ) %>
+  <% else %>
+    <%= f.ds_checkbox(method: :authenticated_declaration1 ) %>
+    <%= f.ds_checkbox(method: :authenticated_declaration2 ) %>
+  <% end %>
 <% end %>

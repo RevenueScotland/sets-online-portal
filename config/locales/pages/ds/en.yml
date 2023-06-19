@@ -1,0 +1,21 @@
+en:
+  ds:
+    exceptions:
+      404:
+        title: Page not found
+        typed: If you typed the web address, check it is correct.
+        pasted: If you pasted the web address, check you copied the entire address.
+        reporting: If the web address is correct or you selected a link or button, please contact Revenue Scotland quoting the reference %{error_reference} and the date and time it happened %{time}
+      403:
+        title: You are not authorised to view this page
+        typed: If you typed the web address, check it is correct.
+        pasted: If you pasted the web address, check you copied the entire address.
+        reporting: If the web address is correct or you selected a link or button and you believe you should have access, please contact your local administrator and provide the action you were taking at the time
+      406:
+        title: Security error
+        try_again: You have triggered a security check. This can happen when you enter unexpected text or try to upload something unsuitable. Please check that what you are doing is correct and try again
+        reporting: If the problem persists and you wish to report it, please contact Revenue Scotland providing the information that you were entering and the date and time it happened %{time}
+      500:
+        title: Sorry, there is a problem with the service
+        try_again: Try again later
+        reporting: If the problem persists and you wish to report it, please contact Revenue Scotland quoting the reference %{error_reference} and the date and time it happened %{time}

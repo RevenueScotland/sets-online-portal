@@ -37,9 +37,3 @@ en:
     hints:
       forgotten_username:
        email_address: "Enter the email address you registered with and press confirm. The username(s) will be sent to the registered email address."       
-  forgotten_usernames:
-    new:
-      title: "Forgotten username"
-    new-confirmation:
-      title: "Forgotten username confirmation"
-      description: "Check your email, your username information has being sent to the registered email address."

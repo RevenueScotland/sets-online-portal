@@ -1,6 +1,6 @@
 {
     "json_class": "Returns::Lbtt::LbttReturn",
-    "is_public": false,
+    "user_account_type": "AGENT",
     "new_record": true,
     "tax": {
         "json_class": "Returns::Lbtt::Tax",
@@ -142,13 +142,6 @@
     "sale_include_option": [
         ""
     ],
-    "non_ads_relief_claims": [
-        {
-            "json_class": "Returns::Lbtt::ReliefClaim",
-            "new_record": false
-        }
-    ],
-    "non_ads_reliefclaim_option_ind": "N",
     "change_reason": "This is the entered change reason",
     "contingents_event_ind": "N",
     "total_consideration": "1500",

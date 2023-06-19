@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <soap:Body>
-    <LBTTCalcResponse xmlns="http://www.northgateps.com/RSTS/GetLBTTCalc" 
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    <LBTTCalcResponse xmlns="http://www.northgateps.com/RSTS/GetLBTTCalc"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:core="http://northgate-is.com/FL/Core">
       <core:Success>true</core:Success>
       <ConvTaxPayable>
@@ -13,21 +13,24 @@
             <ReliefType>INCLLP</ReliefType>
             <ReliefAmount>10</ReliefAmount>
             <ReliefOverrideAmount>10</ReliefOverrideAmount>
+            <ReliefOverrideAmountAds>0</ReliefOverrideAmountAds>
           </Relief>
           <Relief>
             <ReliefType>COMMRIGHT</ReliefType>
             <ReliefAmount>20</ReliefAmount>
             <ReliefOverrideAmount>20</ReliefOverrideAmount>
+            <ReliefOverrideAmountAds>0</ReliefOverrideAmountAds>
           </Relief>
           <Relief>
             <ReliefType>HERITAGE</ReliefType>
             <ReliefAmount>30</ReliefAmount>
             <ReliefOverrideAmount>30</ReliefOverrideAmount>
+            <ReliefOverrideAmountAds>0</ReliefOverrideAmountAds>
           </Relief>
           <Relief>
             <ReliefType>ADSFAMUNIT</ReliefType>
-            <ReliefAmount>40</ReliefAmount>
-            <ReliefOverrideAmount>40</ReliefOverrideAmount>
+            <ReliefAmountAds>40</ReliefAmountAds>
+            <ReliefOverrideAmountAds>40</ReliefOverrideAmountAds>
           </Relief>
         </Reliefs>
         <LBTTCalculated>78134.34</LBTTCalculated>

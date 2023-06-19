@@ -1,11 +1,7 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<% content_for :hide_back_link, :remove_param_new %>
-<%= form_for @claim_payment, url: @post_path, local: true do |f| %>
-  <%= form_errors_for @claim_payment %>
-  <%= f.collection_radio_buttons_fields(:reason, @claim_payment.reason_list, alignment: 'vertical') %>
-  <div id='hideable' class= 'govuk-radios__conditional'>
-    <%= f.text_area_field :claim_desc %>
-  </div>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with( model: @claim_payment, url: @post_path) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "OTHER") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :reason, options_list:@claim_payment.reason_list) %>
+    <%= f.ds_text_area(method: :claim_desc) %>
+  <% end %>
 <% end %>

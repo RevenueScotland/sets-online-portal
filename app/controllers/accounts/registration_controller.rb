@@ -94,7 +94,7 @@ module Accounts
 
     # Determines which is the next step after the account_for page
     def account_for_next_step
-      return accounts_registration_taxes_path if AccountType.individual?(filter_params['registration_type'])
+      return accounts_registration_taxes_path if AccountType.individual?(@account.account_type)
 
       return accounts_registration_company_path unless AccountType.registered_organisation?(@account.account_type)
 

@@ -10,8 +10,9 @@ Feature: Forgotten Password
 
     Scenario: User does not provide any details
         When I go to the "Forgotten-password" page
-        And I click on the "Change Password" button
-        #Then I should receive the message "Username can't be blank"
+        And I click on the "Change password" button
+        Then I should receive the message "Username can't be blank"
+        Then I should receive the message "Username is too short (minimum is 3 characters)"
         And I should receive the message "New password can't be blank"
         And I should receive the message "Email address can't be blank"
 
@@ -20,7 +21,7 @@ Feature: Forgotten Password
         And I enter "x" in the "Email address" field
         And I enter "y" in the "Username" field
         And I enter "invalidpassword" in the "New password" field
-        And I click on the "Change Password" button
+        And I click on the "Change password" button
         Then I should receive the message "Email address is invalid"
         Then I should receive the message "Username is too short (minimum is 3 characters)"
     # deferred to back office for now Then I should receive the message "New password is invalid"
@@ -29,7 +30,7 @@ Feature: Forgotten Password
         When I go to the "Forgotten-password" page
         And I enter "Xyz1234" in the "New password" field
         And I enter "Abc1234" in the "Confirm new password" field
-        And I click on the "Change Password" button
+        And I click on the "Change password" button
         Then I should receive the message "New password does not match"
 
     Scenario: User provides the correct details
@@ -38,5 +39,5 @@ Feature: Forgotten Password
         And I enter "noreply@necsws.com" in the "Email address" field
         And I enter "AbcXyz123!" in the "New password" field
         And I enter "AbcXyz123!" in the "Confirm new password" field
-        And I click on the "Change Password" button
+        And I click on the "Change password" button
         Then I should see the "Forgotten password confirmation" page

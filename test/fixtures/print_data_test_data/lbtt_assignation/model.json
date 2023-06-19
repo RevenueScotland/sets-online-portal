@@ -1,6 +1,6 @@
 {
     "json_class": "Returns::Lbtt::LbttReturn",
-    "is_public": false,
+    "user_account_type": "TAXPAYER",
     "new_record": true,
     "tax": {
         "json_class": "Returns::Lbtt::Tax",
@@ -77,7 +77,7 @@
         }
     ],
     "linked_ind": "N",
-    "non_ads_relief_claims": [
+    "relief_claims": [
         {
             "json_class": "Returns::Lbtt::ReliefClaim",
             "new_record": false

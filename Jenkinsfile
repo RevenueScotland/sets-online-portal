@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="3.1.2"
+def RUBY_VERSION="3.1.3"
 
 /*
 	* Back office names
@@ -251,9 +251,10 @@ def envGitCheckout () {
  */
 def prepareBuildEnvironment() {
 	stage ('Prepare Build Environment') {
-		sh 'gem install bundler rake yard rubocop brakeman bundle-audit licensed' 
+		sh 'gem install bundler rake yard rubocop brakeman bundle-audit licensed'
+		sh 'bundle config mirror.https://rubygems.org http://vm-bld-ruby01.global.internal:9292'
 		sh 'bundle install'
-                sh 'yarn install --frozen-lockfile'
+        sh 'yarn install --frozen-lockfile'
 		milestone(1)
 	}
 }
@@ -266,6 +267,7 @@ def runUnitTests() {
 	stage ('Run Unit Tests') {
         try {
             sh '''
+                yarn build
                 rm -f log/test.log
                 bundle exec rake UNIT_TEST=1 test
             '''
@@ -299,7 +301,7 @@ def generateDocumentation() {
 	stage ('Generate Documentation') {
 		sh 'bundle exec rake yard'
 		withEnv(["APP=${this.getAppName()}"]) {
-			sh 'scp -r doc/* rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APP}'
+			sh 'scp -r doc/* rsdocs@vm-bld-ruby01.global.internal:/var/www/html/${APP}'
 		}
 	}
 }
@@ -428,18 +430,18 @@ def dockerImageBuild() {
 				sh '''
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
 					export DOCKER_HOST=tcp://$(hostname -f):2376
-					export DOCKER_REG=vm-rstp-bld01.global.internal:443
-					export DOCKER_RELEASE_REG=vm-rstp-bld01.global.internal:444
+					export DOCKER_REG=vm-nds-bld02.global.internal:8443/revscot
+					export DOCKER_RELEASE_REG=vm-nds-bld02.global.internal:8443/release-revscot
+					export SRC_DOCKER_REG=vm-nds-bld02.global.internal:8443/nds-app-servers
+					export SRC_DOCKER_RELEASE_REG=vm-nds-bld02.global.internal:8443/release-nds-app-servers
 					cd NdsEnvironment/environment/apps/${APP_NAME}/app-servers-config/redis
 					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-redis redis "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../ui
 					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-app app "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../proxy
-					SRC_DOCKER_REG=vm-nds-bld02.global.internal:443 SRC_DOCKER_RELEASE_REG=vm-rstp-bld01.global.internal:444\
-						../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-proxy proxy "${RELEASE_VERSION}" AAA${APP_NAME}
+					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-proxy proxy "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../selenium-firefox
-					SRC_DOCKER_REG=vm-nds-bld02.global.internal:443 SRC_DOCKER_RELEASE_REG=vm-rstp-bld01.global.internal:444\
-						../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-firefox firefox "${RELEASE_VERSION}" AAA${APP_NAME}
+					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-firefox firefox "${RELEASE_VERSION}" AAA${APP_NAME}
 				'''
 			}
 		}
@@ -457,7 +459,7 @@ def registerReleaseBuild() {
 		steps.withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPNAME=${this.getAppName()}"]) {
 			steps.sh '''
 				now=$(date -Ins -u | sed -e 's/,/./'  -e 's/+.*.//')
-				curl -X PUT vm-nds-bld02.global.internal/api/release -d "{\\"mode\\":\\"add\\",\\"appId\\":\\"${APPNAME}\\",\\"version\\":\\"${FULL_BUILD_VERSION}\\",\\"builtDate\\":\\"${now}\\",\\"exportDate\\":\\"\\"}"
+				curl -X PUT https://vm-nds-bld02.global.internal:445/api/release -d "{\\"mode\\":\\"add\\",\\"appId\\":\\"${APPNAME}\\",\\"version\\":\\"${FULL_BUILD_VERSION}\\",\\"builtDate\\":\\"${now}\\",\\"exportDate\\":\\"\\"}"
 			'''
 		}
 
@@ -516,8 +518,8 @@ def deployAutotestEnvironment(String environment = "autotest") {
 				sh '''
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
 					export DOCKER_HOST=tcp://$(hostname -f):2376
-					export DOCKER_REG=vm-rstp-bld01.global.internal:443
-					export DOCKER_RELEASE_REG=vm-rstp-bld01.global.internal:444
+					export DOCKER_REG=vm-nds-bld02.global.internal:8443/revscot
+					export DOCKER_RELEASE_REG=vm-nds-bld02.global.internal:8443/release-revscot
 					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
 					../../run-app-env.sh $FULL_BUILD_VERSION  ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
 					sleep ${TEST_DELAY}
@@ -552,8 +554,8 @@ def deployManualTestEnvironment(String environment, String environmentLabel, Str
 					export DOCKER_HOST=tcp://$(hostname -f):2376
 					
                     docker network prune -f
-					export DOCKER_REG=vm-rstp-bld01.global.internal:443
-					export DOCKER_RELEASE_REG=vm-rstp-bld01.global.internal:444
+					export DOCKER_REG=vm-nds-bld02.global.internal:8443/revscot
+					export DOCKER_RELEASE_REG=vm-nds-bld02.global.internal:8443/release-revscot
 					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
 					[ ! -z "$(docker ps -qa --filter name=${APP}.*--${ENVIRONMENT})" ] && docker stop $(docker ps -qa --filter "name=${APP}.*--${ENVIRONMENT}") && docker rm -f $(docker ps -qa --filter "name=${APP}.*--${ENVIRONMENT}")
 					../../run-mt-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
@@ -568,12 +570,12 @@ def deployManualTestEnvironment(String environment, String environmentLabel, Str
 				'''
 			}
 			def props = readProperties file: "NdsEnvironment/environment/apps/${this.getAppName()}/app-servers-config/scratch/${this.getFullBuildVersion()}/${environment}/env.properties"
-			def imagesUsed = props["IMAGES_USED"]
-			if (environment == "manualtest") {
-				node ("${this.getAppName()}-docker-build") {
-					analyseApplicationImages(imagesUsed)
-				}
-			}
+//			def imagesUsed = props["IMAGES_USED"]
+//			if (environment == "manualtest") {
+//				node ("${this.getAppName()}-docker-build") {
+//					analyseApplicationImages(imagesUsed)
+//				}
+//			}
 			return [props["APP_HOST"], props["PROXY_HTTPS_PORT"], "", releaseNotesFile]
 		}
 	} catch (err) {
@@ -634,12 +636,14 @@ def runAutotest(String host, String port, String seleniumPort, String environmen
 				sh '''
 					#!/bin/bash
 					export DOCKER_HOST=tcp://$(hostname -f):2376
-                                        docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk add --no-cache --virtual .bundle-deps build-base gmp-dev
-                                        docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle install --deployment --with="development test"
-                                        docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk del .bundle-deps
+                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk add --no-cache --virtual .bundle-deps build-base gmp-dev
+					docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle config mirror.https://rubygems.org http://vm-bld-ruby01.global.internal:9292
+                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle install --deployment --with="development test"
+                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk del .bundle-deps
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} mkdir -p /var/tmp/share/upload /var/tmp/share/download
 					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} chmod 777 -R /var/tmp/share/
-					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
+					docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} chmod a+w -R .
+										docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
 						CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} CAPYBARA_SAVE_PATH=${CAPYBARA_SAVE_PATH}\
 						TEST_FILE_UPLOAD_PATH=/var/tmp/share/upload TEST_FILE_DOWNLOAD_PATH=/var/tmp/share/download \
 						RAILS_ENV=test NODE_ENV=test cucumber
@@ -675,14 +679,14 @@ def postAutotestSuccess(String environment = "autotest") {
         unstash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-licenses"
 		withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 			sh '''
-				ssh rsdocs@vm-rstp-bld01.global.internal "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
+				ssh rsdocs@vm-bld-ruby01.global.internal "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
 				pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}/app/
-				scp -r coverage rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
-				ssh rsdocs@vm-rstp-bld01.global.internal "unlink /var/www/html/${APPLICATION}/coverage ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/coverage /var/www/html/${APPLICATION}/coverage"
+				scp -r coverage rsdocs@vm-bld-ruby01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				ssh rsdocs@vm-bld-ruby01.global.internal "unlink /var/www/html/${APPLICATION}/coverage ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/coverage /var/www/html/${APPLICATION}/coverage"
 				popd
 
-                                scp tmp/licensed.txt rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
-				ssh rsdocs@vm-rstp-bld01.global.internal "[ -L "/var/www/html/${APPLICATION}/licensed.txt" ] && unlink /var/www/html/${APPLICATION}/licensed.txt ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/licensed.txt /var/www/html/${APPLICATION}/licensed.txt"
+                                scp tmp/licensed.txt rsdocs@vm-bld-ruby01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				ssh rsdocs@vm-bld-ruby01.global.internal "[ -L "/var/www/html/${APPLICATION}/licensed.txt" ] && unlink /var/www/html/${APPLICATION}/licensed.txt ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/licensed.txt /var/www/html/${APPLICATION}/licensed.txt"
 			'''
 		}
 	}
@@ -699,7 +703,7 @@ def postAutotestFailure(String host, String environment = "autotest") {
 	dir ('code') {
 		withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 			sh '''
-				ssh rsdocs@vm-rstp-bld01.global.internal "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
+				ssh rsdocs@vm-bld-ruby01.global.internal "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
 				pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}/app/
 				sudo mkdir -p tmp ; sudo chmod a+w -R tmp
 				echo \'<html><head><title>\'Test Results for ${ENVIRONMENT} of ${APPLICATION} version ${FULL_BUILD_VERSION}\'</title></head>\' > tmp/index.html
@@ -707,18 +711,18 @@ def postAutotestFailure(String host, String environment = "autotest") {
 				ls tmp/screenshots/ | sed \'s/\\(.*\\)/\\<p\\>\\<a href="\\1"\\>\\1\\<\\/a\\><\\/p\\>/\' >> tmp/index.html
 				echo \'<p>Test completed at \'$(date)\'</p></body></html>\' >> tmp/index.html
 				mv tmp/index.html tmp/screenshots/index.html
-				scp tmp/screenshots/*.{html,png} rsdocs@vm-rstp-bld01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				scp tmp/screenshots/*.{html,png} rsdocs@vm-bld-ruby01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
 				rm -rf tmp/screenshots/*
-                                cd ../video
-                                sudo /usr/local/bin/ffmpeg -i record.flv  -c:v libx264 -crf 19 -strict experimental record.mp4
-                                sudo rm -rf record.flv
+                cd ../video
+                sudo zip record.flv.zip record.flv
+                sudo rm -rf record.flv
 				popd
 			'''
 			def RELEASE_TEXT = this.isReleaseBuild() ? "Release " : ""
 			emailext attachLog: true, 
 				body: """${RELEASE_TEXT}Auto testing of the ${this.getAppName()} build ${this.getFullBuildVersion()} has failed.
 
-A report can be found here: http://vm-rstp-bld01.global.internal/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html
+A report can be found here: http://vm-bld-ruby01.global.internal/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html
 (This report will be available for a week)
 
 The full console output can be found here: ${env.BUILD_URL}consoleFull
@@ -729,7 +733,7 @@ The log files from the test target can be found on ${host} in /var/log/${this.ge
 				compressLog: true, 
 				subject: "Auto test of the ${this.getAppName()} application, on the ${env.BRANCH_NAME} branch, has failed",
 				to: "${REVSCOT_DEVELOPERS}"
-			echo "${environment} report can be found at: http://vm-rstp-bld01.global.internal/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html"
+			echo "${environment} report can be found at: http://vm-bld-ruby01.global.internal/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html"
 		}
 	}
 }

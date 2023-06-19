@@ -12,8 +12,8 @@ en:
         OTHER_company_name: "Organisation name"
         reg_company_contact_address_yes_no: "Is your registered address also your contact address"
         contact_number: "Contact phone number"
-        terms_and_conditions: "I confirm that I have read and understood the terms & conditions (opens in a new window)"
-        email_data_ind: "I confirm that I have read and understood Revenue Scotland’s email communication policy (opens in a new window). I agree to receive email communication from Revenue Scotland and accept the associated risks"
+        terms_and_conditions: "Terms and conditions"
+        email_data_ind: "Email communication policy agreement"
         full_address: "Address"
         forename: "First name"
         surname: "Last name"
@@ -22,10 +22,14 @@ en:
         org_email_address: "Organisation email address"
         org_telephone: "Organisation phone number"
         main_rep_name: "Organisation main representative name"
-        taxes: Which type of tax return do you want to be able to file
+        taxes: "Which type of tax return do you want to be able to file"
         party_account_type: "Who is the account for"
-      account_type: 
-       registration_type:  "Who are you signing up on behalf of"
+    labels:
+      account:
+        terms_and_conditions: "<span>I confirm that I have read and understood the </span>%{link}"
+        terms_and_conditions_link: "terms & conditions"
+        email_data_ind: "I confirm that I have read and understood Revenue Scotland’s %{link}. I agree to receive email communication from Revenue Scotland and accept the associated risks"
+        email_data_ind_link: "email communication policy"
     hints:
       account:
         registration_token: "Enter the token from the registration email or from the password reset email"
@@ -40,44 +44,4 @@ en:
               accepted: "The terms and conditions must be accepted"
             email_data_ind:
               blank: "The email communication policy agreement can't be blank"
-  accounts:
-    show:
-      title: "Sign up details"
-      description: "This is where you update your account information and manage the access that you give other people to your account."
-      change_company_registered_address: "Contact Revenue Scotland if you want to change your company number or company name"
-      heading: "Your user details"
-      link:
-        change_password: "Change your password"
-        about_registration: "Terms & Conditions"
-        create_update_users: "Create or update users"
-        change_memorable_word: "Create or update memorable word"
-        messages: "Send or view messages"
-        update_account_details: "Update account details"
-        update: "Update"
-        lbtt_return: "Land and Buildings Transaction Tax Returns"
-        slft_return_summary: "Landfill Tax Return"
-        dashboard_returns: "All Returns"
-    new:
-      title: "Account Registration"
-      sign_in_details: "Sign in details"
-      your_details: "Your details"
-      contact_details: "Contact details"
-      you_will_be_sent_confirmation_email: "After you register you will be sent a confirmation email with instructions on how to complete your registration."
-      taxes: "Taxes"
-    edit:
-      title: "Update account"
-      account_holder_details: "Account holder details"
-      account_address: "Account address"
-      contact_details: "Contact details"
-    edit_basic:
-      title: "Update account"
-    edit_company:
-      title: "Update company"
-    edit_address:
-      title: "Update address"
-    activate_account:
-      title: "Complete registration"
-      activate_registration: "Confirm"
-    activate_account_confirmation:
-      title: "Completed registration"
-      description: "Your Revenue Scotland account is now active"
+ 

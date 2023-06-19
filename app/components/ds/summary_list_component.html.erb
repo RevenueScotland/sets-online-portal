@@ -1,0 +1,7 @@
+<%= tag.h2(title) if title %>
+<%= description %>
+<ol class="ds_summary-list ds_!_margin--1<%= ' ds_summary-list--no-border' unless show_border %>">
+  <% items.each do |item| %>
+    <%= item %>
+  <% end %>
+</ol>

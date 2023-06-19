@@ -38,9 +38,9 @@ class Address < FLApplicationRecord
        display_title: true, # Is the title to be displayed
        type: :list, # type list = the list of attributes to follow
        list_items: [{ code: :address_line1 },
-                    { code: :address_line2, nolabel: true, when: :address_line2, is_not: :nil? },
-                    { code: :address_line3, nolabel: true, when: :address_line3, is_not: :nil? },
-                    { code: :address_line4, nolabel: true, when: :address_line4, is_not: :nil? },
+                    { code: :address_line2, label: false, when: :address_line2, is_not: :nil? },
+                    { code: :address_line3, label: false, when: :address_line3, is_not: :nil? },
+                    { code: :address_line4, label: false, when: :address_line4, is_not: :nil? },
                     { code: :town },
                     { code: :county },
                     { code: :postcode }] }]
@@ -99,22 +99,13 @@ class Address < FLApplicationRecord
 
   # Converts address hash suitable for use in a save_request method in the returns models(eg @see Property#request_save)
   # for sending to the back office
-  def format_to_back_office_address
-    output = { 'ins0:AddressLine1': address_line1 }
-    xml_element_if_present(output, 'ins0:AddressLine2', address_line2)
-    xml_element_if_present(output, 'ins0:AddressLine3', address_line3)
-    xml_element_if_present(output, 'ins0:AddressLine4', address_line4)
-    format_town_county_postcode(output)
+  def format_to_back_office_address(prefix = 'ns1')
+    output = { "#{prefix}:AddressLine1": address_line1 }
+    xml_element_if_present(output, "#{prefix}:AddressLine2", address_line2)
+    xml_element_if_present(output, "#{prefix}:AddressLine3", address_line3)
+    xml_element_if_present(output, "#{prefix}:AddressLine4", address_line4)
+    format_town_county_postcode(output, prefix)
     output
-  end
-
-  # Convert address fields town, county and postcode in back-office format
-  def format_town_county_postcode(output)
-    output['ins0:AddressTownOrCity'] = town
-    xml_element_if_present(output, 'ins0:AddressCountyOrRegion', county)
-    xml_element_if_present(output, 'ins0:AddressPostcodeOrZip', postcode)
-    xml_element_if_present(output, 'ins0:AddressCountryCode', country)
-    xml_element_if_present(output, 'ins0:QASMoniker', address_identifier)
   end
 
   # converts back-office address hash into address object
@@ -145,6 +136,15 @@ class Address < FLApplicationRecord
   end
 
   private
+
+  # Convert address fields town, county and postcode in back-office format
+  def format_town_county_postcode(output, prefix)
+    output["#{prefix}:AddressTownOrCity"] = town
+    xml_element_if_present(output, "#{prefix}:AddressCountyOrRegion", county)
+    xml_element_if_present(output, "#{prefix}:AddressPostcodeOrZip", postcode)
+    xml_element_if_present(output, "#{prefix}:AddressCountryCode", country)
+    xml_element_if_present(output, "#{prefix}:QASMoniker", address_identifier)
+  end
 
   # Validation to check that the address has been selected - it's the same as checking the
   # presence of address_line1, town, postcode but with a nicer error message.

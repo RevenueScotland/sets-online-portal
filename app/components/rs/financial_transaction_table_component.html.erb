@@ -1,0 +1,53 @@
+<div class="ds_!_margin-bottom--2">
+  <%= ds_table(caption: tag.h2(caption, class: 'ds_!_margin-bottom--0'), id: id, small_screen: small_screen) do |table| %>
+    <% case format %>
+    <% when :related_transaction %>
+    <% table.with_header(klass: Dashboard::RelatedTransaction) do |header| %>
+      <% header.with_cell(method: :actual_date) %>
+      <% header.with_cell(method: :effective_date) %>
+      <% header.with_cell(method: :description) %>
+      <% header.with_cell(method: :matched_amount)%>
+      <% header.with_cell(method: :original_amount) %>
+    <% end %>
+  <% else %>
+    <% table.with_header(klass: Dashboard::FinancialTransaction) do |header| %>
+      <% header.with_cell(method: :actual_date) %>
+      <% header.with_cell(method: :effective_date) %>
+      <% header.with_cell(method: :related_reference) %>
+      <% header.with_cell(method: :description)%>
+      <% header.with_cell(method: :amount) %>
+      <% header.with_cell(method: :outstanding_balance) %>
+    <% end %>
+  <% end %>
+  <% financial_transactions&.each do |transaction| %>
+    <% table.with_row(model: transaction) do |row| %>
+      <% case format %>
+      <% when :related_transaction %>
+      <% row.with_cell(method: :actual_date) %>
+      <% row.with_cell(method: :effective_date) %>
+      <% row.with_cell(method: :description) %>
+      <% row.with_cell(method: :matched_amount, type: :currency, align: :right)%>
+      <% row.with_cell(method: :original_amount, type: :currency, align: :right) %>
+    <% else %>
+      <% row.with_cell(method: :actual_date) %>
+      <% row.with_cell(method: :effective_date) %>
+      <% row.with_cell(method: :related_reference) %>
+      <% row.with_cell(method: :description)%>
+      <% row.with_cell(method: :amount, type: :currency, align: :right) %>
+      <% row.with_cell(method: :outstanding_balance, type: :currency, align: :right) %>
+    <% end %>
+  <% end %>
+  <% table.with_row do |row| %>
+    <% case format %>
+    <% when :financial_transactions %>
+    <% row.with_cell(colspan: 7) do %>
+      <%= ds_link(name: t('.show'),
+              url: dashboard_financial_transaction_path(transaction.transaction_reference),
+              subtype: :padded) if can?(RS::AuthorisationHelper::VIEW_RETURNS) %>
+    <% end %>
+  <% end %>
+<% end %>
+<% end %>
+<% end %>
+<%= ds_pagination(collection: pagination_collection, region_name: caption, page_name: page_name, anchor: id) %>
+</div>

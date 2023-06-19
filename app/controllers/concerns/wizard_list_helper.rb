@@ -20,11 +20,10 @@
 # see @wizard_list_step for specific overrides for this concern
 #
 # @example
-#     wizard_list_step(nil, setup_step: :setup_reliefs_on_transaction_step,
+#     wizard_list_step(nil, setup_step: :setup_linked_transactions_step,
 #                           next_step: :calculate_next_step, cache_index: LbttController,
-#                           list_required: :non_ads_reliefclaim_option_ind,
-#                           list_attribute: :non_ads_relief_claims,
-#                           new_list_item_instance: :new_list_item_non_ads_relief_claims)
+#                           list_required: :linked_ind, list_attribute: :link_transactions,
+#                           new_list_item_instance: :new_list_item_link_transactions)
 module WizardListHelper
   extend ActiveSupport::Concern
 
@@ -51,8 +50,7 @@ module WizardListHelper
 
     # Exit unless POST processing is required
     list_action, delete_row = wizard_list_action
-
-    return unless list_action
+    return unless list_action # effectively request.get?
 
     # Process the list items if we need to actually process them
     if wizard_list_required?(wizard_page_object, resolve_params(overrides), overrides)
@@ -60,7 +58,7 @@ module WizardListHelper
     end
 
     navigate = wizard_list_validate_and_save(list_action, wizard_cached_object, list_contents, delete_row, overrides)
-    return unless navigate
+    render(status: :unprocessable_entity) && return unless navigate
 
     wizard_navigation_step(steps, overrides, wizard_page_objects_size(wizard_cached_object, overrides))
   end
@@ -121,6 +119,7 @@ module WizardListHelper
     record_array = filter_list_params(list_attribute, overrides[:sub_object_attribute])
 
     record_array&.each_with_index do |record, i|
+      list_contents ||= []
       list_item = wizard_list_create_and_validate_item(list_contents[i], record, overrides)
       list_contents[i] = list_item
     end
@@ -145,10 +144,14 @@ module WizardListHelper
     # Do not navigate if we are processing the submit and the after merge fails
     return unless wizard_list_run_after_merge(list_action, overrides)
 
-    wizard_list_add_or_delete_row(list_action, list_contents, delete_row, overrides)
+    wizard_list_delete_row(list_contents, delete_row) if list_action == :delete_row
 
     # Finally save and if we are in continue navigate
     wizard_save(wizard_cached_object, overrides[:cache_index])
+
+    # We add after the save to avoid a blank row in the list if back is used
+    wizard_list_add_row(list_contents, overrides) if list_action == :add_row
+
     (list_action == :continue)
   end
 
@@ -195,20 +198,6 @@ module WizardListHelper
     # if the validation needs to be done on specific key.
     list_item.valid?(overrides[:list_validation_context])
     list_item
-  end
-
-  # Adds or deletes a row depending on the type of processing
-  # @param list_action [Symbol] Is this a delete or an add
-  # @param list_contents [Array] The list of items
-  # @param delete_row [String] the row to delete a string as needs to handle nil
-  # @param overrides [Hash] the array of overrides for this step
-  def wizard_list_add_or_delete_row(list_action, list_contents, delete_row, overrides)
-    case list_action
-    when :add_row
-      wizard_list_add_row(list_contents, overrides)
-    when :delete_row
-      wizard_list_delete_row(list_contents, delete_row)
-    end
   end
 
   # At the end of the list, adds a row to the list contents of the wizard page object.

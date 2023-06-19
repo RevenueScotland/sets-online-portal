@@ -41,14 +41,12 @@ en:
         amount: "Amount"
         balance: "Balance"
         outstanding_balance: "Balance"
-
       dashboard/related_transaction:
         actual_date: "Created date"
         effective_date: "Effective date"
         description: "Description"
-        matched_amount: "Allocated<br>amount"
-        original_amount: "Original<br>amount"
-
+        matched_amount: "Allocated amount"
+        original_amount: "Original amount"
       dashboard/financial_transaction_filter:
         actual_date: "Created date"
         actual_date_to: "Created date to"
@@ -56,19 +54,13 @@ en:
         effective_date: "Effective date"
         effective_date_to: "Effective date to"
         effective_date_from: "Effective date from"
-        reference: "Reference"
-        related_reference: "Return Reference"
+        related_reference: "Reference"
         amount: "Amount"
         maximum_amount: "Amount to (max)"
         minimum_amount: "Amount from (min)"
-
-        day: "Day"
-        month: "Month"
-        year: "Year"
-
     hints:
       dashboard/financial_transaction_filter:
-        reference: "Enter part or all of the reference"
+        related_reference: "Enter the start or all of the reference"
         amount: "Enter the exact amount"
     errors:
       models:
@@ -82,24 +74,3 @@ en:
               before_date_error: "%{attribute} must be before the effective date to"
             effective_date_to:
               after_date_error: "%{attribute} must be after the effective date from"
-
-  dashboard:
-    financial_transactions:
-      index:
-        title: "All transactions"
-        heading: "Filter transactions by:"
-        show: "View related"
-        find: "Find"
-        no_data_found: "There are no transactions to be shown..."
-        pagination:
-          context:
-            page: "all financial transactions"
-      show:
-        title: "Financial transaction"
-        heading: "Related financial transactions"
-        link:
-          dashboard: "Dashboard"
-          financial_transactions: "Go to all financial transactions"
-        pagination:
-          context:
-            page: "related financial transactions"

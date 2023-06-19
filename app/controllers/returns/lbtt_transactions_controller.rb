@@ -7,18 +7,17 @@ module Returns
     include WizardListHelper
     include LbttTaxHelper
 
-    authorise requires: AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
     # Allow unauthenticated/public access to calc actions
     skip_before_action :require_user
 
     # store step flow of lbtt conveyance return transaction page name used for navigation
     CONVEYANCE_STEPS = %w[property_type transaction_dates about_the_transaction linked_transactions sale_of_business
-                          reliefs_on_transaction multiple_dwellings_relief about_the_calculation
-                          conveyance_values].freeze
+                          about_the_calculation conveyance_values].freeze
 
     # store step flow of lbtt lease return transaction page name used for navigation
-    LEASE_STEPS = %w[property_type transaction_dates about_the_transaction linked_transactions reliefs_on_transaction
-                     multiple_dwellings_relief lease_values rental_years premium_paid relevant_rent npv].freeze
+    LEASE_STEPS = %w[property_type transaction_dates about_the_transaction linked_transactions lease_values
+                     rental_years premium_paid relevant_rent npv].freeze
 
     # store step flow of lbtt lease return, assignation and termination transaction page name used for navigation
     LEASE_REV_ASSIGN_TERMINATE_STEPS = %w[transaction_dates linked_transactions lease_values
@@ -32,8 +31,8 @@ module Returns
     # wizard step
     def transaction_dates
       wizard_step(nil) do
-        { setup_step: :setup_transaction_dates_step, next_step: :calculate_next_step,
-          cache_index: LbttController, after_merge: :update_yearly_rents_and_calculate }
+        { next_step: :calculate_next_step, cache_index: LbttController,
+          after_merge: :update_yearly_rents_and_calculate }
       end
     end
 
@@ -60,24 +59,6 @@ module Returns
                             next_step: :calculate_next_step, cache_index: LbttController,
                             list_required: :linked_ind, list_attribute: :link_transactions,
                             new_list_item_instance: :new_list_item_link_transactions)
-    end
-
-    # Custom step in the Lbtt wizard which handle add row and merge_list method for this page
-    def reliefs_on_transaction
-      wizard_list_step(nil, setup_step: :setup_reliefs_on_transaction_step,
-                            next_step: :calculate_next_step, cache_index: LbttController,
-                            list_required: :non_ads_reliefclaim_option_ind,
-                            list_attribute: :non_ads_relief_claims,
-                            new_list_item_instance: :new_list_item_non_ads_relief_claims,
-                            loop: :start_next_step)
-    end
-
-    # wizard step
-    def multiple_dwellings_relief
-      wizard_step(nil) do
-        { next_step: :calculate_next_step, sub_object_attribute: :md_relief,
-          loop: :multiple_dwellings_relief, cache_index: LbttController }
-      end
     end
 
     # wizard step
@@ -114,12 +95,6 @@ module Returns
     end
 
     # Used in wizard_list_step as part of the merging of data.
-    # @return [Object] new instance of ReliefClaim class that has attributes with value.
-    def new_list_item_non_ads_relief_claims
-      Lbtt::ReliefClaim.new(lbtt_return_ads_due: @lbtt_return.show_ads?)
-    end
-
-    # Used in wizard_list_step as part of the merging of data.
     # @return [Object] new instance of LinkTransactions class that has attributes with value.
     def new_list_item_link_transactions
       Lbtt::LinkTransactions.new(convey: @lbtt_return.convey?)
@@ -140,16 +115,7 @@ module Returns
 
       raise Error::AppError.new('Return type', "Invalid return type for calc #{flbt_type}") if next_steps.nil?
 
-      remove_mdr_step(next_steps)
-    end
-
-    # Remove step multiple_dwellings_relief if there is no MDR is selected as part of non ads reliefs
-    # @param next_steps [Array] Array of wizard step page names
-    # @return [Array] Array of wizard steps by removing the mdr step
-    def remove_mdr_step(next_steps)
-      next_steps_dup = next_steps.dup
-      next_steps_dup.delete('multiple_dwellings_relief') if @lbtt_return.md_relief.empty?
-      next_steps_dup
+      next_steps
     end
 
     # convert lease return specific date
@@ -180,6 +146,7 @@ module Returns
 
         update_yearly_rents_array(previous)
       end
+      setup_transaction_dates_step
       update_tax_calculations
     end
 
@@ -218,23 +185,6 @@ module Returns
     end
 
     # Custom setup for this step.  Calls @see #load_step to set up the model.
-    def setup_reliefs_on_transaction_step
-      model = load_step
-
-      # initialise row data if not already present
-      if @lbtt_return.non_ads_relief_claims.blank?
-        @lbtt_return.non_ads_relief_claims = Array.new(1) do
-          new_list_item_non_ads_relief_claims
-        end
-      end
-
-      # get the ref data for relief types and only show the non-ADS ones @see LbttAdsController#ads_reliefs
-      @relief_types = ReferenceData::TaxReliefType.list_standard(@lbtt_return.flbt_type, true)
-
-      model
-    end
-
-    # Custom setup for this step.  Calls @see #load_step to set up the model.
     # Initialise the relevant row data structures if it's not already set.
     def setup_linked_transactions_step
       model = load_step
@@ -245,40 +195,51 @@ module Returns
       model
     end
 
-    # Custom setup for this step.  Calls @see #load_step to set up the model.
     # Converts date values from strings to dates so the date control works.
     def setup_transaction_dates_step
-      model = load_step
-
       @lbtt_return.effective_date = @lbtt_return.effective_date&.to_date
       @lbtt_return.relevant_date = @lbtt_return.relevant_date&.to_date
       @lbtt_return.contract_date = @lbtt_return.contract_date&.to_date
       convert_lease_transaction_date
+    end
 
-      model
+    # Used to get the permitted attribute and list for filter list params
+    def filtered_list(list_attribute)
+      if list_attribute == :link_transactions
+        [:returns_lbtt_link_transactions, Lbtt::LinkTransactions.attribute_list]
+      else
+        [:returns_lbtt_yearly_rent, Lbtt::YearlyRent.attribute_list]
+      end
     end
 
     # Return the parameter list filtered for the attributes of the LbttReturn model
-    def filter_params(sub_object_attribute = nil)
-      if sub_object_attribute == :md_relief
-        params.require(:returns_lbtt_relief_claim).permit(Lbtt::ReliefClaim.attribute_list)
-      else
-        required = :returns_lbtt_lbtt_return
-        attribute_list = Lbtt::LbttReturn.attribute_list
-        # to store multiple check box values in model attribute we will require to
-        # pass them as array in filter param this method will convert attribute to array
-        # ref url :https://www.sitepoint.com/save-multiple-checkbox-values-database-rails/
-        attribute_list[attribute_list.index(:sale_include_option)] = { sale_include_option: [] }
-        params.require(required).permit(attribute_list) if params[required]
-      end
+    def filter_params(_sub_object_attribute = nil)
+      required = :returns_lbtt_lbtt_return
+      return {} unless params[required]
+
+      not_required = %i[returns_lbtt_link_transactions returns_lbtt_yearly_rent]
+      permit = { returns_lbtt_link_transactions: Lbtt::LinkTransactions.attribute_list,
+                 returns_lbtt_yearly_rent: Lbtt::YearlyRent.attribute_list }
+      attribute_list = Lbtt::LbttReturn.attribute_list
+      # to store multiple check box values in model attribute we will require to
+      # pass them as array in filter param this method will convert attribute to array
+      # ref url :https://www.sitepoint.com/save-multiple-checkbox-values-database-rails/
+      attribute_list[attribute_list.index(:sale_include_option)] = { sale_include_option: [] }
+      params.require(required).permit(attribute_list, permit).except(*not_required)
     end
 
     # Return the parameter list filtered for the attributes of the link transactions model
     # note we have to permit everything because we get a hash of the records returned e.g. "0" => details
     def filter_list_params(list_attribute, _sub_object_attribute = nil)
-      return unless params[:returns_lbtt_lbtt_return] && params[:returns_lbtt_lbtt_return][list_attribute]
+      param = params.require(:returns_lbtt_lbtt_return)
+      permitted_attribute, permitted_list = filtered_list(list_attribute)
+      return unless params[:returns_lbtt_lbtt_return] && params[:returns_lbtt_lbtt_return][permitted_attribute]
 
-      params.require(:returns_lbtt_lbtt_return).permit(list_attribute => {})[list_attribute].values
+      if list_attribute == :link_transactions
+        param.permit(:linked_ind, returns_lbtt_link_transactions: permitted_list)[permitted_attribute].values
+      else
+        param.permit(:rent_for_all_years, returns_lbtt_yearly_rent: permitted_list)[permitted_attribute].values
+      end
     end
   end
 end

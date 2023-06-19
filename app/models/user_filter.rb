@@ -22,6 +22,6 @@ class UserFilter < BaseFilter
 
   # Provides filterd request params
   def self.params(params)
-    params.permit(user_filter: %i[full_name user_is_current])[:user_filter]
+    params.fetch(:user_filter, {}).permit(:full_name, :user_is_current)
   end
 end

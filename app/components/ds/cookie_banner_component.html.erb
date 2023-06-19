@@ -1,0 +1,32 @@
+<div id="cookie-notice" class="ds_notification  ds_notification--large  ds_notification--cookie  js-initial-cookie-content  fully-hidden" data-module="ds-cookie-notification">
+  <div class="ds_wrapper">
+    <div class="ds_notification__content">
+      <div role="heading" class="visually-hidden"><%= t('.information') %></div>
+      <div class="ds_notification__text">
+        <p><%= t('.notification_text1_html', cookies_path: cookies_path) %></p>
+        <p><%= t('.notification_text2_html') %></p>
+      </div>
+      <div class="ds_notification__actions">
+        <button class="ds_button  ds_button--small  js-accept-all-cookies"><%= t('.all_cookies') %></button>
+        <button class="ds_button  ds_button--small  ds_button--secondary  js-accept-essential-cookies"><%= t('.essential_only') %></button>
+        <a href="<%= cookies_path %>"><%= t('.set_preferences') %></a>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="cookie-confirm" class="ds_notification  ds_notification--cookie-success  ds_reversed  <%= 'fully-hidden ' unless show_success %>js-confirm-cookie-content" data-module="ds-notification" data-controller="banner">
+  <div class="ds_wrapper">
+    <div class="ds_notification__content">
+      <div class="ds_notification__text">
+        <h2 class="visually-hidden"> <%= t('.information') %></h2>
+        <div class="ds_notification__text">
+          <p><%= t('.success_html', cookies_path: cookies_path) %></p>
+        </div>
+        <button class="ds_notification__close  js-close-notification" type="button">
+          <span class="visually-hidden"> <%= t('.close') %></span>
+          <svg class="ds_icon  ds_icon--fill" aria-hidden="true" role="img"><use href="<%= image_path('assets/images/icons/icons.stack.svg#close') %>"></use></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

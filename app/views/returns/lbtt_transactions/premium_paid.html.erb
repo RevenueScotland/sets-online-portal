@@ -1,17 +1,13 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @lbtt_return, url: @post_path, :method => 'post', local: true do |f| %>
-  <%= form_errors_for @lbtt_return %>
-  <%= f.collection_radio_buttons_fields(:premium_paid, @lbtt_return.list_ref_data(:premium_paid)) %>
-  <div id='hideable' class='govuk-radios__conditional govuk-radios__conditional--hidden' >
-    <%= f.currency_field :lease_premium, text_links: { t('.lease_premium') =>
-                                                    link_to(t('.lease_premium'), external_link_url('OTHER_CONS'), target: '_blank')} %>
-    
-    <%= f.currency_field :relevant_rent, text_links: { t('.relevant_rent') =>
-                                                    link_to(t('.relevant_rent'), external_link_url('OTHER_CONS'), target: '_blank')} %>                                                    
-  </div>
-  <% if @lbtt_return.linked_ind == 'Y' %>
-    <%= f.currency_field :linked_lease_premium %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :premium_paid,
+                                         options_list: @lbtt_return.list_ref_data(:premium_paid), alignment: :horizontal) %>
+    <%= f.ds_currency(method: :lease_premium, interpolations: { link:
+                        ds_link(name: t('.lease_premium_link'), url: external_link_url('OTHER_CONS'), target: '_blank')}) %>
+    <%= f.ds_currency(method: :relevant_rent) %>
   <% end %>
-  <%= f.button %>
+  <% if @lbtt_return.linked_ind == 'Y' %>
+    <%= f.ds_currency(method: :linked_lease_premium) %>
+  <% end %>
 <% end %>

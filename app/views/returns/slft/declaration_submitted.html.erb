@@ -1,26 +1,21 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :hide_back_link, true %>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <div class="govuk-panel govuk-panel--confirmation">
-      <%# On this page, the page_title above has been set to nil so that this is the only h1 tag that's on this page %>
-      <h1 class="govuk-panel__title">
-        <%= t('.return_submitted') %>
-      </h1>
-      <% return_type = if @slft_return.version == "1" 
-                          'SLFT'
-                        else
-                          'AMEND_SLFT'
-                        end
-      %>
-    </div>
-    <%= render "/layouts/tax_return_submit_text", return_type: return_type, 
-                                                  return_reference: @slft_return.tare_reference, 
-                                                  payment_method: @slft_return.lookup_ref_data_value(:fpay_method), 
-                                                  payment_due_date: @slft_return.payment_date %>
-    <p class="govuk-body">
-      <%= link_to t('go_to_dashboard'), dashboard_path %>
-    </p>
-  </div>
-</div>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_notification_panel(title: t('.return_submitted'), reference: @slft_return.tare_reference, success: true) %>
+<% if @slft_return.version == "1" %>
+  <%= ds_paragraph{t('return.submit.common.date_text', system_date: DateFormatting.to_display_date_format(Date.today))} %>
+  <%= ds_paragraph{t('return.submit.slft.payment_due_text')} %>
+  <%= ds_paragraph{t('return.submit.slft.payment_method_html', payment_method: @slft_return.lookup_ref_data_value(:fpay_method),
+                      link: ds_link(name: t('return.submit.slft.payment_method_link'), url: external_link_url('SLFT_PAYMENT'))) } %>
+  <%= ds_paragraph{t('return.submit.slft.submit_html')} %>
+<% else %>
+  <%= ds_paragraph{t('return.submit.slft.amend_return_reference_text', return_reference: @slft_return.tare_reference)} %>
+  <%= ds_paragraph{t('return.submit.common.date_text', system_date: DateFormatting.to_display_date_format(Date.today))} %>
+  <%= ds_paragraph{t('return.submit.slft.amend_submit_text')} %>
+<% end %>
+<%= ds_paragraph{ t('return.submit.common.queries_contact_text') } if current_user %>
+<% if can? RS::AuthorisationHelper::DOWNLOAD_RECEIPT %>
+  <%= ds_link(name: t('return.submit.common.print_confirmation_text'), url: returns_slft_download_receipt_path, target: "_blank") %><br/>
+<% end %>
+<%= ds_link(name: t('return.submit.common.send_secure_message_text'), url: new_dashboard_message_path(reference: @slft_return.tare_reference)) if current_user %>
+<%= ds_paragraph { ds_link(name: t('go_to_dashboard'), url: dashboard_path)} %>
+<%= ds_paragraph { ds_link(name: t('give_feed_back'), url: external_link_url('FDBK_A_SLFT'),
+                             target: '_blank', subtype: :centered)} %>

@@ -1,11 +1,8 @@
-<% content_for :page_view, render_page_view(__FILE__) %>
-<% content_for :page_title, t('.title') %>
-<% content_for :hide_back_link, :remove_param_new %>
-<%= form_for @claim_payment, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @claim_payment %>
-  <%= f.collection_check_boxes_fields(:eligibility_checkers, ReferenceData::ReferenceValue.list('ELIGIBILITY_LIST', 'SYS', 'RSTU')) %>
-  <%= display_paragraph_components( body: UtilityHelper.swap_texts(t('.unsure_description'), 
-                                      text_links: { t('.unsure_description_link') => 
-                                        link_to(t('.unsure_description_link'), external_link_url('CLAIM_EXAMPLES'), target: '_blank') } )) %>
-  <%= f.button %>
+<% content_for(:page_title, t('.title')) %>
+<%# use the request path to remove the new parameter %>
+<% content_for(:navigation_link, request.path) %>
+<%= ds_form_with(model: @claim_payment, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_checkbox_group( method: :eligibility_checkers, options_list: @claim_payment.list_ref_data(:eligibility_checker)) %>
+  <%= ds_paragraph{t('.unsure_description_html',
+   link: ds_link(url: external_link_url('CLAIM_EXAMPLES'), name: t('.unsure_description_link'), target: '_blank'  ))} %>
 <% end %>

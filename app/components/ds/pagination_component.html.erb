@@ -1,0 +1,43 @@
+<nav class="ds_pagination" aria-label="<%= region_name %>">
+  <ul class="ds_pagination__list">
+    <% unless current_page == 1 %>
+      <li class="ds_pagination__item">
+        <a class="ds_pagination__link  ds_pagination__link--text  ds_pagination__link--icon" href="<%= previous_page_link %>">
+          <svg class="ds_icon" aria-hidden="true" role="img">
+            <use href="<%= image_path('assets/images/icons/icons.stack.svg#chevron_left') %>"></use>
+          </svg>
+          <span class="ds_pagination__link-label"><%= t('.previous') %></span>
+        </a>
+      </li>
+    <% end %>
+    <% page_list.each do |page| %>
+      <% if page[:ellipsis?] %>
+        <li class="ds_pagination__item" aria-hidden="true">
+          <span class="ds_pagination__link  ds_pagination__link--ellipsis">&hellip;</span>
+        </li>
+      <% else %>
+        <% if page[:current_page?] %>
+          <li class="ds_pagination__item" aria-current="page" >
+            <span class="ds_pagination__link ds_current" ><%= page[:page] %></span>
+          </li>
+        <% else %>
+          <li class="ds_pagination__item" >
+            <a class="ds_pagination__link" href="<%= page[:link] %>">
+              <span class="ds_pagination__link-label"><%= page[:page] %></span>
+            </a>
+          </li>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% unless current_page == page_list.last[:page] %>
+      <li class="ds_pagination__item">
+        <a class="ds_pagination__link  ds_pagination__link--text  ds_pagination__link--icon" href="<%= next_page_link %>">
+          <span class="ds_pagination__link-label"><%= t('.next') %></span>
+          <svg class="ds_icon" aria-hidden="true" role="img">
+            <use href="<%= image_path('assets/images/icons/icons.stack.svg#chevron_right') %>"></use>
+          </svg>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</nav>

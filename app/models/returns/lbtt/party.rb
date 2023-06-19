@@ -265,7 +265,7 @@ module Returns
       def print_layout_taxpayer_details
         { code: :taxpayer_details,
           parent_codes: %i[taxpayers],
-          key_value: :translation_pdf_prefix,
+          key_value: :party_type,
           key: '#key_value#_title',
           key_scope: %i[claim claim_payments taxpayer_details],
           divider: true, # should we have a section divider
@@ -286,19 +286,18 @@ module Returns
       def print_layout_taxpayer_alternate_address
         { code: :taxpayer_alternate_address,
           parent_codes: %i[taxpayers],
-          key_value: :translation_pdf_prefix,
+          key_value: :party_type,
           key: '#key_value#_title',
           key_scope: %i[claim claim_payments taxpayer_address], # scope for the title translation
           type: :list,
-          list_items: [{ code: :same_address, lookup: true, when: :object_index, is_not: [0],
-                         translation_extra: :account_type }] }
+          list_items: [{ code: :same_address, lookup: true, when: :object_index, is_not: [0] }] }
       end
 
       # layout for the taxpayer address of the print data of claim
       def print_layout_taxpayer_address
         { code: :address,
           parent_codes: %i[taxpayers],
-          key_value: :translation_pdf_prefix,
+          key_value: :party_type,
           key: '#key_value#_title',
           key_scope: %i[claim claim_payments taxpayer_address], # scope for the title translation
           type: :object }
@@ -310,9 +309,9 @@ module Returns
            divider: true, # should we have a section divider
            display_title: false, # Is the title to be displayed
            type: :list, # type list = the list of attributes to follow
-           list_items: [{ code: :full_name, when: :party_type, is_not: ['AGENT'], translation_extra: :receipt },
+           list_items: [{ code: :full_name, when: :party_type, is_not: ['AGENT'] },
                         { code: :agent_reference, when: :party_type, is: ['AGENT'],
-                          key_scope: %i[return submit lbtt] }] }]
+                          action_name: :receipt }] }]
       end
 
       # National insurance number and alternate related validation
@@ -389,7 +388,7 @@ module Returns
 
       # return true if party added while filling Claim
       def claim?
-        party_type == 'CLAIMANT'
+        %w[CLAIMANT UNAUTH_CLAIMANT].include?(party_type)
       end
 
       # validate the buyer_seller_linked_desc
@@ -469,14 +468,14 @@ module Returns
       # Returns a translation attribute where a given attribute may have more than one name based on e.g. a type
       # it also allows for a different attribute name for the error region for e.g. long labels
       # @param attribute [Symbol] the name of the attribute to translate
-      # @param translation_options [Object] extra information passed from the page or the print layout
+      # @param _translation_options [Object] extra information passed from the page or the print layout
       # @return [Symbol] the name of the translation attribute
-      def translation_attribute(attribute, translation_options = nil)
+      def translation_attribute(attribute, _translation_options = nil)
         return :registered_company_name if attribute == :org_name && type == 'REG_COM'
 
-        return translation_attribute_full_name(attribute, translation_options) if attribute == :full_name
+        return translation_attribute_full_name if attribute == :full_name
 
-        return translation_for_claim(attribute, translation_options) if claim?
+        return translation_for_claim(attribute) if claim?
 
         return translation_attribute_for_party_type(attribute) if translate_party_type?(attribute)
 
@@ -490,66 +489,66 @@ module Returns
 
       # @return a hash suitable for use in a save request to the back office
       def request_save(authority_ind) # rubocop:disable  Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
-        output = { 'ins1:PartyType': lplt_type == 'PRIVATE' ? 'PER' : 'ORG' }
-        output['ins1:LpltType'] = lplt_type # Buyer Type
-        output['ins1:OtherTypeDescription'] = other_type_description if other_type_description.present?
-        output['ins1:FlptType'] = flpt_type # Party Type
-        output['ins1:ParRefno'] = @party_refno if @party_refno.present?
+        output = { 'ins0:PartyType': lplt_type == 'PRIVATE' ? 'PER' : 'ORG' }
+        output['ins0:LpltType'] = lplt_type # Buyer Type
+        output['ins0:OtherTypeDescription'] = other_type_description if other_type_description.present?
+        output['ins0:FlptType'] = flpt_type # Party Type
+        output['ins0:ParRefno'] = @party_refno if @party_refno.present?
         if individual?
-          output['ins1:PersonName'] = { 'ins1:Title': @title,
-                                        'ins1:Forename': @firstname,
-                                        'ins1:Surname': @surname }
+          output['ins0:PersonName'] = { 'ins0:Title': @title,
+                                        'ins0:Forename': @firstname,
+                                        'ins0:Surname': @surname }
         elsif type == 'REG_COM'
           # currently back-office wsdl not having fields to send company details separately
           # e.g  "company"=>{"company_number"=>"03390089", "company_name"=>"COMPANY NUMBER 03390089 LTD",
           # "address_line1"=>"First Floor", "address_line2"=>"73-75 High Street", "locality"=>"Stevenage",
           # "county"=>"Hertfordshire", "postcode"=>"SG1 3HR", "country"=>"GB"}
           # so spliting company details into fields company name, address, company number
-          output['ins1:ComCompanyName'] = @company.company_name if @company.company_name.present?
-          output['ins1:ComRegno'] = @company.company_number if @company.company_number.present?
+          output['ins0:ComCompanyName'] = @company.company_name if @company.company_name.present?
+          output['ins0:ComRegno'] = @company.company_number if @company.company_number.present?
 
-          output['ins1:Address'] = @company.company_address.format_to_back_office_address
+          output['ins0:Address'] = @company.company_address.format_to_back_office_address
         else
-          output['ins1:ComCompanyName'] = @org_name if @org_name.present?
-          output['ins1:ComJurisdiction'] = @com_jurisdiction if @com_jurisdiction.present?
+          output['ins0:ComCompanyName'] = @org_name if @org_name.present?
+          output['ins0:ComJurisdiction'] = @com_jurisdiction if @com_jurisdiction.present?
         end
-        output['ins1:Address'] = @address.format_to_back_office_address if @address.present?
+        output['ins0:Address'] = @address.format_to_back_office_address if @address.present?
 
-        output['ins1:AgentDxNumber'] = @agent_dx_number if @agent_dx_number.present?
-        output['ins1:AuthorityInd'] = @party_type == 'AGENT' && authority_ind == 'Y' ? 'yes' : 'no'
-        output['ins1:TelNo'] = @telephone if @telephone.present?
-        output['ins1:EmailAddress'] = @email_address if @email_address.present?
+        output['ins0:AgentDxNumber'] = @agent_dx_number if @agent_dx_number.present?
+        output['ins0:AuthorityInd'] = @party_type == 'AGENT' && authority_ind == 'Y' ? 'yes' : 'no'
+        output['ins0:TelNo'] = @telephone if @telephone.present?
+        output['ins0:EmailAddress'] = @email_address if @email_address.present?
 
-        output['ins1:CharityNumber'] = @charity_number if @org_type == 'CHARITY'
+        output['ins0:CharityNumber'] = @charity_number if @org_type == 'CHARITY'
         if lplt_type == 'PRIVATE'
-          output['ins1:ParPerNiNo'] = @nino if @nino.present?
+          output['ins0:ParPerNiNo'] = @nino if @nino.present?
           unless @party_type == 'AGENT'
-            output['ins1:AlternateReference'] = { 'ins1:AlrtType': @alrt_type,
-                                                  'ins1:RefCountry': @ref_country,
-                                                  'ins1:Reference': @alrt_reference }.compact
+            output['ins0:AlternateReference'] = { 'ins0:AlrtType': @alrt_type,
+                                                  'ins0:RefCountry': @ref_country,
+                                                  'ins0:Reference': @alrt_reference }.compact
 
-            output.delete('ins1:AlternateReference') if output['ins1:AlternateReference'].blank?
-            output['ins1:ContactAddress'] = @contact_address.format_to_back_office_address if contact_address_different?
+            output.delete('ins0:AlternateReference') if output['ins0:AlternateReference'].blank?
+            output['ins0:ContactAddress'] = @contact_address.format_to_back_office_address if contact_address_different?
           end
         else
-          output['ins1:ContactTelNo'] = @telephone if output['ins1:ContactTelNo'].present?
-          output['ins1:ContactEmailAddress'] = @email_address if output['ins1:ContactEmailAddress'].present?
+          output['ins0:ContactTelNo'] = @telephone if output['ins0:ContactTelNo'].present?
+          output['ins0:ContactEmailAddress'] = @email_address if output['ins0:ContactEmailAddress'].present?
 
           unless %w[LANDLORD SELLER].include? @party_type
-            output['ins1:OrganisationContact'] = {
-              'ins1:ContactParRefno': @contact_par_ref_no,
-              'ins1:ContactJobTitle': @job_title,
-              'ins1:ContactForename': @contact_firstname,
-              'ins1:ContactSurname': @contact_surname,
-              'ins1:ContactAddress': @org_contact_address.format_to_back_office_address,
-              'ins1:ContactTelNo': @contact_tel_no,
-              'ins1:ContactEmailAddress': @contact_email
+            output['ins0:OrganisationContact'] = {
+              'ins0:ContactParRefno': @contact_par_ref_no,
+              'ins0:ContactJobTitle': @job_title,
+              'ins0:ContactForename': @contact_firstname,
+              'ins0:ContactSurname': @contact_surname,
+              'ins0:ContactAddress': @org_contact_address.format_to_back_office_address,
+              'ins0:ContactTelNo': @contact_tel_no,
+              'ins0:ContactEmailAddress': @contact_email
             }.compact
           end
         end
-        output['ins1:BuyerSellerLinkedInd'] = convert_to_backoffice_yes_no_value(@buyer_seller_linked_ind)
-        output['ins1:BuyerSellerLinkedDesc'] = @buyer_seller_linked_desc if @buyer_seller_linked_ind == 'Y'
-        output['ins1:ActingAsTrusteeInd'] = convert_to_backoffice_yes_no_value(@is_acting_as_trustee)
+        output['ins0:BuyerSellerLinkedInd'] = convert_to_backoffice_yes_no_value(@buyer_seller_linked_ind)
+        output['ins0:BuyerSellerLinkedDesc'] = @buyer_seller_linked_desc if @buyer_seller_linked_ind == 'Y'
+        output['ins0:ActingAsTrusteeInd'] = convert_to_backoffice_yes_no_value(@is_acting_as_trustee)
         output
       end
 
@@ -674,11 +673,9 @@ module Returns
 
       private
 
-      # Convert the full name if this is being run for the receipt print layout
-      def translation_attribute_full_name(attribute, translation_options)
-        return "#{party_type}_full_name".to_sym if translation_options == :receipt
-
-        attribute
+      # Convert the full name to get translation
+      def translation_attribute_full_name
+        "#{party_type}_full_name".to_sym
       end
 
       # handle the translations based on party type which may be nil
@@ -692,10 +689,9 @@ module Returns
 
       # Dynamically returns the translation key based on the translation_options provided by the page if it exists
       # @param attribute [Symbol] the name of the attribute to translate
-      # @param translation_options [Object] in this case the party type being processed passed from the page
-      def translation_for_claim(attribute, translation_options)
-        return "#{translation_options}_#{attribute}".to_sym if %i[telephone email_address same_address]
-                                                               .include?(attribute)
+      def translation_for_claim(attribute)
+        acc_type = (party_type == 'UNAUTH_CLAIMANT' ? 'UNAUTHENTICATED' : 'AUTHENTICATED')
+        return "#{acc_type}_#{attribute}".to_sym if %i[telephone email_address same_address].include?(attribute)
 
         return :claim_org_name if attribute == :org_name
 

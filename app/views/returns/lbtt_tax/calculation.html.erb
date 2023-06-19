@@ -1,18 +1,15 @@
-<% content_for :page_title, t('.title') %>
-<% content_for :page_view, render_page_view(__FILE__) %>
-<%= form_for @tax, url: @post_path, method: :post, local: true do |f| %>
-  <%= form_errors_for @tax %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @tax, url: @post_path, method: :post) do |f| %>
   <% if @lbtt_return.flbt_type == 'CONVEY' %>
-    <%= f.currency_field :calculated %>
-    <%= f.currency_field :ads_due if @lbtt_return.show_ads? %>
-    <%= display_field @tax,:total_reliefs , format: :money %>
-    <%= display_field @tax,:total_ads_reliefs , format: :money if @lbtt_return.show_ads? %>
+    <%= f.ds_currency(method: :calculated) %>
+    <%= f.ds_currency(method: :ads_due) if @lbtt_return.show_ads? %>
+    <%= f.ds_currency(method: :total_reliefs, readonly: true) %>
+    <%= f.ds_currency(method: :total_ads_reliefs, readonly: true) if @lbtt_return.show_ads? %>
   <% else %>
-    <%= f.currency_field :npv_tax_due %>
-    <%= f.currency_field :premium_tax_due %>
-    <% if 'LEASERET' == @lbtt_return.flbt_type %>
-      <%= display_field @tax,:total_reliefs , format: :money %>
+    <%= f.ds_currency(method: :npv_tax_due) %>
+    <%= f.ds_currency(method: :premium_tax_due) %>
+    <% if @lbtt_return.lease? %>
+      <%= f.ds_currency(method: :total_reliefs, readonly: true) %>
     <% end %>
   <% end %>
-  <%= f.button %>
 <% end %>
