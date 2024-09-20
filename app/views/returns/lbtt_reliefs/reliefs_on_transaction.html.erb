@@ -2,7 +2,9 @@
 <%= ds_paragraph{ t('.description_1_html', link: 
                  ds_link(name: t('.description_1_link'), url: external_link_url('TAX_RELIEFS'), target: '_blank'))}%>
 <%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f|  %>
-  <%= f.ds_table_form(add_link: true, delete_links: true) do |table| %>
+  <%# <% TODO: RSTP-1190 change to !@lbtt_return.pre_populated? so we dont need the if%>
+  <%= f.ds_table_form(add_link: !@lbtt_return.show_pre_pop_reliefs?, delete_links:  true
+) do |table| %>
     <% table.with_header(klass: Returns::Lbtt::ReliefClaim) do |header| %>
       <% header.with_cell(method: :relief_type_expanded) %>
       <% header.with_cell(method: :relief_amount) %>
@@ -18,7 +20,11 @@
         <% row.with_cell do |c| %>
           <%# TODO: RSTP-1154 remove the capture %>
           <% capture do %>
-            <%= c.ds_select(method: :relief_type_expanded, select_options: @relief_types.collect { |v| [v.description, v.code_expanded] }, data_options: {"action": "reliefs#setFields"}) %>
+            <% if @lbtt_return.show_pre_pop_reliefs? %>
+              <%= c.ds_select(method: :relief_type_expanded, readonly: true, select_options: @relief_types.collect { |v| [v.description, v.code_expanded] }, data_options: {"action": "reliefs#setFields"}) %>
+            <% else %>
+              <%= c.ds_select(method: :relief_type_expanded, select_options: @relief_types.collect { |v| [v.description, v.code_expanded] }, data_options: {"action": "reliefs#setFields"}) %>
+            <% end %>
           <% end %>
         <% end %>
         <% row.with_cell do |c| %>

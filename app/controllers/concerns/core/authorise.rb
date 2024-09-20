@@ -103,6 +103,8 @@ module Core
     def authorise_action
       return true if action_authorised?
 
+      Rails.logger.info { "#{current_user.username} is not authorised for #{controller_name} #{action_name}" }
+
       raise_forbidden
       false
     end
@@ -222,29 +224,26 @@ module Core
     # Once an authorise method is found, it's result is returned.
     # @return [Boolean] return true if the call is authorised, otherwise false
     def action_authorised?
-      authorised = authorise_action_for?("authorise_#{action_name}_#{request.method_symbol}")
-      return authorised unless authorised.nil?
-
-      authorised = authorise_action_for?("authorise_#{action_name}")
-      return authorised unless authorised.nil?
-
-      authorised = authorise_action_for?("authorise_#{request.method_symbol}")
-      return authorised unless authorised.nil?
-
-      authorised = authorise_action_for?('authorise')
-      return authorised unless authorised.nil?
-
-      true
+      authorise_action_for?("authorise_#{action_name}_#{request.method_symbol}") do
+        authorise_action_for?("authorise_#{action_name}") do
+          authorise_action_for?("authorise_#{request.method_symbol}") do
+            authorise_action_for?('authorise') do
+              true
+            end
+          end
+        end
+      end
     end
 
     # If the method_name exists, then call it and return the result. If the method name
-    # doesn't exist then return nil
+    # doesn't exist then calls the yielded code to derive the result
     # @param method_name [String] the name of the method to check if exists and call
     # @return [Boolean] nil if the method doesn't exist, otherwise the result of the method
+    # @yield the block to run if the method does not exist
     def authorise_action_for?(method_name)
-      return nil unless respond_to?(method_name)
+      return send(method_name) if respond_to?(method_name)
 
-      send(method_name)
+      yield
     end
   end
 end

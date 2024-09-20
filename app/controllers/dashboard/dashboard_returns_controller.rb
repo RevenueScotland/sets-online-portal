@@ -32,7 +32,6 @@ module Dashboard
                                   else
                                     [Returns::Slft::SlftReturn.find(@data, current_user), Returns::SlftController]
                                   end
-      return_object.user_account_type = account_type if @srv_code == 'lbtt' # if we are loading it can't be public
       wizard_save(return_object, controller)
       Rails.logger.info("Loaded #{@srv_code.capitalize} #{return_object}")
 

@@ -1,5 +1,5 @@
 <% content_for(:navigation_link, request.path.chomp('/new')) %>
 <% content_for(:page_title, t('.'+@party.party_type+ '_title')) %>
 <%= ds_form_with(model: @party, url: @post_path, method: :post) do |f| %>
-  <%= f.ds_radio_group(method: :type, options_list: @party.list_ref_data(:type) ) %>
+  <%= f.ds_radio_group(method: :type, options_list: @party.list_ref_data(:type),readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false ) %>
 <% end %>

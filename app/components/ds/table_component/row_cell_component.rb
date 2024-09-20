@@ -41,9 +41,9 @@ module DS
       def header_or_value(header, model, method, interpolations, type)
         if header == :label
           @header = true
-          @klass = model.class
           @method = method
           @interpolations = interpolations
+          @model = model
         else
           value_and_type(model, method, type)
           @header = header
@@ -69,9 +69,9 @@ module DS
 
       # sets up the LabellerDelegate using the view_context
       def before_render
-        return unless @klass && @method
+        return unless @model && @method
 
-        @labeller = Core::LabellerDelegate.new(klass_or_model: @klass, method: @method,
+        @labeller = Core::LabellerDelegate.new(klass_or_model: @model, method: @method,
                                                action_name: view_context&.action_name&.to_sym,
                                                interpolations: @interpolations)
       end

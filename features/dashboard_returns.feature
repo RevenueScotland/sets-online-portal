@@ -14,14 +14,14 @@ Feature: Dashboard All Returns
             | Return reference | Description | Version | Action_1     | Action_2               | Action_3               | Action_4        |
             | RS1008003OKAY    | Q3 2019     | 3       | Download PDF | Download waste details | Delete                 | Ongoing enquiry |
             | RS1008002WAUW    | Q4 2019     | 1       | Continue     | Download PDF           | Download waste details | Delete          |
-            | RS100002AAAAA    | Q2 2022     | 1       | Continue     | Download PDF           | Download waste details | Delete          |
+            | RS100002AAAAA    | Q2 2023     | 1       | Continue     | Download PDF           | Download waste details | Delete          |
         And I should see the sub-title "Outstanding balance"
         And the table of data is displayed
             | Return reference | Submitted date | Description | Version | Balance   | Status        | Action_1     | Action_2     | Action_3               | Action_4 | Action_5 |
-            | RS100001AAAAA    | 01/07/2022     | Q1 2022     | 2       | £1,000.00 | Filed (Debit) | Transactions | Download PDF | Download waste details | Amend    | Message  |
+            | RS100001AAAAA    | 01/07/2023     | Q1 2023     | 2       | £1,000.00 | Filed (Debit) | Transactions | Download PDF | Download waste details | Amend    | Message  |
         # Check old version of the return is not shown
-        And I should not see the text "Q1 2018"
-        And I should not see the text "19/06/2022"
+        And I should not see the text "Q1 2019"
+        And I should not see the text "19/06/2023"
 
         When I click on the "See all returns" link
         Then I should see the "All returns" page
@@ -29,12 +29,12 @@ Feature: Dashboard All Returns
             | Return reference | Submitted date | Description | Version | Balance   | Status        | Action_1     | Action_2               | Action_3     | Action_4        | Action_5        |
             | RS1008003OKAY    |                | Q3 2019     | 3       |           | Draft         | Download PDF | Download waste details | Delete       | Ongoing enquiry |                 |
             | RS1008002WAUW    |                | Q4 2019     | 1       |           | Draft         | Download PDF | Download waste details | Continue     | Delete          |                 |
-            | RS100002AAAAA    |                | Q2 2022     | 1       |           | Draft         | Download PDF | Download waste details | Continue     | Delete          |                 |
-            | RS1008003OKAY    | 01/07/2022     | Q3 2019     | 2       | £0.00     | Filed (Paid)  | Download PDF | Download waste details | Transactions | Message         | Ongoing enquiry |
-            | RS1008001HALO    | 01/07/2022     | Q1 2016     | 2       | £0.00     | Filed (Paid)  | Download PDF | Download waste details | Transactions | Claim           | Message         |
-            | RS100001AAAAA    | 01/07/2022     | Q1 2022     | 2       | £1,000.00 | Filed (Debit) | Download PDF | Download waste details | Transactions | Amend           | Message         |
-            | RS1008004HMMM    | 19/06/2022     | Q2 2019     | 1       | £0.00     | Filed (Paid)  | Download PDF | Download waste details | Transactions | Amend           | Message         |
-        And I should not see the text "Q1 2018"
+            | RS100002AAAAA    |                | Q2 2023     | 1       |           | Draft         | Download PDF | Download waste details | Continue     | Delete          |                 |
+            | RS1008003OKAY    | 01/07/2023     | Q3 2019     | 2       | £0.00     | Filed (Paid)  | Download PDF | Download waste details | Transactions | Message         | Ongoing enquiry |
+            | RS1008001HALO    | 01/07/2023     | Q1 2016     | 2       | £0.00     | Filed (Paid)  | Download PDF | Download waste details | Transactions | Claim           | Message         |
+            | RS100001AAAAA    | 01/07/2023     | Q1 2023     | 2       | £1,000.00 | Filed (Debit) | Download PDF | Download waste details | Transactions | Amend           | Message         |
+            | RS1008004HMMM    | 19/06/2023     | Q2 2019     | 1       | £0.00     | Filed (Paid)  | Download PDF | Download waste details | Transactions | Amend           | Message         |
+        And I should not see the text "Q1 2019"
 
     # Index page tests
     Scenario: Check draft stops amend link being shown
@@ -51,11 +51,11 @@ Feature: Dashboard All Returns
             # Note we only use partial references in those with \ as the code inserts a zero width space to allow breaking
             | Return reference | Your reference          | Submitted date | Description            | Version | Balance | Status        | Action_1     | Action_2     | Action_3 | Action_4      |
             | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 |                | Conveyance or transfer | 2       |         | Draft         | Download PDF | Continue     | Delete   |               |
-            | RS3000004DDDD    | ABcC                    | 01/07/2022     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
-            | RS2000004DDDD    | ABcC                    | 01/07/2022     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
-            | RS2000001AAAA    | CO99999.0001            | 01/07/2022     | Conveyance or transfer | 1       | £200.00 | Filed (Debit) | Download PDF | Transactions | Message  | Draft present |
+            | RS3000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
+            | RS2000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
+            | RS2000001AAAA    | CO99999.0001            | 01/07/2023     | Conveyance or transfer | 1       | £200.00 | Filed (Debit) | Download PDF | Transactions | Message  | Draft present |
             | RS3000003EEEE    | XXXXX02-99              | 01/10/2019     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
-            | RS2000003BBBB    | XXXXX02-99              | 01/06/2020     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
+            | RS2000003BBBB    | XXXXX02-99              | 01/06/2021     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
             | RS3000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
             | RS2000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
         And I should not see a link with text "Download waste details"
@@ -64,8 +64,8 @@ Feature: Dashboard All Returns
         Then the table of data is displayed
             | Return reference | Your reference          | Submitted date | Description            | Version | Balance | Status       | Action_1     | Action_2     | Action_3 | Action_4 |
             | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 |                | Conveyance or transfer | 2       |         | Draft        | Download PDF | Continue     | Delete   |          |
-            | RS3000004DDDD    | ABcC                    | 01/07/2022     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Amend    | Message  |
-            | RS2000004DDDD    | ABcC                    | 01/07/2022     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Amend    | Message  |
+            | RS3000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Amend    | Message  |
+            | RS2000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Amend    | Message  |
             | RS3000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Claim    | Message  |
             | RS2000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Claim    | Message  |
 
@@ -88,7 +88,7 @@ Feature: Dashboard All Returns
             | Return reference | Submitted date | Description | Version | Balance | Status | Action_1     | Action_2               | Action_3 | Action_4        | Action_5 |
             | RS1008003OKAY    |                | Q3 2019     | 3       |         | Draft  | Download PDF | Download waste details | Delete   | Ongoing enquiry |          |
             | RS1008002WAUW    |                | Q4 2019     | 1       |         | Draft  | Download PDF | Download waste details | Continue | Delete          |          |
-            | RS100002AAAAA    |                | Q2 2022     | 1       |         | Draft  | Download PDF | Download waste details | Continue | Delete          |          |
+            | RS100002AAAAA    |                | Q2 2023     | 1       |         | Draft  | Download PDF | Download waste details | Continue | Delete          |          |
 
         When I click on the "Dashboard" menu item
         Then I should see the "Dashboard" page
@@ -100,7 +100,7 @@ Feature: Dashboard All Returns
         And the table of data is displayed
             | Return reference | Submitted date | Description | Version | Balance | Status       | Action_1     | Action_2               | Action_3     | Action_4        | Action_5        |
             | RS1008003OKAY    |                | Q3 2019     | 3       |         | Draft        | Download PDF | Download waste details | Delete       | Ongoing enquiry |                 |
-            | RS1008003OKAY    | 01/07/2022     | Q3 2019     | 2       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Transactions | Message         | Ongoing enquiry |
+            | RS1008003OKAY    | 01/07/2023     | Q3 2019     | 2       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Transactions | Message         | Ongoing enquiry |
 
         When I open the "Show more filter options" summary item
         And I check the "Include previous versions" checkbox
@@ -110,8 +110,8 @@ Feature: Dashboard All Returns
         And the table of data is displayed
             | Return reference | Submitted date | Description | Version | Balance | Status       | Action_1     | Action_2               | Action_3        | Action_4        | Action_5        |
             | RS1008003OKAY    |                | Q3 2019     | 3       |         | Draft        | Download PDF | Download waste details | Delete          | Ongoing enquiry |                 |
-            | RS1008003OKAY    | 01/07/2022     | Q3 2019     | 2       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Transactions    | Message         | Ongoing enquiry |
-            | RS1008003OKAY    | 19/06/2022     | Q3 2019     | 1       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Ongoing enquiry |                 |                 |
+            | RS1008003OKAY    | 01/07/2023     | Q3 2019     | 2       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Transactions    | Message         | Ongoing enquiry |
+            | RS1008003OKAY    | 19/06/2023     | Q3 2019     | 1       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Ongoing enquiry |                 |                 |
 
         When I open the "Show more filter options" summary item
         And I enter "20191111-01-09" in the "Submitted from date" field
@@ -166,7 +166,7 @@ Feature: Dashboard All Returns
         And I click on the "Find" button
         Then I should see the "All returns" page
         And I should see the text "Filed (Debit)"
-        And I should see the text "Q1 2022"
+        And I should see the text "Q1 2023"
         And I should see a link with text "Download PDF"
         And I should see a link with text "Download waste details"
         And I should see a link with text "Transactions"
@@ -177,8 +177,8 @@ Feature: Dashboard All Returns
 
         # An old version of a filed return
         When I open the "Show more filter options" summary item
-        And I enter "19-06-2022" in the "Submitted from date" date field
-        And I enter "19-06-2022" in the "Submitted to date" date field
+        And I enter "19-06-2023" in the "Submitted from date" date field
+        And I enter "19-06-2023" in the "Submitted to date" date field
         And I check the "Include previous versions" checkbox
         And I click on the "Find" button
         Then I should see the "All returns" page

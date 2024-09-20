@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="3.1.3"
+def RUBY_VERSION="3.1.4"
 
 /*
 	* Back office names
@@ -242,7 +242,7 @@ def envGitCheckout () {
 				[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: true, timeout: 60], 
 				[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'NdsEnvironment/environment/apps/*']]], 
 				[$class: 'RelativeTargetDirectory', relativeTargetDir: 'environment']], 
-		submoduleCfg: [], userRemoteConfigs: [[credentialsId: '8a6c5c05-92cf-43e5-92a5-dfcb11b8f1e2', url: 'jenkins-git@10.102.65.246:/opt/git/nds-env']]]
+		submoduleCfg: [], userRemoteConfigs: [[credentialsId: '8a6c5c05-92cf-43e5-92a5-dfcb11b8f1e2', url: 'jenkins-git@lg-core-git01.development.local:/opt/git/nds-env']]]
 }
 
 /*
@@ -430,10 +430,10 @@ def dockerImageBuild() {
 				sh '''
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
 					export DOCKER_HOST=tcp://$(hostname -f):2376
-					export DOCKER_REG=vm-nds-bld02.global.internal:8443/revscot
-					export DOCKER_RELEASE_REG=vm-nds-bld02.global.internal:8443/release-revscot
-					export SRC_DOCKER_REG=vm-nds-bld02.global.internal:8443/nds-app-servers
-					export SRC_DOCKER_RELEASE_REG=vm-nds-bld02.global.internal:8443/release-nds-app-servers
+					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
+					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
+					export SRC_DOCKER_REG=lg-bld-cont01.development.local:8443/nds-app-servers
+					export SRC_DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-nds-app-servers
 					cd NdsEnvironment/environment/apps/${APP_NAME}/app-servers-config/redis
 					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-redis redis "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../ui
@@ -459,7 +459,7 @@ def registerReleaseBuild() {
 		steps.withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPNAME=${this.getAppName()}"]) {
 			steps.sh '''
 				now=$(date -Ins -u | sed -e 's/,/./'  -e 's/+.*.//')
-				curl -X PUT https://vm-nds-bld02.global.internal:445/api/release -d "{\\"mode\\":\\"add\\",\\"appId\\":\\"${APPNAME}\\",\\"version\\":\\"${FULL_BUILD_VERSION}\\",\\"builtDate\\":\\"${now}\\",\\"exportDate\\":\\"\\"}"
+				curl -X PUT https://lg-core-rel01.development.local:443/api/release -d "{\\"mode\\":\\"add\\",\\"appId\\":\\"${APPNAME}\\",\\"version\\":\\"${FULL_BUILD_VERSION}\\",\\"builtDate\\":\\"${now}\\",\\"exportDate\\":\\"\\"}"
 			'''
 		}
 
@@ -518,8 +518,8 @@ def deployAutotestEnvironment(String environment = "autotest") {
 				sh '''
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
 					export DOCKER_HOST=tcp://$(hostname -f):2376
-					export DOCKER_REG=vm-nds-bld02.global.internal:8443/revscot
-					export DOCKER_RELEASE_REG=vm-nds-bld02.global.internal:8443/release-revscot
+					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
+					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
 					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
 					../../run-app-env.sh $FULL_BUILD_VERSION  ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
 					sleep ${TEST_DELAY}
@@ -554,8 +554,8 @@ def deployManualTestEnvironment(String environment, String environmentLabel, Str
 					export DOCKER_HOST=tcp://$(hostname -f):2376
 					
                     docker network prune -f
-					export DOCKER_REG=vm-nds-bld02.global.internal:8443/revscot
-					export DOCKER_RELEASE_REG=vm-nds-bld02.global.internal:8443/release-revscot
+					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
+					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
 					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
 					[ ! -z "$(docker ps -qa --filter name=${APP}.*--${ENVIRONMENT})" ] && docker stop $(docker ps -qa --filter "name=${APP}.*--${ENVIRONMENT}") && docker rm -f $(docker ps -qa --filter "name=${APP}.*--${ENVIRONMENT}")
 					../../run-mt-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}

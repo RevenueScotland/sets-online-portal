@@ -9,7 +9,9 @@ module Returns
     include WizardListHelper
     include LbttTaxHelper
 
-    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    # Allow unauthenticated/public access to reliefs actions
+    skip_before_action :require_user
 
     # store step flow of lbtt conveyance return transaction page name used for navigation
     STEPS = %w[reliefs_on_transaction multiple_dwellings_relief reliefs_calculation].freeze

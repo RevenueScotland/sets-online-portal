@@ -8,6 +8,9 @@ module Returns
     include WizardAddressHelper
     include LbttPartiesHelper
     include WizardCompanyHelper
+    # Need this to load summary page in destroy method
+    include LbttControllerDateWarningHelper
+    include LbttControllerLoadAgentHelper
 
     authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
     # Allow unauthenticated/public access to parties actions
@@ -108,10 +111,14 @@ module Returns
       wizard_address_step(OTHER_ORG_STEPS, address_attribute: :org_contact_address, address_list: :used_address_list)
     end
 
-    # Delete the party entry entry specified by params[:party_id]
+    # Delete the party entry specified by params[:party_id]
     def destroy
-      look_for_party(params[:party_id], delete: true)
-      redirect_to(returns_lbtt_summary_path, status: :see_other)
+      if delete_party(params[:party_id])
+        redirect_to(returns_lbtt_summary_path, status: :see_other)
+      else
+        load_agent if current_user # not needed for a public return
+        render('returns/lbtt/summary', status: :unprocessable_entity)
+      end
     end
 
     private

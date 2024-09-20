@@ -1,6 +1,6 @@
 <div class="ds_question<%= ' ds_question--error' if error_list.present? %>">
   <% case  %>
-  <% when type == :date %>
+  <% when type == :date && !readonly %>
   <div data-module="ds-datepicker" class="ds_datepicker">
     <% when field_group_type? %>
     <fieldset id=<%=id%> <%= 'aria-invalid="true"' if error_list.present? %>>
@@ -37,7 +37,7 @@
         </div>
       <% end %>
       <% case %>
-      <% when type == :date %>
+      <% when type == :date && !readonly %>
     </div>
     <% when field_group_type?%>
   </fieldset>

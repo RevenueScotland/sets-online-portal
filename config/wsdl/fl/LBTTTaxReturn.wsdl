@@ -157,12 +157,13 @@
 					<xs:sequence>
 						<xs:element name="FormType" minOccurs="0">
 							<xs:annotation>
-								<xs:documentation>Draft, Latest</xs:documentation>
+								<xs:documentation>Draft, Latest, F denotes Final and not a Draft</xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
 								<xs:restriction base="xs:string">
 									<xs:enumeration value="D"/>
 									<xs:enumeration value="L"/>
+									<xs:enumeration value="F"/>
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
@@ -178,11 +179,11 @@
 									<xs:element name="FlbtType" minOccurs="0">
 										<xs:annotation>
 											<xs:documentation>Return Type -
-										Conveyance Return
-										Lease Return
-										Lease Review
-										Assignation
-										Termination</xs:documentation>
+												Conveyance Return
+												Lease Return
+												Lease Review
+												Assignation
+												Termination</xs:documentation>
 										</xs:annotation>
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
@@ -337,6 +338,11 @@
 															<xs:element name="BuyerSellerLinkedInd" type="core:YesNoType" minOccurs="0"/>
 															<xs:element name="BuyerSellerLinkedDesc" type="xs:string" minOccurs="0"/>
 															<xs:element name="ActingAsTrusteeInd" type="core:YesNoType" minOccurs="0"/>
+															<xs:element name="Prepopulated" type="core:YesNoType" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Prepopulated flag for parties</xs:documentation>
+																</xs:annotation>
+															</xs:element>
 														</xs:sequence>
 													</xs:complexType>
 												</xs:element>
@@ -555,7 +561,7 @@
 									<xs:element name="NonNotifiableExplanation" minOccurs="0">
 										<xs:annotation>
 											<xs:documentation>
-										Explanation for filing non-notified return. NonNotifiableExplanation  must be provided to get 1st version of non-notified return  saved in back office.  
+												Explanation for filing non-notified return. NonNotifiableExplanation  must be provided to get 1st version of non-notified return  saved in back office.  
 											</xs:documentation>
 										</xs:annotation>
 										<xs:simpleType>
@@ -569,6 +575,11 @@
 						</xs:element>
 						<xs:element name="PrintData" type="xs:string" minOccurs="0"/>
 						<xs:element name="PrintDataReceipt" type="xs:string" minOccurs="0"/>
+						<xs:element name="Prepopulated" type="core:YesNoType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Indicates if the data is fetched from the return for prepopulation.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

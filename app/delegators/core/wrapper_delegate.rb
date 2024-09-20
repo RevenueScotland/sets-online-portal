@@ -18,14 +18,16 @@ module Core
     # @param view_context [Object] The view context (template) being used, needed for the page hints
     # @param optional [Boolean] Is the field optional, adds the optional tag on the label
     # @param interpolations [Hash] Hash of options that are passed down to @see LabellerDelegate
-    def initialize(builder:, method:, type: :string, view_context: nil, optional: false, interpolations: {})
+    def initialize(builder:, method:, type: :string, view_context: nil, optional: false, interpolations: {},
+                   readonly: :readonly)
       @builder = builder
       @method = method
       @view_context = view_context
       @model = @builder.object
       @labeller = LabellerDelegate.new(klass_or_model: @model, method: @method,
                                        action_name: view_context&.action_name&.to_sym,
-                                       optional: optional, interpolations: interpolations)
+                                       optional: optional, interpolations: interpolations,
+                                       readonly: readonly)
       # The below allows for arbitrary fields that aren't on the model
       value = @model.send(@method) if @model.respond_to?(@method)
       @formatter = FormatterDelegate.new(value: value, type: type)

@@ -7,7 +7,8 @@ en:
         description: "The LBTT return is split into sections which can be completed in any order. You must complete all the sections before submitting the return."
         repayment_description: "If you need to request a repayment from Revenue Scotland, you can do this once you have clicked submit."
         calculation_description_LEASERET_CONVEY: "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
-        calculation_description: "The amount of tax already paid below will show as £0.00. You will need to change this field to show the correct amount of tax already paid in order for the correct amount of tax due to show. For all other fields, the amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
+        calculation_description_LEASEREV: "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit the 'LBTT tax liability on rent' or 'LBTT tax liability on premium' before you submit the return"
+        add_agent_description: "Agent details"
         add_properties_description: "About the property"
         add_transaction_description: "About the transaction"
         add_additional_dwelling_supplements_description: About the Additional Dwelling Supplement (ADS)
@@ -59,6 +60,14 @@ en:
       return_reference_number:
         title: "Return reference number"
         orig_effective_date: "the effective date"
+      return_pre_population_declaration:
+        title: "Declaration"
+        title_unauth: "Latest return for the lease"
+        declaration_text: "We have found the most recent return for %{orig_return_reference}"
+        pre_population_text: "We will fill in the details for the new return from the return we found."
+        read_only_warning: "Some of the information will be read only. Contact Revenue Scotland if any of the read only information is not as expected."
+        check_data_warning: "It is the responsibilty of the individual completing this return to check the data is correct and to update as needed (including any relief). Incorrect information can result in penalties and/or prosecution."
+        go_to_dashboard: "Go to dashboard"
       save_draft:
         title: "Your return has been saved"
         information: "You can complete or cancel it later using the reference below."
@@ -151,6 +160,7 @@ en:
         ref: "Your reference number : "
         pay_soon: "Please make payments within the next 5 days to avoid any penalties."
         include_transaction_ref_html: "The transaction ID must be included with any payment submitted or in any correspondence regarding this transaction. This acknowledgment should <b>not</b> be sent to Registers of Scotland as part of the land registration process."
+        download_pdf: "Download PDF"
         public_landing_return_page: "Exit"
     lbtt_properties:
       about_the_property:

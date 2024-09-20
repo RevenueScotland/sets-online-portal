@@ -7,15 +7,16 @@ module RS
     include DS::ComponentHelpers
     include DS::FieldsFor
 
-    attr_reader :company, :autofocus
+    attr_reader :company, :autofocus, :readonly
 
     # @param company [Company] The company object
     # @param autofocus [Boolean] Autofocus on the company search button (overridden if there are errors)
-    def initialize(company:, autofocus: false)
+    def initialize(company:, autofocus: false, readonly: false)
       super()
 
       @company = company
       @autofocus = autofocus
+      @readonly = readonly
     end
   end
 end

@@ -34,7 +34,7 @@ module Returns
       # current user is used for getting the sites do not expose this in the attribute list!
       # deleted sites is used for holding sites that get deleted if they are no longer needed
       # these are temporary and are not saved or really used except for displaying to the user
-      attr_accessor :current_user, :deleted_sites
+      attr_accessor :deleted_sites
 
       # Define the ref data codes associated with the attributes to be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>

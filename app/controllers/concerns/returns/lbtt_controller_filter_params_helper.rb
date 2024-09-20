@@ -3,7 +3,7 @@
 # Concerns for returns
 module Returns
   # Helpful methods common to LBTT controllers.
-  module LbttControllerHelper
+  module LbttControllerFilterParamsHelper
     extend ActiveSupport::Concern
 
     # Return the parameter list filtered for the attributes of the LbttReturn model

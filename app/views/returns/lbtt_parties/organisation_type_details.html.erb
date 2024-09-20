@@ -1,7 +1,7 @@
 <% content_for( :page_title, t('.title') )%>
 <%= ds_form_with(model: @party, url: @post_path,method: :post) do |f| %>
   <%= rs_conditional_visibility(visible_value: "OTHER") do |c| %>
-    <% c.with_visibility_control_radio_group(builder: f.builder, method: :org_type, options_list: @party.list_ref_data(:org_type).delete_if { |r| r.code == 'REG_COM' }, alignment: :vertical ) %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :org_type, options_list: @party.list_ref_data(:org_type).delete_if { |r| r.code == 'REG_COM' }, alignment: :vertical, readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false) %>
     <%= f.ds_text_area(method: :other_type_description) %>
   <% end %>
 <% end %>

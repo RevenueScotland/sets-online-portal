@@ -5,7 +5,7 @@
     <%# Note the (party_id: 'new') below is needed, without it when the return is new the user cannot edit the agent (loops on summary screen)  %>
     <% table.with_link(name: t(".add_#{party_type}"), url: returns_lbtt_agent_details_path(party_id: 'new')) %>
   <% else %>
-    <% table.with_link(name: t(".add_#{party_type}"), url: returns_lbtt_about_the_party_path(party_id: 'new', party_type: party_type.to_s.upcase)) %>
+    <% table.with_link(name: t(".add_#{party_type}"), url: returns_lbtt_about_the_party_path(party_id: 'new', party_type: party_type.to_s.upcase)) unless hide_link%>
   <% end %>
   <% table.with_header(klass: Returns::Lbtt::Party) do |header| %>
     <% header.with_cell(method: :full_name) %>
@@ -33,7 +33,7 @@
     <% table.with_row do |row| %>
       <% row.with_cell(colspan:  3) do %>
         <%= ds_link(name: t('.edit_row'), url: returns_lbtt_about_the_party_path(party_id: party), subtype: :padded) %>
-        <%= ds_link(name: t('.delete_row'), url: returns_party_path(party_id: party), delete: true, confirm_message:  t(".delete_#{party_type}"), subtype: :padded)%>
+        <%= ds_link(name: t('.delete_row'), url: returns_party_path(party_id: party), delete: true, confirm_message:  t(".delete_#{party_type}"), subtype: :padded) unless hide_delete_link %>
       <% end %>
     <% end %>
   <% end %>

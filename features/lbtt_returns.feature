@@ -99,15 +99,25 @@ Feature: LBTT Returns
         And I should see the text "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
         # Attempt to submit to check the whole model validation for conveyance
         When I click on the "Submit return" button
-        Then I should receive the message "Please fill in at least one property"
+        Then I should receive the message "At least one property must be present"
         And  I should receive the message "Please fill in the 'About the transaction' section"
-        And  I should receive the message "Please fill in at least one buyer"
-        And  I should receive the message "Please fill in at least one seller"
+        And  I should receive the message "At least one buyer must be present"
+        And  I should receive the message "At least one seller must be present"
 
         # Check you can see agent details and non provided for the reference
         And the table of data is displayed
             | Name             | Your reference |
             | Adam Portal-Test | None provided  |
+
+        # Check error links are working correct
+        When I click on the "At least one property must be present" link
+        Then The field with id "add_a_property" should get focus
+        When I click on the "Please fill in the 'About the transaction' section" link
+        Then The field with id "about_the_transaction" should get focus
+        When I click on the "At least one buyer must be present" link
+        Then The field with id "add_a_buyer" should get focus
+        When I click on the "At least one seller must be present" link
+        Then The field with id "add_a_seller" should get focus
 
         # Add an other organisation (charity) buyer
         When I click on the "Add a buyer" link
@@ -241,10 +251,10 @@ Feature: LBTT Returns
 
         # Attempt to submit to check the whole model validation
         When I click on the "Submit return" button
-        Then I should receive the message "Please fill in at least one property"
+        Then I should receive the message "At least one property must be present"
         And  I should receive the message "Please fill in the 'About the transaction' section"
-        And  I should not receive the message "Please fill in at least one buyer"
-        And  I should receive the message "Please fill in at least one seller"
+        And  I should not receive the message "At least one buyer must be present"
+        And  I should receive the message "At least one seller must be present"
 
         # Add an other organisation (partnership) buyer with contact address
         When I click on the "Add a buyer" link
@@ -1127,6 +1137,42 @@ Feature: LBTT Returns
 
         And I should see the text "100" in field "Total LBTT reliefs claimed"
         And I should see the text "1630" in field "Total ADS reliefs claimed"
+
+        # Validation check
+        When I clear the "LBTT calculated" field
+        And I clear the "ADS calculated" field
+        And I click on the "Continue" button
+        Then I should see the "Calculated tax" page
+        And I should receive the message "LBTT calculated can't be blank"
+        And I should receive the message "ADS calculated can't be blank"
+
+        When I enter "abc" in the "LBTT calculated" field
+        And I enter "abc" in the "ADS calculated" field
+        And I click on the "Continue" button
+        Then I should see the "Calculated tax" page
+        And I should receive the message "LBTT calculated is not a number"
+        And I should receive the message "ADS calculated is not a number"
+
+        When I enter "-1" in the "LBTT calculated" field
+        And I enter "-1" in the "ADS calculated" field
+        And I click on the "Continue" button
+        Then I should see the "Calculated tax" page
+        And I should receive the message "LBTT calculated must be greater than or equal to 0"
+        And I should receive the message "ADS calculated must be greater than or equal to 0"
+
+        When I enter "1000000000000000000" in the "LBTT calculated" field
+        And I enter "1000000000000000000" in the "ADS calculated" field
+        And I click on the "Continue" button
+        Then I should see the "Calculated tax" page
+        And I should receive the message "LBTT calculated must be less than 1000000000000000000"
+        And I should receive the message "ADS calculated must be less than 1000000000000000000"
+
+        When I enter "123.4567" in the "LBTT calculated" field
+        And I enter "120.4500" in the "ADS calculated" field
+        And I click on the "Continue" button
+        Then I should see the "Calculated tax" page
+        And I should receive the message "LBTT calculated must be a number to 2 decimal places"
+        And I should receive the message "ADS calculated must be a number to 2 decimal places"
 
         When I enter "107000" in the "LBTT calculated" field
         And I enter "1700" in the "ADS calculated" field
@@ -3065,32 +3111,240 @@ Feature: LBTT Returns
         And I should not see the text "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
 
 
-    Scenario: Make a lease assignation for an agent, including duplicate NINO check
+    Scenario: Make a lease assignation for an agent, also test for parties validations
 
+        Login with authenticated user
+        Create an lease return
+        Validate the lease model
+        Add a property
+        Check that ADS is not displayed
+        Add a tenant (with an international phone number and address) and validate model
+        Add a landlord
+        Add transactions details
+        Save return reference
+        save the return reference
         Create an assignation return
         Validate the return effective date errors
-        Attempt to submit to check the whole model validation for assignation
+        Validate the pre population declaration page
+        Agree to the pre population declaration
+        Check the dynamic text for the calculation region
         Save the draft
-        Retrieve the draft to check no detals are defaulted
+        Retrieve the draft
         Edit the agent details to change them
         Edit the agent details to check they aren't reset to the default by editing
-        Add a property (check ADS is not shown/allowed)
-        Add a private individual tenant, checking international details are allowed
+        Edit the property (check ADS is not shown/allowed) and that the data is pre populated
+        Edit the private individual tenant, checking international details are allowed and that the data is pre populated
         Add a private individual new tenant
         Add another private individual new tenant
         Delete the second new tenant
-        Add the transaction details, with no linked transactions and with yearly rents
+        Edit the transaction details, with no linked transactions and with yearly rents and that the data is pre populated
         Check the date warnings are not shown
         Submit the return entering repayment details
 
         Amend the return
-        Attempt to add a private individual tenant, checking NINO duplication check
         Submit the return, selecting no to repayment details
+        Download PDF for submitted return
 
+        # Login with authenticated user
         Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
+        # Create an lease return
+        And I check the "Lease" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        # Validate the lease model
+        When I click on the "Submit return" button
+        Then I should see the text "At least one property must be present"
+        And I should see the text "Please fill in the 'About the transaction' section"
+        And I should see the text "At least one tenant must be present"
+        And I should see the text "At least one landlord must be present"
+
+        # Add a property
+        When I click on the "Add a property" link
+        Then I should see the "Property address" page
+        When I enter "EH12 6TS" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Property address" page
+        And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Property address" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the property" page
+        And I should see the sub-title "Provide property details"
+
+        When I select "Aberdeen City" from the "Local authority"
+        And I select "ABN" from the "returns_lbtt_property_title_code"
+        And I enter "1234" in the "returns_lbtt_property_title_number" field
+        And I click on the "Continue" button
+
+        # Check that ADS is not displayed
+        Then I should see the "Return Summary" page
+        And I should see the text "Edit row"
+        And the table of data is displayed
+            | Address                                                   |
+            | Royal Zoological Society Of Scotland, EDINBURGH, EH12 6TS |
+        And I should not see the text "About the Additional Dwelling Supplement"
+        And I should not see the text "ADS?"
+
+        # Add a tenant (with an international phone number and address) and validate model
+        When I click on the "Add a tenant" link
+        Then I should see the "About the tenant" page
+        And I click on the "Continue" button
+        Then I should receive the message "Who they are can't be blank"
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+
+        And I click on the "Continue" button
+        And I should receive the message "Last name can't be blank"
+        And I should receive the message "First name can't be blank"
+        And I should receive the message "Email can't be blank"
+        And I should receive the message "Telephone number can't be blank"
+        And I should receive the message "Provide a NINO or an alternate reference"
+
+        When I enter "TenantSurname" in the "Last name" field
+        And I enter "TenantFirstname" in the "First name" field
+        And I select "Mr" from the "Title"
+        # Allow spanish phone number
+        And I enter "+34629629629" in the "Telephone number" field
+        And I enter "noreply@necsws.com" in the "Email" field
+        And I enter "AB323455C" in the "National Insurance Number (NINO)" field
+        And I click on the "Continue" button
+        Then I should see the "Tenant address" page
+
+        When I click on the "Or type in your full address" button
+        And I enter "Plaza del Ayuntamiento" in the "address_address_line1" field
+        And I enter "1. 03002 Alicante" in the "Town" field
+        And I enter "SPAIN" in the "Country" select or text field
+        And I click on the "Continue" button
+        Then I should see the "Tenant's contact address" page
+        When I click on the "Continue" button
+        Then I should receive the message "Should we use a different address for future correspondence in relation to this return can't be blank"
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+
+        Then I should see the text "Is the tenant connected to the landlord?"
+        When I check the "Yes" radio button
+        And I click on the "Continue" button
+        Then I should receive the message "How are they connected can't be blank"
+
+        When I enter "RANDOM_text,300" in the "How are they connected?" field
+        And I click on the "Continue" button
+        Then I should receive the message "How are they connected is too long (maximum is 255 characters)"
+
+        When I enter "Test relation" in the "How are they connected?" field
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        When I click on the "Continue" button
+        Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
+        When I check the "Yes" radio button
+        And I click on the "Continue" button
+
+        Then I should see the "Return Summary" page
+        Then I should see the text "Mr TenantFirstname TenantSurname"
+        Then I should see the text "Plaza del Ayuntamiento, 1. 03002 Alicante"
+        Then I should see the text "A private individual"
+        Then I should see the text "Edit row"
+
+        # Add a landlord
+        When I click on the "Add a landlord" link
+        Then I should see the "About the landlord" page
+        And I click on the "Continue" button
+        Then I should receive the message "Who they are can't be blank"
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+        Then I should see the "Landlord details" page
+
+        And I enter "Landlord First Name" in the "First name" field
+        And I enter "Landlord Last Name" in the "Last name" field
+        When I click on the "Continue" button
+        Then I should see the "Landlord address" page
+        And I enter "EH12 6TS" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Landlord address" page
+        And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Landlord address" page
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add transactions details
+        When I click on the "Add transaction details" link
+        Then I should see the "About the transaction" page
+        And I check the "Residential" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the dates" page
+        When I enter "02-08-2022" in the "Effective date of transaction" date field
+        And I enter "03-08-2022" in the "Relevant date" date field
+        And I enter "03-08-2022" in the "Date of contract or conclusion of missives" date field
+        And I enter "10-10-2022" in the "Lease start date" date field
+        And I enter "08-10-2026" in the "Lease end date" date field
+        And I click on the "Continue" button
+
+        Then I should see the "About the transaction" page
+        And I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I click on the "Continue" button
+
+        Then I should see the "Linked transactions" page
+        # linked-transactions - select no to get positive calculation results
+        When I check the "No" radio button
+        And I click on the "Continue" button
+
+        Then I should see the "About the lease values" page
+        # about the lease_values rental years
+        When I enter "350000" in the "returns_lbtt_lbtt_return_annual_rent" field
+        And I click on the "Continue" button
+
+        Then I should see the "About the lease values" page
+        When I check the "No" radio button
+        # Rental years
+        Then I should see the text "Year 4"
+        When I enter "350100" in the "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_1_rent" field
+        And I enter "360200" in the "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_2_rent" field
+        And I enter "370200" in the "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_3_rent" field
+        And I enter "340200" in the "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_0_rent" field
+        And I click on the "Continue" button
+
+        Then I should see the "About the lease values" page
+        When I check the "Yes" radio button
+        When I enter "352000" in the "Premium amount" field
+        And I enter "351000" in the "What is the relevant rent amount for this transaction?" field
+        And I click on the "Continue" button
+
+        Then I should see the "Calculated Net Present Value (NPV)" page
+        And I should not see the text "for linked transactions"
+        # NPV calculated tax
+        And I should see the text "1303005.42" in field "Net Present Value (NPV)"
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Save return reference
+        When I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+        And I check the "BACS" radio button
+        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "returns_lbtt_lbtt_return[declaration]" checkbox
+        And I check the "returns_lbtt_lbtt_return[lease_declaration]" checkbox
+        And I click on the "Submit return" button
+        Then I should see the "Your return has been submitted" page
+        And I should see the text "Return reference"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        # save the return reference
+        And I should store the generated value with id "notification_banner_reference"
+        And I should store the reference from the notification panel as "notification_banner_reference_orig"
+        And I should see a link with text "Go to dashboard"
+
+        # Create an assignation return
+        When I click on the "Go to dashboard" link
+        And I click on the "Create LBTT return" menu item
+        Then I should see the "About the return" page
         And I check the "Assignation" radio button
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
@@ -3107,26 +3361,33 @@ Feature: LBTT Returns
         When I enter "01-01-2023" in the "What was the original return effective date" date field
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
-        And I should receive the message "The original return reference and original effective date is not a filed lease return"
+        # TODO: RSTP-1186 API change is wrong, returning wrong error
+        # And I should receive the message "The original return reference and original effective date is not a filed lease return"
 
-        When I enter "RS2000003BBBB" in the "What was the original return reference" field
+        When I enter the stored value "notification_banner_reference" in field "What was the original return reference?"
         # Check invalid date processing and that doesn't call back office
         And I enter "01062020" in the "What was the original return effective date" field
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
         And I should receive the message "What was the original return effective date is invalid"
-        When I enter "01-06-2020" in the "What was the original return effective date" date field
+        When I enter "02-08-2022" in the "What was the original return effective date" date field
         And I click on the "Continue" button
-        Then I should see the "Return Summary" page
-        # Check the dynamic text for the calculation region
-        And I should see the text "The amount of tax already paid below will show as £0.00. You will need to change this field to show the correct amount of tax already paid in order for the correct amount of tax due to show. For all other fields, the amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
 
-        # pre-calculate validation
-        When I click on the "Submit return" button
-        Then I should see the text "Please fill in the 'About the transaction' section"
-        And I should see the text "Please fill in at least one property"
-        And I should see the text "Please fill in at least one new tenant"
-        And I should see the text "Please fill in at least one tenant"
+        # Validate the pre population declaration page
+        Then I should see the "Declaration" page
+        And I should see the text "We have found the most recent return for"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        And I should see the text "I, the agent, confirm that I have authority to view the data for the return referred to above"
+        And I should see the text "Some of the information will be read only. Contact Revenue Scotland if any of the read only information is not as expected."
+        And I should see the text "It is the responsibilty of the individual completing this return to check the data is correct and to update as needed (including any relief). Incorrect information can result in penalties and/or prosecution."
+        And I should see a link with text "Go to dashboard"
+
+        When I click on the "Continue" button
+        Then I should see the text "The authority declaration must be accepted"
+        # Agree to the pre population declaration
+        And I check the "returns_lbtt_lbtt_return_pre_population_declaration" checkbox
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
 
         # Check no details are defaulted
         When I click on the "Save draft" button
@@ -3151,10 +3412,9 @@ Feature: LBTT Returns
         Then I should see the "Return Summary" page
         # Not shown for this return type
         And I should not see the text "What is the property type for this transaction?"
-        # Always shown even when blank
-        And The cell with the heading "Are there any linked transactions?" should be blank
 
-        # Agent
+
+        # Edit the agent details to change them
         When I click on the "Edit agent details" link
         Then I should see the "Agent details" page
         And I should see the text "Portal User" in field "First name"
@@ -3214,23 +3474,15 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "Return Summary" page
 
-        # Property
-        When I click on the "Add a property" link
+        # Edit the property (check ADS is not shown/allowed) and that the data is pre populated
+        When I click on the 2 nd "Edit row" link
         Then I should see the "Property address" page
-        When I enter "EH12 6TS" in the "address_summary_postcode" field
-        And I click on the "Find address" button
-        Then I should see the "Property address" page
-        And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
-        Then I should see the "Property address" page
+        And I should see the text "EH12 6TS" in field "address_postcode"
+        And I should see the text "Royal Zoological Society Of Scotland" in field "address_address_line1"
 
         When I click on the "Continue" button
         Then I should see the "About the property" page
         And I should see the sub-title "Provide property details"
-
-        When I select "Aberdeen City" from the "Local authority"
-        And I select "ABN" from the "returns_lbtt_property_title_code"
-        And I enter "1234" in the "returns_lbtt_property_title_number" field
         And I click on the "Continue" button
         # No does ADS apply page for non-conveyance returns
         Then I should see the "Return Summary" page
@@ -3242,62 +3494,35 @@ Feature: LBTT Returns
         And I should not see the text "About the Additional Dwelling Supplement"
         And I should not see the text "ADS?"
 
-        # Tenant
-        When I click on the "Add a tenant" link
+        # Edit the private individual tenant, checking international details are allowed and that the data is pre populated
+        When I click on the 1 st "Edit row" link
         Then I should see the "About the tenant" page
         And I click on the "Continue" button
-        Then I should receive the message "Who they are can't be blank"
-        When I check the "A private individual" radio button
-        And I click on the "Continue" button
         Then I should see the "Tenant details" page
+        And I should see the text "TenantSurname" in field "Last name"
+        And I should see the text "TenantFirstname" in field "First name"
+        And I should see the text "+34629629629" in field "Telephone number"
+        And I should see the text "noreply@necsws.com" in field "Email"
+        And I should see the text "AB323455C" in field "National Insurance Number (NINO)"
 
-        And I click on the "Continue" button
-        And I should receive the message "Last name can't be blank"
-        And I should receive the message "First name can't be blank"
-        And I should receive the message "Email can't be blank"
-        And I should receive the message "Telephone number can't be blank"
-        And I should receive the message "Provide a NINO or an alternate reference"
-
-        When I enter "TenantSurname" in the "Last name" field
-        And I enter "TenantFirstname" in the "First name" field
-        And I select "Mr" from the "Title"
-        # Allow spanish phone number
-        And I enter "+34629629629" in the "Telephone number" field
-        And I enter "noreply@necsws.com" in the "Email" field
-        And I enter "AB323455C" in the "National Insurance Number (NINO)" field
-        And I click on the "Continue" button
+        When I click on the "Continue" button
         Then I should see the "Tenant address" page
+        And I should see the text "Plaza del Ayuntamiento" in field "address_address_line1"
+        And I should see the text "1. 03002 Alicante" in field "Town"
 
-        When I click on the "Or type in your full address" button
-        And I enter "Plaza del Ayuntamiento" in the "address_address_line1" field
-        And I enter "1. 03002 Alicante" in the "Town" field
-        And I enter "SPAIN" in the "Country" select or text field
-        And I click on the "Continue" button
+        When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
+        And the radio button "No" should be selected
+
         When I click on the "Continue" button
-        Then I should receive the message "Should we use a different address for future correspondence in relation to this return can't be blank"
-        When I check the "No" radio button
-        And I click on the "Continue" button
         Then I should see the "Tenant details" page
+        And I should see the text "Is the tenant connected to the landlord?"
+        And the radio button "Yes" should be selected
+        And I should see the text "Test relation" in field "How are they connected?"
 
-        Then I should see the text "Is the tenant connected to the landlord?"
-        When I check the "Yes" radio button
-        And I click on the "Continue" button
-        Then I should receive the message "How are they connected can't be blank"
-
-        When I enter "RANDOM_text,300" in the "How are they connected?" field
-        And I click on the "Continue" button
-        Then I should receive the message "How are they connected is too long (maximum is 255 characters)"
-
-        When I enter "Test relation" in the "How are they connected?" field
-        And I click on the "Continue" button
-
-
+        When I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I click on the "Continue" button
-        Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
-        When I check the "Yes" radio button
-        And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
         Then I should see the text "Mr TenantFirstname TenantSurname"
@@ -3341,11 +3566,9 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "New tenant's contact address" page
-        When I click on the "Continue" button
-        Then I should receive the message "Should we use a different address for future correspondence in relation to this return can't be blank"
-        When I check the "No" radio button
-        And I click on the "Continue" button
+        And I check the "No" radio button
 
+        When I click on the "Continue" button
         Then I should see the "New tenant details" page
         When I click on the "Continue" button
         Then I should receive the message "If they are linked can't be blank"
@@ -3415,45 +3638,46 @@ Feature: LBTT Returns
         And I should see the text "A private individual"
         And I should see the text "Edit"
 
-        When I click on the 2 nd "Delete row" link
+        When I click on the 1 st "Delete row" link
         And if available, click the confirmation dialog
         Then I should see the "Return Summary" page
         And I should not see the text "Mr TenantFirstname2 TenantSurname2"
 
         # Transaction
-        When I click on the "Add transaction details" link
+        When I click on the "Edit transaction details" link
         Then I should see the "About the dates" page
-        When I enter "02-08-2022" in the "Effective date of transaction" date field
-        And I enter "03-08-2022" in the "Relevant date" date field
-        And I enter "03-08-2022" in the "Date of contract or conclusion of missives" date field
-        And I enter "10-10-2022" in the "Lease start date" date field
-        And I enter "08-10-2026" in the "Lease end date" date field
+        # Please note that readonly dates are shown in DD/MM/YYYY format instead of the entered DD-MM-YYYY format
+        And I should see the text "02/08/2022" in field "Effective date of transaction"
+        And I should see the empty field "Relevant date"
+        And I enter "03/08/2022" in the "Relevant date" date field
+        And I should see the text "03/08/2022" in field "Date of contract or conclusion of missives"
+        And I should see the text "10/10/2022" in field "Lease start date"
+        And I should see the text "08/10/2026" in field "Lease end date"
         And I click on the "Continue" button
 
         Then I should see the "Linked transactions" page
         # linked-transactions - select no to get positive calculation results
-        When I check the "No" radio button
+        When the radio button "No" should be selected
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
         # about the lease_values rental years
-        When I enter "350000" in the "How much was the rent for the first year (inc VAT)?" field
-        And I click on the "Continue" button
+        And I should see the text "350000" in field "How much was the rent for the first year (inc VAT)?"
 
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "No" radio button
+        And the radio button "No" should be selected
         # Rental years
-        Then I should see the text "Year 4"
-        When I enter "350100" in the "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_1_rent" field
-        And I enter "360200" in the "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_2_rent" field
-        And I enter "370200" in the "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_3_rent" field
-        And I enter "340200" in the "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_0_rent" field
-        And I click on the "Continue" button
+        Then I should see the text "350100" in field "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_1_rent"
+        And I should see the text "360200" in field "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_2_rent"
+        And I should see the text "370200" in field "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_3_rent"
+        And I should see the text "340200" in field "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_0_rent"
 
+        When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "Yes" radio button
-        When I enter "352000" in the "Premium amount" field
-        And I enter "351000" in the "What is the relevant rent amount for this transaction?" field
+        And the radio button "Yes" should be selected
+        And I should see the text "352000" in field "Premium amount"
+        And I should see the text "351000" in field "What is the relevant rent amount for this transaction?"
         And I click on the "Continue" button
 
         Then I should see the "Calculated Net Present Value (NPV)" page
@@ -3482,8 +3706,8 @@ Feature: LBTT Returns
             | LBTT tax liability on rent     | £11,530.00 |
             | LBTT tax liability on premium  | £7,600.00  |
             | Total tax payable              | £19,130.00 |
-            | Amount already paid            | £0.00      |
-            | Amount payable for this return | £19,130.00 |
+            | Tax payable on previous return |            |
+            | Tax payable for this return    | £19,130.00 |
 
         # Check the date warnings are not given for a lease assignation
         And I should not see the text "This is usually more recent than this."
@@ -3491,37 +3715,16 @@ Feature: LBTT Returns
         And I should not see a link with text "You can edit the transaction details if you need to"
 
         When I click on the "Submit return" button
-        Then I should see the "Repayment details" page
-        When I check the "Yes" radio button
-        And I click on the "Continue" button
-        Then I should see the "Claim repayment" page
-        When I enter "750" in the "How much are you claiming for repayment?" field
-        And I click on the "Continue" button
-        Then I should see the "Enter bank details" page
-
-        When I enter "Fred Flintstone" in the "Name of the account holder" field
-        And I enter "12345678" in the "Bank / building society account number" field
-        And I enter "10-11-12" in the "Branch sort code" field
-        And I enter "Natwest" in the "Name of bank / building society" field
-        And I click on the "Continue" button
-
-        Then I should see the "Declaration" page
-        And I should see the text "I, the agent for the tenant(s), confirm that the tenant(s) have authorised repayment to be made to these bank details"
-        And I should see the text "I, the agent of the tenant(s), having been authorised to complete this claim on behalf of the tenant(s), certify that the tenant(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tenant(s) is/are eligible for the refund claimed"
-        When I click on the "Continue" button
-        Then I should receive the message "The refund declaration must be accepted"
-        And I should receive the message "The bank account declaration must be accepted"
-        When I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_repayment_agent_declaration" checkbox
-        And I click on the "Continue" button
 
         Then I should see the "Payment and submission" page
         And I should see the text "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s):"
         And I should see the text "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        And I should see the text "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
 
         When I check the "returns_lbtt_lbtt_return_declaration" checkbox
         And I check the "BACS" radio button
         And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
 
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
@@ -3538,35 +3741,18 @@ Feature: LBTT Returns
         Then I should see the "All returns" page
         And I click on the "Amend" link
         Then I should see the "Return Summary" page
-
-        When I click on the "Add a tenant" link
-        Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
-        And I click on the "Continue" button
-        Then I should see the "Tenant details" page
-        When I enter "Tenant3Surname" in the "Last name" field
-        And I enter "Tenant3Firstname" in the "First name" field
-        And I select "Mr" from the "Title"
-        And I enter "0123456789" in the "Telephone number" field
-        And I enter "noreply@necsws.com" in the "Email" field
-        And I enter "AB 32 34 55 C" in the "National Insurance Number (NINO)" field
-        And I click on the "Continue" button
-        And I should receive the message "National Insurance Number (NINO) is a duplicate of that for Mr TenantFirstname TenantSurname"
-        When I click on the "Back" link
-        Then I should see the "About the tenant" page
-        And I click on the "Back" link
+        And I should see the text "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit the 'LBTT tax liability on rent' or 'LBTT tax liability on premium' before you submit the return"
+        And I should not see the text "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
         And I click on the "Submit return" button
         Then I should see the "Amendment reason" page
         When I enter "Test" in the "Tell us why you are amending this return" field
-        And I click on the "Continue" button
-        Then I should see the "Repayment details" page
-        When I check the "No" radio button
         And I click on the "Continue" button
 
         Then I should see the "Payment and submission" page
         When I check the "returns_lbtt_lbtt_return_declaration" checkbox
         And I check the "BACS" radio button
         And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
 
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
@@ -3577,57 +3763,106 @@ Feature: LBTT Returns
             | Description of transaction   | Assignation                                                                      |
             | Effective date               | 02/08/2022                                                                       |
             | Your reference (if provided) | my agent ref                                                                     |
+        And I should see a link with text "Download PDF"
 
-    Scenario: Make a lease review return return for a public user
+        When I click on the "Download PDF" link to download a file
+        Then I should see the downloaded "PDF" content of "LBTT" by looking up "notification_banner_reference"
 
-        Check a public user cannot go to the authenticated pages
-        Validate that the user is stopped when using a disregarded  return
-        Create a 3 year lease review return
-        Validate that the triennial date validation works
-        Check you cannot save a draft
-        Add a private individual tenant
-        Add a property
-        Add transaction details, with no rent years
-        Edit the calculation
-        Check date warnings are not shown
-        Submit the return with no repayment checking DD payment method not available
-        Check the secure message and dashboard links are not shown/allowed
-
-        # Check signed in user does not have access
-        Given I have signed in
-        When I go to the "returns/lbtt/public_landing" page
-        Then I should see the "Dashboard" page
-        When I go to the "returns/lbtt/public_return_type" page
-        Then I should see the "Dashboard" page
-        When I go to the "returns/lbtt/return_reference_number" page
-        Then I should see the "Dashboard" page
-
-        # Now test with public user
-        Given I have signed out
-        When I go to the "returns/lbtt/public_landing" page
-        Then I should see the "To complete this return, you will need the following information" page
-
-        When I click on the "Start now" link
+        When I click on the "Go to dashboard" link
+        And I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
-
         When I check the "3 year lease review" radio button
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
 
-        # Validate that the user is stopped when using a disregarded  return
-        When I enter "RS3000003FFFF" in the "What was the original return reference" field
-        And I enter "01-10-2019" in the "What was the original return effective date" date field
+        When I enter the stored value "notification_banner_reference_orig" in field "What was the original return reference"
+        And I enter "02-08-2022" in the "What was the original return effective date" date field
         And I click on the "Continue" button
-        And I should see the text "The original return reference and original effective date is not a filed lease return. Contact Revenue Scotland as there could be a duplicate return for this reference"
 
-        When I enter "RS2000003BBBB" in the "What was the original return reference" field
-        And I enter "01-06-2020" in the "What was the original return effective date" date field
+        # Validate the pre population declaration on Declaration page
+        Then I should see the "Declaration" page
+        And I should see the text "We have found the most recent return for"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        And I should see the text "I, the agent, confirm that I have authority to view the data for the return referred to above"
+        And I should see the text "Some of the information will be read only. Contact Revenue Scotland if any of the read only information is not as expected."
+        And I should see the text "It is the responsibilty of the individual completing this return to check the data is correct and to update as needed (including any relief). Incorrect information can result in penalties and/or prosecution."
+
+        When I check the "returns_lbtt_lbtt_return_pre_population_declaration" checkbox
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the dates" page
+        And I enter "02-08-2025" in the "Relevant date" date field
+        When I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I click on the "Continue" button
+        Then I should see the "Calculated Net Present Value (NPV)" page
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        And I click on the "Submit return" button
+        And I should see the text "There's an error somewhere in the about the tenant 1 Mr fname lname - please review the about the tenant 1 Mr fname lname section of the return and update it"
+        And I click on the 1 st "Edit row" link
+        Then I should see the "About the tenant" page
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        And I click on the "Continue" button
+        And I should see the text "Provide a NINO or an alternate reference"
+        And I enter "AB383433C" in the "National Insurance Number (NINO)" field
+        And I click on the "Continue" button
+        Then I should see the "Tenant address" page
+        And I click on the "Continue" button
+        And I should see the "Tenant's contact address" page
+        And I click on the "Continue" button
+        And I should see the "Tenant details" page
+        And I click on the "Continue" button
+        And I should see the "Tenant details" page
+        And I click on the "Continue" button
+
+        When I click on the "Submit return" button
+        And I should see the "Payment and submission" page
+
+    Scenario: Make a lease review return return for a public user
+
+        Create a lease return as authenticated user
+        Validate the lease model
+        Add a property
+        Check that ADS is not displayed
+        Add a tenant (with an international phone number and address) and validate model
+        Add a landlord
+        Add transactions details
+        Save return reference
+        save the return reference
+        log out
+        Check a public user cannot go to the authenticated pages
+        Validate that the user is stopped when using a disregarded  return
+        Validate the additional details
+        Validate the pre population declaration page
+        Create a 3 year lease review return
+        Validate pre-populated tenant
+        Check you cannot save a draft
+        Add a private individual tenant
+        Add a property
+        Add transaction details, with no rent years also validate readonly fields
+        Edit the calculation
+        Check date warnings are not shown
+        Submit the return with repayment checking DD payment method not available
+        Check the secure message and dashboard links are not shown/allowed
+        Check the Download PDF are shown/allowed
+
+        Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
+        When I click on the "Create LBTT return" menu item
+        Then I should see the "About the return" page
+
+        And I check the "Lease" radio button
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
-        # Check the dynamic text for the calculation region
-        And I should see the text "The amount of tax already paid below will show as £0.00. You will need to change this field to show the correct amount of tax already paid in order for the correct amount of tax due to show. For all other fields, the amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
-        And I should not see the text "Contact details for this return"
-        And I should not see the text "Save draft"
 
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
@@ -3683,59 +3918,28 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
-        # Check triennial dates validation
-        # First check failure
-        # Then none leap year
-        # Then leap year for 28th and 1st
         When I click on the "Add transaction details" link
-        Then I should see the "About the dates" page
-        Then I should see the "About the dates" page
-        When I enter "01-01-2019" in the "Effective date of transaction" date field
-        And I enter "01-01-2019" in the "Relevant date" date field
-        And I enter "01-01-2019" in the "Lease start date" date field
-        And I enter "01-01-2025" in the "Lease end date" date field
+        Then I should see the "About the transaction" page
+        And I check the "Residential" radio button
         And I click on the "Continue" button
-        Then I should receive the message "Relevant date must be a triennial anniversary of the effective date"
-
-        When I enter "01-01-2019" in the "Effective date of transaction" date field
-        And I enter "03-08-2019" in the "Relevant date" date field
-        And I enter "01-01-2019" in the "Lease start date" date field
-        And I enter "01-01-2025" in the "Lease end date" date field
-        And I click on the "Continue" button
-        Then I should receive the message "Relevant date must be a triennial anniversary of the effective date"
-
-        When I enter "01-01-2019" in the "Effective date of transaction" date field
+        Then I should see the "About the dates" page
+        And I enter "01-01-2019" in the "Effective date of transaction" date field
         And I enter "01-01-2022" in the "Relevant date" date field
         And I enter "01-01-2019" in the "Lease start date" date field
-        And I enter "01-01-2025" in the "Lease end date" date field
-        And I click on the "Continue" button
-        Then I should see the "Linked transactions" page
+        And I enter "01-01-2029" in the "Lease end date" date field
 
-        When I click on the "Back" link
-        And I enter "29-02-2020" in the "Effective date of transaction" date field
-        And I enter "28-02-2023" in the "Relevant date" date field
-        And I enter "01-03-2020" in the "Lease start date" date field
-        And I enter "01-03-2030" in the "Lease end date" date field
-        And I click on the "Continue" button
-        Then I should see the "Linked transactions" page
-
-        When I click on the "Back" link
-        And I enter "29-02-2020" in the "Effective date of transaction" date field
-        And I enter "01-03-2023" in the "Relevant date" date field
-        And I enter "01-03-2020" in the "Lease start date" date field
-        And I enter "01-03-2030" in the "Lease end date" date field
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        And I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
         When I check the "No" radio button
         And I click on the "Continue" button
-        Then I should see the "About the lease values" page
-        And I click on the "Continue" button
-        Then I should receive the message "The rent for the first year can't be blank"
-        When I enter "a" in the "How much was the rent for the first year (inc VAT)?" field
-        And I click on the "Continue" button
-        Then I should receive the message "The rent for the first year is not a number"
-        When I enter "1234" in the "How much was the rent for the first year (inc VAT)?" field
+        And I should see the "About the lease values" page
+        And I enter "1234440405" in the "How much is the rent for the first year (inc VAT)?" field
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
         When I click on the "Continue" button
@@ -3750,10 +3954,385 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
-        When I click on the "Edit calculation" link
-        Then I should see the "Calculated tax" page
-        And I enter " 100 " in the "Amount already paid" field
+        #Landlord
+        When I click on the "Add a landlord" link
+        Then I should see the "About the landlord" page
+        When I check the "An organisation registered with Companies House" radio button
         And I click on the "Continue" button
+
+        Then I should see the "Registered company" page
+        When I enter "09338960" in the "Company number" field
+        And I click on the "Find company" button
+        Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED" in field "company_company_name"
+        And I should see the text "1st Floor, Imex Centre" in field "company_address_line1"
+        And I should see the text "575-599 Maxted Road" in field "company_address_line2"
+        And I should see the text "Hemel Hempstead" in field "company_locality"
+        And I should see the text "Hertfordshire" in field "company_county"
+        And I should see the text "HP2 7DX" in field "company_postcode"
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should see the text "NORTHGATE PUBLIC SERVICES LIMITED"
+
+        When I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+        And I check the "BACS" radio button
+        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "returns_lbtt_lbtt_return[declaration]" checkbox
+        And I check the "returns_lbtt_lbtt_return[lease_declaration]" checkbox
+        And I click on the "Submit return" button
+        Then I should see the "Your return has been submitted" page
+        # Make sure the return reference is the same
+        And I should see the text "Return reference"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        And I should store the generated value with id "notification_banner_reference"
+        And I should see a link with text "Go to dashboard"
+
+        Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
+        When I click on the "Create LBTT return" menu item
+        Then I should see the "About the return" page
+
+        And I check the "Lease" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        When I click on the "Add a tenant" link
+        Then I should see the "About the tenant" page
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        When I enter "surname" in the "Last name" field
+        And I enter "firstname" in the "First name" field
+        And I select "Mr" from the "Title"
+        # Allow intenational phone number
+        And I enter "+12 123456789" in the "Telephone number" field
+        And I enter "noreply@necsws.com" in the "Email" field
+        And I open the "Tenant does not have NINO" summary item
+        And I select "ID Card" from the "Type of ID"
+        And I enter "ENGLAND" in the "Country where ID was issued" select or text field
+        And I enter "1" in the "Reference number of the ID" field
+
+        And I click on the "Continue" button
+        Then I should see the "Tenant address" page
+        When I enter "LU1 1AA" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Tenant address" page
+        When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Tenant address" page
+        When I click on the "Continue" button
+        Then I should see the "Tenant's contact address" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+
+        When I check the "Yes" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        When I click on the "Add a property" link
+        Then I should see the "Property address" page
+        When I enter "EH12 6TS" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Property address" page
+        When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Property address" page
+        When I click on the "Continue" button
+        Then I should see the "About the property" page
+        And I should see the sub-title "Provide property details"
+        When I select "Aberdeen City" from the "Local authority"
+        And I select "ABN" from the "returns_lbtt_property_title_code"
+        And I enter "1234" in the "returns_lbtt_property_title_number" field
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        When I click on the "Add transaction details" link
+        Then I should see the "About the transaction" page
+        And I check the "Residential" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the dates" page
+        And I enter "01-01-2019" in the "Effective date of transaction" date field
+        And I enter "01-01-2022" in the "Relevant date" date field
+        And I enter "01-01-2019" in the "Lease start date" date field
+        And I enter "01-01-2029" in the "Lease end date" date field
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        And I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        And I should see the "About the lease values" page
+        And I enter "12344404056675" in the "How much is the rent for the first year (inc VAT)?" field
+        And I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I click on the "Continue" button
+        Then I should receive the message "Is this the same value for all rental years can't be blank"
+        When I check the "Yes" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Calculated Net Present Value (NPV)" page
+        When I enter "100997979" in the "Net Present Value (NPV)" field
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        #Landlord
+        When I click on the "Add a landlord" link
+        Then I should see the "About the landlord" page
+        When I check the "An organisation registered with Companies House" radio button
+        And I click on the "Continue" button
+
+        Then I should see the "Registered company" page
+        When I enter "09338960" in the "Company number" field
+        And I click on the "Find company" button
+        Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED" in field "company_company_name"
+        And I should see the text "1st Floor, Imex Centre" in field "company_address_line1"
+        And I should see the text "575-599 Maxted Road" in field "company_address_line2"
+        And I should see the text "Hemel Hempstead" in field "company_locality"
+        And I should see the text "Hertfordshire" in field "company_county"
+        And I should see the text "HP2 7DX" in field "company_postcode"
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should see the text "NORTHGATE PUBLIC SERVICES LIMITED"
+
+        When I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+        And I check the "BACS" radio button
+        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "returns_lbtt_lbtt_return[declaration]" checkbox
+        And I check the "returns_lbtt_lbtt_return[lease_declaration]" checkbox
+        And I click on the "Submit return" button
+        Then I should see the "Your return has been submitted" page
+        # Make sure the return reference is the same
+        And I should see the text "Return reference"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        And I should store the generated value with id "notification_banner_reference"
+        And I should see a link with text "Go to dashboard"
+
+        # Check signed in user does not have access
+        Given I have signed in
+        When I go to the "returns/lbtt/public_landing" page
+        Then I should see the "Dashboard" page
+        When I go to the "returns/lbtt/public_return_type" page
+        Then I should see the "Dashboard" page
+        When I go to the "returns/lbtt/return_reference_number" page
+        Then I should see the "Dashboard" page
+
+        # Now test with public user
+        Given I have signed out
+        When I go to the "returns/lbtt/public_landing" page
+        Then I should see the "To complete this return, you will need the following information" page
+
+        When I click on the "Start now" link
+        Then I should see the "About the return" page
+
+        When I check the "3 year lease review" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return reference number" page
+
+        # Validate that the user is stopped when using a disregarded  return
+        When I enter "RS3000003FFFF" in the "What was the original return reference" field
+        And I enter "01-10-2019" in the "What was the original return effective date" date field
+        And I enter "Seller-First" in the "Name of the landlord on the original return" field
+        And I enter "test@necsws.com" in the "The taxpayer's email address" field
+        And I click on the "Continue" button
+        And I should see the text "The original return reference and original effective date is not a filed lease return. Contact Revenue Scotland as there could be a duplicate return for this reference"
+
+        # Validate the additional details
+        When I enter the stored value "notification_banner_reference" in field "What was the original return reference"
+        And I enter "01-01-2019" in the "What was the original return effective date" date field
+        And I clear the "Name of the landlord on the original return" field
+        And I clear the "The taxpayer's email address" field
+        And I click on the "Continue" button
+        And I should see the text "Name of the landlord on the original return can't be blank"
+        And I should see the text "The taxpayer's email address can't be blank"
+
+        When I enter "Landlord Name" in the "Name of the landlord on the original return" field
+        And I click on the "Continue" button
+        And I should see the text "The taxpayer's email address can't be blank"
+
+        When I enter "RANDOM_text,201" in the "Name of the landlord on the original return" field
+        And I enter "RANDOM_text,101" in the "The taxpayer's email address" field
+        And I click on the "Continue" button
+        And I should see the text "Name of the landlord on the original return is too long (maximum is 200 characters)"
+        And I should see the text "The taxpayer's email address is too long (maximum is 100 characters)"
+
+        And I enter "Invalid Landlord Name" in the "Name of the landlord on the original return" field
+        And I enter "test@necsws.com" in the "The taxpayer's email address" field
+        And I click on the "Continue" button
+        And I should see the text "The details do not match with a filed lease return"
+
+        When I enter "NORTHGATE PUBLIC SERVICES LIMITED" in the "Name of the landlord on the original return" field
+        And I click on the "Continue" button
+
+        # Validate the pre population Latest return for the lease page
+        Then I should see the "Latest return for the lease" page
+        And I should see the text "We have found the most recent return for"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        And I should not see the text "I, the agent, confirm that I have authority to view the data for the return referred to above"
+        And I should see the text "Some of the information will be read only. Contact Revenue Scotland if any of the read only information is not as expected."
+        And I should see the text "It is the responsibilty of the individual completing this return to check the data is correct and to update as needed (including any relief). Incorrect information can result in penalties and/or prosecution."
+        And I should not see a link with text "Go to dashboard"
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should not see the text "Contact details for this return"
+        And I should see the text "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit the 'LBTT tax liability on rent' or 'LBTT tax liability on premium' before you submit the return"
+        And I should not see the text "Save draft"
+
+        # Add tenant to check validation for last pre-populated tenant
+        When I click on the "Add a tenant" link
+        Then I should see the "About the tenant" page
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        When I enter "tenant1last" in the "Last name" field
+        And I enter "tenant1first" in the "First name" field
+        And I select "Mr" from the "Title"
+        # Allow intenational phone number
+        And I enter "+12 123456789" in the "Telephone number" field
+        And I enter "noreply@necsws.com" in the "Email" field
+        And I open the "Tenant does not have NINO" summary item
+        And I select "ID Card" from the "Type of ID"
+        And I enter "ENGLAND" in the "Country where ID was issued" select or text field
+        And I enter "1" in the "Reference number of the ID" field
+
+        And I click on the "Continue" button
+        Then I should see the "Tenant address" page
+        When I enter "EH1 1HU" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Tenant address" page
+        When I select "31b/2 Chambers Street, EDINBURGH, EH1 1HU" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Tenant address" page
+        When I click on the "Continue" button
+        Then I should see the "Tenant's contact address" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+
+        When I check the "Yes" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Check validation for last pre-populated tenant
+        When I click on the 1 st "Delete row" link
+        And if available, click the confirmation dialog
+        Then I should see the text "At least one of the pre-existing tenant(s) must remain on a lease review. If all pre-existing tenants need to be removed from the lease then an assignation return must be completed instead to include the details of the new tenants."
+
+        # Remove extra added tenant
+        When I click on the 2 nd "Delete row" link
+        And if available, click the confirmation dialog
+        Then I should see the "Return Summary" page
+
+        When I click on the 1 st "Edit row" link
+        Then I should see the "About the tenant" page
+        And the radio button "A private individual" should be selected
+        And I should see the text "This field is read only. Contact Revenue Scotland if the value is not as expected."
+        And I should not see the text "An organisation registered with Companies House"
+        And I should not see the text "An other organisation"
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        And I should see the text "surname" in field "Last name"
+        And field "Last name" should be readonly
+        And I should see the hint text "This field is read only. Contact Revenue Scotland if the value is not as expected." on the item with the id "returns_lbtt_party_surname"
+        And I should see the text "firstname" in field "First name"
+        And field "First name" should be readonly
+        And I should see the hint text "This field is read only. Contact Revenue Scotland if the value is not as expected." on the item with the id "returns_lbtt_party_firstname"
+        And I should see the text "+12 123456789" in field "Telephone number"
+        And I should see the text "noreply@necsws.com" in field "Email"
+        And I open the "Tenant does not have NINO" summary item
+        And I should see the text "ID Card"
+        And I should see the text "1" in field "Reference number of the ID"
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant address" page
+        And I should see the text "Royal Mail" in field "address_address_line1"
+        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
+        And I should see the text "Dunstable Road" in field "address_address_line3"
+        And I should see the text "LUTON" in field "address_town"
+        And I should see the text "LU1 1AA" in field "address_postcode"
+
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant's contact address" page
+        And the radio button "No" should be selected
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        And the radio button "No" should be selected
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        And the radio button "Yes" should be selected
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        When I click on the 2 nd "Edit row" link
+        Then I should see the "Property address" page
+        And I should see the text "EH12 6TS" in field "address_postcode"
+        And I should see the text "Royal Zoological Society Of Scotland" in field "address_address_line1"
+
+        When I click on the "Continue" button
+        Then I should see the "About the property" page
+        And I should see the sub-title "Provide property details"
+        And I should see the text "Aberdeen City"
+        And I should see the text "ABN"
+        And I should see the text "1234" in field "returns_lbtt_property_title_number"
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the dates" page
+        And I should see the text "01/01/2019" in field "Effective date of transaction"
+        And field "Effective date of transaction" should be readonly
+        And I should see the hint text "This field is read only. Contact Revenue Scotland if the value is not as expected." on the item with the id "returns_lbtt_lbtt_return_effective_date"
+        And I enter "01-01-2025" in the "Relevant date" date field
+        And I should see the text "01/01/2019" in field "Lease start date"
+        And field "Lease start date" should be readonly
+        And I should see the hint text "This field is read only. Contact Revenue Scotland if the value is not as expected." on the item with the id "returns_lbtt_lbtt_return_lease_start_date"
+        And I should see the text "01/01/2029" in field "Lease end date"
+
+        When I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+        And the radio button "No" should be selected
+
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        And I should see the text "12344404056675" in field "How much was the rent for the first year (inc VAT)?"
+        And I enter "1234" in the "How much was the rent for the first year (inc VAT)?" field
+        And I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        And the radio button "Yes" should be selected
+
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        And the radio button "No" should be selected
+
+
+        When I click on the "Continue" button
+        Then I should see the "Calculated Net Present Value (NPV)" page
+        And I should see the text "11107.91" in field "Net Present Value (NPV)"
+        And  I enter "100" in the "Net Present Value (NPV)" field
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        When I click on the "Edit calculation" link
         Then I should see the "Calculated tax" page
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
@@ -3764,98 +4343,86 @@ Feature: LBTT Returns
 
         # submit
         When I click on the "Submit return" button
-        Then I should see the "Repayment details" page
-        When I check the "No" radio button
+        Then I should see the "Claim repayment" page
+        Then I should see "1008479" in the "How much are you claiming for repayment?" select or text field
+        And field "How much are you claiming for repayment?" should be readonly
+        And I click on the "Continue" button
+        Then I should see the "Enter bank details" page
+
+        When I enter "Fred Flintstone" in the "Name of the account holder" field
+        And I enter "12345678" in the "Bank / building society account number" field
+        And I enter "10-11-12" in the "Branch sort code" field
+        And I enter "Natwest" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+
+        Then I should see the "Declaration" page
+        When I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
         And I should not see the text "Direct Debit"
         And I should not see the text "I, the agent for the buyer"
         And I should see the text "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
+        And I should see the text "I, the tenant, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
 
         When I check the "BACS" radio button
         And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should not see the text "secure message"
         And I should not see the text "dashboard"
+        And I should see a link with text "Download PDF"
 
+    Scenario: Make a lease termination return for a taxpayer, including duplicate NINO check
 
-    Scenario: Make a lease termination return for a taxpayer
-
+        Create a lease return
+        Validate the lease model
+        Add a property
+        Check that ADS is not displayed
+        Add a tenant (person)
+        Add a tenant (other organisation)
+        Add a landlord
+        Add transactions details
+        Save return reference
+        save the return reference
         Create a termination return
         Validate that a disregarded versions effective  date is not used
-        Attempt to submit to check the whole model validation for termination
+        Validate the pre population declaration page
         Edit agent details, including phone number allows + (note Agent is correct)
-        Add a property
+        Adding and then immediately deleting the row of property data added
         Delete the property
-        Add the propery checking ADS not allowed
-        Add a private individual tenant, including international details
-        Add the transaction details, including yearly rents
+        checking ADS not allowed
+        Edit the pre populated property to validate data
+        Edit the private individual tenant, including international details and that the data is pre populated
+        Edit the transaction details
+        validate the pre populated yearly rents
         Check the date warnings are not shown
         Save the draft
         Save the draft again
         Go to dashboard and download PDF
         Go to all returns and download PDF
         Retrieve the draft
+        Attempt to add a private individual tenant, checking NINO duplication check
         Submit the return
+        Download PDF for submitted return
 
         Given I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        And I check the "Termination" radio button
-        And I click on the "Continue" button
-        Then I should see the "Return reference number" page
-
-        # Validate that a disregarded versions effective  date is not used
-        When I enter "RS3000003GGGG" in the "What was the original return reference" field
-        And I enter "03-10-2019" in the "What was the original return effective date" date field
-        And I click on the "Continue" button
-        And I should see the text "The original return reference and original effective date is not a filed lease return"
-
-        When I enter "02-10-2019" in the "What was the original return effective date" date field
+        And I check the "Lease" radio button
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
-
-        When I click on the "Back" link
-        And if available, click the confirmation dialog
-        And I enter "RS2000003BBBB" in the "What was the original return reference" field
-        And I enter "01-06-2020" in the "What was the original return effective date" date field
-        And I click on the "Continue" button
-        Then I should see the "Return Summary" page
-        # Check the dynamic text for the calculation region
-        And I should see the text "The amount of tax already paid below will show as £0.00. You will need to change this field to show the correct amount of tax already paid in order for the correct amount of tax due to show. For all other fields, the amounts in this section will be automatically calculated when you create or update the transaction section. You can edit them before you submit the return."
-
-        # pre-calculate validation
+        # Validate the lease model
         When I click on the "Submit return" button
-        Then I should see the text "Please fill in the 'About the transaction' section"
-        And I should see the text "Please fill in at least one property"
-        And I should see the text "Please fill in at least one tenant"
+        Then I should see the text "At least one property must be present"
+        And I should see the text "Please fill in the 'About the transaction' section"
+        And I should see the text "At least one tenant must be present"
+        And I should see the text "At least one landlord must be present"
 
-        # Agent
-        When I click on the "Edit agent details" link
-        Then I should see the "Agent details" page
-        And I select "Mr" from the "Title"
-        And I enter "my agent ref" in the "Your reference (optional)" field
 
-        # Uk phone number start with '+442079460654'
-        And I enter "+442079460654" in the "Telephone number" field
-        And I click on the "Continue" button
-        Then I should see the "Agent address" page
-
-        When I click on the "Return to postcode lookup" button
-        And I enter "LU1 1AA" in the "address_summary_postcode" field
-        And I click on the "Find address" button
-        Then I should see the "Agent address" page
-        When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
-        Then I should see the "Agent address" page
-        When I click on the "Continue" button
-        Then I should see the "Return Summary" page
-
-        # Property
-        # Adding and then immediately deleting the row of property data added
+        # Add a property
         When I click on the "Add a property" link
         Then I should see the "Property address" page
         When I enter "EH12 6TS" in the "address_summary_postcode" field
@@ -3875,72 +4442,24 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         # No does ADS apply page for non-conveyance returns
         Then I should see the "Return Summary" page
-        And I click on the 1 st "Delete row" link
-        And if available, click the confirmation dialog
-        # no wait as the not implies a wait anyway
-        Then I should not see the text "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS"
 
-        When I click on the "Add a property" link
-        Then I should see the "Property address" page
-        When I enter "EH12 6TS" in the "address_summary_postcode" field
-        And I click on the "Find address" button
-        Then I should see the "Property address" page
-        When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
-        Then I should see the "Property address" page
-
-        When I click on the "Continue" button
-        Then I should see the "About the property" page
-        And I should see the sub-title "Provide property details"
-
-        When I select "Aberdeen City" from the "Local authority"
-        And I select "ABN" from the "returns_lbtt_property_title_code"
-        And I enter "1234" in the "returns_lbtt_property_title_number" field
-        And I click on the "Continue" button
-        # No does ADS apply page for non-conveyance returns
-        Then I should see the "Return Summary" page
-        # Verify entered details on return summary page do not include ADS
-        And I should see the text "Edit row"
-        And the table of data is displayed
-            | Address                                                   |
-            | Royal Zoological Society Of Scotland, EDINBURGH, EH12 6TS |
-        And I should not see the text "About the Additional Dwelling Supplement"
-        And I should not see the text "ADS?"
-
-        # Tenant
+        # Add a tenant (person)
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        And I click on the "Continue" button
-        Then I should receive the message "Who they are can't be blank"
         When I check the "A private individual" radio button
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        When I enter "surname" in the "Last name" field
+        And I enter "surname" in the "Last name" field
         And I enter "firstname" in the "First name" field
         And I select "Mr" from the "Title"
         And I enter "+34629629629" in the "Telephone number" field
         And I enter "noreply@necsws.com" in the "Email" field
-        And I open the "Tenant does not have NINO" summary item
-        And I enter "ENGLAND" in the "Country where ID was issued" select or text field
-        And I click on the "Continue" button
-        Then I should receive the message "Provide a NINO or an alternate reference"
-
-        When I enter "AB323455C" in the "National Insurance Number (NINO)" field
-        And I open the "Tenant does not have NINO" summary item
-        And I select "ID Card" from the "Type of ID"
-        And I enter "ENGLAND" in the "Country where ID was issued" select or text field
-        And I enter "1" in the "Reference number of the ID" field
-        And I click on the "Continue" button
-        Then I should receive the message "Don't provide the alternate reference if you provide a NINO"
-
-        When I clear the "National Insurance Number (NINO)" field
-        And I click on the "Continue" button
-        Then I should see the "Tenant address" page
+        And I enter "AB323455C" in the "National Insurance Number (NINO)" field
 
         When I click on the "Continue" button
-        Then I should receive the message "Use the postcode search or enter the address manually"
-        When I enter "LU1 1AA" in the "address_summary_postcode" field
+        Then I should see the "Tenant address" page
+        And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Tenant address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
@@ -3953,8 +4472,6 @@ Feature: LBTT Returns
         And I should see the text "LU1 1AA" in field "address_postcode"
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I click on the "Continue" button
-        Then I should receive the message "Should we use a different address for future correspondence in relation to this return can't be blank"
         When I check the "No" radio button
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
@@ -3967,30 +4484,123 @@ Feature: LBTT Returns
         Then I should see the "Tenant details" page
         When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
-        When I check the "Yes" radio button
-        And I click on the "Continue" button
+        And I check the "Yes" radio button
 
+        When I click on the "Continue" button
         Then I should see the "Return Summary" page
-        Then I should see the text "Mr firstname surname"
-        Then I should see the text "Royal Mail, LUTON, LU1 1AA"
-        Then I should see the text "A private individual"
-        Then I should see the text "Edit"
+        And I should see the text "Mr firstname surname"
+        And I should see the text "Royal Mail, LUTON, LU1 1AA"
+        And I should see the text "A private individual"
+        And I should see the text "Edit"
 
-        # Transaction
+        # Add a tenant (other organisation)
+        When I click on the "Add a tenant" link
+        Then I should see the "About the tenant" page
+        When I check the "An other organisation" radio button
+        And I click on the "Continue" button
+        Then I should see the "Organisation details" page
+        And I click on the "Continue" button
+        Then I should see the text "Type of organisation can't be blank"
+        When I check the "Charity" radio button
+
+        When I click on the "Continue" button
+        Then I should see the "Charity" page
+        And I enter "test Charity" in the "Name" field
+        And I enter "LU1 1AA" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Charity" page
+        When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Charity" page
+        And I should see the text "Royal Mail" in field "address_address_line1"
+        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
+        And I should see the text "Dunstable Road" in field "address_address_line3"
+        And I should see the text "LUTON" in field "address_town"
+        And I should see the text "LU1 1AA" in field "address_postcode"
+        And I enter "154215421" in the "Charity number" field
+        And I enter "ALBANIA" in the "What country's law is the organisation governed by" select or text field
+
+        When I click on the "Continue" button
+        Then I should see the "Contact details" page
+        And I enter "Bob" in the "First name" field
+        And I enter "James" in the "Last name" field
+        And I enter "Team leader" in the "Job title or position" field
+        And I enter "LU1 1AA" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Contact details" page
+        When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Contact details" page
+        And I should see the text "Royal Mail" in field "address_address_line1"
+        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
+        And I should see the text "Dunstable Road" in field "address_address_line3"
+        And I should see the text "LUTON" in field "address_town"
+        And I should see the text "LU1 1AA" in field "address_postcode"
+        And I enter "bob.james@testcharity.com" in the "Email" field
+        And I enter "01452145478" in the "Contact phone number" field
+
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        And I should see the text "Is the tenant connected to the landlord?"
+        When I check the "Yes" radio button
+        And I enter "Test relation" in the "How are they connected?" field
+        And I click on the "Continue" button
+
+        Then I should see the "Tenant details" page
+        When I click on the "Continue" button
+        Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
+        And I check the "Yes" radio button
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I should see the text "test Charity"
+        And I should see the text "Royal Mail, LUTON, LU1 1AA"
+        And I should see the text "Charity"
+        And I should see the text "Edit"
+
+        # Add a landlord
+        When I click on the "Add a landlord" link
+        Then I should see the "About the landlord" page
+        And I click on the "Continue" button
+        And I should receive the message "Who they are can't be blank"
+        And I check the "A private individual" radio button
+
+        When I click on the "Continue" button
+        Then I should see the "Landlord details" page
+        And I enter "Landlord First Name" in the "First name" field
+        And I enter "Landlord Last Name" in the "Last name" field
+        When I click on the "Continue" button
+        Then I should see the "Landlord address" page
+        And I enter "EH12 6TS" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Landlord address" page
+        And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Landlord address" page
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add transactions details
         When I click on the "Add transaction details" link
-        Then I should see the "About the dates" page
-
-        When I enter "02-08-2019" in the "Effective date of transaction" date field
-        And I enter "08-10-2023" in the "Relevant date" date field
-        And I enter "03-08-2019" in the "Date of contract or conclusion of missives" date field
-        And I enter "10-10-2019" in the "Lease start date" date field
-        And I enter "07-08-2023" in the "Lease end date" date field
+        Then I should see the "About the transaction" page
+        And I check the "Residential" radio button
         And I click on the "Continue" button
         Then I should see the "About the dates" page
-        And I should receive the message "Lease end date must be the same as the relevant date"
-
-        When I enter "08-10-2023" in the "Lease end date" date field
+        When I enter "02-08-2022" in the "Effective date of transaction" date field
+        And I enter "03-08-2022" in the "Relevant date" date field
+        And I enter "03-08-2022" in the "Date of contract or conclusion of missives" date field
+        And I enter "10-10-2022" in the "Lease start date" date field
+        And I enter "08-10-2026" in the "Lease end date" date field
         And I click on the "Continue" button
+
+        Then I should see the "About the transaction" page
+        And I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I click on the "Continue" button
+
         Then I should see the "Linked transactions" page
         # linked-transactions - select no to get positive calculation results
         When I check the "No" radio button
@@ -3998,7 +4608,7 @@ Feature: LBTT Returns
 
         Then I should see the "About the lease values" page
         # about the lease_values rental years
-        When I enter "350000" in the "How much was the rent for the first year (inc VAT)?" field
+        When I enter "350000" in the "returns_lbtt_lbtt_return_annual_rent" field
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
@@ -4024,25 +4634,333 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
+        # Save return reference
+        When I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+        And I check the "BACS" radio button
+        And I check the "returns_lbtt_lbtt_return[declaration]" checkbox
+        And I check the "returns_lbtt_lbtt_return[lease_declaration]" checkbox
+        And I click on the "Submit return" button
+        Then I should see the "Your return has been submitted" page
+        # Make sure the return reference is the same
+        And I should see the text "Return reference"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        # save the return reference
+        And I should store the generated value with id "notification_banner_reference"
+        And I should see a link with text "Go to dashboard"
+
+        When I click on the "Go to dashboard" link
+        And I click on the "Create LBTT return" menu item
+        Then I should see the "About the return" page
+        And I check the "Termination" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return reference number" page
+
+        # Validate that a disregarded versions effective  date is not used
+        When I enter "RS3000003GGGG" in the "What was the original return reference" field
+        And I enter "03-10-2019" in the "What was the original return effective date" date field
+        And I click on the "Continue" button
+        And I should see the text "The original return reference and original effective date is not a filed lease return"
+
+        When I enter "02-10-2019" in the "What was the original return effective date" date field
+        And I click on the "Continue" button
+
+        Then I should see the "Declaration" page
+        And I should see the text "We have found the most recent return for RS3000003GGGG"
+        When I click on the "Back" link
+        Then I should see the "Return reference number" page
+        And I enter the stored value "notification_banner_reference" in field "What was the original return reference"
+        And I enter "02-08-2022" in the "What was the original return effective date" date field
+        And I click on the "Continue" button
+
+        # Validate the pre population declaration page
+        Then I should see the "Declaration" page
+        And I should see the text "We have found the most recent return for"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        And I should see the text "I, the taxpayer, confirm that I have authority to view the data for the return referred to above"
+        And I should see a link with text "Go to dashboard"
+        And I check the "returns_lbtt_lbtt_return_pre_population_declaration" checkbox
+        When I click on the "Continue" button
+
+        Then I should see the "Return Summary" page
+        And I should see the text "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit the 'LBTT tax liability on rent' or 'LBTT tax liability on premium' before you submit the return"
+
+        # Agent
+        When I click on the "Edit agent details" link
+        Then I should see the "Agent details" page
+        And I select "Mr" from the "Title"
+        And I enter "my agent ref" in the "Your reference (optional)" field
+
+        # Uk phone number start with '+442079460654'
+        And I enter "+442079460654" in the "Telephone number" field
+        And I click on the "Continue" button
+        Then I should see the "Agent address" page
+
+        When I click on the "Return to postcode lookup" button
+        And I enter "LU1 1AA" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Agent address" page
+        When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Agent address" page
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Adding and then immediately deleting the row of property data added
+        When I click on the "Add a property" link
+        Then I should see the "Property address" page
+        When I enter "G1 3SQ" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Property address" page
+        When I select "W H Smith Ltd, Unit 21, Caledonia Centre, Central Station, GLASGOW, G1 3SQ" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Property address" page
+
+        When I click on the "Continue" button
+        Then I should see the "About the property" page
+        And I should see the sub-title "Provide property details"
+
+        When I select "Aberdeen City" from the "Local authority"
+        And I select "ABN" from the "returns_lbtt_property_title_code"
+        And I enter "1234" in the "returns_lbtt_property_title_number" field
+        And I click on the "Continue" button
+        # No does ADS apply page for non-conveyance returns
+
+        Then I should see the "Return Summary" page
+        And I click on the 2 nd "Delete row" link
+        And if available, click the confirmation dialog
+        # no wait as the not implies a wait anyway
+        Then I should not see the text "W H Smith Ltd, Unit 21, Caledonia Centre, Central Station, GLASGOW, G1 3SQ"
+
+        # Edit the pre populated property to validate data
+        When I click on the 3 rd "Edit row" link
+        Then I should see the "Property address" page
+        And I should see the text "EH12 6TS" in field "Postcode"
+        And I should see the text "Royal Zoological Society Of Scotland" in field "address_address_line1"
+        And I should see the text "134 Corstorphine Road" in field "address_address_line2"
+
+        When I click on the "Continue" button
+        Then I should see the "About the property" page
+        And I should see the sub-title "Provide property details"
+        And I click on the "Continue" button
+        # # No does ADS apply page for non-conveyance returns
+        Then I should see the "Return Summary" page
+        # Verify entered details on return summary page do not include ADS
+        And I should see the text "Edit row"
+        And the table of data is displayed
+            | Address                                                   |
+            | Royal Zoological Society Of Scotland, EDINBURGH, EH12 6TS |
+        And I should not see the text "About the Additional Dwelling Supplement"
+        And I should not see the text "ADS?"
+
+        # Edit the private individual tenant, including international details and that the data is pre populated
+        When I click on the 1 st "Edit row" link
+        Then I should see the "About the tenant" page
+        And the radio button "A private individual" should be selected
+        And I should see the text "This field is read only. Contact Revenue Scotland if the value is not as expected."
+        And I should not see the text "An organisation registered with Companies House"
+        And I should not see the text "An other organisation"
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        And I should see the text "surname" in field "Last name"
+        And field "Last name" should be readonly
+        And I should see the text "firstname" in field "First name"
+        And field "First name" should be readonly
+        And I should see the text "+34629629629" in field "Telephone number"
+        And I should see the text "noreply@necsws.com" in field "Email"
+        And I should see the text "AB323455C" in field "National Insurance Number (NINO)"
+        When I clear the "National Insurance Number (NINO)" field
+        Then I open the "Tenant does not have NINO" summary item
+        And I enter "ENGLAND" in the "Country where ID was issued" select or text field
+        And I click on the "Continue" button
+        Then I should receive the message "Provide a NINO or an alternate reference"
+
+        When I enter "AB323455C" in the "National Insurance Number (NINO)" field
+        And I open the "Tenant does not have NINO" summary item
+        And I select "ID Card" from the "Type of ID"
+        And I enter "ENGLAND" in the "Country where ID was issued" select or text field
+        And I enter "1" in the "Reference number of the ID" field
+        And I click on the "Continue" button
+        Then I should receive the message "Don't provide the alternate reference if you provide a NINO"
+
+        When I open the "Tenant does not have NINO" summary item
+        And I select "" from the "Type of ID"
+        And I clear the "Country where ID was issued" field
+        And I clear the "Reference number of the ID" field
+        And I click on the "Continue" button
+        Then I should see the "Tenant address" page
+        And I should see the text "Royal Mail" in field "address_address_line1"
+        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
+        And I should see the text "Dunstable Road" in field "address_address_line3"
+        And I should see the text "LUTON" in field "address_town"
+        And I should see the text "LU1 1AA" in field "address_postcode"
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant's contact address" page
+        And the radio button "No" should be selected
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        And I should see the text "Is the tenant connected to the landlord?"
+        And the radio button "Yes" should be selected
+        And I should see the text "Test relation" in field "How are they connected?"
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        And the radio button "Yes" should be selected
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        Then I should see the text "Mr firstname surname"
+        Then I should see the text "Royal Mail, LUTON, LU1 1AA"
+        Then I should see the text "A private individual"
+        Then I should see the text "Edit"
+
+        When I click on the 2 nd "Edit row" link
+        Then I should see the "About the tenant" page
+        And I should see the text "This field is read only. Contact Revenue Scotland if the value is not as expected."
+        And the radio button "An other organisation" should be selected
+
+        When I click on the "Continue" button
+        Then I should see the "Organisation details" page
+        And I should see the text "This field is read only. Contact Revenue Scotland if the value is not as expected."
+        And the radio button "Charity" should be selected
+
+        When I click on the "Continue" button
+        Then I should see the "Charity" page
+        And I should see the text "test Charity" in field "Name"
+        And field "Name" should be readonly
+        And I should see the hint text "This field is read only. Contact Revenue Scotland if the value is not as expected." on the item with the id "returns_lbtt_party_org_name"
+        And I should see the text "Royal Mail" in field "address_address_line1"
+        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
+        And I should see the text "Dunstable Road" in field "address_address_line3"
+        And I should see the text "LUTON" in field "address_town"
+        And I should see the text "LU1 1AA" in field "address_postcode"
+        And I should see the text "154215421" in field "Charity number"
+        And field "Charity number" should be readonly
+        And I should see the hint text "This field is read only. Contact Revenue Scotland if the value is not as expected." on the item with the id "returns_lbtt_party_charity_number"
+
+        When I click on the "Continue" button
+        Then I should see the "Contact details" page
+        And I should see the text "Bob" in field "First name"
+        And I should see the text "James" in field "Last name"
+        And I should see the text "Team leader" in field "Job title or position"
+        And I should see the text "Royal Mail" in field "address_address_line1"
+        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
+        And I should see the text "Dunstable Road" in field "address_address_line3"
+        And I should see the text "LUTON" in field "address_town"
+        And I should see the text "LU1 1AA" in field "address_postcode"
+        And I should see the text "bob.james@testcharity.com" in field "Email"
+        And I should see the text "01452145478" in field "Contact phone number"
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        And I should see the text "Is the tenant connected to the landlord?"
+        And the radio button "Yes" should be selected
+        And I should see the text "Test relation" in field "How are they connected?"
+
+        When I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        And the radio button "Yes" should be selected
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        Then I should see the text "test Charity"
+        Then I should see the text "Royal Mail, LUTON, LU1 1AA"
+        Then I should see the text "Charity"
+        Then I should see the text "Edit"
+
+        # Transaction
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the dates" page
+        And I should see the text "02/08/2022" in field "Effective date of transaction"
+        And field "Effective date of transaction" should be readonly
+        And I should see the text "This field is read only. Contact Revenue Scotland if the value is not as expected."
+        And I enter "08-11-2026" in the "Relevant date" date field
+        And I enter "03-08-2019" in the "Date of contract or conclusion of missives" date field
+        And I should see the text "10/10/2022" in field "Lease start date"
+        And field "Lease start date" should be readonly
+        And I enter "07-08-2026" in the "Lease end date" date field
+
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+        And I should receive the message "Lease end date must be the same as the relevant date"
+        And I clear the "Relevant date" field
+        And I clear the "Lease end date" field
+        And I enter "02-08-2026" in the "Relevant date" date field
+        And I enter "02-08-2026" in the "Lease end date" date field
+        And I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+
+        When I click on the "Back" link
+        And I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+
+        When I click on the "Back" link
+        Then I should see the "About the dates" page
+        And I should see the text "02/08/2026" in field "Relevant date"
+        And I should see the text "02/08/2026" in field "Lease end date"
+
+        When I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+        # linked-transactions - select no to get positive calculation results
+        And the radio button "No" should be selected
+
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        # about the lease_values rental years
+        And I should see the text "350000" in field "How much was the rent for the first year (inc VAT)?"
+
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        And  the radio button "No" should be selected
+        # Rental years
+        And I should see the text "Year 4"
+        And I should see the text "350100" in field "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_1_rent"
+        And I should see the text "360200" in field "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_2_rent"
+        And I should see the text "370200" in field "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_3_rent"
+        And I should see the text "340200" in field "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_0_rent"
+
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        And the radio button "Yes" should be selected
+        And the radio button labelled "No" should not exist
+        And I should see the text "352000" in field "Premium amount"
+        And field "Premium amount" should be readonly
+        And I should see the hint text "This field is read only. Contact Revenue Scotland if the value is not as expected." on the item with the id "returns_lbtt_lbtt_return_premium_paid"
+        And I should see the text "351000" in field "What is the relevant rent amount for this transaction?"
+        And I should see the hint text "This field is read only. Contact Revenue Scotland if the value is not as expected." on the item with the id "returns_lbtt_lbtt_return_lease_premium"
+
+        When I click on the "Continue" button
+        Then I should see the "Calculated Net Present Value (NPV)" page
+        And I should not see the text "for linked transactions"
+        # NPV calculated tax
+        And I should see the text "1303005.42" in field "Net Present Value (NPV)"
+        And I enter "1803005" in the "Net Present Value (NPV)" field
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
         And the table of data is displayed
             | About the transaction                                  | Edit          |
-            | Effective date of transaction                          | 02/08/2019    |
-            | Relevant date                                          | 08/10/2023    |
+            | Effective date of transaction                          | 02/08/2022    |
+            | Relevant date                                          | 02/08/2026    |
             | Are there any linked transactions?                     | No            |
-            | Lease start date                                       | 10/10/2019    |
-            | Lease end date                                         | 08/10/2023    |
+            | Is a premium being paid?                               | Yes           |
+            | Lease start date                                       | 10/10/2022    |
+            | Lease end date                                         | 02/08/2026    |
             | Premium amount (inc VAT)                               | £352,000.00   |
             | What is the relevant rent amount for this transaction? | £351,000.00   |
-            | Net Present Value (NPV)                                | £1,303,005.42 |
+            | Net Present Value (NPV)                                | £1,803,005.00 |
 
         # Calculation happened after the transaction section
         And the table of data is displayed
             | About the calculation          | Edit       |
-            | LBTT tax liability on rent     | £11,530.00 |
+            | LBTT tax liability on rent     | £16,530.00 |
             | LBTT tax liability on premium  | £7,600.00  |
-            | Total tax payable              | £19,130.00 |
-            | Amount already paid            | £0.00      |
-            | Amount payable for this return | £19,130.00 |
+            | Total tax payable              | £24,130.00 |
+            | Tax payable on previous return | £22,980.00 |
+            | Tax payable for this return    | £1,150.00  |
 
         # Check the date warnings are not given for a lease review
         And I should not see the text "This is usually more recent than this."
@@ -4092,32 +5010,46 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the transaction                                  | Edit          |
-            | Effective date of transaction                          | 02/08/2019    |
-            | Relevant date                                          | 08/10/2023    |
-            | Lease start date                                       | 10/10/2019    |
-            | Lease end date                                         | 08/10/2023    |
+            | Effective date of transaction                          | 02/08/2022    |
+            | Relevant date                                          | 02/08/2026    |
+            | Lease start date                                       | 10/10/2022    |
+            | Lease end date                                         | 02/08/2026    |
             | Premium amount (inc VAT)                               | £352,000.00   |
             | What is the relevant rent amount for this transaction? | £351,000.00   |
-            | Net Present Value (NPV)                                | £1,303,005.42 |
+            | Net Present Value (NPV)                                | £1,803,005.00 |
             | Are there any linked transactions?                     | No            |
+            | Is a premium being paid?                               | Yes           |
 
         # Calculation happened after the transaction section
         And the table of data is displayed
             | About the calculation          | Edit       |
-            | LBTT tax liability on rent     | £11,530.00 |
+            | LBTT tax liability on rent     | £16,530.00 |
             | LBTT tax liability on premium  | £7,600.00  |
-            | Total tax payable              | £19,130.00 |
-            | Amount already paid            | £0.00      |
-            | Amount payable for this return | £19,130.00 |
+            | Total tax payable              | £24,130.00 |
+            | Tax payable on previous return | £22,980.00 |
+            | Tax payable for this return    | £1,150.00  |
+
+        When I click on the "Add a tenant" link
+        Then I should see the "About the tenant" page
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        When I enter "Tenant3Surname" in the "Last name" field
+        And I enter "Tenant3Firstname" in the "First name" field
+        And I select "Mr" from the "Title"
+        And I enter "0123456789" in the "Telephone number" field
+        And I enter "noreply@necsws.com" in the "Email" field
+        And I enter "AB 32 34 55 C" in the "National Insurance Number (NINO)" field
+        And I click on the "Continue" button
+        And I should receive the message "National Insurance Number (NINO) is a duplicate of that for Mr firstname surname"
+        When I click on the "Back" link
+        Then I should see the "About the tenant" page
+        And I click on the "Back" link
 
         When I click on the "Submit return" button
-
-        Then I should see the "Repayment details" page
-        When I check the "No" radio button
-        And I click on the "Continue" button
-
         Then I should see the "Payment and submission" page
         When I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
         And I check the "BACS" radio button
 
         And I click on the "Submit return" button
@@ -4129,8 +5061,12 @@ Feature: LBTT Returns
             | Property address             | Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS |
             | Tenant                       | Mr firstname surname                                                             |
             | Description of transaction   | Termination                                                                      |
-            | Effective date               | 02/08/2019                                                                       |
+            | Effective date               | 02/08/2022                                                                       |
             | Your reference (if provided) | my agent ref                                                                     |
+        And I should see a link with text "Download PDF"
+
+        When I click on the "Download PDF" link to download a file
+        Then I should see the downloaded "PDF" content of "LBTT" by looking up "notification_banner_reference"
 
 
     Scenario: Make a lease return for an agent
@@ -4197,9 +5133,7 @@ Feature: LBTT Returns
         And I should see the text "LU1 1AA" in field "address_postcode"
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I click on the "Continue" button
-        Then I should receive the message "Should we use a different address for future correspondence in relation to this return can't be blank"
-        When I check the "No" radio button
+        And I check the "No" radio button
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
@@ -4918,27 +5852,24 @@ Feature: LBTT Returns
         And I click on the "Find" button
         Then I should see the "All returns" page
 
-    Scenario: To test the 3 year lease review return draft created prior to 12 months but does not submit until after the relevant date
+    Scenario: To test the lease return draft created prior to 12 months but does not submit until after the relevant date
 
-        Create a 3 year lease review return
+        Create a lease return
         Add a private individual tenant
         Add a property
-        Add transaction details (Effective date of transaction to 1098 days & Relevant date is 2 days ago)
+        Add transaction details (Effective date of transaction to 94 days & Relevant date is 2 days ago)
         Submit the return (BACS)
-
         Amend the return
         Submit the return to check that the non notifiable reason is not shown
         Retrieve the draft
         Save the draft
         Check the return is amendable
         Retrieve the draft
-
-
-        Update the Effective date of transaction to 1490 days & Relevant date to 394 days ago
+        Update the Effective date of transaction to 394 days
         Save the draft
         Check the message about amending by tomorrow is shown
         Retrieve the draft
-        Update the Effective date of transaction to 1491 days & Relevant date to 395 days ago
+        Update the Effective date of transaction to 395 days
         Save the draft
         Check the message about amending by today is shown
         retrieve the draft
@@ -4952,15 +5883,40 @@ Feature: LBTT Returns
         #Step 1:  Create new return and check Amend is available
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
-
-        When I check the "3 year lease review" radio button
-        And I click on the "Continue" button
-        Then I should see the "Return reference number" page
-
-        When I enter "RS2000003BBBB" in the "What was the original return reference" field
-        And I enter "01-06-2020" in the "What was the original return effective date" date field
+        And I check the "Lease" radio button
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
+        When I click on the "Submit return" button
+        Then I should see the text "At least one property must be present"
+        And I should see the text "Please fill in the 'About the transaction' section"
+        And I should see the text "At least one tenant must be present"
+        And I should see the text "At least one landlord must be present"
+
+        # Property
+        When I click on the "Add a property" link
+        Then I should see the "Property address" page
+        When I enter "EH12 6TS" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Property address" page
+        When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Property address" page
+        When I click on the "Continue" button
+        Then I should see the "About the property" page
+        And I should see the sub-title "Provide property details"
+        When I select "Aberdeen City" from the "Local authority"
+        And I select "ABN" from the "returns_lbtt_property_title_code"
+        And I enter "1234" in the "returns_lbtt_property_title_number" field
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        # Verify entered details on return summary
+        And I should see the text "Edit row"
+        And the table of data is displayed
+            | Address                                                   |
+            | Royal Zoological Society Of Scotland, EDINBURGH, EH12 6TS |
+
+
+        # Tenant
 
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
@@ -4998,62 +5954,90 @@ Feature: LBTT Returns
         When I check the "Yes" radio button
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
+        Then I should see the text "Mr firstname surname"
+        Then I should see the text "Royal Mail, LUTON, LU1 1AA"
+        Then I should see the text "A private individual"
+        Then I should see the text "Edit row"
 
-        When I click on the "Add a property" link
-        Then I should see the "Property address" page
-        When I enter "EH12 6TS" in the "address_summary_postcode" field
-        And I click on the "Find address" button
-        Then I should see the "Property address" page
-        When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
-        Then I should see the "Property address" page
-        When I click on the "Continue" button
-        Then I should see the "About the property" page
-        And I should see the sub-title "Provide property details"
-        When I select "Aberdeen City" from the "Local authority"
-        And I select "ABN" from the "returns_lbtt_property_title_code"
-        And I enter "1234" in the "returns_lbtt_property_title_number" field
+        When I click on the "Add a landlord" link
+        Then I should see the "About the landlord" page
         And I click on the "Continue" button
+        Then I should receive the message "Who they are can't be blank"
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+        Then I should see the "Landlord details" page
+
+        And I enter "Landlord First Name" in the "First name" field
+        And I enter "Landlord Last Name" in the "Last name" field
+        When I click on the "Continue" button
+        Then I should see the "Landlord address" page
+        And I enter "EH12 6TS" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Landlord address" page
+        And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Landlord address" page
+
+        When I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         When I click on the "Add transaction details" link
+        Then I should see the "About the transaction" page
+        And I check the "Residential" radio button
+        And I click on the "Continue" button
         Then I should see the "About the dates" page
-
-        When I enter 36 months and 2 days ago in the "Effective date of transaction" date field
+        And I enter 94 days ago in the "Effective date of transaction" date field
         And I enter 2 days ago in the "Relevant date" date field
         And I enter 1100 days ago in the "Lease start date" date field
-        And I enter 1100 days in the future in the "Lease end date" date field
-        And I click on the "Continue" button
-        Then I should see the "Linked transactions" page
+        And I enter 2100 days in the future in the "Lease end date" date field
 
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        And I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I click on the "Continue" button
+
+        Then I should see the "Linked transactions" page
+        # linked-transactions - select no to get positive calculation results
         When I check the "No" radio button
         And I click on the "Continue" button
+
         Then I should see the "About the lease values" page
-        When I enter "1234" in the "How much was the rent for the first year (inc VAT)?" field
+        # about the lease_values rental years
+        When I enter "3563859541" in the "returns_lbtt_lbtt_return_annual_rent" field
         And I click on the "Continue" button
+
         Then I should see the "About the lease values" page
         When I check the "Yes" radio button
         And I click on the "Continue" button
+
         Then I should see the "About the lease values" page
-        When I check the "No" radio button
+        When I check the "Yes" radio button
+        And the radio button "Yes" should be selected
+        And I enter "150000" in the "Premium amount" field
+        And I enter "150000" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
-        When I enter "100" in the "Net Present Value (NPV)" field
+        And I should not see the text "for linked transactions"
+        # NPV calculated tax
+        And I enter "1500005" in the "Net Present Value (NPV)" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
-        # submit
         When I click on the "Submit return" button
-        Then I should see the "Repayment details" page
-        When I check the "No" radio button
-        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
         When I check the "BACS" radio button
         And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return[lease_declaration]" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
-        And I should store the reference from the notification panel as "notification_banner_reference"
+        # Make sure the return reference is the same
+        And I should see the text "Return reference"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        And I should store the generated value with id "notification_banner_reference"
+        And I should see a link with text "Go to dashboard"
 
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
@@ -5081,6 +6065,7 @@ Feature: LBTT Returns
         Then I should see the "Payment and submission" page
         When I check the "BACS" radio button
         And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_lease_declaration" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should store the reference from the notification panel as "notification_banner_reference"
@@ -5108,6 +6093,7 @@ Feature: LBTT Returns
         Then I should see the "Payment and submission" page
         When I check the "BACS" radio button
         And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_lease_declaration" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should store the reference from the notification panel as "notification_banner_reference"
@@ -5132,8 +6118,8 @@ Feature: LBTT Returns
         Then I should see the "Dashboard" page
 
         And the table of data is displayed
-            | Return reference              | Your reference | Description         | Version | Action_1 | Action_2     | Action_3 |
-            | notification_banner_reference |                | 3 year lease review | 3       | Continue | Download PDF | Delete   |
+            | Return reference              | Your reference | Description | Version | Action_1 | Action_2     | Action_3 |
+            | notification_banner_reference |                | Lease       | 4       | Continue | Download PDF | Delete   |
 
         # Step 2: Save the created return in draft list with less than seven days left to submit return
         #         Check warning message is visible on screen
@@ -5148,12 +6134,12 @@ Feature: LBTT Returns
         When I click on the "Continue" link
         Then I should see the "Return Summary" page
         When I click on the "Edit transaction details" link
+        And I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter 1490 days ago in the "Effective date of transaction" date field
-        And I enter 394 days ago in the "Relevant date" date field
-        And I enter 1600 days ago in the "Lease start date" date field
-        And I enter 1100 days in the future in the "Lease end date" date field
+        When I enter 394 days ago in the "Effective date of transaction" date field
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
@@ -5176,8 +6162,8 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
         And the table of data is displayed
-            | Return reference              | Your reference | Description         | Version | Action_1 | Action_2     | Action_3 | Action_4                                            |
-            | notification_banner_reference |                | 3 year lease review | 2       | Continue | Download PDF | Delete   | You have until TOMORROW_DATE to complete this draft |
+            | Return reference              | Your reference | Description | Version | Action_1 | Action_2     | Action_3 | Action_4                                            |
+            | notification_banner_reference |                | Lease       | 4       | Continue | Download PDF | Delete   | You have until TOMORROW_DATE to complete this draft |
 
         When I click on the "See all returns" link
         Then I should see the "All returns" page
@@ -5191,12 +6177,11 @@ Feature: LBTT Returns
         When I click on the "Continue" link
         Then I should see the "Return Summary" page
         When I click on the "Edit transaction details" link
+        And I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter 1491 days ago in the "Effective date of transaction" date field
-        And I enter 395 days ago in the "Relevant date" date field
-        And I enter 1600 days ago in the "Lease start date" date field
-        And I enter 1100 days in the future in the "Lease end date" date field
+        When I enter 395 days ago in the "Effective date of transaction" date field
+        And I click on the "Continue" button
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
@@ -5219,8 +6204,8 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
         And the table of data is displayed
-            | Return reference              | Your reference | Description         | Version | Action_1 | Action_2     | Action_3 | Action_4                                       |
-            | notification_banner_reference |                | 3 year lease review | 2       | Continue | Download PDF | Delete   | You have until NOW_DATE to complete this draft |
+            | Return reference              | Your reference | Description | Version | Action_1 | Action_2     | Action_3 | Action_4                                       |
+            | notification_banner_reference |                | Lease       | 4       | Continue | Download PDF | Delete   | You have until NOW_DATE to complete this draft |
 
         When I click on the "See all returns" link
         Then I should see the "All returns" page
@@ -5236,12 +6221,15 @@ Feature: LBTT Returns
         When I click on the "Continue" link
         Then I should see the "Return Summary" page
         When I click on the "Edit transaction details" link
+        And I click on the "Continue" button
         Then I should see the "About the dates" page
 
         When I enter 1494 days ago in the "Effective date of transaction" date field
         And I enter 398 days ago in the "Relevant date" date field
         And I enter 1600 days ago in the "Lease start date" date field
         And I enter 1100 days in the future in the "Lease end date" date field
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
@@ -5264,8 +6252,8 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
         And the table of data is displayed
-            | Return reference              | Your reference | Description         | Version | Action_1     | Action_2 | Action_3                                                 |
-            | notification_banner_reference |                | 3 year lease review | 2       | Download PDF | Delete   | This return is no longer amendable, use the claim option |
+            | Return reference              | Your reference | Description | Version | Action_1     | Action_2 | Action_3                                                 |
+            | notification_banner_reference |                | Lease       | 4       | Download PDF | Delete   | This return is no longer amendable, use the claim option |
 
         When I click on the "See all returns" link
         Then I should see the "All returns" page
@@ -5633,5 +6621,475 @@ Feature: LBTT Returns
         And I should see the text "Why are you submitting a non-notifiable return is too long (maximum is 4000 characters)"
 
         When I enter "abcd" in the "Why are you submitting a non-notifiable return" field
+        And I click on the "Submit return" button
+        Then I should see the "Your return has been submitted" page
+
+    Scenario: Make a lease review return for an agent with amount payable less than zero
+
+        Create a lease return
+        Add a private individual tenant
+        Add an Private landlord
+        Add a property
+        Add transaction details
+        Submit the return (BACS)
+        save the return reference
+        Create a 3 year lease review return
+        Edit the calculation
+        Submit the return with repayment details
+
+        Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
+
+        # Create a lease return
+        When I click on the "Create LBTT return" menu item
+        Then I should see the "About the return" page
+
+        When I check the "Lease" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add a private individual tenant
+        When I click on the "Add a tenant" link
+        Then I should see the "About the tenant" page
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        When I enter "surname" in the "Last name" field
+        And I enter "firstname" in the "First name" field
+        And I select "Mr" from the "Title"
+        And I enter "+12 123456789" in the "Telephone number" field
+        And I enter "noreply@necsws.com" in the "Email" field
+        And I enter "GG778833C" in the "National Insurance Number (NINO)" field
+
+        And I click on the "Continue" button
+        Then I should see the "Tenant address" page
+        When I enter "AB54 8SX" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Tenant address" page
+        When I select "Brogan Fuels, Steven Road, HUNTLY, AB54 8SX" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Tenant address" page
+        When I click on the "Continue" button
+        Then I should see the "Tenant's contact address" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+
+        When I check the "Yes" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add an Private landlord
+        When I click on the "Add a landlord" link
+        Then I should see the "About the landlord" page
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+        Then I should see the "Landlord details" page
+        When I enter "firstname" in the "First name" field
+        And I enter "lastname" in the "Last name" field
+        And I click on the "Continue" button
+        Then I should see the "Landlord address" page
+        And I enter "AB54 8SX" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Landlord address" page
+        When I select "Ecosse Lifting Services Ltd, Steven Road, HUNTLY, AB54 8SX" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Landlord address" page
+        And I should see the text "Ecosse Lifting Services Ltd" in field "address_address_line1"
+        And I should see the text "Steven Road" in field "address_address_line2"
+        And I should see the text "HUNTLY" in field "address_town"
+        And I should see the text "AB54 8SX" in field "address_postcode"
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add a property
+        When I click on the "Add a property" link
+        Then I should see the "Property address" page
+        When I enter "EH12 6TS" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Property address" page
+        When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Property address" page
+        When I click on the "Continue" button
+        Then I should see the "About the property" page
+        And I should see the sub-title "Provide property details"
+        When I select "Aberdeen City" from the "Local authority"
+        And I select "ABN" from the "returns_lbtt_property_title_code"
+        And I enter "1234" in the "returns_lbtt_property_title_number" field
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add transaction details
+        When I click on the "Add transaction details" link
+        Then I should see the "About the transaction" page
+
+        When I check the "Residential" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the dates" page
+
+        When I enter "01-01-2023" in the "Effective date of transaction" date field
+        And I enter "01-01-2023" in the "Relevant date" date field
+        And I enter "01-01-2023" in the "Lease start date" date field
+        And I enter "01-01-2029" in the "Lease end date" date field
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I enter "50000" in the "How much is the rent for the first year (inc VAT)?" field
+        And I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        And I check the "Yes" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I check the "returns_lbtt_lbtt_return_premium_paid_y" radio button
+        When I enter "25000" in the "Premium amount (inc VAT)" field
+        And I enter "25000" in the "What is the relevant rent amount for this transaction?" field
+        And I click on the "Continue" button
+        Then I should see the "Calculated Net Present Value (NPV)" page
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Submit the return (BACS)
+        When I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+
+        When I check the "BACS" radio button
+        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_lease_declaration" checkbox
+        And I click on the "Submit return" button
+        Then I should see the "Your return has been submitted" page
+        And I should see the text "Return reference"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        # save the return reference
+        And I should store the generated value with id "notification_banner_reference"
+        And I should see a link with text "Go to dashboard"
+
+        # Create an 3 year lease review return
+        When I click on the "Go to dashboard" link
+        And I click on the "Create LBTT return" menu item
+        Then I should see the "About the return" page
+        When I check the "3 year lease review" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return reference number" page
+
+        When I enter the stored value "notification_banner_reference" in field "What was the original return reference"
+        And I enter "01-01-2023" in the "What was the original return effective date" date field
+        And I click on the "Continue" button
+
+        # Validate the pre population declaration on Declaration page
+        Then I should see the "Declaration" page
+        And I should see the text "We have found the most recent return for"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        And I should see the text "I, the agent, confirm that I have authority to view the data for the return referred to above"
+        And I should see the text "Some of the information will be read only. Contact Revenue Scotland if any of the read only information is not as expected."
+        And I should see the text "It is the responsibilty of the individual completing this return to check the data is correct and to update as needed (including any relief). Incorrect information can result in penalties and/or prosecution."
+
+        When I check the "returns_lbtt_lbtt_return_pre_population_declaration" checkbox
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Edit the calculation
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the dates" page
+        And I enter "01-01-2026" in the "Relevant date" date field
+        When I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I click on the "Continue" button
+        Then I should see the "Calculated Net Present Value (NPV)" page
+        And I enter "50.40" in the "Net Present Value (NPV)" field
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # submit
+        When I click on the "Submit return" button
+        Then I should see the "Claim repayment" page
+        And I should see the text "1807" in field "How much are you claiming for repayment?"
+        And field "How much are you claiming for repayment?" should be readonly
+        And I click on the "Continue" button
+        Then I should see the "Enter bank details" page
+
+        When I click on the "Continue" button
+        Then I should receive the message "Name of the account holder can't be blank"
+        And I should receive the message "Bank / building society account number can't be blank"
+        And I should receive the message "Branch sort code can't be blank"
+        And I should receive the message "Name of bank / building society can't be blank"
+
+        When I enter "Fred Flintstone" in the "Name of the account holder" field
+        And I enter "12345678" in the "Bank / building society account number" field
+        And I enter "10-11-12" in the "Branch sort code" field
+        And I enter "Natwest" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+
+        Then I should see the "Declaration" page
+        When I check the "returns_lbtt_lbtt_return_repayment_agent_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
+        And I click on the "Continue" button
+        Then I should see the "Payment and submission" page
+
+        When I check the "BACS" radio button
+        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
+        And I click on the "Submit return" button
+        Then I should see the "Your return has been submitted" page
+
+    Scenario: To test existing relief getting populated on the lease review return
+
+        Create a lease return
+        Add a private individual tenant
+        Add an Private landlord
+        Add a property
+        Add transaction details
+        Add Relief
+        Submit the return (BACS)
+        save the return reference
+        Create an 3 year lease review return
+        Validate the pre population declaration on Declaration page
+        Check About the Reliefs is visible
+        Edit the transaction details
+        submit the 3 year lease review return
+
+        Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
+
+        # Create a lease return
+        When I click on the "Create LBTT return" menu item
+        Then I should see the "About the return" page
+
+        When I check the "Lease" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add a private individual tenant
+        When I click on the "Add a tenant" link
+        Then I should see the "About the tenant" page
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        When I enter "surname" in the "Last name" field
+        And I enter "firstname" in the "First name" field
+        And I select "Mr" from the "Title"
+        And I enter "+12 123456789" in the "Telephone number" field
+        And I enter "noreply@necsws.com" in the "Email" field
+        And I enter "GG778833C" in the "National Insurance Number (NINO)" field
+
+        And I click on the "Continue" button
+        Then I should see the "Tenant address" page
+        When I enter "AB54 8SX" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Tenant address" page
+        When I select "Brogan Fuels, Steven Road, HUNTLY, AB54 8SX" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Tenant address" page
+        When I click on the "Continue" button
+        Then I should see the "Tenant's contact address" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "Tenant details" page
+
+        When I check the "Yes" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add an Private landlord
+        When I click on the "Add a landlord" link
+        Then I should see the "About the landlord" page
+        When I check the "A private individual" radio button
+        And I click on the "Continue" button
+        Then I should see the "Landlord details" page
+        When I enter "firstname" in the "First name" field
+        And I enter "lastname" in the "Last name" field
+        And I click on the "Continue" button
+        Then I should see the "Landlord address" page
+        And I enter "AB54 8SX" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Landlord address" page
+        When I select "Ecosse Lifting Services Ltd, Steven Road, HUNTLY, AB54 8SX" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Landlord address" page
+        And I should see the text "Ecosse Lifting Services Ltd" in field "address_address_line1"
+        And I should see the text "Steven Road" in field "address_address_line2"
+        And I should see the text "HUNTLY" in field "address_town"
+        And I should see the text "AB54 8SX" in field "address_postcode"
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add a property
+        When I click on the "Add a property" link
+        Then I should see the "Property address" page
+        When I enter "EH12 6TS" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Property address" page
+        When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
+        And if available, click the "Select" button
+        Then I should see the "Property address" page
+        When I click on the "Continue" button
+        Then I should see the "About the property" page
+        And I should see the sub-title "Provide property details"
+        When I select "Aberdeen City" from the "Local authority"
+        And I select "ABN" from the "returns_lbtt_property_title_code"
+        And I enter "1234" in the "returns_lbtt_property_title_number" field
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add transaction details
+        When I click on the "Add transaction details" link
+        Then I should see the "About the transaction" page
+
+        When I check the "Residential" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the dates" page
+
+        When I enter "01-01-2023" in the "Effective date of transaction" date field
+        And I enter "01-01-2023" in the "Relevant date" date field
+        And I enter "01-01-2023" in the "Lease start date" date field
+        And I enter "01-01-2029" in the "Lease end date" date field
+        And I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
+        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+
+        When I check the "No" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I enter "50000" in the "How much is the rent for the first year (inc VAT)?" field
+        And I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        And I check the "Yes" radio button
+        And I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I check the "returns_lbtt_lbtt_return_premium_paid_y" radio button
+        When I enter "25000" in the "Premium amount (inc VAT)" field
+        And I enter "25000" in the "What is the relevant rent amount for this transaction?" field
+        And I click on the "Continue" button
+        Then I should see the "Calculated Net Present Value (NPV)" page
+        And I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add Relief
+        When I click on the "Add reliefs" link
+        Then I should see the "Reliefs on this transaction" page
+        And I select "Charities relief (Partial Relief)" from the "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_0_relief_type_expanded"
+        And I enter "100" in the "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_0_relief_amount" field
+        And I click on the "Add row" button
+        And I select "Group relief (Partial Relief)" from the "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_1_relief_type_expanded"
+        And I enter "100" in the "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_1_relief_amount" field
+        And I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+
+        # Submit the return (BACS)
+        When I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+
+        When I check the "BACS" radio button
+        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_lease_declaration" checkbox
+        And I click on the "Submit return" button
+        Then I should see the "Your return has been submitted" page
+        And I should see the text "Return reference"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        # save the return reference
+        And I should store the generated value with id "notification_banner_reference"
+        And I should see a link with text "Go to dashboard"
+
+        # Create an 3 year lease review return
+        When I click on the "Go to dashboard" link
+        And I click on the "Create LBTT return" menu item
+        Then I should see the "About the return" page
+        When I check the "3 year lease review" radio button
+        And I click on the "Continue" button
+        Then I should see the "Return reference number" page
+
+        When I enter the stored value "notification_banner_reference" in field "What was the original return reference"
+        And I enter "01-01-2023" in the "What was the original return effective date" date field
+        And I click on the "Continue" button
+
+        # Validate the pre population declaration on Declaration page
+        Then I should see the "Declaration" page
+        And I should see the text "We have found the most recent return for"
+        And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
+        And I should see the text "I, the agent, confirm that I have authority to view the data for the return referred to above"
+        And I should see the text "Some of the information will be read only. Contact Revenue Scotland if any of the read only information is not as expected."
+        And I should see the text "It is the responsibilty of the individual completing this return to check the data is correct and to update as needed (including any relief). Incorrect information can result in penalties and/or prosecution."
+
+        When I check the "returns_lbtt_lbtt_return_pre_population_declaration" checkbox
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Check 'About the Reliefs' is visible
+        And the table of data is displayed
+            | About the reliefs                 | Edit reliefs                       |
+            | Type of relief                    | Amount of LBTT tax saved by relief |
+            | Charities relief (Partial Relief) | £100.00                            |
+            | Group relief (Partial Relief)     | £100.00                            |
+
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the dates" page
+        And I enter "01-01-2026" in the "Relevant date" date field
+        When I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I click on the "Continue" button
+        Then I should see the "About the lease values" page
+        When I click on the "Continue" button
+        Then I should see the "Calculated Net Present Value (NPV)" page
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # submit the 3 year lease review return
+        When I click on the "Submit return" button
+        Then I should see the "Claim repayment" page
+        And I should see the text "250" in field "How much are you claiming for repayment?"
+        And field "How much are you claiming for repayment?" should be readonly
+        And I click on the "Continue" button
+        Then I should see the "Enter bank details" page
+
+        When I enter "Fred Flintstone" in the "Name of the account holder" field
+        And I enter "12345678" in the "Bank / building society account number" field
+        And I enter "10-11-12" in the "Branch sort code" field
+        And I enter "Natwest" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+
+        Then I should see the "Declaration" page
+        When I check the "returns_lbtt_lbtt_return_repayment_agent_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
+        And I click on the "Continue" button
+        Then I should see the "Payment and submission" page
+
+        When I check the "BACS" radio button
+        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page

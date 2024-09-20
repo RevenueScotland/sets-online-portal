@@ -142,6 +142,9 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   # :validates  -  List of extra validation contexts.  By default submitted params will be validated if a validation
   #                context exists on the object for that name.  This option allows us to add others, eg to provide
   #                page/step/action -based validation eg to check for un-checked check boxes on declaration pages.
+  # :does_not_validate  -  List of extra validation contexts that are not validated on this step.
+  #                This allows us to remove fields that we don't want to validate on this page to avoid the user
+  #                getting in trap by the validation.
   # :loop       -  this is used for wizard page(s) that needs to loop around a (set of) page(s).
   #                If you are using the loop functionality then the route must end with /(:sub_object_index)
   #                There are three specific values it only accepts
@@ -278,6 +281,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   # @param wizard_params [Hash] params submitted eg on a form the keys of which will be the validation contexts to check
   # @param overrides [Hash] the keys used in this method and it's child-methods:
   #   - :validates [Symbol] extra validation contexts to be used
+  #   - :does_not_validate [Symbol] List of extra validation contexts that are not validated on this step.
   #   - :sub_object_attribute [Symbol] this is the attribute(s) of the cached object which contains the sub-object
   # @return [Boolean] true if valid else false
   def wizard_valid?(wizard_cached_object, wizard_params, overrides)
@@ -494,22 +498,24 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     valid
   end
 
-  # Adds any additional contexts from the overrides onto the passed validation context
+  # Adds or removes any additional contexts from the overrides onto the passed validation context
   #
   # @param validation_contexts - the existing validation contexts which may be added to
   # @param overrides - checks for the :validates option to add contexts @see #wizard_step for more details
+  #                  - checks for the :does_not_validate option to remove specific contexts
   # @return [Array] - The revised list of validation contexts
   def add_validation_contexts(validation_contexts, overrides)
     new_validation_contexts = validation_contexts
     # add optional extra validation contexts
     if overrides.key?(:validates)
-      validations = overrides[:validates]
-
-      # turn it into an array if it's not already
-      validations = Array(validations)
-
       # add to the list of validation contexts
-      validations.each { |v| new_validation_contexts << v }
+      new_validation_contexts += Array(overrides[:validates])
+    end
+
+    # remove optional extra validation contexts
+    if overrides.key?(:does_not_validate)
+      # delete from the list of validation contexts
+      new_validation_contexts -= Array(overrides[:does_not_validate])
     end
 
     new_validation_contexts

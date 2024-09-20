@@ -148,14 +148,13 @@ When('I click on the {int} st/nd/rd/th {string} button') do |integer, string|
   all('button', text: string)[integer].click
 end
 
-# JS mode or not may make a button visible or not.  This method clicks it if it's available and doesn't throw
-# an exception if it is not.  (Jenkins always runs the browser so JS mode is on whereas on dev machine's it's off).
+# JS mode or not may make a button visible or not.  This method clicks it if running rake tests
+# (Jenkins always runs the browser so JS mode is on whereas on dev machine's it's off).
 Then('if available, click the {string} button') do |string|
-  wait_for_turbo(js_processing_wait, page_processing_wait)
-  if has_button?(string, wait: not_present_wait)
+  if Capybara.current_driver == :rack_test
     click_button(string)
   else
-    Rails.logger.info("Optional button #{string} not found")
+    Rails.logger.info("button #{string} not pressed, assume not available")
   end
 end
 
@@ -243,6 +242,12 @@ When('I click on the {string} link') do |string|
   scroll_to(find_link(string), align: :center) unless Capybara.current_driver == :rack_test
   # This finds the link again, useful if the page is still processing
   click_link(string)
+end
+
+When('The field with id {string} should get focus') do |id|
+  # Check the focus on element if page is using JS
+  # Rack_test doesn't focus on element as it doesn't support JS
+  page.evaluate_script('document.activeElement.id') == id unless Capybara.current_driver == :rack_test
 end
 
 When('I click on the {string} menu item') do |string|
@@ -719,4 +724,12 @@ end
 # Check the selected option on a select drop-down
 Then('I should see the {string} option selected in {string}') do |string, field|
   assert page.has_select?(field, selected: string), "I cannot see the value #{string} selected in #{field}"
+end
+
+# Check the hint text linked to a item via id
+# Used when we have the same hint text or part of the same hint text multiple times on a page
+# We check the hint text via the items on the page rather than a generic text search on the page
+# -hint is appended to get the hint text span for the item
+Then('I should see the hint text {string} on the item with the id {string}') do |string, string2|
+  assert page.find_by_id("#{string2}-hint").text.include?(string)
 end

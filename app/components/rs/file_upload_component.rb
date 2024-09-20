@@ -105,8 +105,8 @@ module RS
     # sets the legend and hint text for this type based on the fieldset key
     def legend_and_hint(type)
       if @fieldset_key
-        legend = t("#{@fieldset_key}.#{type}.legend", **@interpolations).html_safe
-        hint = t("#{@fieldset_key}.#{type}.hint", default: '', **@interpolations).html_safe
+        legend = I18n.t("#{@fieldset_key}.#{type}.legend", **@interpolations).html_safe
+        hint = I18n.t("#{@fieldset_key}.#{type}.hint", default: '', **@interpolations).html_safe
       else
         legend = ''
         hint = ''

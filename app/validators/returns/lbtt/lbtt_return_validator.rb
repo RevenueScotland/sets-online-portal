@@ -89,11 +89,12 @@ module Returns
 
       # Checks if any of the parties have validation errors
       def validate_parties(lbtt_return, errors)
-        validate_child_hash(lbtt_return.buyers, (I18n.t '.buyer'), errors)
-        validate_child_hash(lbtt_return.sellers, (I18n.t '.seller'), errors)
-        validate_child_hash(lbtt_return.tenants, (I18n.t '.tenant'), errors)
-        validate_child_hash(lbtt_return.landlords, (I18n.t '.landlord'), errors)
-        validate_child_hash(lbtt_return.new_tenants, (I18n.t '.new_tenant'), errors)
+        translation_path = 'returns.lbtt_parties.about_the_party'
+        validate_child_hash(lbtt_return.buyers, (I18n.t "#{translation_path}.BUYER_title"), errors)
+        validate_child_hash(lbtt_return.sellers, (I18n.t "#{translation_path}.SELLER_title"), errors)
+        validate_child_hash(lbtt_return.tenants, (I18n.t "#{translation_path}.TENANT_title"), errors)
+        validate_child_hash(lbtt_return.landlords, (I18n.t "#{translation_path}.LANDLORD_title"), errors)
+        validate_child_hash(lbtt_return.new_tenants, (I18n.t "#{translation_path}.NEWTENANT_title"), errors)
       end
 
       # Passes list of objects and check all objects in the list are valid, add error if not valid
@@ -139,6 +140,9 @@ module Returns
       def save_common_validation(model)
         model.errors.add(:base, :missing_properties_entries, link_id: 'add_a_property') if model.properties.blank?
         transaction_validation(model)
+        # Since we do not prepopulate the relevant date details
+        validate_relevant_date(model) if %w[ASSIGN TERMINATE LEASEREV].include? model.flbt_type
+
         return unless model.user_account_type != 'PUBLIC' && model.agent.blank?
 
         model.errors.add(:base, :missing_agent_details, link_id: 'edit_agent_details')
@@ -157,6 +161,13 @@ module Returns
         return if model.effective_date.present?
 
         model.errors.add(:base, :missing_about_the_transaction, link_id: 'add_transaction_details')
+      end
+
+      # Validates if the relevant date is not blank
+      def validate_relevant_date(model)
+        return if model.relevant_date.present?
+
+        model.errors.add(:relevant_date, :cant_be_blank, link_id: 'edit_transaction_details')
       end
 
       # If there is at least one non individual buyer then ads is due on

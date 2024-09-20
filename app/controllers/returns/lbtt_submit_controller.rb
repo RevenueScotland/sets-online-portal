@@ -6,7 +6,8 @@ module Returns
   class LbttSubmitController < ApplicationController
     include Wizard
     include ControllerHelper
-    include LbttControllerHelper
+    include LbttControllerFilterParamsHelper
+    include LbttTaxHelper
 
     authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
     # Allow unauthenticated/public access to claim actions
@@ -106,6 +107,11 @@ module Returns
     def repayment_claim_amount_setup_step
       model = load_step
 
+      if @lbtt_return.any_lease_review? && @lbtt_return.tax.tax_due_for_return < '0'
+        @lbtt_return.repayment_amount_claimed = -1 * @lbtt_return.tax.tax_due_for_return.to_i
+        @lbtt_return.repayment_ind = 'Y'
+      end
+
       return model unless @lbtt_return.show_ads?
 
       @lbtt_return.repayment_amount_claimed ||= @lbtt_return.ads.ads_repay_amount_claimed
@@ -114,6 +120,10 @@ module Returns
 
     # Returns a path to the next step after the amendment_reason action,
     def amendment_reason_next_step
+      if @lbtt_return.any_lease_review? && @lbtt_return.tax.tax_due_for_return < '0'
+        return returns_lbtt_repayment_claim_amount_path
+      end
+
       return returns_lbtt_declaration_path unless @lbtt_return.show_repayment?
 
       STEPS

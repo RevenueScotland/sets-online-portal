@@ -44,7 +44,7 @@ module DownloadHelper
   # returns the username if current user is authorized
   # It can be overridden in the controller e.g. in the claim_payment_controller
   def sub_directory
-    current_user.username || 'unauthenticated'
+    current_user&.username || 'unauthenticated'
   end
 
   # Checks if the file on the file system contains a virus, if it does the file is removed, and error is logged

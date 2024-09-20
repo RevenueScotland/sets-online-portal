@@ -1,4 +1,8 @@
 <% content_for(:page_title, t('.title')) %>
 <%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f| %>
-  <%= f.ds_currency(method: :repayment_amount_claimed) %>
+  <% if @lbtt_return.any_lease_review? && @lbtt_return.tax.tax_due_for_return < "0" %>
+    <%= f.ds_currency(method: :repayment_amount_claimed, readonly: true) %>
+  <% else %>
+    <%= f.ds_currency(method: :repayment_amount_claimed) %>  
+  <% end %>
 <% end %>

@@ -30,8 +30,12 @@ Feature: Back Link
         And I check the "3 year lease review" radio button
         And I click on the "Continue" button
         And I enter "RS2000003BBBB" in the "What was the original return reference" field
-        And I enter "01-06-2020" in the "What was the original return effective date" date field
+        And I enter "01-06-2021" in the "What was the original return effective date" date field
         And I click on the "Continue" button
+        Then I should see the "Declaration" page
+        And I check the "returns_lbtt_lbtt_return_pre_population_declaration" checkbox
+
+        When I click on the "Continue" button
         And I should see the "Return Summary" page
         And I click on the "Add a tenant" link
         And I check the "A private individual" radio button

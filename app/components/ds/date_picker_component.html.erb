@@ -1,7 +1,7 @@
 <%= ds_field_wrapper(method: method, one_question: one_question, optional: optional, show_label: show_label, 
-                     interpolations: interpolations, type: :date) do |wrapper| %>
+                     interpolations: interpolations, type: :date, readonly: readonly) do |wrapper| %>
   <div class="ds_input__wrapper">
     <%= builder.text_field(method,wrapper.add_ds_html_options(add_html_options({ value: formatted_value , class: "ds_input",
-      placeholder: "dd/mm/yyyy", data_mindate:"01/01/2015", data_maxdate:"31/12/3000"}), ds_width_class: 'ds_input--fixed-10')) %>
+    placeholder: "dd/mm/yyyy", data_mindate:"01/01/2015", data_maxdate:"31/12/3000"}), ds_width_class: 'ds_input--fixed-10')) %>
   </div>
 <% end %>

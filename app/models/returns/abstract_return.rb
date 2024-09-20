@@ -9,8 +9,10 @@ module Returns
     # tare_refno is the number the back office uses to identify this return (probably the primary key)
     # form_type is the status of the return 'D' for draft, 'L'/'F' for Latest/Filed
     # previous_pay_method is the payment method used on the previous version of a return (nil for the first return)
+    # non_notifiable_reasons is the reason why the return is non notifiable
+    # current_user is the current logged in user
     attr_accessor :tare_reference, :tare_refno, :form_type, :previous_form_type, :version, :previous_fpay_method,
-                  :non_notifiable_reasons
+                  :non_notifiable_reasons, :current_user, :prepopulated
 
     # @return [Boolean] whether or not this return is an amendment based on the version number and form type
     def amendment?
@@ -66,6 +68,7 @@ module Returns
       call_ok?(operation, load_request) do |body|
         refined_hash = convert_back_office_hash(body[response_element])
         output = yield(refined_hash)
+        output.current_user = requested_by
         return copy_to_previous(output) if output.present? && output.is_a?(AbstractReturn)
 
         raise Error::AppError.new(' Load', "Loading #{ref_no} failed")

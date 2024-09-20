@@ -39,6 +39,12 @@
   <%= ds_paragraph{t('return.submit.common.queries_contact_text')} if current_user %>
 <% end %>
 <%= ds_paragraph{ t('.include_transaction_ref_html') } %>
+<% if @lbtt_return.any_lease_review? %>
+  <%= ds_link(name: t('.download_pdf'),
+              url: returns_lbtt_download_pdf_path,
+              target: '_blank',
+              show_new_window: false) %> <br>
+<% end %>
 <% if can? RS::AuthorisationHelper::DOWNLOAD_RECEIPT %>
   <%= ds_link(name: t('return.submit.common.print_confirmation_text'), url: returns_lbtt_download_receipt_path, target: "_blank") %><br>
 <% end %>

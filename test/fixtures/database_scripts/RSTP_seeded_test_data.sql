@@ -9,6 +9,7 @@
 --***********************************************************************
 
 set serverout on
+set define off
 
 exec fl_variables.set_g_username('EXTPWSUSER');
 
@@ -58,11 +59,11 @@ DECLARE
   -- The amendable and non amendable date need to be updated once a year at the beginning of august
   -- Then update the same dates in the dashboard_returns.feature
   -- Also update the dates in the lbtt_returns.feature file
-  AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2022';
-  NON_AMENDABLE_DATE VARCHAR2(12) := '01-JUN-2020';
+  AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2023';
+  NON_AMENDABLE_DATE VARCHAR2(12) := '01-JUN-2021';
   -- This is set to a few days before the amendable date for older versions
-  SLFT_SUBMITTED_DATE VARCHAR2(12) := '19-JUN-2022';
-  SLFT_AMENDABLE_YEAR VARCHAR2(4) := '2022';
+  SLFT_SUBMITTED_DATE VARCHAR2(12) := '19-JUN-2023';
+  SLFT_AMENDABLE_YEAR VARCHAR2(4) := '2023';
   
       PROCEDURE create_or_maintain_cde(p_par_refno parties.par_refno%TYPE,
          p_cde_cme_code contact_details.cde_cme_code%TYPE,
@@ -78,16 +79,23 @@ DECLARE
            AND TRUNC(SYSDATE) BETWEEN cde_start_date AND NVL(cde_end_date,TRUNC(SYSDATE));
 
          ln_cde_ref contact_details.cde_refno%TYPE;
+         l_cde_refno contact_details.cde_refno%TYPE;
       BEGIN
          OPEN c_check_cde;
          FETCH c_check_cde INTO ln_cde_ref;
          IF c_check_cde%NOTFOUND
          THEN
+            l_cde_refno := cde_refno.nextval;
             INSERT INTO contact_details
                (cde_refno,cde_cme_code,cde_frv_fao_code,cde_object_reference,cde_start_date,cde_contact_value)
             VALUES
-               (cde_refno.nextval,p_cde_cme_code,'PAR',p_par_refno,TRUNC(SYSDATE),p_value);
+               (l_cde_refno,p_cde_cme_code,'PAR',p_par_refno,TRUNC(SYSDATE),p_value);
             dbms_output.put_line('Inserted CDE : '||p_cde_cme_code||' '||p_value);
+
+            INSERT INTO contact_details_history
+               (cdeh_refno, cdeh_cme_code, cdeh_frv_fao_code, cdeh_object_reference, cdeh_object_version, cdeh_contact_value, cdeh_primary_ind, cdeh_srv_code,cmeh_cde_refno)
+            VALUES
+               (cdeh_seq.nextval,p_cde_cme_code,'PAR',p_par_refno,1,p_value,'Y','SYS',l_cde_refno);
          ELSE
             UPDATE contact_details
             SET cde_contact_value = p_value
@@ -95,6 +103,7 @@ DECLARE
             dbms_output.put_line('Updated CDE : '||p_cde_cme_code||' '||p_value);
          END IF;
          CLOSE c_check_cde;
+
       END;
       
         PROCEDURE create_or_maintain_address(p_refno address_usages.aus_object_reference%TYPE
@@ -104,7 +113,8 @@ DECLARE
          ,p_adr_town addresses.adr_town%TYPE
          ,p_adr_county addresses.adr_county%TYPE
          ,p_adr_postcode addresses.adr_postcode%TYPE
-		 ,p_adr_type VARCHAR2 DEFAULT 'CORR')
+		     ,p_adr_type VARCHAR2 DEFAULT 'CORR'
+         ,p_adr_country addresses.adr_country%TYPE DEFAULT 'GB')
       IS
       
          CURSOR c_check_aus
@@ -125,7 +135,7 @@ DECLARE
             INSERT INTO addresses
                (adr_refno,adr_address_line_1,adr_address_line_2,adr_town,adr_postcode,adr_county,adr_country)
             VALUES
-               (adr_seq.nextval,p_adr_address_line_1,p_adr_address_line_2,p_adr_town,p_adr_postcode,p_adr_county,'GB')
+               (adr_seq.nextval,p_adr_address_line_1,p_adr_address_line_2,p_adr_town,p_adr_postcode,p_adr_county,p_adr_country)
             RETURNING adr_refno INTO ln_adr_ref;
                
             INSERT INTO address_usages
@@ -193,6 +203,8 @@ BEGIN
   DELETE FROM lbtt_yearly_rents WHERE lbyr_lbtt_tare_refno IN (
        SELECT lpli_lbtt_tare_refno FROM lbtt_return_party_links WHERE lpli_flpt_type = 'AGENT' AND lpli_par_refno IN 
          (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%'));
+  DELETE FROM lbtt_yearly_rents WHERE lbyr_lbtt_tare_refno IN (
+        SELECT tare_refno FROM tax_returns WHERE tare_reference = 'RS2000003BBBB');
   DELETE FROM lbtt_tax_return_links WHERE lbtr_tare_refno IN (
        SELECT lpli_lbtt_tare_refno FROM lbtt_return_party_links WHERE lpli_flpt_type = 'AGENT' AND lpli_par_refno IN 
          (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%'));
@@ -219,6 +231,7 @@ BEGIN
   DELETE FROM return_repayments WHERE rrep_tare_refno IN (SELECT tare_refno FROM tax_returns WHERE tare_srv_code = 'LBTT' and NOT EXISTS 
       (SELECT NULL FROM lbtt_returns WHERE lbtt_tare_refno = tare_refno));
   DELETE FROM tax_returns WHERE tare_srv_code = 'LBTT' and NOT EXISTS (SELECT NULL FROM lbtt_returns WHERE lbtt_tare_refno = tare_refno);
+  DELETE FROM contact_details_history WHERE NOT EXISTS (SELECT null FROM contact_details WHERE cde_frv_fao_code = 'PAR' AND cde_object_reference = cmeh_cde_refno);
   DELETE FROM contact_details WHERE cde_frv_fao_code = 'PAR' AND NOT EXISTS (SELECT null FROM parties WHERE par_refno = cde_object_reference);
   
   -- Delete financial_transactions
@@ -1452,7 +1465,10 @@ BEGIN
     lbtt_calculated,lbtt_due_before_reliefs,lbtt_total_reliefs,lbtt_tax_due,
     lbtt_orig_calculated,lbtt_orig_due_before_reliefs,lbtt_orig_total_reliefs,lbtt_orig_tax_due,
     lbtt_ads_due_ind,lbtt_ads_due,lbtt_orig_ads_due,
-    lbtt_fpay_method,lbtt_fpay_frd_domain,lbtt_fpay_srv_code,lbtt_fpay_wrk_refno
+    lbtt_fpay_method,lbtt_fpay_frd_domain,lbtt_fpay_srv_code,lbtt_fpay_wrk_refno,
+    lbtt_lease_start_date,lbtt_lease_end_date,lbtt_annual_rent,
+    lbtt_same_rent_each_year_ind,lbtt_net_present_value,lbtt_relevant_rent,
+    lbtt_lease_premium,lbtt_premium_tax_due,lbtt_npv_tax_due 
 ) VALUES (
     l_tare_refno,1,'P','L','YY/XXXXX02-99',
     '3','PROPERTYTYPE','SYS',1, -- Non Residential
@@ -1465,16 +1481,65 @@ BEGIN
     1000,1000,0,1000,
     1000,1000,0,1000,
     'N',0,0,
-    'BACS','PAYMENT TYPE','LBTT',1);
-    
+    'BACS','PAYMENT TYPE','LBTT',1,
+    '10-OCT-2022','08-OCT-2026',350000,'N',
+    1304875.26,351000,352000,500,600);
+
+  INSERT INTO cases (
+    case_refno,case_reference,
+    case_caty_type,case_caty_srv_code,case_caty_wrk_refno,
+    case_cast_status,case_casr_reason,
+    case_automatic_ind,case_fcas_source,case_fcas_frd_domain,case_fcas_wrk_refno,case_fcas_srv_code,
+    case_receipt_date,case_all_information_date,
+    case_fobt_type,case_fobt_frd_domain,case_fobt_wrk_refno,case_fobt_srv_code,case_related_reference
+  ) VALUES (
+    case_seq.nextval,'PORTAL.RS2000003BBBB',
+    'RETURN','LBTT',1,
+    'CLOSED','AUTOCLOSED',
+    'Y','ONLINEFORM','CASESOURCES',1,'LBTT',
+    '01-SEP-2019','01-SEP-2019',
+    'RETURN','CASEOBJECTTYPES',1,'LBTT','RS2000003BBBB'
+  ) 
+  returning case_refno INTO l_case_refno;
+
+  INSERT INTO case_return_links (
+    crli_tare_refno, crli_case_refno
+  ) VALUES (
+    l_tare_refno,l_case_refno
+  );
+
+  INSERT INTO lbtt_yearly_rents (
+    lbyr_lbtt_tare_refno, lbyr_lbtt_version, lbyr_year, lbyr_rent
+  ) VALUES (
+      l_tare_refno,1,1,350100
+  );
+
+  INSERT INTO lbtt_yearly_rents (
+    lbyr_lbtt_tare_refno, lbyr_lbtt_version, lbyr_year, lbyr_rent
+  ) VALUES (
+      l_tare_refno,1,2,360200
+  );
+
+  INSERT INTO lbtt_yearly_rents (
+    lbyr_lbtt_tare_refno, lbyr_lbtt_version, lbyr_year, lbyr_rent
+  ) VALUES (
+      l_tare_refno,1,3,370200
+  );
+
+  INSERT INTO lbtt_yearly_rents (
+    lbyr_lbtt_tare_refno, lbyr_lbtt_version, lbyr_year, lbyr_rent
+  ) VALUES (
+      l_tare_refno,1,4,340200
+  );    
+  
   INSERT INTO properties (
     pro_lau_code,pro_lau_frd_domain,pro_lau_wrk_refno, pro_lau_srv_code
   ) VALUES (
     '9055','LAU',1, 'SYS'
   ) returning pro_refno INTO l_pro_refno;
   
-   create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'11 Acacia Avenue',
-     p_adr_address_line_2=>'',p_adr_town=>'Hemel Hempstead',p_adr_county=>'Hertfordshire',p_adr_postcode=>'HP2 7DX',p_adr_type=>'PHYSICAL');
+   create_or_maintain_address(p_refno=>l_pro_refno,p_fao_code=>'PRO',p_adr_address_line_1=>'Marks & Spencer plc',
+     p_adr_address_line_2=>'Unit 14',p_adr_town=>'Glasgow',p_adr_county=>'Lanarkshire',p_adr_postcode=>'G1 3SQ',p_adr_type=>'PHYSICAL',p_adr_country=>'SCO');
  
    history_tables_api.snapshot_property( p_pro_refno=>l_pro_refno,p_snapshot_src_vn=>NULL,p_proh_version=>l_h_version);
                              
@@ -1482,26 +1547,31 @@ BEGIN
     lppr_pro_refno,lppr_lbtt_tare_refno,lppr_lbtt_version,lppr_proh_version
   ) VALUES (
     l_pro_refno,l_tare_refno,1,l_h_version);
+    
 
   INSERT INTO parties
-    (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
+    (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind,par_per_ni_no)
   VALUES
-    (par_refno_seq.nextval,'PER','Buyer-First','Derek','N')
+    (par_refno_seq.nextval,'PER','Buyer-First','Derek','N','RW471856D')
   RETURNING par_refno INTO l_tmp_par_refno;
-  
+
+  create_or_maintain_cde(p_par_refno=>l_tmp_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'DerekBuyer@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_tmp_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700904321');
   create_or_maintain_address(p_refno=>l_tmp_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'22 Coronation Street',
-    p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+    p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB',
+    p_adr_type => 'PHYSICAL');
 
   history_tables_api.snapshot_party( p_par_refno=>l_tmp_par_refno,p_snapshot_src_vn=>NULL,p_parh_version=>l_h_version);
 
   INSERT INTO lbtt_return_party_links (
     lpli_par_refno,lpli_lbtt_tare_refno,lpli_lbtt_version,
     lpli_flpt_type,lpli_flpt_srv_code,lpli_flpt_frd_domain,lpli_flpt_wrk_refno,
-    lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version
+    lpli_buyer_seller_linked_ind,lpli_authority_ind,lpli_orig_authority_ind,lpli_parh_version,
+    lpli_contact_parh_version, lpli_contact_par_refno, lpli_acting_trustee_ind
 ) VALUES (
     l_tmp_par_refno,l_tare_refno,1,
     'BUYER','LBTT','RETURNPARTYLINKS',1,
-    'N','N','N',l_h_version);
+    'N','N','N',l_h_version,1,l_tmp_par_refno,'Y');
    
    INSERT INTO parties
     (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind)
@@ -1534,7 +1604,6 @@ BEGIN
     l_par_refno,l_tare_refno,1,
     'AGENT','LBTT','RETURNPARTYLINKS',1,
     'Y','N','N',l_h_version);
-    
   --------
   -- FINAL lease less than 12 months
   INSERT INTO tax_returns
@@ -2605,4 +2674,3 @@ BEGIN
   COMMIT;
 END;
 /
-

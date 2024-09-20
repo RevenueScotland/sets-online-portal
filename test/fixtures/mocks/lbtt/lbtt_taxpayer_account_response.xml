@@ -8,7 +8,7 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:core="http://northgate-is.com/FL/Core">
       <core:Success>true</core:Success>
-      <CompanyName>Test Portal Company</CompanyName>
+      <CompanyName>Adam Portal Test</CompanyName>
       <EmailAddress>noreply@necsws.com</EmailAddress>
       <PhoneNumber>07700900321</PhoneNumber>
       <Address>
@@ -20,8 +20,8 @@
         <core:AddressCountryCode>GB</core:AddressCountryCode>
       </Address>
       <MarketingIndicator>N</MarketingIndicator>
-      <PartyNINO>AB123456D</PartyNINO>
-      <PartyAccountType>AGENT</PartyAccountType>
+      <PartyNINO>AB123456G</PartyNINO>
+      <PartyAccountType>TAXPAYER</PartyAccountType>
       <CurrDDInstructionAvail>false</CurrDDInstructionAvail>
       <UserServices>
         <UserService>LBTT</UserService>

@@ -3,4 +3,6 @@
   <%= f.ds_text_field(method: :orig_return_reference) %>
   <%= f.ds_date_picker(method: :orig_effective_date, interpolations: { link: ds_link(name: t('.orig_effective_date'), url: external_link_url('EFFECTIVE_DATE'), target: '_blank') } 
   ) %>
+  <%= f.ds_text_field(method: :orig_landlord_name) if current_user.blank? %>
+  <%= f.ds_text_field(method: :taxpayer_email_id) if current_user.blank? %>
 <% end %>

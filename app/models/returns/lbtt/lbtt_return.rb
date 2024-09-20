@@ -21,7 +21,8 @@ module Returns
            non_chargeable deferral_reference relevant_rent bank_name account_number branch_code account_holder_name
            fpay_method authority_ind declaration lease_declaration parties payment_date filing_date current_flbt_type
            repayment_ind repayment_amount_claimed repayment_declaration repayment_agent_declaration account_type
-           ads change_reason orig_effective_date non_notifiable_submit_ind non_notifiable_explanation]
+           ads change_reason orig_effective_date non_notifiable_submit_ind non_notifiable_explanation prepopulated
+           pre_population_declaration pre_population_submit_declaration orig_landlord_name taxpayer_email_id]
       end
 
       attribute_list.each { |attr| attr_accessor attr }
@@ -32,16 +33,20 @@ module Returns
                        :annual_rent, :relevant_rent, :repayment_amount_claimed, :account_number
 
       # Holds items that are internal and not set by the user
-      # The attribute user_account_type is used to determine current_user account type, in other words, a
-      # user who is submitting return. This needs to be populated on a new instance of a lbtt_return object.
       # LBTT tax calculations object to manage and store tax calculation results.
       # Not including in the attribute_list so it can't be posted to, ie not user editable from this object
-      attr_accessor :tax, :user_account_type
+      attr_accessor :tax
 
       validates :flbt_type, presence: true, on: :flbt_type
       validates :orig_return_reference, presence: true, reference_number: true, on: :orig_return_reference
       validates :orig_effective_date, custom_date: true, presence: true, compare_date: true, on: :orig_effective_date
+      validates :orig_landlord_name, presence: true, length: { maximum: 200 }, on: :orig_landlord_name
+      validates :taxpayer_email_id, presence: true, length: { maximum: 100 }, on: :taxpayer_email_id
       validate  :validate_return_reference, on: :orig_return_reference
+
+      # Validation of the pre population declaration
+      validates :pre_population_declaration, acceptance: { accept: ['Y'] }, on: :pre_population_declaration,
+                                             if: :show_pre_pop_declaration?
 
       # Transaction validation
       validates :property_type, presence: true, on: :property_type
@@ -60,7 +65,7 @@ module Returns
                 :uk_ind, presence: true, on: :previous_option_ind,
                          unless: :any_lease_review?
       validates :business_ind, presence: true, on: :business_ind, if: :convey?
-      validate  :sale_include_option_valid?, on: :business_ind, if: :convey?
+      validate  :sale_include_option_is_choosen, on: :business_ind, if: :convey?
       validates :contingents_event_ind, presence: true, on: :contingents_event_ind,
                                         if: :convey?
       validates :deferral_agreed_ind, presence: true, on: :contingents_event_ind,
@@ -146,28 +151,68 @@ module Returns
       validates :declaration, acceptance: { accept: ['Y'] }, on: :fpay_method
       validates :lease_declaration, acceptance: { accept: ['Y'] }, on: :fpay_method,
                                     if: :lease?
-
-      # @return a hash suitable for use in validateReturnReference request to the back office
-      def request_validate_element(current_user)
-        if current_user.blank?
-          { UnAuthenticated: true, TareReference: @orig_return_reference, IncludeDisregardedReturns: true }
-        else
-          { Username: current_user.username, ParRefNo:  current_user.party_refno,
-            UnAuthenticated: false, TareReference: @orig_return_reference, IncludeDisregardedReturns: true }
-        end
-      end
+      validates :pre_population_submit_declaration, acceptance: { accept: ['Y'] }, on: :fpay_method,
+                                                    if: :any_lease_review?
 
       # calls back office and returns hash which is used to validate the return reference and effective date
       def validate_return_reference
         return if errors.any? # don't check validation unless model already valid
 
-        call_ok?(:validate_return_reference, request_validate_element(@current_user)) do |response|
+        call_ok?(:validate_return_reference, request_validate_element) do |response|
           if not_filed_lease(response)
             errors.add(:orig_return_reference, :return_not_filed_lease)
           elsif response[:status] == 'Y'
             errors.add(:orig_return_reference, :return_disregarded)
+          else
+            pre_populate_return(response)
           end
         end
+      end
+
+      # Returns true if the data has been pre populated and claims are present on the return
+      # @return [boolean] should we show the reliefs region
+      def show_pre_pop_reliefs?
+        pre_populated? && @tax.total_reliefs > '0'
+      end
+
+      # Gets the return pdf ready to be downloaded.
+      # calls wsdl to send data given by client to back-office
+      # current user is the user information in case of Authenticated user.
+      # return_data hash which contains return number and version
+      # pdf_type [String] for the type of pdf Return/Receipt
+      def back_office_pdf_data(current_user, return_data, pdf_type)
+        pdf_response = ''
+        success = call_ok?(:view_return_pdf, request_pdf_elements(current_user, return_data, pdf_type)) do |body|
+          break if body.blank?
+
+          pdf_response = body
+        end
+
+        [success, pdf_response]
+      end
+
+      # @return a hash suitable for use in download pdf request to the back office
+      # in case of unauthenticated user, current_user will be blank
+      def request_pdf_elements(current_user, return_data, pdf_type)
+        if current_user.blank?
+          { Authenticated: 'no', TareReference: return_data[:tare_reference], ReturnVersion: return_data[:version],
+            RequestType: pdf_type }
+        else
+          { Authenticated: 'yes', ParRefno: current_user.party_refno, Username: current_user.username,
+            TareReference: return_data[:tare_reference], ReturnVersion: return_data[:version], RequestType: pdf_type }
+        end
+      end
+
+      # Returns true if the return type is not a lease review or if a
+      # pre populated lease review with reliefs for the pdf section
+      def show_pre_pop_reliefs_pdf?
+        show_pre_pop_reliefs? || !any_lease_review?
+      end
+
+      # Returns true if the return data has been pre populated
+      # @return [boolean] pre populated return
+      def pre_populated?
+        @prepopulated == 'Y'
       end
 
       # Return the property type attribute, but if this is one of the lease reviews set to non residential
@@ -299,7 +344,7 @@ module Returns
       # Define the ref data codes associated with the attributes but which won't be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
       def uncached_ref_data_codes
-        { authority_ind: YESNO_COMP_KEY,
+        { authority_ind: YESNO_COMP_KEY, pre_population_declaration: YESNO_COMP_KEY,
           previous_option_ind: YESNO_COMP_KEY, repayment_ind: YESNO_COMP_KEY,
           exchange_ind: YESNO_COMP_KEY, uk_ind: YESNO_COMP_KEY,
           linked_ind: YESNO_COMP_KEY, business_ind: YESNO_COMP_KEY,
@@ -307,7 +352,7 @@ module Returns
           rent_for_all_years: YESNO_COMP_KEY, premium_paid: YESNO_COMP_KEY,
           declaration: YESNO_COMP_KEY, lease_declaration: YESNO_COMP_KEY,
           repayment_declaration: YESNO_COMP_KEY, repayment_agent_declaration: YESNO_COMP_KEY,
-          non_notifiable_submit_ind: YESNO_COMP_KEY }
+          non_notifiable_submit_ind: YESNO_COMP_KEY, pre_population_submit_declaration: YESNO_COMP_KEY }
       end
 
       # Layout to print the data in this model
@@ -325,7 +370,9 @@ module Returns
                         { code: :change_reason, when: :amendment?, is: [true] },
                         { code: :form_type, lookup: true },
                         { code: :flbt_type, lookup: true },
-                        { code: :orig_return_reference, when: :any_lease_review?, is: [true] }] },
+                        { code: :orig_return_reference, when: :any_lease_review?, is: [true] },
+                        { code: :pre_population_declaration, lookup: true,
+                          when: :show_pre_pop_declaration?, is: [true] }] },
          { code: :agent,
            when: :user_account_type,
            is_not: ['PUBLIC'],
@@ -454,8 +501,8 @@ module Returns
            key_scope: %i[returns lbtt_reliefs reliefs_calculation], # scope for the title translation
            divider: true, # should we have a section divider
            display_title: true, # Is the title to be displayed
-           when: :any_lease_review?,
-           is: [false],
+           when: :show_pre_pop_reliefs_pdf?,
+           is: [true],
            type: :object }, #         unless @version.blank?
          { code: :tax, # section code
            type: :object }, # key for the title translation
@@ -494,7 +541,9 @@ module Returns
            type: :list, # type list = the list of attributes to follow
            list_items: [{ code: :authority_ind, lookup: true, when: :account_type, is: ['AGENT'] },
                         { code: :declaration, lookup: true },
-                        { code: :lease_declaration, lookup: true, when: :lease?, is: [true] }] }]
+                        { code: :lease_declaration, lookup: true, when: :lease?, is: [true] },
+                        { code: :pre_population_submit_declaration, lookup: true,
+                          when: :any_lease_review?, is: [true] }] }]
       end
 
       # Layout to print the receipt data in this model
@@ -541,14 +590,29 @@ module Returns
         @flbt_type == 'CONVEY'
       end
 
-      # is this a lease return, , see also tax.rb
+      # is this a lease return, see also tax.rb
       def lease?
         @flbt_type == 'LEASERET'
+      end
+
+      # is this a assignation return
+      def assignation?
+        @flbt_type == 'ASSIGN'
       end
 
       # is this any lease review type, see also tax.rb
       def any_lease_review?
         %w[LEASEREV ASSIGN TERMINATE].include?(@flbt_type)
+      end
+
+      # gets the account type from the current user
+      def user_account_type
+        User.account_type(current_user)
+      end
+
+      # is this any lease review type, with the logged in user type agent or taxpayer
+      def show_pre_pop_declaration?
+        any_lease_review? && %w[AGENT TAXPAYER].include?(user_account_type)
       end
 
       # is this any lease review type, see also tax.rb
@@ -572,7 +636,7 @@ module Returns
       end
 
       # Validation for transaction sale include options, user must have selected at least one non-blank option
-      def sale_include_option_valid?
+      def sale_include_option_is_choosen
         return unless business_ind?
 
         errors.add(:sale_include_option, :one_must_be_chosen) if sale_include_option.compact_blank.empty?
@@ -653,8 +717,7 @@ module Returns
       # @see LbttPropertiesController
       # @return [Boolean] whether or not to show repayment details
       def show_repayment?
-        return true if any_lease_review?
-        return true if amendment?
+        return true if amendment? && !any_lease_review?
 
         false
       end
@@ -686,13 +749,14 @@ module Returns
 
       # Takes the hash from the back office response and transform to make it compatible with our models
       # ie this method is like the opposite of @see #request_save.
-      private_class_method def self.convert_back_office_hash(lbtt) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength
+      def self.convert_back_office_hash(lbtt) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength
         # separate output object so that back office changes won't break FL record loading
         output = {}
         output[:form_type] = lbtt[:form_type]
         output[:tare_reference] = lbtt[:tare_reference]
         output[:tare_refno] = lbtt[:tare_refno]
         output[:version] = lbtt[:version]
+
         output.merge!(lbtt[:lbtt_return_details])
 
         hash_parties = convert_parties(output)
@@ -702,7 +766,6 @@ module Returns
         output[:landlords] = split_by_party_type(hash_parties, 'LANDLORD')
         output[:new_tenants] = split_by_party_type(hash_parties, 'NEWTENANT')
         output[:agent] = split_by_party_type(hash_parties, 'AGENT')
-
         output[:link_transactions] = convert_to_link_transactions(output) if output[:linked_transactions].present?
         output[:yearly_rents] = convert_to_yearly_rents(output) if output[:rent].present?
 
@@ -722,9 +785,11 @@ module Returns
         # tax and reliefs
         output[:relief_claims] = convert_to_relief_claims(output[:reliefs]) if output[:reliefs].present?
 
+        # prepopulation ind
+        output[:prepopulated] = lbtt[:prepopulated] == 'yes' ? 'Y' : 'N'
+
         # convert back office yes/no to Y/N
         yes_nos_to_yns(output, %i[previous_option_ind exchange_ind uk_ind contingents_event_ind])
-
         # derive yes no for transaction pages radio button based on the data now that we've finished moving it around
         # Use annual rent or total consideration as a marker they have entered the transaction wizard
         derive_transactions_yes_nos_in(output)
@@ -792,8 +857,10 @@ module Returns
         return :total_consideration_residential if attribute == :total_consideration && @property_type == '1'
         return "#{attribute}_#{flbt_type}".to_sym if %i[effective_date relevant_date annual_rent]
                                                      .include?(attribute)
-        return attribute unless %i[authority_ind repayment_agent_declaration lease_declaration
-                                   declaration repayment_declaration].include?(attribute)
+        return "#{attribute}_#{user_account_type}".to_sym if attribute == :pre_population_declaration &&
+                                                             show_pre_pop_declaration?
+        return attribute unless %i[authority_ind repayment_agent_declaration lease_declaration declaration
+                                   repayment_declaration pre_population_submit_declaration].include?(attribute)
 
         translation_attribute_declarations(attribute)
       end
@@ -891,6 +958,58 @@ module Returns
 
       private
 
+      # @return a hash suitable for use in validateReturnReference request to the back office
+      def request_validate_element
+        output = { 'ins0:TareReference': @orig_return_reference }
+        output['ins0:IncludeDisregardedReturns'] = true
+        # TODO: Update the backoffice API so that we can pass in the return type @flbt_type rather than hardcoding
+        output['ins0:LeaseReviewType'] = 'LEASEREV'
+        output['ins0:PrepopulateDetails'] = true
+        unauthenticated_request_element(output) if current_user.blank?
+        authenticated_request_element(output) if current_user.present?
+
+        output
+      end
+
+      # Adds authenticated details to the hash used in validateReturnReference request to the back office
+      # @param output [Hash] that contains the reference, type and pre population and disregard ind to get data
+      # returns output [Hash] the hash with the authenticated details
+      def authenticated_request_element(output)
+        output['ins0:Username'] = current_user.username
+        output['ins0:ParRefNo'] = current_user.party_refno
+        output['ins0:UnAuthenticated'] = false
+        output
+      end
+
+      # Adds unauthenticated details to the hash used in validateReturnReference request to the back office
+      # @param output [Hash] that contains the reference, type and pre population and disregard ind to get data
+      # returns output [Hash] the hash with the unauthenticated details
+      def unauthenticated_request_element(output)
+        output['ins0:UnAuthenticated'] = true
+        output['ins0:TaxPayersEmail'] = @taxpayer_email_id
+        output['ins0:LandlordName'] = @orig_landlord_name
+        output
+      end
+
+      # pre populates the model from the response
+      # @param response [Hash] that contains the return details from the back office
+      def pre_populate_return(response)
+        pre_populate_data = self.class.convert_back_office_hash(response[:lbtt_tax_return])
+        pre_populate_strip_attributes(pre_populate_data)
+        assign_attributes(pre_populate_data)
+        @prepopulated = 'Y'
+      end
+
+      # Removes the attributes from the response that we don't want to pre populate
+      # @param pre_populate_data [Hash] that contains the return details from the back office
+      # returns pre_populate_data [Hash] that contains the return details from the back office
+      def pre_populate_strip_attributes(pre_populate_data)
+        delete = %i[form_type tare_reference tare_refno version flbt_type par_refno agent buyers sellers new_tenants]
+        delete += %i[relevant_date] if assignation? || terminate?
+        delete.each { |key| pre_populate_data.delete(key) }
+        pre_populate_data
+      end
+
       # check the correct amounts are present for the tax calc
       # note we don't check all the amounts but if these are present which should have the others as well
       def amounts_for_tax_calc?
@@ -906,7 +1025,7 @@ module Returns
       end
 
       # Called by @see Returns::AbstractReturn#save
-      # If tare_refno exists then must be doing an update, otherwise creating a new one
+      # If tare_refno exists then we are doing an update, otherwise creating a new one
       # We can't use version as that gets set by the portal on save so changes a create into update
       def save_operation
         operation = if @tare_refno.blank?
@@ -926,6 +1045,7 @@ module Returns
       # @param form_type [string] D(raft) or L(atest)
       # @return a hash suitable for use in a save request to the back office
       def request_save(_requested_by, form_type:) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+        clean_up_yes_nos
         output = {
           'ins0:FlbtType': @flbt_type, 'ins0:PropertyType': property_type
         }
@@ -1041,7 +1161,8 @@ module Returns
         # The print data needs to be in this routine as it has specific information based on the return type
         { 'ins0:LBTTReturnDetails': output,
           'ins0:PrintData': print_data(:print_layout),
-          'ins0:PrintDataReceipt': print_data(:print_layout_receipt) }
+          'ins0:PrintDataReceipt': print_data(:print_layout_receipt),
+          'ins0:Prepopulated': (@prepopulated == 'Y' ? 'yes' : 'no') }
       end
 
       # Dynamically returns the translation key based on the flbt_type or user_account_type
@@ -1050,7 +1171,7 @@ module Returns
       def translation_attribute_declarations(attribute)
         suffix = if %i[authority_ind repayment_agent_declaration].include?(attribute)
                    flbt_type
-                 elsif %i[lease_declaration].include?(attribute)
+                 elsif %i[lease_declaration pre_population_submit_declaration].include?(attribute)
                    user_account_type
                  elsif %i[declaration repayment_declaration].include?(attribute)
                    "#{flbt_type}_#{user_account_type}"
@@ -1085,6 +1206,11 @@ module Returns
           is_not: ['PUBLIC'],
           display_title: false,
           type: :object }
+      end
+
+      # Hash to translate back office logical data item into an attribute
+      def back_office_attributes
+        { ORIG_RETURN_REFERENCE: { attribute: :orig_return_reference } }
       end
     end
   end

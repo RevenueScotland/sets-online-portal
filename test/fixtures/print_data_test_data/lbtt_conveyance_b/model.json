@@ -1,6 +1,27 @@
 {
     "json_class": "Returns::Lbtt::LbttReturn",
-    "user_account_type": "AGENT",
+    "current_user": {
+        "json_class": "User",
+        "username": "PORTAL.NEW.USERS",
+        "work_place_refno": "3",
+        "party_refno": "1644",
+        "user_roles": {
+            "user_role": [
+                "ACCADMN",
+                "ACCSECADMN",
+                "PWSAMEND",
+                "PWSCLAIM",
+                "PWSDASH",
+                "PWSDRNEW",
+                "PWSDRSUB",
+                "PWSDRUPD",
+                "PWSMESSAGE"
+            ]
+        },
+        "password_change_required": false,
+        "password_expiry_date": "2023-08-28",
+        "new_record": true
+    },
     "new_record": false,
     "tax": {
         "json_class": "Returns::Lbtt::Tax",

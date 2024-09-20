@@ -1,6 +1,27 @@
 {
     "json_class": "Returns::Lbtt::LbttReturn",
-    "user_account_type": "TAXPAYER",
+    "current_user": {
+        "json_class": "User",
+        "username": "ADAM.PORTAL-TEST",
+        "work_place_refno": "3",
+        "party_refno": "1645",
+        "user_roles": {
+            "user_role": [
+                "ACCADMN",
+                "ACCSECADMN",
+                "PWSAMEND",
+                "PWSCLAIM",
+                "PWSDASH",
+                "PWSDRNEW",
+                "PWSDRSUB",
+                "PWSDRUPD",
+                "PWSMESSAGE"
+            ]
+        },
+        "password_change_required": false,
+        "password_expiry_date": "2023-08-28",
+        "new_record": true
+    },
     "new_record": true,
     "tax": {
         "json_class": "Returns::Lbtt::Tax",
@@ -9,7 +30,7 @@
         "linked_ind": "N",
         "linked_npv": 0,
         "orig_linked_npv": 0,
-        "total_reliefs": "0",
+        "total_reliefs": "70",
         "orig_total_reliefs": "0",
         "npv": "6060.58",
         "npv_tax_due": "2202",
@@ -80,11 +101,16 @@
     "relief_claims": [
         {
             "json_class": "Returns::Lbtt::ReliefClaim",
-            "new_record": false
+            "new_record": false,
+            "relief_type": "CHARITIESP",
+            "lbtt_return_flbt_type": "LEASERET",
+            "relief_amount": "0",
+            "relief_override_amount": "70"
         }
     ],
     "declaration": "Y",
     "lease_declaration": "N",
+    "pre_population_submit_declaration": "Y",
     "fpay_method": "BACS",
     "authority_ind": "Y",
     "form_type": "D",
@@ -93,6 +119,7 @@
     "tare_refno": "148",
     "payment_date": "14/11/2019",
     "version": "",
+    "prepopulated": "Y",
     "account_type": "AGENT",
     "tenants": {
         "6f9f4ccc-c562-4742-a4e2-d4aa7c74eab4": {
@@ -168,6 +195,7 @@
     "premium_paid": "Y",
     "relevant_rent": "2500",
     "orig_return_reference": "RS1234567AABB",
+    "pre_population_declaration": "Y",
     "new_tenants": {
         "31eb4fe9-5d9e-44e4-a680-5d720aa510f0": {
             "json_class": "Returns::Lbtt::Party",

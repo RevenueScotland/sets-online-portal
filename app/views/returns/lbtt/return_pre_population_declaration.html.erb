@@ -1,0 +1,15 @@
+<% if User.account_type(current_user) == 'PUBLIC' %>
+  <% content_for(:page_title, t('.title_unauth')) %>
+<% else %>
+  <% content_for(:page_title, t('.title')) %>
+<% end %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post, action_name: :confirm) do |f| %>
+  <%= f.ds_paragraph{t('.declaration_text', orig_return_reference: @lbtt_return.orig_return_reference)} %>
+  <%= f.ds_paragraph{t('.pre_population_text')} %>
+  <%= f.ds_warning{ t('.read_only_warning') } %>
+  <%= f.ds_warning{ t('.check_data_warning') } %>
+  <% if User.account_type(current_user) != 'PUBLIC' %>
+    <%= f.ds_checkbox(method: :pre_population_declaration) %>
+    <%= f.ds_paragraph {ds_link(name: t('.go_to_dashboard'),url: dashboard_path)} %>
+  <% end %>
+<% end %>

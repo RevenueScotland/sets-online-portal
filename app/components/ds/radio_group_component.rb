@@ -18,16 +18,20 @@ module DS
     #   code to be used and the value to be displayed
     # @param alignment [Symbol] use :horizontal to align the radio group across the page
     # @param conditional_visibility [Symbol] The radio group acts as a conditional visibility control
+    # We cannot make a radio group readonly so when we pass readonly as true, we are removing all of the
+    # non checked radio buttons for that question. The readonly flag will also change the colour of the
+    # checked marker to the readonly grey
     def initialize(builder:, method:, options_list:, one_question: false, interpolations: {}, width: nil,
-                   autocomplete: nil, alignment: :vertical, conditional_visibility: false)
+                   autocomplete: nil, alignment: :vertical, conditional_visibility: false, readonly: false)
       super(builder: builder, method: method, one_question: one_question, autocomplete: autocomplete,
-            interpolations: interpolations, width: width)
+            interpolations: interpolations, width: width, readonly: readonly)
       @options_list = options_list
       alignment = self.class.fetch_or_fallback(ALLOWED_ALIGNMENTS, alignment, :vertical)
       @field_group_type = (alignment == :horizontal ? :field_group_inline : :field_group)
       @code_method = :code
       @value_method = :value
       @data_action = (conditional_visibility ? { 'data-action': 'visibility#toggleRegion' } : {})
+      @options_list.delete_if { |a| a.send(@code_method) != builder.object.send(method) } if readonly
     end
   end
 end

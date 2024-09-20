@@ -1,7 +1,7 @@
 <% content_for(:page_title, t('.'+@party.org_type+ '_title')) %>
 <%= ds_section_title(section_title: t('.'+@party.org_type+ '_subtitle')) %>
 <%= ds_form_with(model: @party, url: @post_path, method: :post) do |f| %>
-  <%= f.ds_text_field(method: :org_name)%>
+  <%= f.ds_text_field(method: :org_name, readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false)%>
   <% if @party.type == 'REG_COM' %>
     <%= ds_section_sub_title(section_sub_title: t('.registered_address')) %>
   <% else %>
@@ -10,7 +10,7 @@
   <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail, 
       show_address_detail: @show_manual_address, readonly: @address_read_only, address_list: @address_list) %>
   <% if @party.org_type == 'CHARITY' %>
-    <%= f.ds_text_field(method: :charity_number) %>
+    <%= f.ds_text_field(method: :charity_number, readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false) %>
   <% end %>
   <%= f.ds_select(method: :com_jurisdiction, select_options: @party.list_ref_data(:com_jurisdiction), use_search: true) %>
 <% end %>

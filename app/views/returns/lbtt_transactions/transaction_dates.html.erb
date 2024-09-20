@@ -1,13 +1,13 @@
 <% content_for(:page_title, t('.title')) %>
 <%= ds_section_title(section_title: t('.subtitle')) %>
 <%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f| %>
-  <%= f.ds_date_picker(method: :effective_date, interpolations: { link:
+  <%= f.ds_date_picker(method: :effective_date, readonly: @lbtt_return.pre_populated? ? true : false, interpolations: { link:
                                                     ds_link(name: t('.effective_date'), url: external_link_url('EFFECTIVE_DATE'), target: '_blank') } ) %>
   <%= f.ds_date_picker(method: :relevant_date, interpolations: { link:
                                                     ds_link(name: t('.relevant_date'), url: external_link_url('RELEVANT_DATE'), target: '_blank') } )  %>
   <%= f.ds_date_picker(method: :contract_date , optional: true ) %>
   <% unless @lbtt_return.flbt_type == 'CONVEY' %>
-    <%= f.ds_date_picker(method: :lease_start_date) %>
+    <%= f.ds_date_picker(method: :lease_start_date, readonly: @lbtt_return.pre_populated? ? true : false) %>
     <%= f.ds_date_picker(method: :lease_end_date) %>
   <% end %>
 <% end %>

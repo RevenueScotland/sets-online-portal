@@ -8,4 +8,5 @@
     <%= f.ds_radio_group(method: :authority_ind,options_list: @lbtt_return.list_ref_data(:authority_ind)) if User.account_type(current_user) == 'AGENT' %>
     <%= f.ds_checkbox(method: :declaration) %>
     <%= f.ds_checkbox(method: :lease_declaration) if @lbtt_return.flbt_type == 'LEASERET'%>
+    <%= f.ds_checkbox(method: :pre_population_submit_declaration) if @lbtt_return.any_lease_review? %>
   <% end %>

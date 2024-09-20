@@ -52,3 +52,8 @@ en:
         address_line1: "%{label}<span class=\"visually-hidden\"> line 1 of 2</span>"
         address_line2:
           visually_hidden: "%{label} of 2"
+    hints:
+      company:
+        company_number: 
+          readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
+          default: ""

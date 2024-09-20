@@ -88,13 +88,20 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     # LBTT
     namespace :returns do # rubocop:disable Metrics/BlockLength
-      match 'lbtt/summary',                        to: 'lbtt#summary',                                via: %i[get post]
-      match 'lbtt/return_type',                    to: 'lbtt#return_type',                            via: %i[get post]
-      match 'lbtt/return_reference_number',        to: 'lbtt#return_reference_number',                via: %i[get post]
-      get 'lbtt/save_draft', to: 'lbtt#save_draft'
-      get 'lbtt/public_landing', to: 'lbtt#public_landing'
-      match 'lbtt/public_return_type',             to: 'lbtt#public_return_type', via: %i[get post]
-      get 'lbtt/download-receipt',                 to: 'lbtt#download_receipt'
+      match 'lbtt/summary',                           to: 'lbtt#summary',
+                                                      via: %i[get post]
+      match 'lbtt/return_type',                       to: 'lbtt#return_type',
+                                                      via: %i[get post]
+      match 'lbtt/return_reference_number',           to: 'lbtt#return_reference_number',
+                                                      via: %i[get post]
+      match 'lbtt/return_pre_population_declaration', to: 'lbtt#return_pre_population_declaration',
+                                                      via: %i[get post]
+      get 'lbtt/save_draft',                          to: 'lbtt#save_draft'
+      get 'lbtt/public_landing',                      to: 'lbtt#public_landing'
+      match 'lbtt/public_return_type',                to: 'lbtt#public_return_type',
+                                                      via: %i[get post]
+      get 'lbtt/download-receipt',                    to: 'lbtt#download_receipt'
+      get 'lbtt/download_pdf',                        to: 'lbtt#download_pdf'
 
       match 'lbtt/reliefs_calculation',            to: 'lbtt_reliefs#reliefs_calculation',
                                                    via: %i[get post]

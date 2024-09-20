@@ -33,6 +33,19 @@ Feature: Registration Wizard
     And I should receive the message "National insurance number (NINO) can't be blank"
     And I should receive the message "Last name can't be blank"
     And I should receive the message "First name can't be blank"
+    And I should receive the message "Contact phone number can't be blank"
+
+    # Check error links are working correct
+    When I click on the "First name can't be blank" link
+    Then The field with id "account_current_user_forename" should get focus
+    When I click on the "Last name can't be blank" link
+    Then The field with id "account_current_user_surname" should get focus
+    When I click on the "National insurance number (NINO) can't be blank" link
+    Then The field with id "account_nino" should get focus
+    When I click on the "Email address can't be blank" link
+    Then The field with id "account_email_address" should get focus
+    When I click on the "Contact phone number can't be blank" link
+    Then The field with id "account_contact_number" should get focus
 
     When I enter "noreply@necsws@com" in the "Email address" field
     And I enter "noreply@necsws@com" in the "Confirm email address" field

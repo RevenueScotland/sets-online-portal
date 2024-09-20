@@ -31,6 +31,8 @@ en:
         repayment_declaration: "The refund declaration"
         property_type: "What is the property type for this transaction"
         orig_return_reference: "What was the original return reference"
+        orig_landlord_name: "Name of the landlord on the original return"
+        taxpayer_email_id: "The taxpayer's email address"
         flbt_type: "Which return do you want to submit"
         business_ind: "Is the transaction part of the sale of a business"
         sale_include_option: "Does the sale include any of the following"
@@ -110,6 +112,13 @@ en:
         lease_declaration_PUBLIC: "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date"
         change_reason: "Tell us why you are amending this return"
         non_notifiable_explanation: "Why are you submitting a non-notifiable return"
+        pre_population_declaration_AGENT: "I, the agent, confirm that I have authority to view the data for the return referred to above"
+        pre_population_declaration_TAXPAYER: "I, the taxpayer, confirm that I have authority to view the data for the return referred to above"
+        pre_population_declaration: "The authority declaration"
+        pre_population_submit_declaration_AGENT: "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
+        pre_population_submit_declaration_TAXPAYER: "I, the tenant, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
+        pre_population_submit_declaration_PUBLIC: "I, the tenant, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
+        pre_population_submit_declaration: "The pre-population declaration"
       returns/lbtt/tax:
         calculated: "LBTT calculated"
         ads_due: "ADS calculated"
@@ -120,7 +129,9 @@ en:
         npv_tax_due: LBTT tax liability on rent
         premium_tax_due: LBTT tax liability on premium
         amount_already_paid: "Amount already paid"
+        amount_already_paid_pre_populated: "Tax payable on previous return"
         tax_due_for_return: "Amount payable for this return"
+        tax_due_for_return_pre_populated: "Tax payable for this return"
         npv: Net Present Value (NPV)
         linked_npv: "Net Present Value (NPV) for linked transactions"
       returns/lbtt/ads:
@@ -182,26 +193,44 @@ en:
           ads_repay_details: "Original total ADS paid"
     hints:
       returns/lbtt/lbtt_return:
+        repayment_amount_claimed:
+          default: ""
+          readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
         non_notifiable_submit_ind: "If you don't submit the return your changes won't be saved"
         sale_include_option: "Select all that apply"
         total_consideration: "See guidance on %{link} for further details"
         total_consideration_residential: "See guidance on determining the chargeable consideration (opens in a new window) for further details"
         total_vat: "See guidance on %{link} for further details"
         non_chargeable: "This is the amount that LBTT does not apply to"
-        premium_paid: "This is paid by the tenant to the owner, in addition to the rent"
+        premium_paid: 
+          default: "This is paid by the tenant to the owner, in addition to the rent"
+          readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
         relevant_rent: "This is your annual rent, including VAT. If you have linked transactions, it will be the total of all rents and must be entered when a premium is being paid"
         account_number: "This should be 8 digits"
         branch_code: "The sort code should be entered in the format 99-99-99"
         effective_date_CONVEY: "This is usually the date the land transaction is completed (e.g. the date of settlement). See guidance on %{link} for further details"
         effective_date_LEASERET: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
-        effective_date_LEASEREV: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
-        effective_date_ASSIGN: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
-        effective_date_TERMINATE: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
+        effective_date_LEASEREV: 
+          default: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
+          readonly: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details.<br>This field is read only. Contact Revenue Scotland if the value is not as expected."
+        effective_date_ASSIGN: 
+          default: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
+          readonly: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details.<br>This field is read only. Contact Revenue Scotland if the value is not as expected."
+        effective_date_TERMINATE: 
+          default: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
+          readonly: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details.<br>This field is read only. Contact Revenue Scotland if the value is not as expected."
+        lease_start_date:
+          default: ""
+          readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
         orig_effective_date: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
         relevant_date_CONVEY: "See guidance on %{link} for further details"
         relevant_date_LEASERET: "See guidance on %{link} for further details"
-        relevant_date_LEASEREV: "This date will be the 3 year anniversary of the effective date and every subsequent three years for the duration of the lease. See guidance on %{link} for further details"
-        relevant_date_ASSIGN: "This is the date the lease was assigned. See guidance on %{link} for further details"
+        relevant_date_LEASEREV: 
+          default:  "This date will be the 3 year anniversary of the effective date and every subsequent three years for the duration of the lease. See guidance on %{link} for further details"
+          readonly: "This date will be the 3 year anniversary of the effective date and every subsequent three years for the duration of the lease. See guidance on %{link} for further details.<br>This field is read only. Contact Revenue Scotland if the value is not as expected."
+        relevant_date_ASSIGN: 
+          default:  "This is the date the lease was assigned. See guidance on %{link} for further details"
+          readonly: "This date will be the 3 year anniversary of the effective date and every subsequent three years for the duration of the lease. See guidance on %{link} for further details.<br>This field is read only. Contact Revenue Scotland if the value is not as expected."
         relevant_date_TERMINATE: "This is the date the lease was terminated or came to an end. See guidance on %{link} for further details"
         orig_effective_date: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on %{link} for further details"
         fpay_method: "The payment method will only be used if a payment is actually due on this return"
@@ -212,7 +241,11 @@ en:
         linked_consideration: "See guidance on %{link} for further details"
         non_chargeable: "See guidance on %{link} for further details"
         remaining_chargeable: "See guidance on %{link} for further details"
-        lease_premium: "See guidance on %{link} for further details"
+        lease_premium: 
+          default: "See guidance on %{link} for further details"
+          readonly: "See guidance on %{link} for further details.<br>This field is read only. Contact Revenue Scotland if the value is not as expected."
+        orig_landlord_name: "This is the surname or the company name of the landlord as written on the original return for the lease"
+        taxpayer_email_id: "This is the email address provided on the most recent return for the lease"
       returns/lbtt/tax:
         calculated: "This is the derived LBTT liability from values provided in this form"
         ads_due: "This is ADS liability"
@@ -249,17 +282,18 @@ en:
               after_date_error: "%{attribute} must be after lease start date"
               equal_date_error: "%{attribute} must be the same as the relevant date"
             base:
-              missing_properties_entries: "Please fill in at least one property"
+              missing_properties_entries: "At least one property must be present"
               missing_about_the_transaction: "Please fill in the 'About the transaction' section"
-              missing_buyer_entries: "Please fill in at least one buyer"
-              missing_seller_entries: "Please fill in at least one seller"
-              missing_landlord_entries: "Please fill in at least one landlord"
-              missing_tenant_entries: "Please fill in at least one tenant"
-              missing_new_tenant_entries: "Please fill in at least one new tenant"
+              missing_buyer_entries: "At least one buyer must be present"
+              missing_seller_entries: "At least one seller must be present"
+              missing_landlord_entries: "At least one landlord must be present"
+              missing_tenant_entries: "At least one tenant must be present"
+              missing_new_tenant_entries: "At least one new tenant must be present"
               missing_agent_details: "Please fill in the 'Contact details for agent' section"
               missing_ads: "Please fill in the 'About the Additional Dwelling Supplement (ADS)' section"
               has_already_been_submitted: "This return has already been submitted. If you are unsure that the return has been submitted, save a draft version and check on the dashboard"
               non_individual_no_ads: "ADS must apply to all properties on this return where at least one of the buyers is not a private individual and the transaction is residential"
+              missing_pre_existing_tenant: "At least one of the pre-existing tenant(s) must remain on a lease review. If all pre-existing tenants need to be removed from the lease then an assignation return must be completed instead to include the details of the new tenants."
         returns/lbtt/relief_claim:
           attributes:
             relief_type_expanded:
