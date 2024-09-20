@@ -18,25 +18,14 @@ Feature: Claim payment
         Given I have signed out
         When I go to the "claim/claim_payments/public_claim_landing" page
         Then I should see the "Claim a repayment of Additional Dwelling Supplement" page
-        # And I should see the text "Following recent change in legislation, the eligibility to claim Additional Dwelling Supplement has changed for some transactions depending on the effective date."
-        # And I should see a link with text "LBTT Additional Dwelling Supplement"
         And I should see the text "If you sold your previous home within the relevant disposal period of buying a new one, you may be eligible to claim a repayment of ADS. Find out more using our eligibility checker on the next page."
 
         When I click on the "Continue" link
-        # Then I should see the "Effective date" page
-        # And I should see the text "Following recent change in legislation, the eligibility to claim Additional Dwelling Supplement has changed for some transactions depending on the effective date."
-        # And I should see a link with text "LBTT Additional Dwelling Supplement"
-
-        # When I click on the "Continue" button
-        # Then I should see a link with text "Choose one of the following options can't be blank"
-
-        # When I check the "My transaction has an effective date of 1st December 2023 or later" radio button in answer to the question "Choose one of the following options"
-        And I click on the "Continue" button
         Then I should see the "Eligibility checker" page
-        # And I should see a link with text "LBTT Additional Dwelling Supplement"
 
         When I click on the "Continue" button
-        Then I should see the text "Please confirm the following criteria are met in order to proceed with the application must be accepted"
+        Then I should see the "Eligibility checker" page
+        And I should see the text "Please confirm the following criteria are met in order to proceed with the application must be accepted"
 
         When I check the "ADS was paid on the new property purchase" checkbox
         And I check the "The previous property was sold within 18 months of buying the new one" checkbox
@@ -59,21 +48,15 @@ Feature: Claim payment
         Then I should see the "Before you start" page
         When I click on the "Back" link
         Then I should see the "Eligibility checker" page
-        # When I click on the "Back" link
-        # Then I should see the "Effective date" page
         When I click on the "Back" link
         Then I should see the "Claim a repayment of Additional Dwelling Supplement" page
         # Now data is lost
         When I click on the "Continue" link
-        # Then I should see the "Effective date" page
-
-        # When I check the "My transaction has an effective date of 30th November 2023 or earlier" radio button in answer to the question "Choose one of the following options"
-        # And I click on the "Continue" button
         Then I should see the "Eligibility checker" page
-        And I should not see a link with text "LBTT Additional Dwelling Supplement"
 
         When I click on the "Continue" button
-        Then I should see the text "Please confirm the following criteria are met in order to proceed with the application must be accepted"
+        Then I should see the "Eligibility checker" page
+        And I should see the text "Please confirm the following criteria are met in order to proceed with the application must be accepted"
 
         When I check the "ADS was paid on the new property purchase" checkbox
         And I check the "The previous property was sold within 18 months of buying the new one" checkbox
@@ -306,6 +289,7 @@ Feature: Claim payment
         And I should receive the message "The declaration must be accepted"
         When I check the "I, Additional Buyer First name Additional Buyer Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
         Then the checkbox "I, Additional Buyer First name Additional Buyer Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" should be checked
+        And I should see the text "Note: LBTT is a self-assessed tax and Revenue Scotland does not verify all repayment claims before repayments are issued. Checks may take place after the issue of a repayment. This is to ensure claims meet the repayment conditions in full. If all the repayment conditions are not met, you may be due to pay tax back to Revenue Scotland. Steps will be taken to recover any repayment which should not have been paid, including interest."
         And I click on the "Continue" button
         Then I should see the "Your request has been sent to Revenue Scotland" page
 

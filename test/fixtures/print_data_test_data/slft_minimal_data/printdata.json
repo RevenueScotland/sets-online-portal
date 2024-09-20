@@ -6,6 +6,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Return period",
             "listitem": [
                 {
@@ -65,6 +66,7 @@
             "sectiondivider": false,
             "pagebreak": true,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Waste Site 1",
             "listitem": [
                 {
@@ -100,6 +102,7 @@
             "sectiondivider": false,
             "pagebreak": true,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Credits claimed",
             "listitem": [
                 {
@@ -129,6 +132,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Calculated tax liability",
             "listitem": [
                 {
@@ -158,6 +162,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Payment and submission",
             "listitem": [
                 {

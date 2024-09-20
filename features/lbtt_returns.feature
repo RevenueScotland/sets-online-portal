@@ -744,13 +744,13 @@ Feature: LBTT Returns
         When I check the "No" radio button in answer to the question "Does any part of your consideration depend on future events, like planning permission?"
         And I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
-        And I should not see the text "Linked transaction consideration"
+        And I should not see the text "All other Linked transaction consideration"
 
         When I click on the "Continue" button
         Then I should not see the text "VAT Amount"
-        And I should see the text "Total consideration can't be blank"
+        And I should see the text "Total consideration for this transaction can't be blank"
         And I should see the text "Non-chargeable consideration can't be blank"
-        And I should see the text "Total consideration remaining can't be blank"
+        And I should see the text "Total chargeable consideration can't be blank"
 
         When I enter "1234565" in the "returns_lbtt_lbtt_return_total_consideration" field
         Then I enter "500" in the "Non-chargeable consideration" field
@@ -857,7 +857,7 @@ Feature: LBTT Returns
         Then I should receive the message "VAT amount can't be blank"
 
         When I enter "1000" in the "VAT amount" field
-        And I enter "1234065" in the "Total consideration remaining" field
+        And I enter "1234065" in the "Total chargeable consideration" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -885,7 +885,7 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
-        And I should see the text "1234565" in field "Total consideration"
+        And I should see the text "1234565" in field "Total consideration for this transaction"
         And I should not see the text "VAT Amount"
 
         When I click on the "Continue" button
@@ -1449,10 +1449,10 @@ Feature: LBTT Returns
 
         Then I should see the "Declaration" page
         And I should not see the text "I, the agent for the buyer(s), confirm that the buyer(s) have authorised repayment to be made to these bank details"
-        And I should see the text "I, the buyer, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed"
+        And I should see the text "I, the buyer, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed"
         When I click on the "Continue" button
         Then I should see the "Declaration" page
-        And I should receive the message "The refund declaration must be accepted"
+        And I should receive the message "The repayment declaration must be accepted"
         And I should not receive the message "The bank account declaration must be accepted"
         When I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
         And I click on the "Continue" button
@@ -1622,7 +1622,7 @@ Feature: LBTT Returns
         # Declarations and re-submit
         When I click on the "Continue" button
         Then I should see the "Declaration" page
-        And I should receive the message "The refund declaration must be accepted"
+        And I should receive the message "The repayment declaration must be accepted"
 
         When I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
         And I click on the "Continue" button
@@ -1953,57 +1953,57 @@ Feature: LBTT Returns
         When I check the "No" radio button in answer to the question "Does any part of your consideration depend on future events, like planning permission?"
         And I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
-        And I should see the text "1000" in field "Linked transaction consideration"
+        And I should see the text "1000" in field "All other Linked transaction consideration"
 
-        When I clear the "Linked transaction consideration" field
+        When I clear the "All other Linked transaction consideration" field
         And I click on the "Continue" button
-        Then I should receive the message "Total consideration can't be blank"
-        And I should receive the message "Linked transaction consideration can't be blank"
+        Then I should receive the message "Total consideration for this transaction can't be blank"
+        And I should receive the message "All other Linked transaction consideration can't be blank"
         And I should receive the message "Non-chargeable consideration can't be blank"
-        And I should receive the message "Total consideration remaining can't be blank"
+        And I should receive the message "Total chargeable consideration can't be blank"
 
-        When I enter "a" in the "Total consideration" field
-        And I enter "b" in the "Linked transaction consideration" field
+        When I enter "a" in the "Total consideration for this transaction" field
+        And I enter "b" in the "All other Linked transaction consideration" field
         And I enter "c" in the "Non-chargeable consideration" field
-        And I enter "c" in the "Total consideration remaining" field
+        And I enter "c" in the "Total chargeable consideration" field
         And I click on the "Continue" button
-        Then I should receive the message "Total consideration is not a number"
-        And I should receive the message "Linked transaction consideration is not a number"
+        Then I should receive the message "Total consideration for this transaction is not a number"
+        And I should receive the message "All other Linked transaction consideration is not a number"
         And I should receive the message "Non-chargeable consideration is not a number"
-        And I should receive the message "Total consideration remaining is not a number"
+        And I should receive the message "Total chargeable consideration is not a number"
 
-        When I enter "900000" in the "Total consideration" field
-        And I enter "1100" in the "Linked transaction consideration" field
+        When I enter "900000" in the "Total consideration for this transaction" field
+        And I enter "1100" in the "All other Linked transaction consideration" field
         And I enter "125" in the "Non-chargeable consideration" field
-        And I enter "-100" in the "Total consideration remaining" field
+        And I enter "-100" in the "Total chargeable consideration" field
         And I click on the "Continue" button
-        Then I should see the text "Total consideration remaining must be Total consideration plus Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
+        Then I should see the text "Total chargeable consideration must be Total consideration for this transaction plus All other Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
 
-        When I enter "9000" in the "Total consideration" field
-        And I enter "100" in the "Linked transaction consideration" field
+        When I enter "9000" in the "Total consideration for this transaction" field
+        And I enter "100" in the "All other Linked transaction consideration" field
         And I enter "125" in the "Non-chargeable consideration" field
-        And I enter "0" in the "Total consideration remaining" field
+        And I enter "0" in the "Total chargeable consideration" field
         And I click on the "Continue" button
-        Then I should see the text "Total consideration remaining must be Total consideration plus Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
+        Then I should see the text "Total chargeable consideration must be Total consideration for this transaction plus All other Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
 
-        When I enter "900000" in the "Total consideration" field
-        When I enter "1100" in the "Linked transaction consideration" field
+        When I enter "900000" in the "Total consideration for this transaction" field
+        When I enter "1100" in the "All other Linked transaction consideration" field
         And I enter "125" in the "Non-chargeable consideration" field
-        And I enter "900000" in the "Total consideration remaining" field
+        And I enter "900000" in the "Total chargeable consideration" field
         # Check the consideration has not been saved following the error
         When I click on the "Back" link
         Then I should see the "About future events" page
         When I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
-        And I should see the empty field "Total consideration"
-        And I should see the text "1000" in field "Linked transaction consideration"
+        And I should see the empty field "Total consideration for this transaction"
+        And I should see the text "1000" in field "All other Linked transaction consideration"
         And I should see the empty field "Non-chargeable consideration"
-        And I should see the empty field "Total consideration remaining"
+        And I should see the empty field "Total chargeable consideration"
 
-        When I enter "1234560" in the "Total consideration" field
-        When I enter "1100" in the "Linked transaction consideration" field
+        When I enter "1234560" in the "Total consideration for this transaction" field
+        When I enter "1100" in the "All other Linked transaction consideration" field
         And I enter "1250" in the "Non-chargeable consideration" field
-        And I enter "1234410" in the "Total consideration remaining" field
+        And I enter "1234410" in the "Total chargeable consideration" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -2059,6 +2059,61 @@ Feature: LBTT Returns
         Then I should see the "Reliefs on this transaction" page
         When I click on the 1 st "Delete row" button
         Then I should see the "Reliefs on this transaction" page
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Set linked transactions to No to test if they are still being included in the calc
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+        And the radio button "Yes" should be selected in answer to the question "Are there any linked transactions?"
+        And I check the "No" radio button in answer to the question "Are there any linked transactions?"
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+
+        When I click on the "Continue" button
+        Then I should see the text "Total chargeable consideration must be Total consideration for this transaction minus Non-chargeable consideration, and not less than zero"
+        And I enter "1233310" in the "returns_lbtt_lbtt_return[remaining_chargeable]" field
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+        # Add back the linked transactions
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About the dates" page
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Linked transactions" page
+        And the radio button "No" should be selected in answer to the question "Are there any linked transactions?"
+        And I check the "Yes" radio button in answer to the question "Are there any linked transactions?"
+        And I should see the text "1000" in field "returns_lbtt_lbtt_return_returns_lbtt_link_transactions_0_consideration_amount"
+
+        When I click on the "Continue" button
+        Then I should see the "About the transaction" page
+        When I click on the "Continue" button
+        Then I should see the "About future events" page
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+
+        When I click on the "Continue" button
+        Then I should see the text "Total chargeable consideration must be Total consideration for this transaction plus All other Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
+        And I enter "1234410" in the "returns_lbtt_lbtt_return[remaining_chargeable]" field
+
         When I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -2375,13 +2430,13 @@ Feature: LBTT Returns
         Then I should see the "About future events" page
         When I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
-        And I should see the text "1234560" in field "Total consideration"
-        And I should see the text "2000" in field "Linked transaction consideration"
+        And I should see the text "1234560" in field "Total consideration for this transaction"
+        And I should see the text "2000" in field "All other Linked transaction consideration"
         And I should see the text "1250" in field "Non-chargeable consideration"
-        And I should see the text "1234410" in field "Total consideration remaining"
+        And I should see the text "1234410" in field "Total chargeable consideration"
         When I click on the "Continue" button
-        Then I should see the text "Total consideration remaining must be Total consideration plus Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
-        When I enter "1235310" in the "Total consideration remaining" field
+        Then I should see the text "Total chargeable consideration must be Total consideration for this transaction plus All other Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
+        When I enter "1235310" in the "Total chargeable consideration" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         # Check the date warning(s) and link
@@ -4291,7 +4346,7 @@ Feature: LBTT Returns
         And I enter "Seller-First" in the "Name of the landlord on the original return" field
         And I enter "test@necsws.com" in the "The taxpayer's email address" field
         And I click on the "Continue" button
-        And I should see the text "The original return reference and original effective date is not a filed lease return. Contact Revenue Scotland as there could be a duplicate return for this reference"
+        And I should see the text "The details do not match with a filed lease return"
 
         # Validate the additional details
         When I enter the stored value "notification_banner_reference" in field "What was the original return reference"
@@ -5830,7 +5885,7 @@ Feature: LBTT Returns
         When I check the "No" radio button in answer to the question "Does any part of your consideration depend on future events, like planning permission?"
         And I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
-        And I should not see the text "Linked transaction consideration"
+        And I should not see the text "All other Linked transaction consideration"
 
         When I enter "12345" in the "returns_lbtt_lbtt_return_total_consideration" field
         And I enter "0" in the "Non-chargeable consideration" field
@@ -7466,15 +7521,15 @@ Feature: LBTT Returns
         When I check the "No" radio button in answer to the question "Does any part of your consideration depend on future events, like planning permission?"
         And I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
-        And I should see the text "100000" in field "Total consideration"
+        And I should see the text "100000" in field "Total consideration for this transaction"
         And I should see the text "0" in field "Non-chargeable consideration"
-        And I should see the text "110000" in field "Total consideration remaining"
+        And I should see the text "110000" in field "Total chargeable consideration"
         # Validate the total consideration remaining field
         When I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
-        And I should see the text "Total consideration remaining must be Total consideration plus Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
+        And I should see the text "Total chargeable consideration must be Total consideration for this transaction minus Non-chargeable consideration, and not less than zero"
 
-        When I enter "100000" in the "Total consideration remaining" field
+        When I enter "100000" in the "Total chargeable consideration" field
         And I click on the "Continue" button
         # Check if there is no error for transaction section
         Then I should see the "Return Summary" page

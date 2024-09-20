@@ -140,7 +140,7 @@ module RevScot
     config.x.file_upload_unknown_content_type = 'application/octet-stream'
 
     # limit size of upload file
-    config.x.file_upload_expected_max_size_mb = 10
+    config.x.file_upload_expected_max_size_mb = 15
 
     # Percentage of invalid CSV rows for SLFT waste import before the file is rejected. A row is invalid if it
     # contains the wrong number of columns for the model import.

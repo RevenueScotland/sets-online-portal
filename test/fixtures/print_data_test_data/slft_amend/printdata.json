@@ -6,6 +6,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Return period",
             "listitem": [
                 {
@@ -77,6 +78,7 @@
             "sectiondivider": false,
             "pagebreak": true,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Waste Site 1",
             "listitem": [
                 {
@@ -112,6 +114,7 @@
             "sectiondivider": false,
             "pagebreak": true,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Credits claimed",
             "listitem": [
                 {
@@ -165,6 +168,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Calculated tax liability",
             "listitem": [
                 {
@@ -194,6 +198,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Repayment details",
             "listitem": [
                 {
@@ -235,7 +240,7 @@
                 {
                     "itemcode": "rrep_bank_auth_ind",
                     "itemformat": null,
-                    "itemlabel": "I, the taxpayer, declare that this claim form is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed",
+                    "itemlabel": "I, the taxpayer, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed",
                     "itemdata": "Yes"
                 }
             ],
@@ -247,6 +252,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Payment and submission",
             "listitem": [
                 {

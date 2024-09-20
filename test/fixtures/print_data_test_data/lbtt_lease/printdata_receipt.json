@@ -6,6 +6,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -23,6 +24,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the property",
             "listitem": [
                 {
@@ -46,6 +48,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -63,6 +66,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -86,6 +90,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {

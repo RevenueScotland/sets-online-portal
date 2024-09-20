@@ -6,6 +6,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the return",
             "listitem": [
                 {
@@ -47,6 +48,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Agent details",
             "listitem": [
                 {
@@ -100,6 +102,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Agent address",
             "listitem": [
                 {
@@ -140,6 +143,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the buyer(An other organisation)",
             "listitem": [
                 {
@@ -157,6 +161,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Trust",
             "listitem": [
                 {
@@ -180,6 +185,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -220,6 +226,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": "Contact details",
             "listitem": [
                 {
@@ -261,6 +268,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -301,6 +309,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": "Buyer details",
             "listitem": [
                 {
@@ -330,6 +339,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the seller(An organisation registered with Companies House)",
             "listitem": [
                 {
@@ -388,6 +398,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": "Contact details",
             "listitem": [
                 {
@@ -429,6 +440,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the property",
             "listitem": [
                 {
@@ -464,6 +476,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Property address",
             "listitem": [
                 {
@@ -509,6 +522,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the transaction",
             "listitem": [
                 {
@@ -574,6 +588,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Linked transactions",
             "listitem": [
                 {
@@ -591,6 +606,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -614,6 +630,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -637,6 +654,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -660,6 +678,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the transaction",
             "listitem": [
                 {
@@ -683,6 +702,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About future events",
             "listitem": [
                 {
@@ -712,12 +732,13 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the conveyance or transfer",
             "listitem": [
                 {
                     "itemcode": "total_consideration",
                     "itemformat": "money",
-                    "itemlabel": "Total consideration",
+                    "itemlabel": "Total consideration for this transaction",
                     "itemdata": "12500"
                 },
                 {
@@ -729,7 +750,7 @@
                 {
                     "itemcode": "linked_consideration",
                     "itemformat": "money",
-                    "itemlabel": "Linked transaction consideration",
+                    "itemlabel": "All other Linked transaction consideration",
                     "itemdata": "1370"
                 },
                 {
@@ -741,7 +762,7 @@
                 {
                     "itemcode": "remaining_chargeable",
                     "itemformat": "money",
-                    "itemlabel": "Total consideration remaining",
+                    "itemlabel": "Total chargeable consideration",
                     "itemdata": "30"
                 }
             ],
@@ -753,6 +774,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Non notifiable return",
             "listitem": [
                 {
@@ -776,6 +798,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Additional Dwelling Supplement (ADS)",
             "listitem": [
                 {
@@ -811,6 +834,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "What is the address of the main residence that will be sold?",
             "listitem": [
                 {
@@ -861,6 +885,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Reliefs on this transaction",
             "listitem": [
                 {
@@ -902,7 +927,8 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": null,
-            "sectiontitle": "Reliefs on this transaction",
+            "sectionfooter": null,
+            "sectiontitle": null,
             "listitem": [
                 {
                     "itemcode": "relief_type_description",
@@ -931,7 +957,8 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": null,
-            "sectiontitle": "Reliefs on this transaction",
+            "sectionfooter": null,
+            "sectiontitle": null,
             "listitem": [
                 {
                     "itemcode": "relief_type_description",
@@ -960,7 +987,8 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": null,
-            "sectiontitle": "Reliefs on this transaction",
+            "sectionfooter": null,
+            "sectiontitle": null,
             "listitem": [
                 {
                     "itemcode": "relief_type_description",
@@ -983,7 +1011,8 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": null,
-            "sectiontitle": "Reliefs on this transaction",
+            "sectionfooter": null,
+            "sectiontitle": null,
             "listitem": [
                 {
                     "itemcode": "relief_type_description",
@@ -1006,6 +1035,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the calculation",
             "listitem": [
                 {
@@ -1053,6 +1083,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Edit calculation reason",
             "listitem": [
                 {
@@ -1070,6 +1101,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Payment and submission",
             "listitem": [
                 {
@@ -1087,6 +1119,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Payment and submission",
             "listitem": [
                 {

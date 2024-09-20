@@ -11,9 +11,9 @@ if [ -z "${container_name}" ] || [ -z "${app_name}" ] || [  -z "${new_version}" 
 fi
 
 
-if [[ $(docker ps -qfname="${container_name}") ]]; then 
+if [[ $(sudo -E docker ps -qfname="${container_name}") ]]; then 
 	echo Found container with partial name ${container_name} - assuming first parameter is a container name
-	start_version=$(docker inspect -f="{{ index .Config.Labels \"com.northgateps.nds.version\"}}" $(docker ps -qf name="${container_name}") 2>/dev/null)
+	start_version=$(sudo -E docker inspect -f="{{ index .Config.Labels \"com.northgateps.nds.version\"}}" $(sudo -E docker ps -qf name="${container_name}") 2>/dev/null)
 else 
 	echo Can not find container with partial name ${container_name} - assuming it''s a version number
 	start_version=${container_name}

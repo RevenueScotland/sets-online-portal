@@ -29,10 +29,10 @@ en:
         authenticated_declaration1: "The declaration"
         authenticated_declaration2: "The declaration"
         unauthenticated_declarations: "The declaration"
-        authenticated_declaration1_TAXPAYER: "I (we), the tax payer(s) declare that this repayment or claim request is, to the best of my (our) knowledge, correct and complete and confirm that I (we) am (are) eligible for the refund claimed"
+        authenticated_declaration1_TAXPAYER: "I (we), the tax payer(s) declare that this repayment or claim request is, to the best of my (our) knowledge, correct and complete and confirm that I (we) am (are) eligible for the repayment claimed"
         authenticated_declaration2_TAXPAYER: "I (we), the tax payer(s) declare that Revenue Scotland can contact me (us) regarding this repayment or claim request"
         authenticated_declaration1_AGENT: "I, the agent for the tax payer(s), confirm that the tax payer(s) have authorised repayment to be made to these bank details"
-        authenticated_declaration2_AGENT: "I, the agent of the tax payer(s), having been authorised to complete this repayment or claim request on behalf of the tax payer(s), certify that the tax payer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tax payer(s) is/are eligible for the refund claimed"
+        authenticated_declaration2_AGENT: "I, the agent of the tax payer(s), having been authorised to complete this repayment or claim request on behalf of the tax payer(s), certify that the tax payer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tax payer(s) is/are eligible for the repayment claimed"
         # reaturn reference number
         tare_reference: "What was the tax return reference of your new property purchase "
         case_reference: "Claim reference"

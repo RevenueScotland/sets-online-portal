@@ -6,6 +6,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the return",
             "listitem": [
                 {
@@ -53,6 +54,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Agent details",
             "listitem": [
                 {
@@ -106,6 +108,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Agent address",
             "listitem": [
                 {
@@ -146,6 +149,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the buyer(A private individual)",
             "listitem": [
                 {
@@ -211,6 +215,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Buyer address",
             "listitem": [
                 {
@@ -251,6 +256,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": null,
+            "sectionfooter": null,
             "sectiontitle": "Buyer's contact address",
             "listitem": [
                 {
@@ -268,6 +274,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": "Buyer details",
             "listitem": [
                 {
@@ -291,6 +298,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the seller(A private individual)",
             "listitem": [
                 {
@@ -320,6 +328,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Seller address",
             "listitem": [
                 {
@@ -370,6 +379,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the property",
             "listitem": [
                 {
@@ -405,6 +415,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Property address",
             "listitem": [
                 {
@@ -445,6 +456,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the transaction",
             "listitem": [
                 {
@@ -498,6 +510,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Linked transactions",
             "listitem": [
                 {
@@ -515,6 +528,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the transaction",
             "listitem": [
                 {
@@ -538,6 +552,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About future events",
             "listitem": [
                 {
@@ -555,12 +570,13 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the conveyance or transfer",
             "listitem": [
                 {
                     "itemcode": "total_consideration",
                     "itemformat": "money",
-                    "itemlabel": "Total consideration",
+                    "itemlabel": "Total consideration for this transaction",
                     "itemdata": "1500"
                 },
                 {
@@ -572,7 +588,7 @@
                 {
                     "itemcode": "linked_consideration",
                     "itemformat": "money",
-                    "itemlabel": "Linked transaction consideration",
+                    "itemlabel": "All other Linked transaction consideration",
                     "itemdata": ""
                 },
                 {
@@ -584,7 +600,7 @@
                 {
                     "itemcode": "remaining_chargeable",
                     "itemformat": "money",
-                    "itemlabel": "Total consideration remaining",
+                    "itemlabel": "Total chargeable consideration",
                     "itemdata": ""
                 }
             ],
@@ -596,6 +612,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the calculation",
             "listitem": [
                 {
@@ -643,6 +660,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Payment and submission",
             "listitem": [
                 {
@@ -660,6 +678,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Payment and submission",
             "listitem": [
                 {

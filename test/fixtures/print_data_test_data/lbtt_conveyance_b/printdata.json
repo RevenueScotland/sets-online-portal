@@ -6,6 +6,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the return",
             "listitem": [
                 {
@@ -53,6 +54,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Agent details",
             "listitem": [
                 {
@@ -106,6 +108,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Agent address",
             "listitem": [
                 {
@@ -146,6 +149,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the buyer(An other organisation)",
             "listitem": [
                 {
@@ -163,6 +167,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Trust",
             "listitem": [
                 {
@@ -186,6 +191,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -226,6 +232,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": "Contact details",
             "listitem": [
                 {
@@ -267,6 +274,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -307,6 +315,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": "Buyer details",
             "listitem": [
                 {
@@ -336,6 +345,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the buyer(An other organisation)",
             "listitem": [
                 {
@@ -353,6 +363,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Club",
             "listitem": [
                 {
@@ -376,6 +387,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -426,6 +438,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": "Contact details",
             "listitem": [
                 {
@@ -467,6 +480,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -507,6 +521,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": "Buyer details",
             "listitem": [
                 {
@@ -530,6 +545,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the seller(An organisation registered with Companies House)",
             "listitem": [
                 {
@@ -588,6 +604,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": "Contact details",
             "listitem": [
                 {
@@ -629,6 +646,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the seller(An other organisation)",
             "listitem": [
                 {
@@ -652,6 +670,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Organisation details",
             "listitem": [
                 {
@@ -675,6 +694,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -725,6 +745,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": "Contact details",
             "listitem": [
                 {
@@ -766,6 +787,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the property",
             "listitem": [
                 {
@@ -801,6 +823,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Property address",
             "listitem": [
                 {
@@ -846,6 +869,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the transaction",
             "listitem": [
                 {
@@ -905,6 +929,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Linked transactions",
             "listitem": [
                 {
@@ -922,6 +947,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -945,6 +971,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -968,6 +995,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": false,
+            "sectionfooter": null,
             "sectiontitle": null,
             "listitem": [
                 {
@@ -991,6 +1019,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the transaction",
             "listitem": [
                 {
@@ -1014,6 +1043,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About future events",
             "listitem": [
                 {
@@ -1043,12 +1073,13 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the conveyance or transfer",
             "listitem": [
                 {
                     "itemcode": "total_consideration",
                     "itemformat": "money",
-                    "itemlabel": "Total consideration",
+                    "itemlabel": "Total consideration for this transaction",
                     "itemdata": "12500"
                 },
                 {
@@ -1060,7 +1091,7 @@
                 {
                     "itemcode": "linked_consideration",
                     "itemformat": "money",
-                    "itemlabel": "Linked transaction consideration",
+                    "itemlabel": "All other Linked transaction consideration",
                     "itemdata": "1370"
                 },
                 {
@@ -1072,7 +1103,7 @@
                 {
                     "itemcode": "remaining_chargeable",
                     "itemformat": "money",
-                    "itemlabel": "Total consideration remaining",
+                    "itemlabel": "Total chargeable consideration",
                     "itemdata": "30"
                 }
             ],
@@ -1084,6 +1115,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Non notifiable return",
             "listitem": [
                 {
@@ -1107,6 +1139,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Additional Dwelling Supplement (ADS)",
             "listitem": [
                 {
@@ -1142,6 +1175,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "What is the address of the main residence that will be sold?",
             "listitem": [
                 {
@@ -1192,6 +1226,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Additional Dwelling Supplement (ADS)",
             "listitem": [
                 {
@@ -1221,6 +1256,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Confirm the address of the previous main residence that has been sold or disposed of",
             "listitem": [
                 {
@@ -1261,6 +1297,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Reliefs on this transaction",
             "listitem": [
                 {
@@ -1290,7 +1327,8 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": null,
-            "sectiontitle": "Reliefs on this transaction",
+            "sectionfooter": null,
+            "sectiontitle": null,
             "listitem": [
                 {
                     "itemcode": "relief_type_description",
@@ -1319,7 +1357,8 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": null,
-            "sectiontitle": "Reliefs on this transaction",
+            "sectionfooter": null,
+            "sectiontitle": null,
             "listitem": [
                 {
                     "itemcode": "relief_type_description",
@@ -1342,7 +1381,8 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": null,
-            "sectiontitle": "Reliefs on this transaction",
+            "sectionfooter": null,
+            "sectiontitle": null,
             "listitem": [
                 {
                     "itemcode": "relief_type_description",
@@ -1365,7 +1405,8 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": null,
-            "sectiontitle": "Reliefs on this transaction",
+            "sectionfooter": null,
+            "sectiontitle": null,
             "listitem": [
                 {
                     "itemcode": "relief_type_description",
@@ -1406,6 +1447,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the calculation",
             "listitem": [
                 {
@@ -1453,6 +1495,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": "Note: LBTT is a self-assessed tax and Revenue Scotland does not verify all repayment claims before repayments are issued. Checks may take place after the issue of a repayment. This is to ensure claims meet the repayment conditions in full. If all the repayment conditions are not met, you may be due to pay tax back to Revenue Scotland. Steps will be taken to recover any repayment which should not have been paid, including interest.",
             "sectiontitle": "Repayment details",
             "listitem": [
                 {
@@ -1492,15 +1535,15 @@
                     "itemdata": "NatEast"
                 },
                 {
-                    "itemcode": "repayment_declaration",
-                    "itemformat": null,
-                    "itemlabel": "I, the agent of the buyer(s), having been authorised to complete this claim on behalf of the buyer(s), certify that the buyer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the buyer(s) is/are eligible for the refund claimed",
-                    "itemdata": "Yes"
-                },
-                {
                     "itemcode": "repayment_agent_declaration",
                     "itemformat": null,
                     "itemlabel": "I, the agent for the buyer(s), confirm that the buyer(s) have authorised repayment to be made to these bank details",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "repayment_declaration",
+                    "itemformat": null,
+                    "itemlabel": "I, the agent of the buyer(s), having been authorised to complete this claim on behalf of the buyer(s), certify that the buyer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the buyer(s) is/are eligible for the repayment claimed",
                     "itemdata": "Yes"
                 }
             ],
@@ -1512,6 +1555,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Payment and submission",
             "listitem": [
                 {
@@ -1529,6 +1573,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Payment and submission",
             "listitem": [
                 {

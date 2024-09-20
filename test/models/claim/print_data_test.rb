@@ -137,9 +137,9 @@ module Claim
     def object_specific_setup(object)
       # Some of the savon expectations are needed to be placed here as this is the area where the object can be
       # accessed, and there are information needed from the object to get the correct responses.
+      savon_expectations_user_setup(object.current_user, object.srv_code.downcase)
       savon_expectations_reference_values_setup
       savon_expectations_system_parameters_setup
-      savon_expectations_user_setup(object.current_user, object.srv_code.downcase)
     end
   end
 end

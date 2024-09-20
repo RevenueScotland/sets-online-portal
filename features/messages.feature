@@ -52,7 +52,7 @@ Feature: Secure Communication
 
         # Uploading file with file size that is too big
         When I upload "testimage_over_size_limit.jpg" to "dashboard_message_resource_item_default_file_data" on the browser
-        Then I should receive the message "File should be less than 10 mb" on the browser
+        Then I should receive the message "File should be less than 15 mb" on the browser
 
         # Uploading invalid file type
         When I upload "testtxt_invalid_file_type.txt" to "dashboard_message_resource_item_default_file_data"
@@ -85,7 +85,7 @@ Feature: Secure Communication
 
         # Uploading file with file size that is too big
         When I upload "testimage_over_size_limit.jpg" to "dashboard_message_resource_item_default_file_data" on the browser
-        Then I should receive the message "File should be less than 10 mb" on the browser
+        Then I should receive the message "File should be less than 15 mb" on the browser
 
         # Uploading invalid file type
         When I upload "testtxt_invalid_file_type.txt" to "dashboard_message_resource_item_default_file_data"

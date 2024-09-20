@@ -38,9 +38,9 @@ timestamps {
 					runUnitTests()
 					generateDocumentation()
 					lintCode()
-                                        checkCVEs()
+                    checkCVEs()
 					codeStaticAnalysis()
-                                        checkGemLicenses()
+                    checkGemLicenses()
 					precompileAssets()
 					stashDeployables()
 				}
@@ -235,7 +235,8 @@ def envGitCheckout () {
 	if (!isReleaseBuild() && !isDevelopBranch()) {
 		branch = "develop"
 	}
-
+	
+	sh '[ -d environment ] && sudo chown -R jenkins:jenkins environment || echo'
 	checkout changelog: false, poll: false, scm: 
 		[$class: 'GitSCM', branches: [[name: branch]], doGenerateSubmoduleConfigurations: false, extensions: 
 			[[$class: 'CheckoutOption', timeout: 60], 
@@ -423,13 +424,14 @@ def unstashDeployables(folder) {
  */
 def dockerImageBuild() {
 	stage ('Docker Image Build') {
+		sh '[ -d environment ] && sudo chown -R jenkins:jenkins environment || echo'
 		unstashDeployables("environment/NdsEnvironment/environment/apps/${this.getAppName()}/app-servers-config/ui/scratch")
 		unstashDeployables("environment/NdsEnvironment/environment/apps/${this.getAppName()}/app-servers-config/proxy/scratch")
 		dir ('environment') {
 			withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APP_NAME=${this.getAppName()}", "RELEASE_VERSION=${this.releaseVersion()}"]) {
 				sh '''
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
-					export DOCKER_HOST=tcp://$(hostname -f):2376
+					# export DOCKER_HOST=tcp://$(hostname -f):2376
 					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
 					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
 					export SRC_DOCKER_REG=lg-bld-cont01.development.local:8443/nds-app-servers
@@ -517,11 +519,39 @@ def deployAutotestEnvironment(String environment = "autotest") {
 			         "ENVIRONMENT=${environment}", "USER=${this.getAppUser()}", "RELEASE_VERSION=${this.releaseVersion()}"]) {
 				sh '''
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
-					export DOCKER_HOST=tcp://$(hostname -f):2376
+					#export DOCKER_HOST=tcp://$(hostname -f):2376
 					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
 					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
 					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
 					../../run-app-env.sh $FULL_BUILD_VERSION  ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
+					sleep ${TEST_DELAY}
+				'''
+			}
+			def props = readProperties file: "NdsEnvironment/environment/apps/${this.getAppName()}/app-servers-config/scratch/${this.getFullBuildVersion()}/${environment}/env.properties"
+			currentBuild.result = "SUCCESS"
+			return [props["APP_HOST"], props["PROXY_HTTPS_PORT"], props["SELHUB_PORT"]]
+		}
+	} catch (err) {
+		currentBuild.result = "FAILURE"
+		throw err
+	}
+}
+
+/*
+ * Deploy an autotest type environment with Podman
+ *
+ */
+def deployAutotestEnvironmentPodman(String environment = "autotest") {
+	try {
+		dir('environment') {
+			withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "TEST_DELAY=${this.getTestDelay()}", "APP=${this.getAppName()}", 
+			         "ENVIRONMENT=${environment}", "USER=${this.getAppUser()}", "RELEASE_VERSION=${this.releaseVersion()}"]) {
+				sh '''
+					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
+					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
+					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
+					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
+					sudo -E ../../run-app-env.sh $FULL_BUILD_VERSION  ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
 					sleep ${TEST_DELAY}
 				'''
 			}
@@ -551,18 +581,18 @@ def deployManualTestEnvironment(String environment, String environmentLabel, Str
 				sh '''
 					#!/bin/bash
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
-					export DOCKER_HOST=tcp://$(hostname -f):2376
 					
-                    docker network prune -f
+                    sudo docker network prune -f
+					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
 					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
 					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
-					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
-					[ ! -z "$(docker ps -qa --filter name=${APP}.*-${ENVIRONMENT})" ] && docker stop $(docker ps -qa --filter "name=${APP}.*-${ENVIRONMENT}") && docker rm -f $(docker ps -qa --filter "name=${APP}.*-${ENVIRONMENT}")
-					../../run-mt-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
+					[ ! -z "$(sudo docker ps -qa --filter name=${APP}.*-${ENVIRONMENT})" ] && sudo docker stop $(sudo docker ps -qa --filter "name=${APP}.*-${ENVIRONMENT}") && sudo docker rm -f $(sudo docker ps -qa --filter "name=${APP}.*-${ENVIRONMENT}")
+					sudo -E ../../run-mt-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
 					sleep ${TEST_DELAY}
 					export IMAGE_VERSION=${FULL_BUILD_VERSION}
 					containers=$(grep -Po "container_name:\\s*\\K.+" scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/docker-compose.yml | paste -sd " ")
-					echo IMAGES_USED=\\"$(docker inspect --format='{{.Config.Image}}' ${containers} | paste -sd ' ')\\" >> scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/env.properties
+					sudo chown jenkins:jenkins -R scratch/${FULL_BUILD_VERSION}
+					echo IMAGES_USED=\\"$(sudo docker inspect --format='{{.Config.Image}}' ${containers} | paste -sd ' ')\\" >> scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/env.properties
     				sed 's/>/\\\\\\>/g;s/</\\\\\\</g' scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/env.properties > scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/escaped-env.properties
     				source scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/escaped-env.properties
 					cd ../..
@@ -597,7 +627,7 @@ def generateReleaseNotes(environment) {
 			sh '''
 				#!/bin/bash
 				set +e
-				export DOCKER_HOST=tcp://$(hostname -f):2376
+				# export DOCKER_HOST=tcp://$(hostname -f):2376
 				cd tools
 				./simpleReleaseNotes.sh app-${ENVIRONMENT} ${APP} latest RSTP > ${OUTPUT}
 				echo
@@ -635,7 +665,7 @@ def runAutotest(String host, String port, String seleniumPort, String environmen
 					 "COVERAGE_DIR=log/coverage", "COVERAGE_MERGE=true", "CAPYBARA_SAVE_PATH=log/tmp/screenshots"]) {
 				sh '''
 					#!/bin/bash
-					export DOCKER_HOST=tcp://$(hostname -f):2376
+					# export DOCKER_HOST=tcp://$(hostname -f):2376
                     docker exec -u root ${APP}-app-${ENVIRONMENT} apk add --no-cache --virtual .bundle-deps build-base gmp-dev
 					docker exec -u root ${APP}-app-${ENVIRONMENT} bundle config mirror.https://rubygems.org http://lg-bld-ruby01.development.local:9292
                     docker exec -u root ${APP}-app-${ENVIRONMENT} bundle install --deployment --with="development test"
@@ -650,6 +680,56 @@ def runAutotest(String host, String port, String seleniumPort, String environmen
 					docker exec ${APP}-app-${ENVIRONMENT} chmod -R u+w ${COVERAGE_DIR}
 					docker exec ${APP}-app-${ENVIRONMENT} mv log/test.log log/${ENVIRONMENT}.log
 					docker exec ${APP}-app-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
+				    	UNIT_TEST=1 CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} RAILS_ENV=test test
+					'''
+			}
+		}
+		postAutotestSuccess(environment)
+		currentBuild.result = "SUCCESS"
+	} catch (err) {
+		postAutotestFailure(host, environment)
+		currentBuild.result = "FAILURE"
+        throw err
+	} finally {
+		emailModSecFailures(environment)
+		emailLogErrors(environment, host)
+        emailDepreciatedMessages(environment, host)
+	}
+}
+
+/*
+ * Run an autotest test with Podman
+ * host			the name of the host where the application is running on
+ * port			the port the application is listening on
+ * seleniumPort	the port that the selenium server is listening on
+ */
+def runAutotestPodman(String host, String port, String seleniumPort, String environment = "autotest") {
+	try
+	{
+		dir ('code') {
+			def altVersion = this.getFullBuildVersion().replaceAll('\\.', '-')
+			seleniumUrl = "http://${this.getAppName()}-selenium-hub-${environment}:4444/wd/hub"
+			appHostUrl = "http://${this.getAppName()}-app-${environment}:2099"
+			withEnv(["CAPYBARA_DRIVER=selenium_remote_firefox", "CAPYBARA_REMOTE_URL=${seleniumUrl}", "APP=${this.getAppName()}", 
+			         "FULL_BUILD_VERSION=${altVersion}", "ENVIRONMENT=${environment}", "CAPYBARA_APP_HOST=${appHostUrl}",
+					 "COVERAGE_DIR=log/coverage", "COVERAGE_MERGE=true", "CAPYBARA_SAVE_PATH=log/tmp/screenshots"]) {
+				sh '''
+					#!/bin/bash
+					# export DOCKER_HOST=tcp://$(hostname -f):2376
+                    sudo -E docker exec -u root ${APP}-app-${ENVIRONMENT} apk add --no-cache --virtual .bundle-deps build-base gmp-dev
+					sudo -E docker exec -u root ${APP}-app-${ENVIRONMENT} bundle config mirror.https://rubygems.org http://lg-bld-ruby01.development.local:9292
+                    sudo -E docker exec -u root ${APP}-app-${ENVIRONMENT} bundle install --deployment --with="development test"
+                    sudo -E docker exec -u root ${APP}-app-${ENVIRONMENT} apk del .bundle-deps
+					sudo -E docker exec ${APP}-app-${ENVIRONMENT} mkdir -p /var/tmp/share/upload /var/tmp/share/download
+					sudo -E docker exec ${APP}-app-${ENVIRONMENT} chmod 777 -R /var/tmp/share/
+					sudo -E docker exec -u root ${APP}-app-${ENVIRONMENT} chmod a+w -R .
+					sudo -E docker exec ${APP}-app-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
+						CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} CAPYBARA_SAVE_PATH=${CAPYBARA_SAVE_PATH}\
+						TEST_FILE_UPLOAD_PATH=/var/tmp/share/upload TEST_FILE_DOWNLOAD_PATH=/var/tmp/share/download \
+						RAILS_ENV=test NODE_ENV=test cucumber
+					sudo -E docker exec ${APP}-app-${ENVIRONMENT} chmod -R u+w ${COVERAGE_DIR}
+					sudo -E docker exec ${APP}-app-${ENVIRONMENT} mv log/test.log log/${ENVIRONMENT}.log
+					sudo -E docker exec ${APP}-app-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
 				    	UNIT_TEST=1 CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} RAILS_ENV=test test
 					'''
 			}
@@ -685,7 +765,7 @@ def postAutotestSuccess(String environment = "autotest") {
 				ssh rsdocs@lg-bld-ruby01.development.local "unlink /var/www/html/${APPLICATION}/coverage ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/coverage /var/www/html/${APPLICATION}/coverage"
 				popd
 
-                                scp tmp/licensed.txt rsdocs@lg-bld-ruby01.development.local:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+                scp tmp/licensed.txt rsdocs@lg-bld-ruby01.development.local:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
 				ssh rsdocs@lg-bld-ruby01.development.local "[ -L "/var/www/html/${APPLICATION}/licensed.txt" ] && unlink /var/www/html/${APPLICATION}/licensed.txt ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/licensed.txt /var/www/html/${APPLICATION}/licensed.txt"
 			'''
 		}
@@ -1108,7 +1188,7 @@ def stopEnvironment(String environment) {
 def doDockerCmdOnEnvironment(String environment, String cmd) {
 	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}", "COMMAND=${cmd}"]) {
 		sh '''
-			export DOCKER_HOST=tcp://$(hostname -f):2376
+			#export DOCKER_HOST=tcp://$(hostname -f):2376
 			export ENV_NAME=${APPLICATION}-.*-${ENVIRONMENT}
 			[ ! -z "$(docker ps -qa --filter name=${ENV_NAME})" ] && docker ${COMMAND} $(docker ps -qa --filter name=${ENV_NAME}) || true
 			export ENV_NAME=${APPLICATION}.*${FULL_BUILD_VERSION//\\./-}.*${ENVIRONMENT}
@@ -1124,7 +1204,7 @@ def doDockerCmdOnEnvironment(String environment, String cmd) {
 def removeDockerNetwork(String environment) {
 	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 		sh '''
-			export DOCKER_HOST=tcp://$(hostname -f):2376
+			# export DOCKER_HOST=tcp://$(hostname -f):2376
 			export NETWORK_NAME=${APPLICATION}${FULL_BUILD_VERSION}${ENVIRONMENT}_common
 			docker network rm ${NETWORK_NAME} || true
 		'''
@@ -1139,7 +1219,7 @@ def removeDockerNetwork(String environment) {
 def deleteOldEnvironments(String environment) {
 	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 		sh '''
-			export DOCKER_HOST=tcp://$(hostname -f):2376
+			# export DOCKER_HOST=tcp://$(hostname -f):2376
 			cd environment/NdsEnvironment/environment/apps/
 			bash ./remove-all-old-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APPLICATION}
 			'''

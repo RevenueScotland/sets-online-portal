@@ -298,7 +298,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
           get 'download_pdf'
 
-          get 'download-file', to: 'download_file'
+          get 'download-file', to: 'slft#download_file'
         end
         resource :sites, only: %i[new] do
           member do

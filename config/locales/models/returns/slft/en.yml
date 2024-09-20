@@ -33,7 +33,7 @@ en:
         bank_account_no: "Bank / building society account number"
         bank_sort_code: "Branch sort code"
         bank_name: "Name of bank / building society"
-        rrep_bank_auth_ind: "I, the taxpayer, declare that this claim form is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed"
+        rrep_bank_auth_ind: "I, the taxpayer, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed"
         rrep_bank_auth_text: ""
       returns/slft/waste:
         ewc_code: "EWC code"

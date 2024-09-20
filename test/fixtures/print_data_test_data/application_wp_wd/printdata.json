@@ -6,6 +6,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Application",
             "listitem": [
                 {
@@ -53,6 +54,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Waste producer details",
             "listitem": [
                 {
@@ -82,6 +84,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Waste producer address",
             "listitem": [
                 {
@@ -117,6 +120,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "About the waste water",
             "listitem": [
                 {
@@ -134,6 +138,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Banned liquid waste",
             "listitem": [
                 {
@@ -151,6 +156,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Tell us about the waste",
             "listitem": [
                 {
@@ -180,6 +186,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Tell us about the water content",
             "listitem": [
                 {
@@ -215,6 +222,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Water treatment",
             "listitem": [
                 {
@@ -238,6 +246,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Start date",
             "listitem": [
                 {
@@ -255,6 +264,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Landfill site details",
             "listitem": [
                 {
@@ -290,6 +300,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Site address",
             "listitem": [
                 {
@@ -330,6 +341,7 @@
             "sectiondivider": null,
             "pagebreak": null,
             "displaytitle": null,
+            "sectionfooter": null,
             "sectiontitle": "Separate mailing address for landfill operator",
             "listitem": [
                 {
@@ -347,6 +359,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Separate mailing address for landfill operator",
             "listitem": [
                 {
@@ -387,6 +400,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Site waste details",
             "listitem": [
                 {
@@ -410,6 +424,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Supporting documentation",
             "listitem": [
                 {
@@ -427,6 +442,7 @@
             "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
+            "sectionfooter": null,
             "sectiontitle": "Declarations",
             "listitem": [
                 {

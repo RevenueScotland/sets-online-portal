@@ -18,7 +18,7 @@ gem 'propshaft', git: 'https://github.com/rails/propshaft'
 # We build the css using sass-loader so not cssbundling-rails
 gem 'jsbundling-rails'
 # Turbo https://github.com/hotwired/turbo-rails
-gem 'turbo-rails'
+gem 'turbo-rails', '~>1.0'
 # Stimulus https://github.com/hotwired/stimulus-rails
 gem 'stimulus-rails'
 # Include view component
