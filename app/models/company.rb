@@ -22,7 +22,7 @@ class Company # rubocop:disable Metrics/ClassLength
 
   validates :company_number, presence: true, length: { minimum: 8, maximum: 8, allow_blank: true },
                              on: %i[search registered_organisation company_number]
-  validate  :company_number_valid?, on: %i[search registered_organisation company_number]
+  validate  :company_number_is_valid, on: %i[search registered_organisation company_number]
   validates :company_name, presence: true, length: { maximum: 200 },
                            on: %i[registered_organisation other_organisation company_name]
   validates :org_telephone, presence: true, phone_number: true,
@@ -35,7 +35,7 @@ class Company # rubocop:disable Metrics/ClassLength
   validates :county, length: { maximum: 50 }, presence: true, on: %i[registered_organisation county]
   validates :postcode, length: { minimum: 6, maximum: 8 }, presence: true, on: %i[registered_organisation postcode]
   validates :main_rep_name, presence: true, length: { maximum: 100 }, on: %i[main_rep_name]
-  validate  :company_selected?, on: :company_selected
+  validate  :company_is_selected, on: :company_selected
 
   # Layout to print the data in this model
   # This defines the sections that are to be printed and the content and layout of those sections
@@ -221,14 +221,14 @@ class Company # rubocop:disable Metrics/ClassLength
   # Validation to check that the company has been selected - it's the same as checking the
   # presence of number, name, and address_line1, but with a nicer error message
   # and attached to the base object
-  def company_selected?
+  def company_is_selected
     return unless company_number.blank? || company_name.blank? || address_line1.blank?
 
     errors.add(:company_number, :company_not_chosen)
   end
 
   # Check if company number is valid based on @see COMPANY_NUMBER_REGEX.
-  def company_number_valid?
+  def company_number_is_valid
     return if company_number.blank? || company_number.length != 8 || company_number&.match?(COMPANY_NUMBER_REGEX)
 
     errors.add(:company_number, :is_invalid)

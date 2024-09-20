@@ -106,13 +106,8 @@ module Returns
 
     # Cleans and saves the return by sending to the back office.
     def save_draft
-      Rails.logger.debug('Actioning Save Draft')
       @slft_return = load_step
-      Rails.logger.debug('Wizard Loaded')
-      @slft_return.save_draft(current_user)
-      Rails.logger.debug('Out of Save')
       @post_path = '.'
-      wizard_save(@slft_return)
     end
 
     private

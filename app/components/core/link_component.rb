@@ -63,9 +63,9 @@ module Core
 
       @options = { rel: 'noopener noreferrer' }
       @name = html_escape(@name) + if show_new_window
-                                     tag.span(" (#{t('opens_new_window')})")
+                                     tag.span(" (#{I18n.t('opens_new_window')})")
                                    else
-                                     tag.span(" (#{t('opens_new_window')})", class: 'visually-hidden')
+                                     tag.span(" (#{I18n.t('opens_new_window')})", class: 'visually-hidden')
                                    end
     end
   end

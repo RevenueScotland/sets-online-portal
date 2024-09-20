@@ -19,7 +19,10 @@ module Returns
     # returns/lbtt/calculation Allows editing the tax calculation.
     # Always goes to summary after successful editing
     def calculation
-      wizard_step(nil) { { next_step: :calculate_next_step, cache_index: LbttController } }
+      wizard_step(nil) do
+        { next_step: :calculate_next_step, does_not_validate: %i[total_reliefs total_ads_reliefs],
+          cache_index: LbttController }
+      end
     end
 
     # returns/lbtt/calc_already_paid step to collect info about tax already paid.  Is optionally

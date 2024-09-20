@@ -18,11 +18,13 @@ module Core
     # @param interpolations [Hash] Hash of options that are passed down to the translations, they are
     #   passed to both hint and label so the same argument name can be used in both, if you want
     #   different ones then use different argument names
-    def initialize(klass_or_model:, method:, action_name: nil, optional: false, interpolations: {})
+    def initialize(klass_or_model:, method:, action_name: nil, optional: false, interpolations: {},
+                   readonly: false)
       @action_name = action_name
       @optional = optional
       @interpolations = interpolations
       @label_visually_hidden = false
+      @readonly = readonly
       set_klass_and_method(klass_or_model, method)
     end
 
@@ -152,7 +154,7 @@ module Core
     def get_text(type, interpolations: {}, default: nil)
       text = I18n.t(@method, default: default, scope: [i18n_scope(@klass), type, @klass.model_name.i18n_key],
                              **interpolations)
-      text = text_from_hash(text, @action_name, interpolations) if text.is_a?(Hash)
+      text = text_from_hash(text, (@readonly ? :readonly : @action_name), interpolations) if text.is_a?(Hash)
       # Explicitly mark the translation as safe so we can include html
       (text.is_a?(Hash) ? text : text.html_safe) # rubocop:disable Rails/OutputSafety
     end
@@ -176,6 +178,7 @@ module Core
       if klass_or_model.instance_of?(Class)
         @klass = klass_or_model
       else
+        # The translation attribute can only work on as an instance of the class.
         @klass = klass_or_model.class
         @method = klass_or_model.translation_attribute(method) if klass_or_model.respond_to?(:translation_attribute)
       end

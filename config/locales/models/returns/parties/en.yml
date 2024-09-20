@@ -79,6 +79,27 @@ en:
         AUTHENTICATED_telephone: "To contact the tax payer in case we have any queries about this application"
         UNAUTHENTICATED_email_address: "We'll use this to send you an email confirmation"
         AUTHENTICATED_email_address: "We'll use this to send the tax payer an email confirmation"
+        type_TENANT:
+          readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
+          default: ""  
+        title:
+          readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
+          default: ""
+        firstname:
+          readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
+          default: ""
+        surname:
+          readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
+          default: ""
+        org_type:
+          readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
+          default: ""
+        org_name:
+          readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
+          default: ""
+        charity_number:
+          readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
+          default: ""
     errors:
       models:
         returns/lbtt/party:

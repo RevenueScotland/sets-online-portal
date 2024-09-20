@@ -9,13 +9,15 @@ module Returns
   class LbttController < ApplicationController # rubocop:disable Metrics/ClassLength
     include Wizard
     include ControllerHelper
-    include LbttControllerHelper
+    include LbttControllerFilterParamsHelper
+    include LbttControllerLoadAgentHelper
     include LbttControllerDateWarningHelper
     include DownloadHelper
 
     # all public pages, not just wizard steps for the public part of LBTT
-    PUBLIC_PAGES = %I[public_landing public_return_type return_reference_number summary
-                      declaration declaration_submitted ].freeze
+    PUBLIC_PAGES = %I[public_landing public_return_type return_reference_number
+                      return_pre_population_declaration summary
+                      declaration declaration_submitted download_pdf].freeze
 
     authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY
     authorise routes: PUBLIC_PAGES, requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
@@ -31,10 +33,12 @@ module Returns
     CONVEY_LEASERET_STEPS = %w[return_type summary].freeze
 
     # navigation steps in the lbtt lease review, assignation and termination wizard
-    LEASE_REV_ASSIGN_TERMINATE_STEPS = %w[return_type return_reference_number summary].freeze
+    LEASE_REV_ASSIGN_TERMINATE_STEPS = %w[return_type return_reference_number
+                                          return_pre_population_declaration summary].freeze
 
     # publicly available steps (feeds into the steps above)
-    PUBLIC_STEPS = %w[landing_public public_return_type return_reference_number summary].freeze
+    PUBLIC_STEPS = %w[landing_public public_return_type return_reference_number
+                      return_pre_population_declaration summary].freeze
 
     # this can't be defined in authorise.rb, otherwise rails throws an error
     helper_method :public
@@ -87,6 +91,31 @@ module Returns
       wizard_step(nil) { { next_step: :return_type_next_steps } }
     end
 
+    # lease review, assignation and termination pre population next step
+    def return_pre_population_declaration
+      wizard_step(LEASE_REV_ASSIGN_TERMINATE_STEPS)
+    end
+
+    # The method is used to retrieve the PDF of the submitted return
+    def download_pdf
+      @lbtt_return ||= load_step
+      success, attachment = @lbtt_return.back_office_pdf_data(current_user,
+                                                              @lbtt_return.back_office_receipt_request, 'Return')
+      return unless success
+
+      # Download the file
+      send_file_from_attachment(attachment[:document_return])
+    end
+
+    # Overwrites the user method to pass unique id for unauthenticated user to create folder on server
+    # folder will hold the file uploaded by user
+    def sub_directory
+      return current_user.username if current_user
+
+      @lbtt_return ||= load_step
+      @lbtt_return.tare_reference
+    end
+
     # The method used to retrieve the pdf summary of the return
     def download_receipt
       @lbtt_return = load_step
@@ -101,10 +130,7 @@ module Returns
     # Cleans and saves the return by sending to the back office.
     def save_draft
       @lbtt_return = load_step
-      @lbtt_return.clean_up_yes_nos
-      @lbtt_return.save_draft(current_user)
       @post_path = '.'
-      wizard_save(@lbtt_return)
     end
 
     private
@@ -149,10 +175,9 @@ module Returns
       clear_caches
 
       # Creates a clean and new LBTT with some initial data added as these are data from before the summary page.
-      # The current_flbt_type is set to flbt_type to reset it.
       @lbtt_return = Lbtt::LbttReturn.new(flbt_type: flbt_type, current_flbt_type: flbt_type,
                                           orig_return_reference: @lbtt_return.orig_return_reference,
-                                          user_account_type: User.account_type(current_user))
+                                          current_user: current_user)
       setup_sub_models
     end
 
@@ -167,21 +192,7 @@ module Returns
 
     # load all the parties data involved in lbtt return
     def load_party_summary
-      agent_data if current_user # not needed for a public return
-    end
-
-    # Load agent contact data (or populate with @see Party#populate_from_account) into @agent.
-    # If there is no user then an blank @agent will be set up (ie the public user case).
-    def agent_data
-      # load agent data from current user if its blank
-      if @lbtt_return.agent.nil?
-        @lbtt_return.agent = Lbtt::Party.new(party_type: 'AGENT')
-        # get login user details to pre-populate details for agent section
-        # skip this step if there isn't a logged in user
-        @lbtt_return.agent.populate_from_account(Account.find(current_user))
-      end
-
-      @agent = @lbtt_return.agent
+      load_agent if current_user # not needed for a public return
     end
 
     # Checks if submit button was pressed & redirects to the appropriate action if validation passes.
@@ -205,8 +216,9 @@ module Returns
       # for amendments, provide the amendment reason and check if they want to request a repayment
       if @lbtt_return.amendment?
         redirect_to returns_lbtt_amendment_reason_path
-      elsif @lbtt_return.any_lease_review?
-        redirect_to returns_lbtt_repayment_claim_path
+      # for lease review,assign, termination and amount payable is less than zero
+      elsif @lbtt_return.any_lease_review? && @lbtt_return.tax.tax_due_for_return < '0'
+        redirect_to returns_lbtt_repayment_claim_amount_path
       else
         redirect_to returns_lbtt_declaration_path
       end
@@ -217,7 +229,7 @@ module Returns
     # @return [LbttReturn] the model for wizard saving
     def setup_step
       @post_path = wizard_post_path
-      @lbtt_return = wizard_load || Lbtt::LbttReturn.new(user_account_type: User.account_type(current_user))
+      @lbtt_return = wizard_load || Lbtt::LbttReturn.new(current_user: current_user)
 
       setup_sub_models(save_wizard: false)
 

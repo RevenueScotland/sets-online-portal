@@ -23,10 +23,10 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   attribute_list.each { |attr| attr_accessor attr }
 
   validates :email_data_ind, presence: true, on: %i[create email_data_ind]
-  validate  :names_valid?, on: %i[update update_basic]
+  validate  :names_are_valid, on: %i[update update_basic]
   validates :email_address, presence: true, email_address: true, on: %i[create update email_address update_basic]
   validates :email_address, confirmation: true, on: %i[create update email_address update_basic]
-  validate  :taxes_valid?, on: %i[create taxes]
+  validate  :one_tax_is_choosen, on: %i[create taxes]
   validate  :company_valid?, on: :update
   validate  :basic_company_details_valid?, on: :update_basic
   validates :reg_company_contact_address_yes_no, presence: true, on: :reg_company_contact_address_yes_no

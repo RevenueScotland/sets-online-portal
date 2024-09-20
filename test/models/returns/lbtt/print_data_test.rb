@@ -24,10 +24,28 @@ module Returns
         @savon.expects(:get_reference_values_wsdl).returns(fixture)
         fixture = File.read('test/fixtures/mocks/reference_data/tax_relief_types_response.xml')
         @savon.expects(:get_tax_relief_types_wsdl).returns(fixture)
+
+        # change for portal new users
+        fixture = File.read('test/fixtures/mocks/lbtt/lbtt_agent_account_response.xml')
+        @savon.expects(:get_party_details_wsdl).with(message: :any).returns(fixture)
+        fixture = File.read('test/fixtures/mocks/dashboard/list_users.xml')
+        @savon.expects(:maintain_user_wsdl).with(message: :any).returns(fixture)
+
+        fixture = File.read('test/fixtures/mocks/lbtt/lbtt_taxpayer_account_response.xml')
+        @savon.expects(:get_party_details_wsdl).with(message: :any).returns(fixture)
+        fixture = File.read('test/fixtures/mocks/dashboard/list_users.xml')
+        @savon.expects(:maintain_user_wsdl).with(message: :any).returns(fixture)
+
         Rails.logger.debug { 'Mocking started' }
         # Force cache population for ref data and tax relief types
         ReferenceData::ReferenceValue.lookup('TITLES', 'SYS', 'RSTU')
         ReferenceData::TaxReliefType.lookup('RELIEF_TYPES', 'LBTT', 'RSTU')
+
+        # The party refno's needs to match the party refno nested into current_user in the json files
+        Account.all(User.new(party_refno: 1644))
+        User.all(User.new(party_refno: 1644))
+        Account.all(User.new(party_refno: 1645))
+        User.all(User.new(party_refno: 1645))
       end
 
       # Stop the mocking and reset the cache

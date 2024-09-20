@@ -1,8 +1,8 @@
 <% content_for(:page_title, t('.'+@party.party_type+ '_title')) %>
 <%= ds_form_with(model: @party, url: @post_path, method: :post) do |f| %>
-  <%= f.ds_select(method: :title, select_options: @party.list_ref_data(:title), width: 10, optional: true) %>
-  <%= f.ds_text_field(method: :firstname) %>
-  <%= f.ds_text_field(method: :surname) %>
+  <%= f.ds_select(method: :title, select_options: @party.list_ref_data(:title), width: 10, optional: true, readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false) %>
+  <%= f.ds_text_field(method: :firstname, readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false) %>
+  <%= f.ds_text_field(method: :surname, readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false) %>
   <% if !%w[SELLER LANDLORD].include?(@party.party_type) %>
     <% if @party.party_type != 'NEWTENANT'%>
       <%= f.ds_text_field(method: :telephone) %>

@@ -28,6 +28,6 @@ class CompaniesHouseApi
       http_proxyaddr: proxy_uri.host, http_proxyport: proxy_uri.port,
       http_proxyuser: proxy_uri.user, http_proxypass: proxy_uri.password
     }
-    proxy.delete_if { |_, v| v.nil? }
+    proxy.compact { |_, v| v.nil? }
   end
 end

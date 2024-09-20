@@ -14,7 +14,8 @@ module Returns
     end
 
     # Extracted summary method
-    # Checks if draft button was pressed & redirects to the save draft action if validation passes.
+    # Checks if draft button was pressed & redirects to the save draft action if validation passes and
+    # draft save is success
     # @return true if button was pressed, else false.
     def manage_draft(model)
       return false unless params[:save_draft]
@@ -22,11 +23,22 @@ module Returns
       Rails.logger.debug('save_draft pressed')
       if model.valid?(:draft)
         Rails.logger.debug('  validation passed')
-        redirect_to(action: :save_draft)
+        submit_draft(model)
       else
         render(status: :unprocessable_entity)
       end
       true
+    end
+
+    # Save the draft on back office and redirect to save draft action if save draft is success.
+    def submit_draft(model)
+      if model.save_draft(current_user)
+        Rails.logger.debug('  save draft submitted')
+        wizard_save(model)
+        redirect_to(action: :save_draft)
+      else
+        render(status: :unprocessable_entity)
+      end
     end
 
     # Extracted summary method

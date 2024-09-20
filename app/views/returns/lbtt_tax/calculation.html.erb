@@ -8,7 +8,7 @@
   <% else %>
     <%= f.ds_currency(method: :npv_tax_due) %>
     <%= f.ds_currency(method: :premium_tax_due) %>
-    <% if @lbtt_return.lease? %>
+    <% if @lbtt_return.lease? || @lbtt_return.show_pre_pop_reliefs? %>
       <%= f.ds_currency(method: :total_reliefs, readonly: true) %>
     <% end %>
   <% end %>

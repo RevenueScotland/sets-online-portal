@@ -29,7 +29,7 @@ module Returns
                     :orig_npv_tax_due, :orig_premium_tax_due, :orig_total_due, :orig_total_ads_reliefs,
                     :orig_linked_npv, # this isn't used but we create orig_ values automatically so keeping it for that
                     # HACK: values copied from LbttReturn for validation and printing
-                    :flbt_type, :linked_ind
+                    :flbt_type, :linked_ind, :prepopulated
 
       # calc_already_paid page has amount_already paid which is only shown if type is not CONVEY or LEASERET
       # and amount_already_paid is also on the calculation page in a section only for LEASEREV, ASSIGN or TERMINATE
@@ -166,6 +166,8 @@ module Returns
       # @return [Symbol] the name of the translation attribute
       def translation_attribute(attribute, translation_options = nil)
         return :ads_due_repay_original if attribute == :ads_due && translation_options == :original
+        return :amount_already_paid_pre_populated if attribute == :amount_already_paid && @prepopulated == 'Y'
+        return :tax_due_for_return_pre_populated if attribute == :tax_due_for_return && @prepopulated == 'Y'
 
         attribute
       end
@@ -184,7 +186,7 @@ module Returns
 
         # ensure the Tax model exists and the important values are updated from values
         lbtt_return.tax ||= Lbtt::Tax.new
-        %i[flbt_type linked_ind].each do |attr|
+        %i[flbt_type linked_ind prepopulated].each do |attr|
           lbtt_return.tax.send("#{attr}=", lbtt_return.send(attr))
         end
         lbtt_return.tax.update_npv_linked_from_lbtt(lbtt_return)
@@ -209,6 +211,7 @@ module Returns
         # populate values from main lbtt model, needed for validation
         new_hash[:flbt_type] = bo_hash[:flbt_type]
         new_hash[:linked_ind] = bo_hash[:linked_ind]
+        new_hash[:prepopulated] = bo_hash[:prepopulated]
 
         # setup tax object
         Lbtt::Tax.new(new_hash)

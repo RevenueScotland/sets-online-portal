@@ -27,7 +27,8 @@ module Core
     def before_render
       # The wrapper needs the view context
       @wrapper = WrapperDelegate.new(builder: @builder, method: @method,
-                                     optional: @optional, interpolations: @interpolations, view_context: view_context)
+                                     optional: @optional, interpolations: @interpolations, view_context: view_context,
+                                     readonly: @readonly)
     end
 
     private

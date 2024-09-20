@@ -27,7 +27,7 @@ class Address < FLApplicationRecord
   validates :postcode,
             format: /\A([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})\z/i,
             on: :save, if: proc { |p| p.postcode.present? }
-  validate :address_selected?, on: :address_selected
+  validate :address_is_selected, on: :address_selected
   validates :country, presence: true, on: :save
 
   # Layout to print the data in this model
@@ -148,7 +148,7 @@ class Address < FLApplicationRecord
 
   # Validation to check that the address has been selected - it's the same as checking the
   # presence of address_line1, town, postcode but with a nicer error message.
-  def address_selected?
+  def address_is_selected
     return unless address_line1.to_s.empty? || town.to_s.empty?
 
     errors.add(:postcode, :address_not_chosen)

@@ -2,8 +2,8 @@
 <%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f| %>
   <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
     <% c.with_visibility_control_radio_group(builder: f.builder, method: :premium_paid,
-                                         options_list: @lbtt_return.list_ref_data(:premium_paid), alignment: :horizontal) %>
-    <%= f.ds_currency(method: :lease_premium, interpolations: { link:
+                                         options_list: @lbtt_return.list_ref_data(:premium_paid), alignment: :horizontal, readonly:  @lbtt_return.pre_populated? ? true : false) %>
+    <%= f.ds_currency(method: :lease_premium, readonly: @lbtt_return.pre_populated? ? true : false, interpolations: { link:
                         ds_link(name: t('.lease_premium_link'), url: external_link_url('OTHER_CONS'), target: '_blank')}) %>
     <%= f.ds_currency(method: :relevant_rent) %>
   <% end %>

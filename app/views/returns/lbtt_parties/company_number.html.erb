@@ -1,5 +1,5 @@
 <% content_for( :page_title, t('.title')) %>
 <% content_for :page_subtitle, t('.subtitle') %>
 <%= ds_form_with(model: @party, url: @post_path, method: :post) do |f| %>
-  <%= rs_company_search(company: @company, autofocus: @on_company_search) %>
+  <%= rs_company_search(company: @company, autofocus: @on_company_search, readonly: @party.pre_populated? ? true : false) %>
 <% end %>

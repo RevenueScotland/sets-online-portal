@@ -21,7 +21,7 @@ module Returns
           org_name job_title company org_type other_type_description
           contact_surname contact_firstname org_contact_address is_acting_as_trustee agent_dx_number
           contact_email contact_tel_no com_jurisdiction agent_reference same_address
-          party_refno authority_date hash_for_nino used_address_list
+          party_refno authority_date hash_for_nino used_address_list pre_populated
         ]
       end
 
@@ -41,7 +41,7 @@ module Returns
       validates :telephone, presence: true, on: :telephone,
                             if: :individual_but_not_claim_seller_landlord_newtenant?
       # For a claim one must be provided
-      validate :no_contact_details?, on: :email_address, if: :claim?
+      validate :contact_details_present, on: :email_address, if: :claim?
       # format must always be correct
       validates :email_address, email_address: true, on: :email_address,
                                 if: :individual_but_not_seller_landlord_newtenant?
@@ -84,8 +84,8 @@ module Returns
       validates :is_acting_as_trustee, presence: true, on: :is_acting_as_trustee,
                                        if: proc { |p| %w[SELLER LANDLORD].exclude?(p.party_type) }
       # National insurance number and alternate related validation
-      validate :no_nino_or_alternate?, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
-      validate :both_nino_and_alternate?, on: :nino
+      validate :nino_or_alternate_is_present, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
+      validate :both_nino_and_alternate_are_present, on: :nino
       validates :nino, nino: true, on: :nino, if: :individual_but_not_seller_landlord_newtenant?
       validates :alrt_type, :ref_country, presence: true, InReferenceValues: true, on: :alrt_type,
                                           if: :incomplete_alternate?
@@ -316,7 +316,7 @@ module Returns
 
       # National insurance number and alternate related validation
       # No nino or alternate data is provided.
-      def no_nino_or_alternate?
+      def nino_or_alternate_is_present
         return unless nino.blank? && alrt_type.blank? && ref_country.blank? && alrt_reference.blank?
 
         errors.add(:nino, :no_nino_or_alternate)
@@ -324,7 +324,7 @@ module Returns
 
       # National insurance number and alternate related validation
       # No nino or alternate data is provided.
-      def both_nino_and_alternate?
+      def both_nino_and_alternate_are_present
         return unless nino.present? && (alrt_type.present? || ref_country.present? || alrt_reference.present?)
 
         errors.add(:nino, :both_nino_and_alternate)
@@ -340,7 +340,7 @@ module Returns
       end
 
       # Validate that at least one of the contact details is supplied.
-      def no_contact_details?
+      def contact_details_present
         return if email_address.present? || telephone.present?
 
         errors.add(:telephone, :no_contact_details)
@@ -540,7 +540,7 @@ module Returns
               'ins0:ContactJobTitle': @job_title,
               'ins0:ContactForename': @contact_firstname,
               'ins0:ContactSurname': @contact_surname,
-              'ins0:ContactAddress': @org_contact_address.format_to_back_office_address,
+              'ins0:ContactAddress': @org_contact_address&.format_to_back_office_address,
               'ins0:ContactTelNo': @contact_tel_no,
               'ins0:ContactEmailAddress': @contact_email
             }.compact
@@ -549,7 +549,13 @@ module Returns
         output['ins0:BuyerSellerLinkedInd'] = convert_to_backoffice_yes_no_value(@buyer_seller_linked_ind)
         output['ins0:BuyerSellerLinkedDesc'] = @buyer_seller_linked_desc if @buyer_seller_linked_ind == 'Y'
         output['ins0:ActingAsTrusteeInd'] = convert_to_backoffice_yes_no_value(@is_acting_as_trustee)
+        output['ins0:Prepopulated'] = convert_to_backoffice_yes_no_value(@pre_populated) if pre_populated?
         output
+      end
+
+      # returns true if the party has been pre populated
+      def pre_populated?
+        @pre_populated == 'Y'
       end
 
       # converts buyer type into wsdl acceptable format
@@ -593,7 +599,6 @@ module Returns
           end
         end
         raw_hash[:agent_reference] = agent_ref if raw_hash[:party_type] == 'AGENT' && agent_ref.present?
-
         raw_hash[:org_name] = raw_hash.delete(:com_company_name) if raw_hash.key?(:com_company_name)
 
         raw_hash[:address] = Address.convert_hash_to_address(raw_hash[:address]) unless raw_hash[:address].nil?
@@ -627,13 +632,14 @@ module Returns
         end
 
         raw_hash[:is_acting_as_trustee] = raw_hash.delete(:acting_as_trustee_ind)
+        raw_hash[:pre_populated] = raw_hash.delete(:prepopulated)
 
         # strip out attributes we don't want yet
         delete = %i[lplt_type flpt_type person_name alternate_reference authority_ind organisation_contact]
         delete.each { |key| raw_hash.delete(key) }
 
         # convert back office yes/no to Y/N
-        yes_nos_to_yns(raw_hash, %i[buyer_seller_linked_ind is_acting_as_trustee])
+        yes_nos_to_yns(raw_hash, %i[buyer_seller_linked_ind is_acting_as_trustee pre_populated])
 
         # derive yes no based on the data now that we've finished moving it around
         derive_yes_nos_in(raw_hash)

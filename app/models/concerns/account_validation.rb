@@ -61,21 +61,21 @@ module AccountValidation
   end
 
   # Validation for taxes, user must have selected only one non-blank service
-  def taxes_valid?
+  def one_tax_is_choosen
     errors.add(:taxes, :one_must_be_chosen) if taxes.compact_blank.size != 1
   end
 
   # Validation for names, if it's not a company
-  def names_valid?
+  def names_are_valid
     return nil unless AccountType.individual?(account_type)
 
     errors.add(:forename, :cant_be_blank) if forename.to_s.empty?
     errors.add(:surname, :cant_be_blank) if surname.to_s.empty?
-    names_length_valid?
+    names_length_are_valid
   end
 
   # Extra validation for names that checks for the length
-  def names_length_valid?
+  def names_length_are_valid
     errors.add(:forename, :too_long, count: 50) if forename.length > 50
     errors.add(:surname, :too_long, count: 100) if surname.length > 100
   end

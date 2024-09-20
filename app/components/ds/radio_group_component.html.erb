@@ -1,7 +1,7 @@
 <%= ds_field_wrapper(method: method, one_question: one_question, optional: optional, show_label: show_label, 
-                     interpolations: interpolations, type: field_group_type) do |wrapper| %>
+                     interpolations: interpolations, type: field_group_type, readonly: readonly) do |wrapper| %>
   <%# The Rails function has a value parameter that we tend to call code %>
   <%= builder.collection_radio_buttons(method, options_list, code_method, value_method,{},data_action) do |b| 
-      tag.div(b.radio_button(class: 'ds_radio__input') + b.label(class: 'ds_radio__label'),class:"ds_radio")
+      tag.div(b.radio_button(class: 'ds_radio__input', readonly: readonly) + b.label(class: 'ds_radio__label'),class:"ds_radio")
    end %>
 <% end %>

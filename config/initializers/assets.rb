@@ -5,15 +5,9 @@
 # Specific compiler for propshaft for digital scotland JS
 # This replaces the links to icons.stack.svg with a full digested path
 # ${this.imagePath}icons.stack.svg becomes <asset page>${this.image_path}icons.stack-<digest>.svg
-class DigitalScotlandAssets
-  attr_reader :assembly
-
+class DigitalScotlandAssets < Propshaft::Compiler
   # The svg is controlled by this.imagePath, so look for this
   ASSET_URL_PATTERN = /(\${this.imagePath})(icons.stack.svg)/
-
-  def initialize(assembly)
-    @assembly = assembly
-  end
 
   def compile(_logical_path, input)
     input.gsub(ASSET_URL_PATTERN) do
@@ -28,7 +22,7 @@ class DigitalScotlandAssets
     full_path = "assets/images/icons/#{svg}"
     if (asset = assembly.load_path.find(full_path))
       new_svg = asset.digested_path.basename
-      "#{assembly.url_prefix}#{image_path}#{new_svg}"
+      "#{url_prefix}#{image_path}#{new_svg}"
     else
       Propshaft.logger.warn { "Unable to resolve '#{svg}'" }
       svg

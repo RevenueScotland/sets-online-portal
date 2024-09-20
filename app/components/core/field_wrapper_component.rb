@@ -9,7 +9,7 @@ module Core
   class FieldWrapperComponent < ViewComponent::Base
     include ListValidator
 
-    attr_reader :builder, :method, :one_question, :type, :show_label
+    attr_reader :builder, :method, :one_question, :type, :show_label, :readonly
 
     delegate :id, :label_text, :label_visually_hidden, :hint_text, :hint_id, :error_list, :error_id,
              :add_html_options, to: :wrapper
@@ -26,7 +26,7 @@ module Core
     # @param interpolations [Hash] Hash of options that are passed down to @see LabellerDelegate
     # @param type [Symbol] Used to record the type of field being wrapped, can be used to change rendered html
     def initialize(builder:, method:, one_question: false, optional: false, show_label: true, interpolations: {},
-                   type: :field)
+                   type: :field, readonly: false)
       super()
       @builder = builder
       @one_question = one_question
@@ -35,6 +35,7 @@ module Core
       @show_label = show_label
       @interpolations = interpolations
       @type = self.class.fetch_or_fallback(ALLOWED_TYPES, type, :field)
+      @readonly = readonly
     end
 
     # Is the type one of the field group types
@@ -46,7 +47,8 @@ module Core
     def before_render
       # The wrapper needs the view context
       @wrapper = WrapperDelegate.new(builder: @builder, method: @method,
-                                     optional: @optional, interpolations: @interpolations, view_context: view_context)
+                                     optional: @optional, interpolations: @interpolations, view_context: view_context,
+                                     readonly: @readonly)
     end
 
     private

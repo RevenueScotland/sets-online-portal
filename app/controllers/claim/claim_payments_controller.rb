@@ -220,10 +220,10 @@ module Claim
     # Overwrites the user method to pass unique id for unauthenticated user to create folder on server
     # folder will hold the file uploaded by user
     def sub_directory
-      @claim_payment ||= load_step
-      return @claim_payment.tare_reference if current_user.blank?
+      return current_user.username if current_user
 
-      current_user.username
+      @claim_payment ||= load_step
+      @claim_payment.tare_reference
     end
 
     # Calculates which wizard steps to be followed if return is conveyance with ADS

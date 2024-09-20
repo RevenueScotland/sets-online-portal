@@ -1,0 +1,12 @@
+/*------------------------------------*\
+    Extensions to the read only styling
+\*------------------------------------*/
+
+.ds_input[readonly],
+.ds_select[readonly] {
+  background-color: #EBEBE4;
+}
+
+.ds_radio__input[readonly]:checked+.ds_radio__label::after {
+  color: #EBEBE4;
+}

@@ -1,9 +1,11 @@
 <%= ds_fields_for(company) do |c| %>
   <fieldset>
-    <%= c.ds_text_field(method: :company_number, width: 10) %>
-    <%= c.builder.button "company_search", { :class => 'ds_button  ds_no-margin--top', :name => 'company_search' } do
-            t('.company_search')
-         end %>
+    <%= c.ds_text_field(method: :company_number, width: 10, readonly: @readonly) %>
+    <% unless @readonly %>
+      <%= c.builder.button "company_search", { :class => 'ds_button  ds_no-margin--top', :name => 'company_search' } do
+              t('.company_search')
+          end %>
+    <% end %>
   </fieldset>
   <% unless company.company_name.nil? %>
     <fieldset>

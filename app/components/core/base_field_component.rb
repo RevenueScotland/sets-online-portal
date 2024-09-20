@@ -6,7 +6,7 @@ module Core
   # Defines a base Core field component with standard attributes, this is kept in synch with {FieldWrapperComponent}
   # as most of the options are passed through to that component for rendering
   class BaseFieldComponent < ViewComponent::Base
-    attr_reader :builder, :method, :one_question, :optional, :show_label, :interpolations
+    attr_reader :builder, :method, :one_question, :optional, :show_label, :interpolations, :readonly
 
     delegate :formatted_value, to: :formatter
 

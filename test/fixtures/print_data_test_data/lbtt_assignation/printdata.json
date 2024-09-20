@@ -43,9 +43,15 @@
                     "itemformat": null,
                     "itemlabel": "What was the original return reference?",
                     "itemdata": "RS1234567AABB"
+                },
+                {
+                    "itemcode": "pre_population_declaration",
+                    "itemformat": null,
+                    "itemlabel": "I, the taxpayer, confirm that I have authority to view the data for the return referred to above",
+                    "itemdata": "Yes"
                 }
             ],
-            "itemcount": 6
+            "itemcount": 7
         },
         {
             "sectioncode": "agent_details",
@@ -691,6 +697,29 @@
             "itemcount": 4
         },
         {
+            "sectioncode": "relief_types",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Reliefs on this transaction",
+            "listitem": [
+                {
+                    "itemcode": "relief_type_description",
+                    "itemformat": null,
+                    "itemlabel": "Type of relief",
+                    "itemdata": "Charities relief (Partial Relief)"
+                },
+                {
+                    "itemcode": "relief_override_amount",
+                    "itemformat": "money",
+                    "itemlabel": "Amount of LBTT tax saved by relief",
+                    "itemdata": "70"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
             "sectioncode": "calculation",
             "sectiontype": "list",
             "sectiondivider": true,
@@ -726,13 +755,13 @@
                     "itemcode": "total_reliefs",
                     "itemformat": "money",
                     "itemlabel": "Total LBTT reliefs claimed",
-                    "itemdata": "0"
+                    "itemdata": "70"
                 },
                 {
                     "itemcode": "tax_due",
                     "itemformat": "money",
                     "itemlabel": "Total tax payable",
-                    "itemdata": "2279"
+                    "itemdata": "2209"
                 },
                 {
                     "itemcode": "amount_already_paid",
@@ -744,7 +773,7 @@
                     "itemcode": "tax_due_for_return",
                     "itemformat": "money",
                     "itemlabel": "Amount payable for this return",
-                    "itemdata": "629"
+                    "itemdata": "559"
                 }
             ],
             "itemcount": 8
@@ -802,9 +831,15 @@
                     "itemformat": null,
                     "itemlabel": "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete",
                     "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "pre_population_submit_declaration",
+                    "itemformat": null,
+                    "itemlabel": "I, the tenant, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies",
+                    "itemdata": "Yes"
                 }
             ],
-            "itemcount": 2
+            "itemcount": 3
         }
     ]
 }

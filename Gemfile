@@ -9,10 +9,8 @@ ruby '>= 3.0'
 gem 'rails', '~> 7.0'
 # Use Puma as the app server
 gem 'puma', '~> 6.0'
-# Use propshaft for asset management, currently using a forked version due to https://github.com/rails/propshaft/issues/103
-# gem 'propshaft', git: 'https://github.com/rails/propshaft', branch: 'asset-host'
-gem 'propshaft', git: 'https://github.com/markstanley-nps/propshaft', branch: 'relative-url-root'
-# gem 'propshaft', path: '../propshaft'
+# Use propshaft for asset management, currently using a main branch until next release due to  https://github.com/rails/propshaft/issues/103
+gem 'propshaft', git: 'https://github.com/rails/propshaft'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/jsbundling-rails
 # We build the css using sass-loader so not cssbundling-rails
 gem 'jsbundling-rails'
