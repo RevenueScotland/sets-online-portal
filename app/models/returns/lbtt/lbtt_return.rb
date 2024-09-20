@@ -535,10 +535,11 @@ module Returns
                           { code: :account_number, when: :repayment_ind, is: ['Y'] },
                           { code: :branch_code, when: :repayment_ind, is: ['Y'] },
                           { code: :bank_name, when: :repayment_ind, is: ['Y'] },
-                          { code: :repayment_declaration, lookup: true,
-                            when: :repayment_ind, is: ['Y'] },
                           { code: :repayment_agent_declaration, lookup: true,
-                            when: :repayment_ind, is: ['Y'] }] }
+                            when: :user_account_type, is: ['AGENT'] },
+                          { code: :repayment_declaration, lookup: true,
+                            when: :repayment_ind, is: ['Y'] }],
+             footer: I18n.t('.returns.lbtt_submit.repayment_claim_declaration.repayment_declaration_NOTE') }
          end,
          { code: :declaration, # section code
            key: :title, # key for the title translation
@@ -661,12 +662,14 @@ module Returns
 
         return if total_remaining_chargeable.to_f.abs == @remaining_chargeable.to_f.abs
 
-        errors.add(:remaining_chargeable, :must_be_calculated)
+        errors.add(:remaining_chargeable, :must_be_calculated_linked) if @linked_ind == 'Y'
+
+        errors.add(:remaining_chargeable, :must_be_calculated) if @linked_ind == 'N'
       end
 
       # Calculates the value for remaining chargeable field
       def total_remaining_chargeable
-        if @linked_consideration.present?
+        if @linked_consideration.present? && @linked_ind == 'Y'
           ((@total_consideration.to_f + @linked_consideration.to_f) - @non_chargeable.to_f).round(2)
         else
           (@total_consideration.to_f - @non_chargeable.to_f).round(2)
@@ -907,9 +910,6 @@ module Returns
       # @param _translation_options [Object] in this case the party type being processed passed from the page
       # @return [Symbol] the name of the translation attribute
       def translation_attribute(attribute, _translation_options = nil)
-        #  Depending on the property type, this changes the attribute to match the specific attribute
-        #  that has the translation text that we want for when it's 'Residential to be displayed.
-        return :total_consideration_residential if attribute == :total_consideration && @property_type == '1'
         return :"#{attribute}_#{flbt_type}" if %i[effective_date relevant_date annual_rent]
                                                .include?(attribute)
         return attribute unless %i[authority_ind repayment_agent_declaration lease_declaration declaration

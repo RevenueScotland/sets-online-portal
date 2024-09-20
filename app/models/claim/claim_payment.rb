@@ -424,6 +424,13 @@ module Claim
       User.account_type(@current_user)
     end
 
+    # Use in print layout for authenticated declaration footer
+    def authenticated_declaration_footer
+      return nil if account_type != 'AGENT' && @srv_code != 'LBTT'
+
+      I18n.t('.claim.claim_payments.final_declaration.claim_declaration_NOTE')
+    end
+
     # @return [Hash] elements used to specify the print data element that we want to save in the back office
     #   for this return.
     def print_data_element
@@ -617,8 +624,14 @@ module Claim
         divider: true, # should we have a section divider
         display_title: true, # Is the title to be displayed
         type: :list, # type list = the list of attributes to follow
-        list_items: [{ code: :authenticated_declaration1, lookup: true },
-                     { code: :authenticated_declaration2, lookup: true }] }
+        list_items: print_layout_authenticated_declarations_list_item,
+        footer: authenticated_declaration_footer }
+    end
+
+    # fields for authenticated declarations
+    def print_layout_authenticated_declarations_list_item
+      [{ code: :authenticated_declaration1, lookup: true },
+       { code: :authenticated_declaration2, lookup: true }]
     end
 
     # layout for the unauthenticated (ads) declarations
@@ -630,7 +643,8 @@ module Claim
         key_scope: %i[claim claim_payments final_declaration], # scope for the title translation
         divider: true, # should we have a section divider
         display_title: true, # Is the title to be displayed
-        type: :object }
+        type: :object,
+        footer: I18n.t('.claim.claim_payments.final_declaration.claim_declaration_NOTE') }
     end
   end
 end

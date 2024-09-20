@@ -156,6 +156,7 @@ en:
         title: Enter bank details
       repayment_claim_declaration:
         title: Declaration
+        repayment_declaration_NOTE: "Note: LBTT is a self-assessed tax and Revenue Scotland does not verify all repayment claims before repayments are issued. Checks may take place after the issue of a repayment. This is to ensure claims meet the repayment conditions in full. If all the repayment conditions are not met, you may be due to pay tax back to Revenue Scotland. Steps will be taken to recover any repayment which should not have been paid, including interest."
       declaration:
         title: "Payment and submission"
         dd_not_available: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"

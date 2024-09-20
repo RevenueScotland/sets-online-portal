@@ -83,8 +83,8 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # Defines the format for a section of the print; this can either be a list or a table
   # object type sections are rendered into either a list or a table
   class SectionData
-    attr_accessor :sectioncode, :sectiontitle, :sectiontype, :pagebreak, :listitem, :tableheadings, :tablerow,
-                  :sectiondivider, :displaytitle, :itemcount, :tablerowcount, :tablecolumncount
+    attr_accessor :sectioncode, :sectiontitle, :sectiontype, :sectionfooter, :pagebreak, :listitem, :tableheadings,
+                  :tablerow, :sectiondivider, :displaytitle, :itemcount, :tablerowcount, :tablecolumncount
 
     # Creates a section
     # The parent section options are used for the first section when a section is based on an array
@@ -97,9 +97,9 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     # @param object_index [Integer] If processing objects the index of the object
     # @return [SectionData] an instance of section data
     def initialize(object, section_options, objects = nil, parent_section_options = nil, object_index: nil)
-      use_parent_title = (parent_section_options || {})[:use_parent_title]
+      parent_section_options = setup_parent_section(parent_section_options)
       # Pass the parent options down for initialisation if needed
-      initialize_section_options(section_options, (use_parent_title ? parent_section_options : {}))
+      initialize_section_options(section_options, parent_section_options)
 
       @sectiontitle = object.section_name(section_options, parent_section_options)
 
@@ -125,6 +125,20 @@ module PrintData # rubocop:disable Metrics/ModuleLength
       @sectiondivider = set_value(section_options, parent_section_options, :divider)
       @pagebreak = set_value(section_options, parent_section_options, :page_break)
       @displaytitle = set_value(section_options, parent_section_options, :display_title)
+      @sectionfooter = set_value(section_options, parent_section_options, :footer)
+    end
+
+    # Set the parent section option by deleting the keys which are not required.
+    # @param parent_section_options [Hash] the hash for the parent section when processing objects
+    # @return [Hash] returns the parent section option hash
+    def setup_parent_section(parent_section_options)
+      use_parent_title = parent_section_options[:use_parent_title]
+      use_parent_footer = parent_section_options[:use_parent_footer]
+
+      parent_section_options.delete(:footer) unless use_parent_footer
+      parent_section_options.delete_if { |key, _| key != :footer } unless use_parent_title
+
+      parent_section_options
     end
 
     # Set the individual option value based on the rule
@@ -149,6 +163,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
       @sectiondivider = section_options[:divider] if section_options.key?(:divider)
       @pagebreak = section_options[:page_break] if section_options.key?(:page_break)
       @displaytitle = section_options[:display_title] if section_options.key?(:display_title)
+      @sectionfooter = section_options[:footer] if section_options.key?(:footer)
     end
 
     # For tables, loops around the array of objects and gets a row of data for each object
@@ -272,13 +287,16 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param layout [Symbol] The method to call on the model for the layout, the default is :print_layout
   # @param parent_section [Hash] The options for the parent section used when processing objects
   # @param first_object [Boolean] Set if processing objects and this is the first object, used to control headings
+  # @param last_object [Boolean] Set if processing objects and this is the last object, used to control footer
   # @param object_index [Integer] If processing objects the index of the object
   # @return [hash] the sections to be printed; may be merged into a parent object
-  def sections(layout, parent_section = nil, first_object: false, object_index: nil)
+  def sections(layout, parent_section = nil, first_object: false, last_object: false, object_index: nil) # rubocop:disable Metrics/MethodLength
     layout_print = send(layout)
 
     section_list = []
 
+    # Duplicate the hash as the lower routine change it
+    parent_section_options = (parent_section || {}).deep_dup
     # loop around each section rendering it in turn
     layout_print.each_with_index do |section, i|
       next if section.nil?
@@ -286,8 +304,9 @@ module PrintData # rubocop:disable Metrics/ModuleLength
       Rails.logger.debug { "Section #{section[:code]} Type #{section[:type]} Object Index: #{object_index}" }
       next if skip_section(section, parent_section, object_index: object_index)
 
-      section_list += process_section(layout, section, parent_section,
-                                      (first_object && i.zero?), object_index: object_index)
+      section_list += process_section(layout, section, parent_section_options,
+                                      use_parent_title: first_object && i.zero?, use_parent_footer: last_object,
+                                      object_index: object_index)
     end
     section_list # return the section list
   end
@@ -472,9 +491,11 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param section_options [Hash] The options to be used for this section
   # @param parent_section_options [Hash] The options for the parent section when this is an object
   # @param use_parent_title [Boolean] Should you use the parent section to generate the section headers
+  # @param use_parent_footer [Boolean] Should you use the parent section to generate the section footers
   # @param object_index [Integer] The index of the object in process objects
   # @return [Array] the sections rendered
-  def process_section(layout, section_options, parent_section_options, use_parent_title, object_index: nil)
+  def process_section(layout, section_options, parent_section_options, use_parent_title: false,
+                      use_parent_footer: false, object_index: nil)
     # for table and object types get the list of objects
     # skip if there are none
     if %i[object table].include?(section_options[:type])
@@ -485,11 +506,29 @@ module PrintData # rubocop:disable Metrics/ModuleLength
 
     if %i[list table].include?(section_options[:type])
       # always return an array so wrap this in an array
-      parent_section_options[:use_parent_title] = use_parent_title unless parent_section_options.nil?
-      [SectionData.new(self, section_options, objects, parent_section_options, object_index: object_index)]
+      assign_section_data(section_options, objects, parent_section_options, use_parent_title,
+                          use_parent_footer, object_index: object_index)
     else # object
       process_objects_section(replace_section_name(section_options), layout, objects)
     end
+  end
+
+  # Note that it returns an array as the section may be based on a list of objects
+  # in which case each object is a section
+  # @param section_options [Hash] The options to be used for this section
+  # @param objects [Array] Array of the objects
+  # @param parent_section_options [Hash] The options for the parent section when this is an object
+  # @param use_parent_title [Boolean] Should you use the parent section to generate the section headers
+  # @param use_parent_footer [Boolean] Should you use the parent section to generate the section footer
+  # @param object_index [Integer] The index of the object in process objects
+  # @return [Array] the sections rendered
+  def assign_section_data(section_options, objects, parent_section_options, use_parent_title, use_parent_footer,
+                          object_index: nil)
+    unless parent_section_options.nil?
+      parent_section_options[:use_parent_title] = use_parent_title
+      parent_section_options[:use_parent_footer] = use_parent_footer
+    end
+    [SectionData.new(self, section_options, objects, parent_section_options, object_index: object_index)]
   end
 
   # need to make sure that response is an array
@@ -513,8 +552,10 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     return if objects.nil?
 
     section_list = []
+    last_index = objects.count - 1
     objects.each_with_index do |object, i|
-      section_list += object.sections(layout, parent_section, first_object: i.zero?, object_index: i)
+      section_list += object.sections(layout, parent_section, first_object: i.zero?, object_index: i,
+                                                              last_object: i == last_index)
     end
     section_list
   end

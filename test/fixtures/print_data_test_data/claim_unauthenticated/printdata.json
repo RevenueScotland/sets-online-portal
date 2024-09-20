@@ -6,6 +6,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Claim repayment",
       "listitem": [
         {
@@ -41,6 +42,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Your previous main residence",
       "listitem": [
         {
@@ -58,6 +60,7 @@
       "sectiondivider": false,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Your previous main residence",
       "listitem": [
         {
@@ -98,6 +101,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Claim amount",
       "listitem": [
         {
@@ -121,6 +125,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Buyer details",
       "listitem": [
         {
@@ -156,6 +161,7 @@
       "sectiondivider": null,
       "pagebreak": null,
       "displaytitle": null,
+      "sectionfooter": null,
       "sectiontitle": "Buyer address",
       "listitem": [],
       "itemcount": 0
@@ -166,6 +172,7 @@
       "sectiondivider": false,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Buyer address",
       "listitem": [
         {
@@ -211,6 +218,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Buyer details",
       "listitem": [
         {
@@ -246,6 +254,7 @@
       "sectiondivider": null,
       "pagebreak": null,
       "displaytitle": null,
+      "sectionfooter": null,
       "sectiontitle": "Buyer address",
       "listitem": [
         {
@@ -263,6 +272,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Buyer details",
       "listitem": [
         {
@@ -298,6 +308,7 @@
       "sectiondivider": null,
       "pagebreak": null,
       "displaytitle": null,
+      "sectionfooter": null,
       "sectiontitle": "Buyer address",
       "listitem": [
         {
@@ -315,6 +326,7 @@
       "sectiondivider": false,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Buyer address",
       "listitem": [
         {
@@ -360,6 +372,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Buyer details",
       "listitem": [
         {
@@ -395,6 +408,7 @@
       "sectiondivider": null,
       "pagebreak": null,
       "displaytitle": null,
+      "sectionfooter": null,
       "sectiontitle": "Buyer address",
       "listitem": [
         {
@@ -412,6 +426,7 @@
       "sectiondivider": false,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Buyer address",
       "listitem": [
         {
@@ -457,6 +472,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Buyer details",
       "listitem": [
         {
@@ -492,6 +508,7 @@
       "sectiondivider": null,
       "pagebreak": null,
       "displaytitle": null,
+      "sectionfooter": null,
       "sectiontitle": "Buyer address",
       "listitem": [
         {
@@ -509,6 +526,7 @@
       "sectiondivider": false,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Buyer address",
       "listitem": [
         {
@@ -554,6 +572,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Bank details",
       "listitem": [
         {
@@ -589,6 +608,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Declarations",
       "listitem": [
         {
@@ -606,7 +626,8 @@
       "sectiondivider": null,
       "pagebreak": null,
       "displaytitle": null,
-      "sectiontitle": "Declarations",
+      "sectionfooter": null,
+      "sectiontitle": null,
       "listitem": [
         {
           "itemcode": "checked",
@@ -623,7 +644,8 @@
       "sectiondivider": null,
       "pagebreak": null,
       "displaytitle": null,
-      "sectiontitle": "Declarations",
+      "sectionfooter": null,
+      "sectiontitle": null,
       "listitem": [
         {
           "itemcode": "checked",
@@ -640,7 +662,8 @@
       "sectiondivider": null,
       "pagebreak": null,
       "displaytitle": null,
-      "sectiontitle": "Declarations",
+      "sectionfooter": null,
+      "sectiontitle": null,
       "listitem": [
         {
           "itemcode": "checked",
@@ -657,7 +680,8 @@
       "sectiondivider": null,
       "pagebreak": null,
       "displaytitle": null,
-      "sectiontitle": "Declarations",
+      "sectionfooter": "Note: LBTT is a self-assessed tax and Revenue Scotland does not verify all repayment claims before repayments are issued. Checks may take place after the issue of a repayment. This is to ensure claims meet the repayment conditions in full. If all the repayment conditions are not met, you may be due to pay tax back to Revenue Scotland. Steps will be taken to recover any repayment which should not have been paid, including interest.",
+      "sectiontitle": null,
       "listitem": [
         {
           "itemcode": "checked",

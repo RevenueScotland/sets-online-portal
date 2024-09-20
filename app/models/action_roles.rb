@@ -16,8 +16,8 @@ class ActionRoles < FLApplicationRecord
     raise Error::AppError.new('NONE', 'role_action must be supplied to this method') if role_action.to_s.empty?
 
     user_roles = Array(user_roles)
-    # The & causes any roles in both arrays to be returned
-    !(find_for(role_action) & user_roles).empty?
+    # The intersection causes any roles in both arrays to be returned
+    find_for(role_action).intersect?(user_roles)
   end
 
   # Load all actions from the back office and populate the cache with them

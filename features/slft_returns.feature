@@ -873,14 +873,14 @@ Feature: SLfT Returns
         And I enter "Natwest" in the "Name of bank / building society" field
         And I click on the "Continue" button
         Then I should see the "Declaration" page
-        And I should see the text "I am eligible for the refund claimed"
+        And I should see the text "I am eligible for the repayment claimed"
 
         # Repayment declaration
         When I click on the "Continue" button
         Then I should see the "Declaration" page
-        And I should receive the message "I am eligible for the refund claimed must be accepted"
+        And I should receive the message "I am eligible for the repayment claimed must be accepted"
 
-        When I check the "returns_slft_slft_return_rrep_bank_auth_ind" checkbox
+        When I check the "I, the taxpayer, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
         And I should see the text "I, the taxpayer, confirm that this return is, to the best of my knowledge, correct and complete"

@@ -6,6 +6,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Claim repayment",
       "listitem": [
         {
@@ -41,6 +42,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Previous main residence",
       "listitem": [
         {
@@ -58,6 +60,7 @@
       "sectiondivider": false,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Previous main residence",
       "listitem": [
         {
@@ -98,6 +101,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Claim amount",
       "listitem": [
         {
@@ -121,6 +125,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Taxpayer details",
       "listitem": [
         {
@@ -156,6 +161,7 @@
       "sectiondivider": null,
       "pagebreak": null,
       "displaytitle": null,
+      "sectionfooter": null,
       "sectiontitle": "Taxpayer address",
       "listitem": [],
       "itemcount": 0
@@ -166,6 +172,7 @@
       "sectiondivider": false,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Taxpayer address",
       "listitem": [
         {
@@ -211,6 +218,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Bank details",
       "listitem": [
         {
@@ -246,6 +254,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": "Note: LBTT is a self-assessed tax and Revenue Scotland does not verify all repayment claims before repayments are issued. Checks may take place after the issue of a repayment. This is to ensure claims meet the repayment conditions in full. If all the repayment conditions are not met, you may be due to pay tax back to Revenue Scotland. Steps will be taken to recover any repayment which should not have been paid, including interest.",
       "sectiontitle": "Declarations",
       "listitem": [
         {
@@ -257,7 +266,7 @@
         {
           "itemcode": "authenticated_declaration2",
           "itemformat": null,
-          "itemlabel": "I, the agent of the tax payer(s), having been authorised to complete this repayment or claim request on behalf of the tax payer(s), certify that the tax payer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tax payer(s) is/are eligible for the refund claimed",
+          "itemlabel": "I, the agent of the tax payer(s), having been authorised to complete this repayment or claim request on behalf of the tax payer(s), certify that the tax payer(s) has/have declared that the information provided in the claim is to the best of their knowledge, correct and complete, and confirm that the tax payer(s) is/are eligible for the repayment claimed",
           "itemdata": "Yes"
         }
       ],

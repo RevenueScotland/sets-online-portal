@@ -10,4 +10,5 @@
     <%= f.ds_checkbox(method: :authenticated_declaration1 ) %>
     <%= f.ds_checkbox(method: :authenticated_declaration2 ) %>
   <% end %>
+  <%= ds_paragraph {t('.claim_declaration_NOTE')} if @claim_payment.srv_code == 'LBTT' %>
 <% end %>

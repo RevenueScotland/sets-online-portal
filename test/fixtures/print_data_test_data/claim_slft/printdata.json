@@ -6,6 +6,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Claim repayment",
       "listitem": [
         {
@@ -41,6 +42,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Details about your request for repayment",
       "listitem": [
         {
@@ -58,6 +60,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Taxpayer details",
       "listitem": [
         {
@@ -93,6 +96,7 @@
       "sectiondivider": null,
       "pagebreak": null,
       "displaytitle": null,
+      "sectionfooter": null,
       "sectiontitle": "Taxpayer address",
       "listitem": [],
       "itemcount": 0
@@ -103,6 +107,7 @@
       "sectiondivider": false,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Taxpayer address",
       "listitem": [
         {
@@ -148,6 +153,7 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Bank details",
       "listitem": [
         {
@@ -183,12 +189,13 @@
       "sectiondivider": true,
       "pagebreak": null,
       "displaytitle": true,
+      "sectionfooter": null,
       "sectiontitle": "Declarations",
       "listitem": [
         {
           "itemcode": "authenticated_declaration1",
           "itemformat": null,
-          "itemlabel": "I (we), the tax payer(s) declare that this repayment or claim request is, to the best of my (our) knowledge, correct and complete and confirm that I (we) am (are) eligible for the refund claimed",
+          "itemlabel": "I (we), the tax payer(s) declare that this repayment or claim request is, to the best of my (our) knowledge, correct and complete and confirm that I (we) am (are) eligible for the repayment claimed",
           "itemdata": "Yes"
         },
         {
