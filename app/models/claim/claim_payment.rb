@@ -94,7 +94,7 @@ module Claim
 
     # Validates that the reason chosen is valid
     def validate_unauthenticated_declaration
-      return if  unauthenticated_declarations.all? { |o| o.checked == 'Y' }
+      return if unauthenticated_declarations.all? { |o| o.checked == 'Y' }
 
       errors.add(:unauthenticated_declarations, :accepted)
     end
@@ -175,7 +175,7 @@ module Claim
       return errors.add(:tare_reference, :return_does_not_exist) if @submitted_date.blank?
 
       # Check RS no. belongs to a conveyancing return with ADS
-      return errors.add(:tare_reference, :not_ads_return_reference) if @ads_included == false || @flbt_type != 'CONVEY'
+      errors.add(:tare_reference, :not_ads_return_reference) if @ads_included == false || @flbt_type != 'CONVEY'
     end
 
     # Custom setter to get the information on the back office when the reference is set

@@ -115,10 +115,13 @@ en:
         pre_population_declaration_AGENT: "I, the agent, confirm that I have authority to view the data for the return referred to above"
         pre_population_declaration_TAXPAYER: "I, the taxpayer, confirm that I have authority to view the data for the return referred to above"
         pre_population_declaration: "The authority declaration"
-        pre_population_submit_declaration_AGENT: "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
-        pre_population_submit_declaration_TAXPAYER: "I, the tenant, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
-        pre_population_submit_declaration_PUBLIC: "I, the tenant, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
-        pre_population_submit_declaration: "The pre-population declaration"
+        transaction_declaration_AGENT: "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
+        transaction_declaration_TAXPAYER: "I, the taxpayer, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
+        transaction_declaration_PUBLIC: "I, the taxpayer, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
+        transaction_declaration: "The transaction declaration"
+        non_residential_reason: "Why is the property non-residential"
+        non_residential_reason_text: "Other reason"
+        edit_calc_reason: "Why are you editing the calculated values"
       returns/lbtt/tax:
         calculated: "LBTT calculated"
         ads_due: "ADS calculated"
@@ -187,10 +190,16 @@ en:
         effective_date:
           default: "%{label}"
           declaration_submitted: "Effective date"
+        edit_calc_reason:
+          default: "%{label}"
+          print: "Reason for editing the calculation"
       returns/lbtt/tax:
         ads_due:
           default: "%{label}"
           ads_repay_details: "Original total ADS paid"
+        edit_calc_reason:
+          default: "%{label}"
+          summary: "Reason for editing the calculation"
     hints:
       returns/lbtt/lbtt_return:
         repayment_amount_claimed:
@@ -294,6 +303,9 @@ en:
               has_already_been_submitted: "This return has already been submitted. If you are unsure that the return has been submitted, save a draft version and check on the dashboard"
               non_individual_no_ads: "ADS must apply to all properties on this return where at least one of the buyers is not a private individual and the transaction is residential"
               missing_pre_existing_tenant: "At least one of the pre-existing tenant(s) must remain on a lease review. If all pre-existing tenants need to be removed from the lease then an assignation return must be completed instead to include the details of the new tenants."
+              recalc_return: "There have been transitional rate changes that affect this return. Ensure you go to the transaction section to recalculate and check all figures prior to submitting the return"
+            non_residential_reason:
+              reason_must_be_provided: "A reason must be given for a non-residential property transaction"
         returns/lbtt/relief_claim:
           attributes:
             relief_type_expanded:

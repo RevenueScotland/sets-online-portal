@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 17-Oct-2013   Version 1.0  -->
-<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/ViewAllReturns" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.northgateps.com/RSTS/ViewAllReturns.wsdl" targetNamespace="http://www.northgateps.com/RSTS/ViewAllReturns.wsdl" name="ViewAllReturns">
+<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/ViewAllReturns"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.northgateps.com/RSTS/ViewAllReturns.wsdl" targetNamespace="http://www.northgateps.com/RSTS/ViewAllReturns.wsdl" name="ViewAllReturns">
 	<wsdl:types>
-		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:complexType name="PersonNameType">
 				<xsd:sequence>
 					<xsd:element name="Title" minOccurs="0">
@@ -138,7 +144,9 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
-		<xs:schema xmlns="http://www.northgateps.com/RSTS/ViewAllReturns" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/ViewAllReturns" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/ViewAllReturns"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/ViewAllReturns" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xs:import namespace="http://northgate-is.com/FL/Core"/>
 			<xs:element name="ViewReturnsRequest">
 				<xs:complexType>
@@ -180,6 +188,25 @@
 						<xs:element name="Username" type="xs:string"/>
 						<xs:element name="TAREReference" type="xs:string" minOccurs="0"/>
 						<xs:element name="TARERefno" type="xs:string" minOccurs="0"/>
+						<xs:element name="SortBy">
+							<xs:annotation>
+								<xs:documentation>Sorting option type selected in dropdown</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="MostRecent"/>
+									<xs:enumeration value="Oldest"/>
+									<xs:enumeration value="BalanceDesc"/>
+									<xs:enumeration value="BalanceAsc"/>
+									<xs:enumeration value="ReturnReference"/>
+									<xs:enumeration value="YourReference"/>
+									<xs:enumeration value="Description"/>
+									<xs:annotation>
+										<xs:documentation>Description is combination of FLBTType, address and buyer full name</xs:documentation>
+									</xs:annotation>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
 						<xs:element name="AgentReference" type="xs:string" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Reference for the buyers agent for LBTT service only</xs:documentation>
@@ -213,6 +240,21 @@
 							<xs:annotation>
 								<xs:documentation>Only return Draft versions</xs:documentation>
 							</xs:annotation>
+						</xs:element>
+						<xs:element name="MyReturnsOnly" type="core:YesNoType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Only return returns created by user</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ReturnType" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>Return type in dropdown, selected by user</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="30"/>
+								</xs:restriction>
+							</xs:simpleType>
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>

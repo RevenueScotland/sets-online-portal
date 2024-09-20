@@ -17,7 +17,7 @@
     font-size: px-to-rem($root-font-size); // 1rem
 }
 
-.ds_table caption a {
+.ds_table caption span {
     position: absolute;
     right: 0px;
     top: 0.5rem;

@@ -12,17 +12,19 @@ module Returns
       validates_with LbttReturnValidator, on: :submit
 
       # Attributes for this class, in list so can re-use as permitted params list in the controller
-      def self.attribute_list
+      def self.attribute_list # rubocop:disable Metrics/MethodLength
         %i[orig_return_reference flbt_type buyers sellers agent landlords tenants new_tenants properties property_type
-           effective_date relevant_date contract_date lease_start_date lease_end_date business_ind exchange_ind
-           previous_option_ind uk_ind sale_include_option relief_claims lease_premium premium_paid linked_ind
-           linked_consideration linked_lease_premium link_transactions annual_rent yearly_rents rent_for_all_years
-           total_consideration total_vat remaining_chargeable contingents_event_ind deferral_agreed_ind
+           non_residential_reason non_residential_reason_text
+           previous_option_ind relevant_date contract_date lease_start_date lease_end_date business_ind declaration
+           effective_date sale_include_option annual_rent lease_premium premium_paid linked_ind transaction_declaration
+           linked_consideration linked_lease_premium link_transactions yearly_rents rent_for_all_years relief_claims ads
+           total_consideration total_vat remaining_chargeable contingents_event_ind deferral_agreed_ind recalc_required
            non_chargeable deferral_reference relevant_rent bank_name account_number branch_code account_holder_name
-           fpay_method authority_ind declaration lease_declaration parties payment_date filing_date current_flbt_type
+           fpay_method authority_ind lease_declaration parties payment_date filing_date current_flbt_type exchange_ind
            repayment_ind repayment_amount_claimed repayment_declaration repayment_agent_declaration account_type
            ads change_reason orig_effective_date non_notifiable_submit_ind non_notifiable_explanation prepopulated
-           pre_population_declaration pre_population_submit_declaration orig_landlord_name taxpayer_email_id]
+           pre_population_declaration orig_landlord_name taxpayer_email_id show_trans_declaration
+           edit_calc_reason uk_ind calculation_edited]
       end
 
       attribute_list.each { |attr| attr_accessor attr }
@@ -50,6 +52,10 @@ module Returns
 
       # Transaction validation
       validates :property_type, presence: true, on: :property_type
+      validates :non_residential_reason, presence: true, on: :non_residential_reason
+      validates :non_residential_reason_text, presence: true, length: { maximum: 160 },
+                                              on: :non_residential_reason,
+                                              if: proc { |w| w.non_residential_reason == 'OTHER' }
       validates :effective_date, :relevant_date, custom_date: true, presence: true, compare_date: true,
                                                  on: :effective_date
       # Contract date is optional
@@ -122,6 +128,8 @@ module Returns
                                                 allow_blank: true },
                                 two_dp_pattern: true, presence: true, on: :premium_paid, if: :premium_paid?,
                                 unless: :convey?
+      validates :edit_calc_reason, presence: true, length: { maximum: 4000 }, on: :edit_calc_reason,
+                                   if: :calculation_edited
       validates :change_reason, presence: true, length: { maximum: 4000 }, on: :change_reason, if: :amendment?
       # claim repayment validation
       validates :repayment_ind, presence: true, on: :repayment_ind, if: :show_repayment?
@@ -151,8 +159,7 @@ module Returns
       validates :declaration, acceptance: { accept: ['Y'] }, on: :fpay_method
       validates :lease_declaration, acceptance: { accept: ['Y'] }, on: :fpay_method,
                                     if: :lease?
-      validates :pre_population_submit_declaration, acceptance: { accept: ['Y'] }, on: :fpay_method,
-                                                    if: :any_lease_review?
+      validates :transaction_declaration, acceptance: { accept: ['Y'] }, on: :fpay_method
 
       # calls back office and returns hash which is used to validate the return reference and effective date
       def validate_return_reference
@@ -209,6 +216,10 @@ module Returns
         show_pre_pop_reliefs? || !any_lease_review?
       end
 
+      def show_trans_declaration?
+        (show_trans_declaration == 'Y' && (convey? || lease?)) || any_lease_review?
+      end
+
       # Returns true if the return data has been pre populated
       # @return [boolean] pre populated return
       def pre_populated?
@@ -234,16 +245,6 @@ module Returns
         @total_vat
       end
 
-      # @return [Integer] the value of the @non_chargeable attribute or 0, depending on the @business_ind value.
-      # @see business_ind? to learn more about what the @business_ind consists of and it's meaning.
-      def non_chargeable
-        # Defaults to 0 because in the page the field that uses this attribute becomes hidden.
-        return 0 if @business_ind == 'N'
-
-        # When the @business_ind is nil or equivalent to 'Y' then we output the attribute's value
-        @non_chargeable
-      end
-
       # @return [Array] The array of MD reliefs, we are only expecting one
       def md_relief
         md_relief = []
@@ -264,22 +265,6 @@ module Returns
           end
         end
         self
-      end
-
-      # @return [Integer] the value of the @remaining_chargeable or @total_consideration attribute,
-      # depending on the @property_type, @business_ind, @linked_ind values.
-      # @see business_ind?, linked_transaction_validation to learn more about what
-      # the @business_ind, @property_type, @linked_ind consists of and their meaning.
-      def remaining_chargeable
-        # Defaults to the value entered in @total_consideration field because in the page the field
-        # that uses this attribute becomes hidden.
-        if @property_type == '1' && @business_ind == 'N' && @linked_ind == 'N'
-          @total_consideration
-        else
-          # When the @property_type, @business_ind, @linked_ind are nil or equivalent to
-          # '3' or 'Y' or 'Y' respectively then we output the attribute's value.
-          @remaining_chargeable
-        end
       end
 
       # setter for the linked consideration
@@ -338,7 +323,8 @@ module Returns
         { fpay_method: comp_key('PAYMENT TYPE', 'LBTT', 'RSTU'), flbt_type: comp_key('RETURN TYPE', 'LBTT', 'RSTU'),
           property_type: comp_key('PROPERTYTYPE', 'SYS', 'RSTU'),
           sale_include_option: comp_key('SALEOFBUSINESS', 'LBTT', 'RSTU'),
-          form_type: comp_key('RETURN_STATUS', 'SYS', 'RSTU') }
+          form_type: comp_key('RETURN_STATUS', 'SYS', 'RSTU'),
+          non_residential_reason: comp_key('NON RES REASON', 'LBTT', 'RSTU') }
       end
 
       # Define the ref data codes associated with the attributes but which won't be cached in this model
@@ -352,7 +338,7 @@ module Returns
           rent_for_all_years: YESNO_COMP_KEY, premium_paid: YESNO_COMP_KEY,
           declaration: YESNO_COMP_KEY, lease_declaration: YESNO_COMP_KEY,
           repayment_declaration: YESNO_COMP_KEY, repayment_agent_declaration: YESNO_COMP_KEY,
-          non_notifiable_submit_ind: YESNO_COMP_KEY, pre_population_submit_declaration: YESNO_COMP_KEY }
+          non_notifiable_submit_ind: YESNO_COMP_KEY, transaction_declaration: YESNO_COMP_KEY }
       end
 
       # Layout to print the data in this model
@@ -398,6 +384,10 @@ module Returns
            display_title: true, # Is the title to be displayed
            type: :list, # type list = the list of attributes to follow
            list_items: [{ code: :property_type, lookup: true, when: :any_lease_review?, is_not: [true] },
+                        { code: :non_residential_reason, lookup: true,
+                          when: :non_residential_reason_needed?, is: [true] },
+                        { code: :non_residential_reason_text,
+                          when: :non_residential_reason_other?, is: [true] },
                         { code: :effective_date, format: :date },
                         { code: :relevant_date, format: :date },
                         { code: :contract_date, format: :date },
@@ -457,17 +447,19 @@ module Returns
                         { code: :lease_premium, format: :money },
                         { code: :linked_lease_premium, format: :money },
                         { code: :relevant_rent, format: :money }] },
-         { code: :non_notifiable, # section code
-           key: :title, # key for the title translation
-           key_scope: %i[returns lbtt_transactions non_notifiable], # scope for the title translation
-           divider: false, # should we have a section divider
-           display_title: true, # Is the title to be displayed
-           when: :non_notifiable_submit_ind?,
-           is: [true],
-           type: :list, # type list = the list of attributes to follow
-           list_items: [{ code: :non_notifiable_submit_ind, lookup: true,
-                          when: :non_notifiable_submit_ind?, is: [true] },
-                        { code: :non_notifiable_explanation, when: :non_notifiable_submit_ind?, is: [true] }] },
+         unless convey?
+           { code: :non_notifiable, # section code
+             key: :title, # key for the title translation
+             key_scope: %i[returns lbtt_transactions non_notifiable], # scope for the title translation
+             divider: false, # should we have a section divider
+             display_title: true, # Is the title to be displayed
+             when: :non_notifiable_submit_ind?,
+             is: [true],
+             type: :list, # type list = the list of attributes to follow
+             list_items: [{ code: :non_notifiable_submit_ind, lookup: true,
+                            when: :non_notifiable_submit_ind?, is: [true] },
+                          { code: :non_notifiable_explanation, when: :non_notifiable_submit_ind?, is: [true] }] }
+         end,
          { code: :about_the_calculation, # section code
            key: :title, # key for the title translation
            key_scope: %i[returns lbtt_transactions about_the_calculation], # scope for the title translation
@@ -492,6 +484,19 @@ module Returns
                         { code: :linked_consideration, format: :money },
                         { code: :non_chargeable, format: :money },
                         { code: :remaining_chargeable, format: :money }] },
+         if convey?
+           { code: :non_notifiable, # section code
+             key: :title, # key for the title translation
+             key_scope: %i[returns lbtt_transactions non_notifiable], # scope for the title translation
+             divider: false, # should we have a section divider
+             display_title: true, # Is the title to be displayed
+             when: :non_notifiable_submit_ind?,
+             is: [true],
+             type: :list, # type list = the list of attributes to follow
+             list_items: [{ code: :non_notifiable_submit_ind, lookup: true,
+                            when: :non_notifiable_submit_ind?, is: [true] },
+                          { code: :non_notifiable_explanation, when: :non_notifiable_submit_ind?, is: [true] }] }
+         end,
          if show_ads?
            { code: :ads, # section code
              type: :object } # key for the title translation
@@ -508,11 +513,20 @@ module Returns
            type: :object }, # key for the title translation
          # if the repayment ind is nil/blank they never got asked the question i.e. not an amend
          # we can't use the version as that is set to 1 by the time this is called
+         if form_type != 'D' && calculation_edited == 'Y'
+           { code: :edit_calculation_reason, # section code
+             key: :title, # key for the title translation
+             key_scope: %i[returns lbtt_submit edit_calculation_reason], # scope for the title translation
+             divider: true, # should we have a section divider
+             display_title: true, # Is the title to be displayed
+             type: :list, # type list = the list of attributes to follow
+             list_items: [{ code: :edit_calc_reason, action_name: :print }] }
+         end,
          if repayment_ind.present?
            { code: :repayment, # section code
              key: :title, # key for the title translation
              key_scope: %i[returns lbtt_submit repayment_claim], # scope for the title translation
-             divider: false, # should we have a section divider
+             divider: true, # should we have a section divider
              display_title: true, # Is the title to be displayed
              type: :list, # type list = the list of attributes to follow
              list_items: [{ code: :repayment_ind, lookup: true },
@@ -542,8 +556,7 @@ module Returns
            list_items: [{ code: :authority_ind, lookup: true, when: :account_type, is: ['AGENT'] },
                         { code: :declaration, lookup: true },
                         { code: :lease_declaration, lookup: true, when: :lease?, is: [true] },
-                        { code: :pre_population_submit_declaration, lookup: true,
-                          when: :any_lease_review?, is: [true] }] }]
+                        { code: :transaction_declaration, lookup: true, when: :show_trans_declaration?, is: [true] }] }]
       end
 
       # Layout to print the receipt data in this model
@@ -650,6 +663,24 @@ module Returns
       # condition to check non_notifiable_submit_ind is set to Yes
       def non_notifiable_submit_ind?
         @non_notifiable_submit_ind == 'Y'
+      end
+
+      # Condition to check if non-residential reason is needed
+      # this is only applicable for convey and property is non-residential
+      def non_residential_reason_needed?
+        convey? && @property_type == '3'
+      end
+
+      # condition to check if the non-residential reason is other
+      def non_residential_reason_other?
+        non_residential_reason_needed? && @non_residential_reason == 'OTHER'
+      end
+
+      # check any calculated values are changed
+      def calculated_values_changed
+        return @calculation_edited = 'Y' if @tax.npv_value_changed? || @tax.calculations_are_changed?
+
+        @calculation_edited = 'N'
       end
 
       # Combine list of parties together
@@ -788,8 +819,13 @@ module Returns
         # prepopulation ind
         output[:prepopulated] = lbtt[:prepopulated] == 'yes' ? 'Y' : 'N'
 
+        # if a lease review delete recalc flag as warning is now not shown for lease reviews
+        if %w[LEASEREV ASSIGN TERMINATE].include?(lbtt[:lbtt_return_details][:flbt_type])
+          output.delete(:recalc_required)
+        end
+
         # convert back office yes/no to Y/N
-        yes_nos_to_yns(output, %i[previous_option_ind exchange_ind uk_ind contingents_event_ind])
+        yes_nos_to_yns(output, %i[previous_option_ind exchange_ind uk_ind contingents_event_ind recalc_required])
         # derive yes no for transaction pages radio button based on the data now that we've finished moving it around
         # Use annual rent or total consideration as a marker they have entered the transaction wizard
         derive_transactions_yes_nos_in(output)
@@ -857,10 +893,9 @@ module Returns
         return :total_consideration_residential if attribute == :total_consideration && @property_type == '1'
         return "#{attribute}_#{flbt_type}".to_sym if %i[effective_date relevant_date annual_rent]
                                                      .include?(attribute)
-        return "#{attribute}_#{user_account_type}".to_sym if attribute == :pre_population_declaration &&
-                                                             show_pre_pop_declaration?
         return attribute unless %i[authority_ind repayment_agent_declaration lease_declaration declaration
-                                   repayment_declaration pre_population_submit_declaration].include?(attribute)
+                                   repayment_declaration transaction_declaration
+                                   pre_population_declaration].include?(attribute)
 
         translation_attribute_declarations(attribute)
       end
@@ -998,6 +1033,7 @@ module Returns
         pre_populate_strip_attributes(pre_populate_data)
         assign_attributes(pre_populate_data)
         @prepopulated = 'Y'
+        @recalc_required = 'N'
       end
 
       # Removes the attributes from the response that we don't want to pre populate
@@ -1050,7 +1086,11 @@ module Returns
           'ins0:FlbtType': @flbt_type, 'ins0:PropertyType': property_type
         }
         output['ins0:ChangeReason'] = @change_reason if amendment?
+        output['ins0:NonResidentialReason'] = @non_residential_reason if non_residential_reason_needed?
+        output['ins0:NonResidentialReasonText'] = @non_residential_reason_text if non_residential_reason_needed?
         output['ins0:OrigReturnReference'] = @orig_return_reference if any_lease_review?
+        # TODO: RSTP-1321 Update LBTTCalculationScheme to CalculationScheme
+        output['ins0:LBTTCalculationScheme'] = @tax.calculation_scheme
         output.merge!('ins0:EffectiveDate': DateFormatting.to_xml_date_format(@effective_date),
                       'ins0:RelevantDate': DateFormatting.to_xml_date_format(@relevant_date),
                       'ins0:ContractDate': DateFormatting.to_xml_date_format(@contract_date))
@@ -1060,6 +1100,7 @@ module Returns
         end
 
         output['ins0:NonNotifiableExplanation'] = @non_notifiable_explanation if non_notifiable_submit_ind?
+        output['ins0:EditCalcReason'] = @edit_calc_reason if @calculation_edited == 'Y' && @edit_calc_reason.present?
 
         output.merge!('ins0:PreviousOptionInd': convert_to_backoffice_yes_no_value(@previous_option_ind),
                       'ins0:ExchangeInd': convert_to_backoffice_yes_no_value(@exchange_ind),
@@ -1171,7 +1212,7 @@ module Returns
       def translation_attribute_declarations(attribute)
         suffix = if %i[authority_ind repayment_agent_declaration].include?(attribute)
                    flbt_type
-                 elsif %i[lease_declaration pre_population_submit_declaration].include?(attribute)
+                 elsif %i[lease_declaration transaction_declaration pre_population_declaration].include?(attribute)
                    user_account_type
                  elsif %i[declaration repayment_declaration].include?(attribute)
                    "#{flbt_type}_#{user_account_type}"

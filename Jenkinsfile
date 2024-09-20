@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="3.1.4"
+def RUBY_VERSION="3.2.2"
 
 /*
 	* Back office names
@@ -49,17 +49,17 @@ timestamps {
 		node ('revscot-docker-build') {
 			milestone(2)
 			envGitCheckout()
-			dockerImageBuild()
+			lock (resource: "revscot-container-image-build", inversePrecedence: true) {
+				dockerImageBuild()
+			}
 		}
 
 		lock (resource: "${this.getAppName()}-${env.BRANCH_NAME}-autotest", inversePrecedence: true) {
 			node ('revscot-docker-auto-run') {
 				milestone(3)
 				(deployed, host, port, seleniumPort) = deployDockeredEnvironment("autotest")
-			}
-			if (deployed) {
-				stage ('Auto Testing') {
-					node('revscot-docker-auto-run') {
+				if (deployed) {
+					stage ('Auto Testing') {
 						runAutotest(host, port, seleniumPort)
 					}
 				}
@@ -252,7 +252,7 @@ def envGitCheckout () {
 def prepareBuildEnvironment() {
 	stage ('Prepare Build Environment') {
 		sh 'gem install bundler rake yard rubocop brakeman bundle-audit licensed'
-		sh 'bundle config mirror.https://rubygems.org http://vm-bld-ruby01.global.internal:9292'
+		sh 'bundle config mirror.https://rubygems.org http://lg-bld-ruby01.development.local:9292'
 		sh 'bundle install'
         sh 'yarn install --frozen-lockfile'
 		milestone(1)
@@ -301,7 +301,7 @@ def generateDocumentation() {
 	stage ('Generate Documentation') {
 		sh 'bundle exec rake yard'
 		withEnv(["APP=${this.getAppName()}"]) {
-			sh 'scp -r doc/* rsdocs@vm-bld-ruby01.global.internal:/var/www/html/${APP}'
+			sh 'scp -r doc/* rsdocs@lg-bld-ruby01.development.local:/var/www/html/${APP}'
 		}
 	}
 }
@@ -557,7 +557,7 @@ def deployManualTestEnvironment(String environment, String environmentLabel, Str
 					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
 					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
 					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
-					[ ! -z "$(docker ps -qa --filter name=${APP}.*--${ENVIRONMENT})" ] && docker stop $(docker ps -qa --filter "name=${APP}.*--${ENVIRONMENT}") && docker rm -f $(docker ps -qa --filter "name=${APP}.*--${ENVIRONMENT}")
+					[ ! -z "$(docker ps -qa --filter name=${APP}.*-${ENVIRONMENT})" ] && docker stop $(docker ps -qa --filter "name=${APP}.*-${ENVIRONMENT}") && docker rm -f $(docker ps -qa --filter "name=${APP}.*-${ENVIRONMENT}")
 					../../run-mt-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
 					sleep ${TEST_DELAY}
 					export IMAGE_VERSION=${FULL_BUILD_VERSION}
@@ -599,7 +599,7 @@ def generateReleaseNotes(environment) {
 				set +e
 				export DOCKER_HOST=tcp://$(hostname -f):2376
 				cd tools
-				./simpleReleaseNotes.sh app--${ENVIRONMENT} ${APP} latest RSTP > ${OUTPUT}
+				./simpleReleaseNotes.sh app-${ENVIRONMENT} ${APP} latest RSTP > ${OUTPUT}
 				echo
 			'''
 		}
@@ -628,28 +628,28 @@ def runAutotest(String host, String port, String seleniumPort, String environmen
 	{
 		dir ('code') {
 			def altVersion = this.getFullBuildVersion().replaceAll('\\.', '-')
-			seleniumUrl = "http://${this.getAppName()}-selenium-hub-${altVersion}-${environment}:4444/wd/hub"
-			appHostUrl = "http://${this.getAppName()}-app-${altVersion}-${environment}:2099"
+			seleniumUrl = "http://${this.getAppName()}-selenium-hub-${environment}:4444/wd/hub"
+			appHostUrl = "http://${this.getAppName()}-app-${environment}:2099"
 			withEnv(["CAPYBARA_DRIVER=selenium_remote_firefox", "CAPYBARA_REMOTE_URL=${seleniumUrl}", "APP=${this.getAppName()}", 
 			         "FULL_BUILD_VERSION=${altVersion}", "ENVIRONMENT=${environment}", "CAPYBARA_APP_HOST=${appHostUrl}",
 					 "COVERAGE_DIR=log/coverage", "COVERAGE_MERGE=true", "CAPYBARA_SAVE_PATH=log/tmp/screenshots"]) {
 				sh '''
 					#!/bin/bash
 					export DOCKER_HOST=tcp://$(hostname -f):2376
-                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk add --no-cache --virtual .bundle-deps build-base gmp-dev
-					docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle config mirror.https://rubygems.org http://vm-bld-ruby01.global.internal:9292
-                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle install --deployment --with="development test"
-                    docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} apk del .bundle-deps
-					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} mkdir -p /var/tmp/share/upload /var/tmp/share/download
-					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} chmod 777 -R /var/tmp/share/
-					docker exec -u root ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} chmod a+w -R .
-										docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
+                    docker exec -u root ${APP}-app-${ENVIRONMENT} apk add --no-cache --virtual .bundle-deps build-base gmp-dev
+					docker exec -u root ${APP}-app-${ENVIRONMENT} bundle config mirror.https://rubygems.org http://lg-bld-ruby01.development.local:9292
+                    docker exec -u root ${APP}-app-${ENVIRONMENT} bundle install --deployment --with="development test"
+                    docker exec -u root ${APP}-app-${ENVIRONMENT} apk del .bundle-deps
+					docker exec ${APP}-app-${ENVIRONMENT} mkdir -p /var/tmp/share/upload /var/tmp/share/download
+					docker exec ${APP}-app-${ENVIRONMENT} chmod 777 -R /var/tmp/share/
+					docker exec -u root ${APP}-app-${ENVIRONMENT} chmod a+w -R .
+										docker exec ${APP}-app-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
 						CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} CAPYBARA_SAVE_PATH=${CAPYBARA_SAVE_PATH}\
 						TEST_FILE_UPLOAD_PATH=/var/tmp/share/upload TEST_FILE_DOWNLOAD_PATH=/var/tmp/share/download \
 						RAILS_ENV=test NODE_ENV=test cucumber
-					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} chmod -R u+w ${COVERAGE_DIR}
-					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} mv log/test.log log/${ENVIRONMENT}.log
-					docker exec ${APP}-app-${FULL_BUILD_VERSION}-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
+					docker exec ${APP}-app-${ENVIRONMENT} chmod -R u+w ${COVERAGE_DIR}
+					docker exec ${APP}-app-${ENVIRONMENT} mv log/test.log log/${ENVIRONMENT}.log
+					docker exec ${APP}-app-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
 				    	UNIT_TEST=1 CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} RAILS_ENV=test test
 					'''
 			}
@@ -679,14 +679,14 @@ def postAutotestSuccess(String environment = "autotest") {
         unstash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-licenses"
 		withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 			sh '''
-				ssh rsdocs@vm-bld-ruby01.global.internal "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
+				ssh rsdocs@lg-bld-ruby01.development.local "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
 				pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}/app/
-				scp -r coverage rsdocs@vm-bld-ruby01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
-				ssh rsdocs@vm-bld-ruby01.global.internal "unlink /var/www/html/${APPLICATION}/coverage ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/coverage /var/www/html/${APPLICATION}/coverage"
+				scp -r coverage rsdocs@lg-bld-ruby01.development.local:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				ssh rsdocs@lg-bld-ruby01.development.local "unlink /var/www/html/${APPLICATION}/coverage ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/coverage /var/www/html/${APPLICATION}/coverage"
 				popd
 
-                                scp tmp/licensed.txt rsdocs@vm-bld-ruby01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
-				ssh rsdocs@vm-bld-ruby01.global.internal "[ -L "/var/www/html/${APPLICATION}/licensed.txt" ] && unlink /var/www/html/${APPLICATION}/licensed.txt ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/licensed.txt /var/www/html/${APPLICATION}/licensed.txt"
+                                scp tmp/licensed.txt rsdocs@lg-bld-ruby01.development.local:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				ssh rsdocs@lg-bld-ruby01.development.local "[ -L "/var/www/html/${APPLICATION}/licensed.txt" ] && unlink /var/www/html/${APPLICATION}/licensed.txt ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/licensed.txt /var/www/html/${APPLICATION}/licensed.txt"
 			'''
 		}
 	}
@@ -703,7 +703,7 @@ def postAutotestFailure(String host, String environment = "autotest") {
 	dir ('code') {
 		withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 			sh '''
-				ssh rsdocs@vm-bld-ruby01.global.internal "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
+				ssh rsdocs@lg-bld-ruby01.development.local "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
 				pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}/app/
 				sudo mkdir -p tmp ; sudo chmod a+w -R tmp
 				echo \'<html><head><title>\'Test Results for ${ENVIRONMENT} of ${APPLICATION} version ${FULL_BUILD_VERSION}\'</title></head>\' > tmp/index.html
@@ -711,7 +711,7 @@ def postAutotestFailure(String host, String environment = "autotest") {
 				ls tmp/screenshots/ | sed \'s/\\(.*\\)/\\<p\\>\\<a href="\\1"\\>\\1\\<\\/a\\><\\/p\\>/\' >> tmp/index.html
 				echo \'<p>Test completed at \'$(date)\'</p></body></html>\' >> tmp/index.html
 				mv tmp/index.html tmp/screenshots/index.html
-				scp tmp/screenshots/*.{html,png} rsdocs@vm-bld-ruby01.global.internal:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				scp tmp/screenshots/*.{html,png} rsdocs@lg-bld-ruby01.development.local:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
 				rm -rf tmp/screenshots/*
                 cd ../video
                 sudo zip record.flv.zip record.flv
@@ -722,7 +722,7 @@ def postAutotestFailure(String host, String environment = "autotest") {
 			emailext attachLog: true, 
 				body: """${RELEASE_TEXT}Auto testing of the ${this.getAppName()} build ${this.getFullBuildVersion()} has failed.
 
-A report can be found here: http://vm-bld-ruby01.global.internal/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html
+A report can be found here: http://lg-bld-ruby01.development.local/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html
 (This report will be available for a week)
 
 The full console output can be found here: ${env.BUILD_URL}consoleFull
@@ -733,7 +733,7 @@ The log files from the test target can be found on ${host} in /var/log/${this.ge
 				compressLog: true, 
 				subject: "Auto test of the ${this.getAppName()} application, on the ${env.BRANCH_NAME} branch, has failed",
 				to: "${REVSCOT_DEVELOPERS}"
-			echo "${environment} report can be found at: http://vm-bld-ruby01.global.internal/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html"
+			echo "${environment} report can be found at: http://lg-bld-ruby01.development.local/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html"
 		}
 	}
 }
@@ -1109,7 +1109,7 @@ def doDockerCmdOnEnvironment(String environment, String cmd) {
 	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}", "COMMAND=${cmd}"]) {
 		sh '''
 			export DOCKER_HOST=tcp://$(hostname -f):2376
-			export ENV_NAME=${APPLICATION}.*${FULL_BUILD_VERSION//\\./\\\\.}.*${ENVIRONMENT}
+			export ENV_NAME=${APPLICATION}-.*-${ENVIRONMENT}
 			[ ! -z "$(docker ps -qa --filter name=${ENV_NAME})" ] && docker ${COMMAND} $(docker ps -qa --filter name=${ENV_NAME}) || true
 			export ENV_NAME=${APPLICATION}.*${FULL_BUILD_VERSION//\\./-}.*${ENVIRONMENT}
 			[ ! -z "$(docker ps -qa --filter name=${ENV_NAME})" ] && docker ${COMMAND} $(docker ps -qa --filter name=${ENV_NAME}) || true						 

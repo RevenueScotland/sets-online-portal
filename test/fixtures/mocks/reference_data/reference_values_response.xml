@@ -15548,6 +15548,123 @@
                     <Default>no</Default>
                     <Sequence>10</Sequence>
                 </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>COMPROP</Code>
+                    <Name>Commercial property</Name>
+                    <Default>no</Default>
+                    <Sequence>1</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>NOTDWELL</Code>
+                    <Name>Not suitable for use as a dwelling</Name>
+                    <Default>no</Default>
+                    <Sequence>2</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>PLOTNODWEL</Code>
+                    <Name>Plots of land with no dwellings</Name>
+                    <Default>no</Default>
+                    <Sequence>3</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>AGLACOMUSE</Code>
+                    <Name>Agricultural land that is commercially used</Name>
+                    <Default>no</Default>
+                    <Sequence>4</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>MIXUSETRAN</Code>
+                    <Name>Mixed use transaction</Name>
+                    <Default>no</Default>
+                    <Sequence>5</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>TRAN6DWELL</Code>
+                    <Name>A transaction that includes 6 or more separate dwellings</Name>
+                    <Default>no</Default>
+                    <Sequence>6</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>RESACCHILD</Code>
+                    <Name>A home or other institution providing residential accommodation for children</Name>
+                    <Default>no</Default>
+                    <Sequence>7</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>RESFORSTUD</Code>
+                    <Name>A hall of residence for students in further or higher education</Name>
+                    <Default>no</Default>
+                    <Sequence>8</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>HMPERCARE</Code>
+                    <Name>A home or other institution for persons in need of personal care due to age, disability, drug or alcohol dependency or mental health conditions</Name>
+                    <Default>no</Default>
+                    <Sequence>9</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>HOSPITAL</Code>
+                    <Name>A hospital or hospice</Name>
+                    <Default>no</Default>
+                    <Sequence>10</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>PRISON</Code>
+                    <Name>A prison or similar establishment</Name>
+                    <Default>no</Default>
+                    <Sequence>11</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>HOTEL</Code>
+                    <Name>A hotel or inn or similar establishment</Name>
+                    <Default>no</Default>
+                    <Sequence>12</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>NON RES REASON</DomainCode>
+                    <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>OTHER</Code>
+                    <Name>Other</Name>
+                    <Default>no</Default>
+                    <Sequence>13</Sequence>
+                </ReferenceValue>
             </ReferenceValues>
         </GetReferenceValuesResponse>
     </soap:Body>

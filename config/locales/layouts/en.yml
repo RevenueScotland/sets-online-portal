@@ -13,6 +13,9 @@ en:
       menu: "Menu"
       service_name: "Scottish Electronic Tax System"
       revenue_scotland: "Revenue Scotland"
+      feedback_html: "Give %{link} about this service"
+      feedback_link: "feedback"
+      banner_tag_text: "feedback"
     application:
       timeout_warning_message: "Your session is about to time out"
       cancel_warning_message: "You are about to leave this return. If you haven't saved your changes click 'Cancel' followed by the 'Save draft' button on the return summary screen. Any unsaved changes will be lost."

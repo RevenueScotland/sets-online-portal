@@ -13,7 +13,7 @@ Feature: Registration Wizard
     Then I should see the text "Who are you signing up on behalf of?"
     And I should receive the message "Who are you signing up on behalf of can't be blank"
 
-    When I check the "Individual/Sole trader" radio button
+    When I check the "Individual/Sole trader" radio button in answer to the question "Who are you signing up on behalf of?"
     And I click on the "Continue" button
     Then I should see the text "Sign up to file tax returns"
 
@@ -23,7 +23,7 @@ Feature: Registration Wizard
     And I should receive the message "Who is the account for can't be blank"
 
     When I check the "Land and Building Transaction Tax" checkbox
-    And I check the "A taxpayer" radio button
+    And I check the "A taxpayer" radio button in answer to the question "Who is the account for?"
     And I click on the "Continue" button
     Then I should see the sub-title "Your individual account details"
 
@@ -151,7 +151,7 @@ Feature: Registration Wizard
 
     When I enter "SM" in the "Username" field
     And I check the "I confirm that I have read and understood the" checkbox using the span
-    And I check the "Yes" radio button
+    And I check the "Yes" radio button in answer to the question "I confirm that I have read and understood Revenue Scotland’s email communication policy (opens in a new window) . I agree to receive email communication from Revenue Scotland and accept the associated risks"
     And I enter "Password001" in the "Password" field
     And I enter "Password002" in the "Confirm password" field
     And I click on the "Confirm" button
@@ -178,7 +178,7 @@ Feature: Registration Wizard
     When I click on the "Continue" button
     Then I should see the text "Who are you signing up on behalf of?"
     And I should receive the message "Who are you signing up on behalf of can't be blank"
-    When I check the "Non registered body" radio button
+    When I check the "Non registered body" radio button in answer to the question "Who are you signing up on behalf of?"
     And I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
     And I should see the sub-title "Organisation"
@@ -358,7 +358,7 @@ Feature: Registration Wizard
     Then I should see the text "Who are you signing up on behalf of?"
     And I should receive the message "Who are you signing up on behalf of can't be blank"
 
-    When I check the "Companies House registered body" radio button
+    When I check the "Companies House registered body" radio button in answer to the question "Who are you signing up on behalf of?"
     And I click on the "Continue" button
     Then I should see the sub-title "Company"
 
@@ -406,7 +406,7 @@ Feature: Registration Wizard
     Then I should see the sub-title "Contact address"
     And I should receive the message "Is your registered address also your contact address can't be blank"
 
-    When I check the "Yes" radio button
+    When I check the "Yes" radio button in answer to the question "Is your registered address also your contact address?"
     And I click on the "Continue" button
     Then I should see the sub-title "Organisation contact details"
 
@@ -435,12 +435,12 @@ Feature: Registration Wizard
     And I click on the "Register if you don't have an account" link
 
     Then I should see the text "Who are you signing up on behalf of?"
-    When I check the "Individual/Sole trader" radio button
+    When I check the "Individual/Sole trader" radio button in answer to the question "Who are you signing up on behalf of?"
     And I click on the "Continue" button
 
     Then I should see the text "Sign up to file tax returns"
     And I check the "Land and Building Transaction Tax" checkbox
-    And I check the "A taxpayer" radio button
+    And I check the "A taxpayer" radio button in answer to the question "Who is the account for?"
 
     When I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
@@ -476,7 +476,7 @@ Feature: Registration Wizard
     And I enter "Password001" in the "Password" field
     And I enter "Password001" in the "Confirm password" field
     And I check the "I confirm that I have read and understood the" checkbox using the span
-    And I check the "Yes" radio button
+    And I check the "Yes" radio button in answer to the question "I confirm that I have read and understood Revenue Scotland’s email communication policy (opens in a new window) . I agree to receive email communication from Revenue Scotland and accept the associated risks"
     And I click on the "Confirm" button
     Then I should see the "Sign up to file tax returns" page
     And I should see the sub-title "Complete sign up"
@@ -487,7 +487,7 @@ Feature: Registration Wizard
     And I click on the "Register if you don't have an account" link
 
     Then I should see the text "Who are you signing up on behalf of?"
-    When I check the "Non registered body" radio button
+    When I check the "Non registered body" radio button in answer to the question "Who are you signing up on behalf of?"
     When I click on the "Continue" button
 
     Then I should see the sub-title "Organisation"
@@ -530,7 +530,7 @@ Feature: Registration Wizard
     When I click on the "Continue" button
     Then I should see the text "Sign up to file tax returns"
     And I check the "Land and Building Transaction Tax" checkbox
-    And I check the "A taxpayer" radio button
+    And I check the "A taxpayer" radio button in answer to the question "Who is the account for?"
     When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
@@ -546,7 +546,7 @@ Feature: Registration Wizard
     And I enter "Password001" in the "Password" field
     And I enter "Password001" in the "Confirm password" field
     And I check the "I confirm that I have read and understood the" checkbox using the span
-    And I check the "Yes" radio button
+    And I check the "Yes" radio button in answer to the question "I confirm that I have read and understood Revenue Scotland’s email communication policy (opens in a new window) . I agree to receive email communication from Revenue Scotland and accept the associated risks"
     And I click on the "Confirm" button
 
     Then I should see the sub-title "Complete sign up"
@@ -557,7 +557,7 @@ Feature: Registration Wizard
     And I click on the "Register if you don't have an account" link
 
     Then I should see the text "Who are you signing up on behalf of?"
-    When I check the "Companies House registered body" radio button
+    When I check the "Companies House registered body" radio button in answer to the question "Who are you signing up on behalf of?"
     When I click on the "Continue" button
 
     Then I should see the sub-title "Company"
@@ -572,7 +572,7 @@ Feature: Registration Wizard
     And I click on the "Continue" button
 
     Then I should see the sub-title "Contact address"
-    When I check the "No" radio button
+    When I check the "No" radio button in answer to the question "Is your registered address also your contact address?"
     And I enter "LU1 1AA" in the "address_summary_postcode" field
     And I click on the "Find address" button
     Then I should see the "Sign up to file tax returns" page
@@ -594,7 +594,7 @@ Feature: Registration Wizard
 
     Then I should see the text "Sign up to file tax returns"
     And I check the "Land and Building Transaction Tax" checkbox
-    And I check the "A taxpayer" radio button
+    And I check the "A taxpayer" radio button in answer to the question "Who is the account for?"
     When I click on the "Continue" button
 
     Then I should see the sub-title "Your individual account details"
@@ -610,7 +610,8 @@ Feature: Registration Wizard
     And I enter "Password001" in the "Password" field
     And I enter "Password001" in the "Confirm password" field
     And I check the "I confirm that I have read and understood the" checkbox using the span
-    And I check the "Yes" radio button
+    And I check the "Yes" radio button in answer to the question "I confirm that I have read and understood Revenue Scotland’s email communication policy (opens in a new window) . I agree to receive email communication from Revenue Scotland and accept the associated risks"
+
     And I click on the "Confirm" button
 
     Then I should see the sub-title "Complete sign up"
@@ -622,7 +623,7 @@ Feature: Registration Wizard
     Then I should see the "Sign up to file tax returns" page
     And I should see the text "Who are you signing up on behalf of?"
 
-    When I check the "Companies House registered body" radio button
+    When I check the "Companies House registered body" radio button in answer to the question "Who are you signing up on behalf of?"
     And I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
     And I should see the sub-title "Company"
@@ -639,7 +640,7 @@ Feature: Registration Wizard
     When I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
     And I should see the sub-title "Contact address"
-    When I check the "Yes" radio button
+    When I check the "Yes" radio button in answer to the question "Is your registered address also your contact address?"
     And I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
     And I should see the sub-title "Organisation contact details"
@@ -650,7 +651,7 @@ Feature: Registration Wizard
     And I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
     When I check the "Land and Building Transaction Tax" checkbox
-    And I check the "A taxpayer" radio button
+    And I check the "A taxpayer" radio button in answer to the question "Who is the account for?"
     And I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
     And I should see the sub-title "Your individual account details"
@@ -668,7 +669,7 @@ Feature: Registration Wizard
     And I enter "Password001" in the "Password" field
     And I enter "Password001" in the "Confirm password" field
     And I check the "I confirm that I have read and understood the" checkbox using the span
-    And I check the "Yes" radio button
+    And I check the "Yes" radio button in answer to the question "I confirm that I have read and understood Revenue Scotland’s email communication policy (opens in a new window) . I agree to receive email communication from Revenue Scotland and accept the associated risks"
     And I click on the "Confirm" button
     Then I should see the "Sign up to file tax returns" page
     And I should see the sub-title "Complete sign up"

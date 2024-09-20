@@ -53,7 +53,7 @@ module Returns
       wizard_save(@slft_return)
 
       # manage the buttons AFTER wizard_save so we don't save the validation errors
-      return if manage_draft(@slft_return) || manage_calculate(@slft_return)
+      manage_draft(@slft_return) || manage_calculate(@slft_return)
     end
 
     # returns/slft/declaration_calculation

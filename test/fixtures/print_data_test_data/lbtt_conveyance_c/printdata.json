@@ -579,13 +579,13 @@
                     "itemcode": "non_chargeable",
                     "itemformat": "money",
                     "itemlabel": "Non-chargeable consideration",
-                    "itemdata": "0"
+                    "itemdata": "40"
                 },
                 {
                     "itemcode": "remaining_chargeable",
                     "itemformat": "money",
                     "itemlabel": "Total consideration remaining",
-                    "itemdata": "1500"
+                    "itemdata": ""
                 }
             ],
             "itemcount": 5

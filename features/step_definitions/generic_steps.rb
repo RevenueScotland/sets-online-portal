@@ -148,13 +148,14 @@ When('I click on the {int} st/nd/rd/th {string} button') do |integer, string|
   all('button', text: string)[integer].click
 end
 
-# JS mode or not may make a button visible or not.  This method clicks it if running rake tests
-# (Jenkins always runs the browser so JS mode is on whereas on dev machine's it's off).
+# JS mode or not may make a button visible or not.  This method clicks it if it's available and doesn't throw
+# an exception if it is not.  (Jenkins always runs the browser so JS mode is on whereas on dev machine's it's off).
 Then('if available, click the {string} button') do |string|
-  if Capybara.current_driver == :rack_test
+  wait_for_turbo(js_processing_wait, page_processing_wait)
+  if has_button?(string, wait: not_present_wait)
     click_button(string)
   else
-    Rails.logger.info("button #{string} not pressed, assume not available")
+    Rails.logger.info("Optional button #{string} not found")
   end
 end
 
@@ -280,12 +281,9 @@ When('I click on the {int} st/nd/rd/th {string} link') do |integer, string|
 end
 
 # Use the in answer to the question step below in preference
-When('I check the {string} radio button') do |label|
-  choose(label)
-end
-
 When('I check the {string} radio button in answer to the question {string}') do |label, question|
   node = find('legend', text: question).ancestor('fieldset')
+  log("...found the node #{node}")
   within(node) do
     choose(label)
   end
@@ -306,9 +304,12 @@ end
 When('I enter {string} in the {string} select or text field') do |text, field|
   sleep(js_processing_wait) unless Capybara.current_driver == :rack_test # wait for the JS to process
   if page.has_field?(field, type: 'select', wait: not_present_wait)
+    log("...found select field #{field}")
     select(text, from: field)
   elsif page.has_field?(field, type: 'text', wait: not_present_wait)
+    log("...found text field #{field}")
     fill_in(field, with: text)
+    log('waiting for autocomplete text...')
     sleep(js_processing_wait) # give time for the autocomplete to complete
   else
     assert false, "Cannot find #{field} to complete"
@@ -686,10 +687,6 @@ Then('the checkbox {string} should be checked') do |string|
   assert page.has_checked_field?(string, visible: false)
 end
 
-Then('the radio button {string} should be selected') do |string|
-  assert page.has_checked_field?(string, visible: false)
-end
-
 Then('the radio button {string} should be selected in answer to the question {string}') do |label, question|
   node = find('legend', text: question).ancestor('fieldset')
   within(node) do
@@ -732,4 +729,22 @@ end
 # -hint is appended to get the hint text span for the item
 Then('I should see the hint text {string} on the item with the id {string}') do |string, string2|
   assert page.find_by_id("#{string2}-hint").text.include?(string)
+end
+
+# check the phase banner is visible with content
+Then('I should see a phase banner with the text {string} and a link to {string}') do |message, url|
+  assert page.find_by_id('ds_phase-banner__text').text.include?(message)
+  assert page.find_by_id('ds_phase-banner').has_link?(url)
+end
+
+# Replicates a enter key press
+# Note that this only works with the selenium tests and not the rake tests as send_keys requires JS
+Then('I press the enter button on the {string} field') do |string|
+  if Capybara.current_driver == :rack_test
+    log('JS is not enabled hence going via the Continue button')
+    click_button('Continue')
+  else
+    log('JS is enabled hence going via enter key press')
+    page.find_by_id(string).native.send_keys(:enter)
+  end
 end

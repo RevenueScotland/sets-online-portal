@@ -129,7 +129,7 @@ Feature: Secure Communication
         Given I have signed in
         Then I should see the "Dashboard" page
         And I should see the sub-title "Unread messages"
-        When I click on the "See all messages" link
+        When I click on the "Find messages" link
         Then I should see the "Messages" page
         When I enter "RS2000001AAAA" in the "Reference" field
         Then I click on the "Find" button
@@ -139,11 +139,75 @@ Feature: Secure Communication
             | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | No         | Sent | View     |
             | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | No         | No   | View     |
             | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
+        When I select "Oldest" from the "Sort by"
+        And I click on the "Find" button
+        Then the table of data is displayed
+            | Date & time      | Name             | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
+            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
+            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | No         | No   | View     |
+            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | No         | Sent | View     |
+            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | No         | No   | View     |
+            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
+        # validate the mark as read/unread functions
+
+        When I click on the 2 nd "View" link
+        Then I should see the "Message details" page
+        And I should see the button with text "Mark as unread"
+        And I should not see the button with text "Mark as read"
+
+        When I click on the "Back" link
+        Then I should see the "Messages" page
+        And I enter "RS2000001AAAA" in the "Reference" field
+        And I select "Oldest" from the "Sort by"
+        And I click on the "Find" button
+        And the table of data is displayed
+            | Date & time      | Name             | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
+            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | No         | Sent | View     |
+            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | No         | Yes  | View     |
+            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
+
+        When I click on the 2 nd "View" link
+        Then I should see the "Message details" page
+        And I should see the button with text "Mark as unread"
+        And I should not see the button with text "Mark as read"
+
+        When I click on the "Mark as unread" button
+        Then I should see the "Message details" page
+        And I should not see the button with text "Mark as unread"
+        And I should see the button with text "Mark as read"
+
+        When I click on the "Mark as read" button
+        Then I should see the "Message details" page
+        And I should see the button with text "Mark as unread"
+        And I should not see the button with text "Mark as read"
+
+        When I click on the "Mark as unread" button
+        Then I should see the "Message details" page
+        And I should not see the button with text "Mark as unread"
+        And I should see the button with text "Mark as read"
+
+        When I click on the "Back" link
+        Then I should see the "Messages" page
+        And I enter "RS2000001AAAA" in the "Reference" field
+        And I select "Oldest" from the "Sort by"
+        And I click on the "Find" button
+        And the table of data is displayed
+            | Date & time      | Name             | Message title                      | Reference     | Subject          | Attachment | Read | Action_1 |
+            | 23/03/2019 15:16 | Portal User One  | Test Message 1 - Reply to Response | RS2000001AAAA | General question | No         | Sent | View     |
+            | 23/03/2019 09:13 | Revenue Scotland | Test Message 1 - Response          | RS2000001AAAA | General question | No         | No   | View     |
+            | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
+
+        When I click on the 1 st "View" link
+        Then I should see the "Message details" page
+        And I should not see the button with text "Mark as unread"
+        And I should not see the button with text "Mark as read"
+
+
 
     # Show page tests
     Scenario: View a message in full details with the list of related messages and a related message
         Given I have signed in
-        When I click on the "See all messages" link
+        When I click on the "Find messages" link
         Then I should see the "Messages" page
         When I enter "RS2000001AAAA" in the "Reference" field
         And I click on the "Find" button
@@ -167,8 +231,8 @@ Feature: Secure Communication
         And I should see the text "Test Message 1 - Reply to Response"
 
         And I should see the text "Message body"
-        And I should see the text "<p>Body for Test Message 1</p>"
-        And I should see the text "<p>Reply to Response</p>"
+        And I should see the text "Body for Test Message 1"
+        And I should see the text "Reply to Response"
 
         And I should see the text "Related messages"
         And the table of data is displayed
@@ -199,7 +263,7 @@ Feature: Secure Communication
     # New page: Replying to messages
     Scenario: Reply to a message carry over some information from the previous message to a new empty message
         Given I have signed in
-        When I click on the "See all messages" link
+        When I click on the "Find messages" link
         Then I should see the "Messages" page
         When I enter "RS2000001AAAA" in the "Reference" field
         And I click on the "Find" button
@@ -223,7 +287,7 @@ Feature: Secure Communication
     # New page: Sending of new message
     Scenario: Create a new message and check for incorrect data inputs
         Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
-        When I click on the "See all messages" link
+        When I click on the "Find messages" link
         Then I should see the "Messages" page
 
         # This shows the New Message page with the empty fields
@@ -303,20 +367,25 @@ Feature: Secure Communication
         Then I should see the "Thank you for your secure message" page
         And I click on the "Finish" button
         Then I should see the "Messages" page
+        When I enter "RANDOM_REFERENCE_NAME" in the "Reference" field
+        And I click on the "Find" button
+        Then I should see the "Messages" page
         Then the table of data is displayed
             | Date & time | Name                  | Message title     | Reference             | Subject          | Attachment | Read | Action_1 |
             | NOW_DATE    | Portal User New Users | My response title | RANDOM_REFERENCE_NAME | General question | No         | Sent | View     |
+            | NOW_DATE    | Portal User New Users | My title          | RANDOM_REFERENCE_NAME | General question | No         | Sent | View     |
         # Show dependent message
         When I click on the "View" link of the first entry displayed
         Then I should see the "Message details" page
         And the table of data is displayed
-            | Date & time | Name                  | Message title | Reference             | Subject          | Attachment | Read | Action_1 |
-            | NOW_DATE    | Portal User New Users | My title      | RANDOM_REFERENCE_NAME | General question | No         | Sent | View     |
+            | Date & time | Name                  | Message title     | Reference             | Subject          | Attachment | Read | Action_1         |
+            | NOW_DATE    | Portal User New Users | My title          | RANDOM_REFERENCE_NAME | General question | No         | Sent | View             |
+            | NOW_DATE    | Portal User New Users | My response title | RANDOM_REFERENCE_NAME | General question | No         | Sent | Selected message |
 
 
     Scenario: Message filtering only shows the data that I want to see
         Given I have signed in
-        When I click on the "See all messages" link
+        When I click on the "Find messages" link
         Then I should see the "Messages" page
 
         When I open the "Show more filter options" summary item
@@ -336,7 +405,7 @@ Feature: Secure Communication
 
         When I open the "Show more filter options" summary item
         And I clear the "Sent by" field
-        And I select "Received" from the "Type"
+        And I select "Received" from the "Sent / received"
         And I enter "RS2000001AAAA" in the "Reference" field
         And I click on the "Find" button
         Then I should see the "Messages" page
@@ -346,7 +415,7 @@ Feature: Secure Communication
         And I should not see the text "Test Message 1 - Reply to Response"
 
         When I open the "Show more filter options" summary item
-        And I select "Sent" from the "Type"
+        And I select "Sent" from the "Sent / received"
         And I click on the "Find" button
         Then I should see the "Messages" page
         And the table of data is displayed
@@ -356,7 +425,7 @@ Feature: Secure Communication
         And I should not see the text "Test Message 1 - Response"
 
         When I open the "Show more filter options" summary item
-        And I select "" from the "Type"
+        And I select "" from the "Sent / received"
         And I select "General question" from the "Subject"
         And I click on the "Find" button
         Then I should see the "Messages" page
@@ -387,7 +456,7 @@ Feature: Secure Communication
 
     Scenario: Message filtering validation
         Given I have signed in
-        When I click on the "See all messages" link
+        When I click on the "Find messages" link
         Then I should see the "Messages" page
 
         When I enter "RANDOM_STRING,31" in the "Reference" field

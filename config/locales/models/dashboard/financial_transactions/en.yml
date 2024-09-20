@@ -58,6 +58,11 @@ en:
         amount: "Amount"
         maximum_amount: "Amount to (max)"
         minimum_amount: "Amount from (min)"
+        my_returns_transactions_only: "Only transactions for my returns"
+        include_outstanding_only: "Only transactions with an outstanding balance"
+        return_type: "Return type"
+        transaction_type_group: "Transaction group"
+        trans_sort_by: "Sort by"
     hints:
       dashboard/financial_transaction_filter:
         related_reference: "Enter the start or all of the reference"

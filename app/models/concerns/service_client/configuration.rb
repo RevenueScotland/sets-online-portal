@@ -89,6 +89,9 @@ module ServiceClient
     secure_message_create = { service: fl_endpoint, wsdl: 'SecureMessageCreate.wsdl',
                               endpoint: '/CreateSecureMessage', operation: :secure_message_create_wsdl,
                               response: :secure_message_create_response }
+    secure_message_update = { service: fl_endpoint, wsdl: 'SecureMessageUpdate.wsdl',
+                              endpoint: '/UpdateSecureMessage', operation: :secure_message_update_wsdl,
+                              response: :secure_message_update_response }
     slft_application = { service: fl_endpoint, wsdl: 'SLFTApplication.wsdl',
                          endpoint: '/SLFTApplication', operation: :slft_application_wsdl,
                          response: :slft_application_response }
@@ -133,7 +136,8 @@ module ServiceClient
                        list_secure_messages: list_secure_messages, list_system_notices: list_system_notices,
                        log_off_user: log_off_user, maintain_party_details: maintain_party_details,
                        maintain_user: maintain_user, maintain_user_registration: maintain_user_registration,
-                       secure_message_create: secure_message_create, slft_application: slft_application,
+                       secure_message_create: secure_message_create, secure_message_update: secure_message_update,
+                       slft_application: slft_application,
                        slft_calc: slft_calc, slft_tax_return: slft_tax_return,
                        slft_tax_return_details: slft_tax_return_details, slft_update: slft_update,
                        validate_return_reference: validate_return_reference,

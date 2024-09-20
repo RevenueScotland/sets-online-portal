@@ -1,5 +1,5 @@
 <% content_for(:page_title, t('.title')) %>
-<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f| %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post, hidden_submit: true) do |f| %>
   <%= rs_conditional_visibility(visible_value: "N") do |c| %>
     <% c.with_visibility_control_radio_group(builder: f.builder, method: :rent_for_all_years,
                                    options_list: @lbtt_return.list_ref_data(:rent_for_all_years), alignment: :horizontal) %>
@@ -11,7 +11,7 @@
       <% @lbtt_return.yearly_rents.each_with_index do |yearly_rent, index| %>
         <% table.with_form_row(model: yearly_rent, index: index) do |row| %>
           <% row.with_cell(method: :display_year, header: true) do |r| %>
-          <%# TODO: RSTP-1154 remove the capture %>
+            <%# TODO: RSTP-1154 remove the capture %>
             <% capture do %>
               <%= r.ds_hidden_field(:year) %>
             <% end %>

@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions xmlns:ns="http://www.northgateps.com/FL/ListSecureMessages" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.northgateps.com/FL/ListSecureMessages.wsdl" targetNamespace="http://www.northgateps.com/FL/ListSecureMessages.wsdl">
+<wsdl:definitions xmlns:ns="http://www.northgateps.com/FL/ListSecureMessages"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+	xmlns:tns="http://www.northgateps.com/FL/ListSecureMessages.wsdl" targetNamespace="http://www.northgateps.com/FL/ListSecureMessages.wsdl">
 	<wsdl:types>
-		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:complexType name="PersonNameType">
 				<xsd:sequence>
 					<xsd:element name="Title" minOccurs="0">
@@ -137,7 +145,9 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
-		<xs:schema xmlns="http://www.northgateps.com/FL/ListSecureMessages" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:flc="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/FL/ListSecureMessages" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xs:schema xmlns="http://www.northgateps.com/FL/ListSecureMessages"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:flc="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/FL/ListSecureMessages" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xs:import namespace="http://northgate-is.com/FL/Core"/>
 			<xs:element name="ListSecureMessagesRequest">
 				<xs:annotation>
@@ -152,12 +162,27 @@
 						<xs:element name="SRVCode" type="xs:string" minOccurs="0"/>
 						<xs:element name="FromDate" type="xs:date" minOccurs="0"/>
 						<xs:element name="ToDate" type="xs:date" minOccurs="0"/>
+						<xs:element name="SortBy">
+							<xs:annotation>
+								<xs:documentation>Sort by type selected in dropdown</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="MostRecent"/>
+									<xs:enumeration value="Oldest"/>
+									<xs:enumeration value="ReturnReference"/>
+									<xs:enumeration value="SenderName"/>
+									<xs:enumeration value="Subject"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
 						<xs:element name="SearchUserName" type="xs:string" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>one account has 'N' number of users. This Field to be used in the search filters</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="SmsgOriginalRefno" type="xs:integer" minOccurs="0"/>
+						<xs:element name="MarkAsRead" type="xs:string" minOccurs="0"/>
 						<xs:element name="Reference" type="xs:string" minOccurs="0"/>
 						<xs:element name="UnreadOnly" type="flc:YesNoType" default="no"/>
 						<xs:element name="Direction">

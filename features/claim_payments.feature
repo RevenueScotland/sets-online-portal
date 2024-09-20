@@ -145,7 +145,7 @@ Feature: Claim payment
 
         When I click on the "Continue" button
         Then I should receive the message "claiming for a full repayment of ADS can't be blank"
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "I am claiming for a full repayment of ADS"
         And I click on the "Continue" button
         Then I should receive the message "Claiming amount can't be blank"
         When I enter "600" in the "I am eligible for partial repayment of ADS and wish to reclaim the following amount" field
@@ -185,7 +185,7 @@ Feature: Claim payment
         And I enter "noreply5@necsws.com" in the "Email" field
         And I click on the "Continue" button
         Then I should see the "Buyer address (buyer 2 of 5)" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is this the same as the first buyer's address?"
         And I click on the "Continue" button
 
         Then I should see the "Buyer details (buyer 3 of 5)" page
@@ -197,7 +197,7 @@ Feature: Claim payment
         And I click on the "Continue" button
         Then I should see the "Buyer address (buyer 3 of 5)" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is this the same as the first buyer's address?"
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Buyer address (buyer 3 of 5)" page
@@ -214,7 +214,7 @@ Feature: Claim payment
         And I click on the "Continue" button
         Then I should see the "Buyer address (buyer 4 of 5)" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is this the same as the first buyer's address?"
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Buyer address (buyer 4 of 5)" page
@@ -231,7 +231,7 @@ Feature: Claim payment
         And I enter "noreply5@necsws.com" in the "Email" field
         And I click on the "Continue" button
         Then I should see the "Buyer address (buyer 5 of 5)" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is this the same as the first buyer's address?"
 
         When I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find address" button
@@ -301,8 +301,10 @@ Feature: Claim payment
     Scenario: Checking Claim repayment wizard functionality for LBTT ADS returns with one tax payer
         Given I have signed in 'PORTAL.ONE' and password 'Password1!'
         # A draft return
-        When I click on the "See all returns" link
+        When I click on the 1 st "Find returns" link
 
+        And I uncheck the "Only my returns" checkbox
+        And I select "" from the "Return status"
         And I enter "RS2000003BBBB" in the "Return reference" field
         And I click on the "Find" button
         Then I should see the text "Filed"
@@ -314,18 +316,15 @@ Feature: Claim payment
         And I should not see the text "ADS repayment following a sale or disposal of previous main residence"
 
         When I click on the "Back" link
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see the text "RS2000003BBBB"
         And I should see the text "Filed"
         And I should see a link with text "Claim"
 
-        When I go to the "en/dashboard/dashboard_returns" page
-        Then I should see the "All returns" page
-
         # A latest filed return that is over 12 months old
         When I enter "RS2000002AAAA" in the "Return reference" field
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see the text "Filed"
         And I should see a link with text "Claim"
         # Claim payment wizard and validation
@@ -334,7 +333,7 @@ Feature: Claim payment
         And I click on the "Continue" button
         And I should see the text "What is the reason for the claim for payment from Revenue Scotland can't be blank"
 
-        And I check the "ADS repayment following a sale or disposal of previous main residence" radio button
+        And I check the "ADS repayment following a sale or disposal of previous main residence" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the "Previous main residence" page
 
@@ -359,7 +358,7 @@ Feature: Claim payment
         Then I should see the "Claim amount" page
         And I click on the "Continue" button
         Then I should receive the message "claiming for a full repayment of ADS can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Are you claiming for a full repayment of ADS?"
         And I click on the "Continue" button
 
         # Since RS2000002AAAA has number of buyer is 1
@@ -422,9 +421,11 @@ Feature: Claim payment
     Scenario: Checking Claim repayment wizard functionality for LBTT Non ADS returns with one tax payer
         Given I have signed in 'PORTAL.ONE' and password 'Password1!'
         # A draft return
-        When I click on the "See all returns" link
+        When I click on the 1 st "Find returns" link
 
         And I enter "RS2000003BBBB" in the "Return reference" field
+        And I uncheck the "Only my returns" checkbox
+        And I select "" from the "Return status"
         And I click on the "Find" button
         Then I should see the text "Filed"
         And I should see a link with text "Claim"
@@ -432,7 +433,7 @@ Feature: Claim payment
         And I click on the "Claim" link
         Then I should see the "Claim repayment" page
 
-        And I check the "Other" radio button
+        And I check the "Other" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
         And I click on the "Continue" button
 
         Then I should receive the message "Claim description can't be blank"
@@ -446,7 +447,7 @@ Feature: Claim payment
         When I click on the "Back" link
         Then I should see the "Claim repayment" page
 
-        When I check the "Impact of legislation change" radio button
+        When I check the "Impact of legislation change" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
         And I click on the "Continue" button
 
         Then I should see the "Evidence to support the claim" page
@@ -497,8 +498,11 @@ Feature: Claim payment
     Scenario: Checking Claim repayment wizard functionality for SLFT returns one tax payer
         Given I have signed in 'PORTAL.WASTE' and password 'Password1!'
         # A draft return
-        When I click on the "See all returns" link
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And I should see "Draft" in the "Return status" select or text field
 
+        When I select "" from the "Return status"
         And I enter "RS1008001HALO" in the "Return reference" field
         And I click on the "Find" button
         Then I should see the text "Filed"
@@ -507,7 +511,7 @@ Feature: Claim payment
         And I click on the "Claim" link
         Then I should see the "Claim repayment" page
 
-        And I check the "Claim for Repayment" radio button
+        And I check the "Claim for Repayment" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
         And I click on the "Continue" button
 
         Then I should see the "Evidence to support the claim" page

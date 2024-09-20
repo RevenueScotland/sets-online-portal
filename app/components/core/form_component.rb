@@ -7,7 +7,7 @@ module Core
   # functionality but it is normally used as a base class for a UI specific version
   #
   class FormComponent < ViewComponent::Base
-    attr_reader :builder, :button_actions, :button_label, :autofocus, :file_upload, :data_options
+    attr_reader :builder, :button_actions, :button_label, :autofocus, :file_upload, :data_options, :hidden_submit
 
     delegate :object, to: :builder
 
@@ -20,7 +20,10 @@ module Core
     #   normally used with forms that return to the same page (e.g. find forms)
     # @param file_upload [Boolean] Sets file upload controller, use this on file upload pages where the user
     #   may forget to upload the file
-    def initialize(builder:, button_action: :continue, button_label: nil, autofocus: false, file_upload: false)
+    # @param hidden_submit [Boolean] Adds a hidden submit button to the top of the form that will act as the
+    #  default action when the user pushes the enter key
+    def initialize(builder:, button_action: :continue, button_label: nil, autofocus: false, file_upload: false,
+                   hidden_submit: false)
       super()
       @builder = builder
       # We need to add the default on as the main form_with may pass nil down
@@ -29,6 +32,7 @@ module Core
       @autofocus = autofocus
       @file_upload = file_upload || false
       @data_options = (@file_upload ? { action: 'file-upload#checkUpload' } : {})
+      @hidden_submit = hidden_submit
     end
 
     # Derives the action type for the submit button based on the index and the number of actions

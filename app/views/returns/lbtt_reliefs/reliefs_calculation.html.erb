@@ -1,5 +1,5 @@
 <% content_for(:page_title, t('.title')) %>
-<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f|  %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post, hidden_submit: true) do |f|  %>
   <%= f.ds_table_form do |table| %>
     <% table.with_header(klass: Returns::Lbtt::ReliefClaim) do |header| %>
       <% header.with_cell(method: :relief_type) %>

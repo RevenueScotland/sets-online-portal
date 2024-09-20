@@ -1,5 +1,5 @@
 <% content_for(:page_title, t('.title')) %>
-<% content_for(:back_link, dashboard_messages_path ) %>
+<% content_for(:back_link, dashboard_messages_path('dashboard_message_filter[sort_by]': 'MostRecent') ) %>
 <%= ds_summary_list(model: @message, show_border: false) do |s|%>
   <% s.with_item_method(method: :full_name) %>
   <% s.with_item_method(method: :created_date ,type: :date) %>
@@ -8,9 +8,16 @@
   <% s.with_item_method(method: :title) %>
   <% s.with_item_method(method: :body) %>
 <% end %>
-<% if can? RS::AuthorisationHelper::CREATE_MESSAGE %>
-  <%= ds_button(url: new_dashboard_message_path(smsg_refno: @message.smsg_refno),
-                name: t('.reply')) %>
+<%= ds_form_with(model: @message, button_action: :none, url: toggle_read_status_dashboard_message_path) do |f| %>
+  <% if can? RS::AuthorisationHelper::CREATE_MESSAGE %>
+    <%= ds_button(url: new_dashboard_message_path(smsg_refno: @message.smsg_refno),
+                  name: t('.reply')) %>
+  <% end %>
+  <% if @message.direction == 'O' %>
+    <%= f.ds_hidden_field(:read_indicator)%>
+    <%= f.ds_submit(button_action: :submit, type: :secondary, button_label: @message.read_indicator == 'Yes' ? t('.unread') : t('.read'))%>
+    <%# <% @message.status_update %>
+  <% end %>
 <% end %>
 <%if @message.attachments %>
   <%= rs_resource_item_table(resource_items: @message.attachments, caption: t('.caption'),

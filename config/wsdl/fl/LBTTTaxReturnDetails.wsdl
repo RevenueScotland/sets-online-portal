@@ -241,6 +241,20 @@
 											<xs:documentation>TODO - have enum constrained by domain</xs:documentation>
 										</xs:annotation>
 									</xs:element>
+									<xs:element name="NonResidentialReason" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Reason for choosing Non-Residential property</xs:documentation>
+										</xs:annotation>
+										<xs:restriction base="xs:string">
+											<xs:maxLength value="10"/>
+										</xs:restriction>
+									</xs:element>
+									<xs:element name="NonResidentialReasonText" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Text for chosing the OTHER as Non-Residential reason</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="LBTTCalculationScheme" type="xs:string" minOccurs="0"/>
 									<xs:element name="OrigReturnReference" type="xs:string" minOccurs="0"/>
 									<xs:element name="EffectiveDate" type="xs:date" minOccurs="0"/>
 									<xs:element name="RelevantDate" type="xs:date" minOccurs="0"/>
@@ -598,6 +612,18 @@
 										<xs:annotation>
 											<xs:documentation>
 										Explanation for filing non-notified return. NonNotifiableExplanation  must be provided to get 1st version of non-notified return  saved in back office.  
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="4000"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="EditCalcReason" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>
+										Explanation for editing the calculated values. EditCalcReason must be provided if user modify the calculated values. Reason is  saved in back office.
 											</xs:documentation>
 										</xs:annotation>
 										<xs:simpleType>

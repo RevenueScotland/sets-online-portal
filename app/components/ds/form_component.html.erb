@@ -1,6 +1,11 @@
 <% if file_upload %>
   <div data-controller="file-upload" data-warning-text="<%=t('.file_upload_warning_text')%>">
   <% end %>
+  <% if hidden_submit %>
+    <% # if using the standard button label for the hidden button, the tests fail due to duplicate buttons %>
+    <%= render(DS::SubmitComponent.new(builder: builder, button_action: button_actions.first, button_label: 'hidden', 
+             type: :hidden, autofocus: false)) %>
+  <% end %>
   <%= content %>
   <% store_base_errors %>
   <% button_actions.each_with_index do |button_action, i| %>

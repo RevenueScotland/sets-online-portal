@@ -35,12 +35,12 @@ end
 # register a remote selenium firefox based driver, which ignores insecure certs
 Capybara.register_driver :selenium_remote_firefox do |app|
   opts = Selenium::WebDriver::Firefox::Options.new(args: ['--window-size=1920,1024'],
-                                                   profile: customized_firefox_profile)
-  capabilities = Selenium::WebDriver::Remote::Capabilities.firefox(accept_insecure_certs: true)
+                                                   profile: customized_firefox_profile,
+                                                   accept_insecure_certs: true)
   Capybara::Selenium::Driver.new(app,
                                  browser: :remote,
                                  url: ENV.fetch('CAPYBARA_REMOTE_URL', nil),
-                                 capabilities: [capabilities, opts])
+                                 options: opts)
 end
 # enable screen shots for our various drivers
 Capybara::Screenshot.register_driver(:selenium_chrome) do |driver, path|

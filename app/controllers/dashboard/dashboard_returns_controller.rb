@@ -17,8 +17,10 @@ module Dashboard
     # The index page which would be used for showing the data for all returns and the pagination
     def index
       @dashboard_return_filter = DashboardReturnFilter.new(DashboardReturnFilter.params(params))
-      @dashboard_returns, @pagination_collection =
-        DashboardReturn.list_all_returns(current_user, params[:page], @dashboard_return_filter)
+      if params[:find]
+        @dashboard_returns, @pagination_collection =
+          DashboardReturn.list_all_returns(current_user, params[:page], @dashboard_return_filter)
+      end
       # Determines when the find functionality is executed in index page of financial transactions
       @on_filter_find = !params[:dashboard_dashboard_return_filter].nil?
     end

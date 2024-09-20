@@ -14,9 +14,15 @@ module Returns
     skip_before_action :require_user
 
     # wizard steps for the submit return
-    STEPS = %w[amendment_reason repayment_claim repayment_claim_amount repayment_claim_bank_details
-               repayment_claim_declaration declaration non_notifiable non_notifiable_reason
-               declaration_submitted].freeze
+    STEPS = %w[edit_calculation_reason amendment_reason repayment_claim repayment_claim_amount
+               repayment_claim_bank_details repayment_claim_declaration declaration non_notifiable
+               non_notifiable_reason declaration_submitted].freeze
+
+    # Returns/lbtt/edit_calculation_reason Asks user reason for editing tax calculation.
+    # Is optionally shown if user made changes in tax calculation.
+    def edit_calculation_reason
+      wizard_step(nil) { { cache_index: LbttController, next_step: :edit_calculation_reason_next_step } }
+    end
 
     # returns/lbtt/amendment_reason - check if they want to request a repayment
     def amendment_reason
@@ -116,6 +122,18 @@ module Returns
 
       @lbtt_return.repayment_amount_claimed ||= @lbtt_return.ads.ads_repay_amount_claimed
       model
+    end
+
+    # Returns a path to the next step after the edit_calculation_reason action
+    def edit_calculation_reason_next_step
+      return returns_lbtt_amendment_reason_path if @lbtt_return.amendment?
+
+      # for lease review,assign, termination and amount payable is less than zero
+      if @lbtt_return.any_lease_review? && @lbtt_return.tax.tax_due_for_return < '0'
+        return returns_lbtt_repayment_claim_amount_path
+      end
+
+      returns_lbtt_declaration_path
     end
 
     # Returns a path to the next step after the amendment_reason action,

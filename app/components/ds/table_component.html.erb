@@ -4,7 +4,13 @@
     <% if content %>
       <p> <%= content %> </p>
     <% end %>
-    <%= link if link? %>
+    <% if links? %>
+      <span>
+        <% links.each do |link| %>
+          <%= link %>
+        <% end %>
+      </span>
+    <% end %>
   </caption>
   <thead>
     <%= header %>

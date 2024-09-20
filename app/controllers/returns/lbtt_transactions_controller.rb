@@ -12,8 +12,9 @@ module Returns
     skip_before_action :require_user
 
     # store step flow of lbtt conveyance return transaction page name used for navigation
-    CONVEYANCE_STEPS = %w[property_type transaction_dates about_the_transaction linked_transactions sale_of_business
-                          about_the_calculation conveyance_values].freeze
+    CONVEYANCE_STEPS = %w[property_type non_residential_reason transaction_dates about_the_transaction
+                          linked_transactions sale_of_business about_the_calculation
+                          conveyance_values].freeze
 
     # store step flow of lbtt lease return transaction page name used for navigation
     LEASE_STEPS = %w[property_type transaction_dates about_the_transaction linked_transactions lease_values
@@ -25,6 +26,21 @@ module Returns
 
     # wizard step
     def property_type
+      wizard_step(nil) { { next_step: :property_type_next_step, cache_index: LbttController } }
+    end
+
+    # in case of non-residential of CONVEY returns we need to give the reason
+    def property_type_next_step
+      if @lbtt_return.flbt_type == 'CONVEY'
+        return returns_lbtt_non_residential_reason_path if @lbtt_return.property_type == '3'
+
+        return returns_lbtt_transaction_dates_path
+      end
+      calculate_next_step
+    end
+
+    # custom step to handle non-residential reason
+    def non_residential_reason
       wizard_step(nil) { { next_step: :calculate_next_step, cache_index: LbttController } }
     end
 

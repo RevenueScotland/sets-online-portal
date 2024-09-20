@@ -13,14 +13,11 @@ module DS
       @fixed = fixed
     end
 
-    # Returns specific Digital Scotland classes based on the button type
+    # Returns specific Digital Scotland (or hidden) classes based on the button type
     def ds_classes
-      type_class = case @type
-                   when :secondary
-                     ' ds_button--secondary'
-                   when :cancel
-                     ' ds_button--cancel'
-                   end
+      type_class = { secondary: ' ds_button--secondary',
+                     cancel: ' ds_button--cancel',
+                     hidden: ' fully-hidden' }[@type]
       fixed_class = (@fixed ? ' ds_button--fixed' : nil)
       "ds_button#{type_class}#{fixed_class} #{extra_classes}"
     end

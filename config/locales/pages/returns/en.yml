@@ -18,6 +18,7 @@ en:
         edit_relief: "Edit reliefs"
         add_relief: "Add reliefs"
         save_changes_warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
+        recalc_return: "There have been transitional rate changes that affect this return. Ensure you go to the transaction section to recalculate and check all figures prior to submitting the return"
         save_draft: "Save draft"
         submit_return: "Submit return"
         delete_buyer: "Delete buyer?"
@@ -109,7 +110,7 @@ en:
         title: "Additional Dwelling Supplement (ADS)"
       ads_intending_sell:
         title: "Additional Dwelling Supplement (ADS)"
-        address: "What is the address of the main residence that will be sold"
+        address: "What is the address of the main residence that will be sold?"
       ads_amount:
         title: "Additional Dwelling Supplement (ADS)"
         description: "The ADS consideration is usually the same as the purchase price"
@@ -125,17 +126,21 @@ en:
         title: "Additional Dwelling Supplement (ADS)"
         section_title: "When you submit the return you will be asked for the bank details for the repayment."
     lbtt_submit:
+      edit_calculation_reason:
+        title: "Edit calculation reason"
       non_notifiable:
         title: "Non-notifiable return"
         non_notifiable_return_html: "Current values indicate this is a non-notifable return. See guidance on %{link} for further details."
         non_notifiable_return_link: "notifiable lease transactions"
+        non_notifiable_convey_return_link: "notifiable conveyance returns"
         go_back_auth_html: "Go %{link} to review the values on this return or to save as draft"
         go_back_html: "Go %{link} to review the values on this return"
         go_back_link: "back to return summary"
       non_notifiable_reason:
         title: "Non-notifiable return"
         non_notifiable_return_html: "Current values indicate this is a non-notifable return. See guidance on %{link} for further details."
-        non_notifiable_return_link: "notifiable lease transactions"        
+        non_notifiable_return_link: "notifiable lease transactions" 
+        non_notifiable_convey_return_link: "notifiable conveyance returns"       
         go_back_auth_html: "Go %{link} to review the values on this return or to save as draft"
         go_back_html: "Go %{link} to review the values on this return"
         go_back_link: "back to return summary"
@@ -180,6 +185,8 @@ en:
         title: "About the transaction"
         property_type_residential_link: "meaning of residential property"
         property_type_non_residential_link: "non-residential property and the treatment of ‘mixed’ property"
+      non_residential_reason:
+        title: "Non residential reason" 
       non_notifiable:
         title: Non notifiable return
       about_the_transaction:

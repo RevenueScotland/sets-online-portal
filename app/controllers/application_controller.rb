@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
   before_action :set_locale
   before_action :set_response_headers
 
-  helper_method :account_has_service?, :account_has_no_service?
+  helper_method :account_has_service?, :account_has_no_service?, :account_service
   helper_method :storage_permission?
 
   # Check if the current account has the supplied service
@@ -25,6 +25,13 @@ class ApplicationController < ActionController::Base
   def account_has_service?(service)
     account = Account.find(current_user)
     account.service?(service)
+  end
+
+  # @return [String] returns the service of the current account
+  def account_service
+    return 'LBTT' if account_has_service?(:lbtt)
+
+    'SLFT' if account_has_service?(:slft)
   end
 
   # Check if the current account has the supplied service

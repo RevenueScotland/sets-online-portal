@@ -31,6 +31,8 @@ module DS
     # @option autofocus [Boolean] should autofocus be on the submit button
     # @option autocomplete [Boolean] Turn autocomplete back on
     # @option file_upload [Boolean] Add the file upload controller on
+    # @option hidden_submit [Boolean] Adds a hidden submit button to the top of the form that will act as the
+    #  default action when the user pushes the enter key
     # @return [String] The html to be rendered
     # @yield [FormComponent] The form component
     def ds_form_with(**options, &block) # rubocop:disable Metrics/MethodLength
@@ -40,10 +42,11 @@ module DS
       file_upload = options.delete(:file_upload)
       autocomplete = (options.delete(:autocomplete) ? 'on' : 'off')
       options[:multipart] = true if file_upload
+      hidden_submit = options.delete(:hidden_submit)
       form_with(**{ html: { novalidate: true, autocomplete: autocomplete } }.deep_merge(options)) do |form|
         render(DS::FormComponent.new(
                  builder: form, button_action: button_action, button_label: button_label, autofocus: autofocus,
-                 file_upload: file_upload
+                 file_upload: file_upload, hidden_submit: hidden_submit
                ), &block)
       end
     end

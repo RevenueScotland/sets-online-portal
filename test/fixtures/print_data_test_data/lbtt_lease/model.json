@@ -247,6 +247,8 @@
     "linked_lease_premium": "5300",
     "premium_paid": "Y",
     "relevant_rent": "1240",
+    "calculation_edited": "Y",
+    "edit_calc_reason": "I disagree with calculated values",
     "non_notifiable_submit_ind": "Y",
     "non_notifiable_explanation": "Test"
 }

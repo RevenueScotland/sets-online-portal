@@ -15,7 +15,7 @@ module Returns
       # NB flbt_type is passed in by the form for validation as we don't have access to it otherwise
       def self.attribute_list
         %i[calculated ads_due total_reliefs npv npv_tax_due amount_already_paid
-           linked_npv total_ads_reliefs premium_tax_due]
+           linked_npv total_ads_reliefs premium_tax_due calculation_scheme]
       end
 
       attribute_list.each { |attr| attr_accessor attr }
@@ -27,9 +27,10 @@ module Returns
       # Not including in the attribute_list so it can't be changed by the user
       attr_accessor :orig_calculated, :orig_ads_due, :orig_total_reliefs, :orig_npv,
                     :orig_npv_tax_due, :orig_premium_tax_due, :orig_total_due, :orig_total_ads_reliefs,
-                    :orig_linked_npv, # this isn't used but we create orig_ values automatically so keeping it for that
+                    # below are not used but we create orig_ values automatically so keeping it for that
+                    :orig_linked_npv, :orig_calculation_scheme,
                     # HACK: values copied from LbttReturn for validation and printing
-                    :flbt_type, :linked_ind, :prepopulated
+                    :flbt_type, :linked_ind, :prepopulated, :calculation_edited
 
       # calc_already_paid page has amount_already paid which is only shown if type is not CONVEY or LEASERET
       # and amount_already_paid is also on the calculation page in a section only for LEASEREV, ASSIGN or TERMINATE
@@ -136,6 +137,20 @@ module Returns
         @linked_ind == 'Y'
       end
 
+      # Check whether user made changes in NPV value
+      def npv_value_changed?
+        @npv != @orig_npv
+      end
+
+      # Check whether user made changes in calculated liabilities values
+      def calculations_are_changed?
+        return conveyance_values_changed? if convey?
+
+        return lease_values_changed? if lease? || any_lease_review?
+
+        false
+      end
+
       def print_layout # rubocop:disable Metrics/MethodLength
         [{ code: :calculation,
            key: :about_calculation, # key for the title translation
@@ -186,7 +201,7 @@ module Returns
 
         # ensure the Tax model exists and the important values are updated from values
         lbtt_return.tax ||= Lbtt::Tax.new
-        %i[flbt_type linked_ind prepopulated].each do |attr|
+        %i[flbt_type linked_ind prepopulated calculation_edited].each do |attr|
           lbtt_return.tax.send("#{attr}=", lbtt_return.send(attr))
         end
         lbtt_return.tax.update_npv_linked_from_lbtt(lbtt_return)
@@ -375,6 +390,9 @@ module Returns
 
         merge['calculated'] = conv_tax_payable[:lbtt_calculated]
         merge['ads_due'] = conv_tax_payable[:ads_payable]
+        # TODO: RSTP-1321 Update LBTTCalculationScheme to CalculationScheme (as per TODO in schema) also you may then
+        # not need this line as the names are the same (but i haven't checked the logic)
+        merge['calculation_scheme'] = conv_tax_payable[:lbtt_calculation_scheme]
       end
 
       # Extract back office tax response details for a non-conveyance type response
@@ -391,9 +409,7 @@ module Returns
           # if the calculated npv hasn't changed since the last calculation
           # then do not overwrite the npv or the other calculated values as these may be based on
           # an overridden npv we didn't pass in
-          return if current_npv == @orig_npv
-
-          merge['npv'] = current_npv
+          current_npv == @orig_npv ? return : merge['npv'] = current_npv
         end
 
         merge['total_reliefs'] = lease_tax_payable[:total_reliefs_claimed]
@@ -404,6 +420,7 @@ module Returns
 
         merge['npv_tax_due'] = lease_tax_payable[:tax_liabilityon_npv]
         merge['premium_tax_due'] = lease_tax_payable[:tax_liabilityon_premium]
+        merge['calculation_scheme'] = lease_tax_payable[:lbtt_calculation_scheme]
       end
 
       # @return a hash suitable for use in a calc request to the back office.
@@ -499,6 +516,16 @@ module Returns
         else
           { 'ins1:RentalYears': { 'ins1:Years': lbtt.yearly_rents.map(&:request_save_for_calc) } }
         end
+      end
+
+      # Check whether user made changes in calculated liabilities values for convey
+      def conveyance_values_changed?
+        @calculated != @orig_calculated || @ads_due != @orig_ads_due
+      end
+
+      # Check whether user made changes in calculated liabilities values for lease
+      def lease_values_changed?
+        @npv_tax_due != @orig_npv_tax_due || @premium_tax_due != @orig_premium_tax_due
       end
 
       # transaction details of the lease part of the calc request

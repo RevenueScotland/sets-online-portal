@@ -10,6 +10,8 @@
   <% if can?(RS::AuthorisationHelper::CREATE_MESSAGE) && @message_filter.reference.present? %>
     <%= ds_link(url: new_dashboard_message_path(reference: @message_filter.reference ), name: t('.create_new_message', reference: @message_filter.reference )) %>
   <% end %>
+  <%= form.ds_select(method: :sort_by, select_options: @message_filter.list_ref_data(:sort_by),
+      include_blank: false, width: 20) %>
   <%= ds_details(header: t('.filter_show')) do %>
     <%= form.ds_text_field(method: :sent_by) %>
     <%= form.ds_select(method: :direction_code, select_options: @message_filter.list_ref_data(:direction_code), width: 10) %>

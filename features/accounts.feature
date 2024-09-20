@@ -55,7 +55,7 @@ Feature: Account
         And I should see the text "Contact phone number"
         And I should see the text "Test Portal Company"
         And I should see the text "Address"
-        And I should see the text "1 Acacia Avenue, Garden Village, NORTHTOWN, Northshire, RG1 1PB"
+        And I should see the text "3 Park Lane, Garden Village, NORTHTOWN, Northshire, RG1 1PB"
         And I should not see the text "Company Number"
         And I should not see the text "Registered address"
         And I should not see the text "To change your registered company details use the update option against the company number"

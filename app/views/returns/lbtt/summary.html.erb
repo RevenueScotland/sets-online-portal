@@ -6,6 +6,7 @@
   <%= ds_paragraph{ t('.repayment_description')} %>
 <% end %>
 <%= ds_warning { t('.save_changes_warning') } if current_user %>
+<%= ds_warning { t('.recalc_return') } if @lbtt_return.recalc_required == 'Y' %>
 <% if User.account_type(current_user) != 'PUBLIC' %>
   <%= rs_lbtt_party_table(parties: [@agent], party_type: :agent, id: 'agent') %>
 <% end %>
@@ -48,6 +49,18 @@
     <% table.with_row(model: @lbtt_return) do |row| %>
       <% row.with_cell(method: :property_type, header: :label) %>
       <% row.with_cell(method: :property_type, type: :lookup) %>
+    <% end %>
+  <% end %>
+  <% if @lbtt_return.non_residential_reason_needed? %>
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :non_residential_reason, header: :label) %>
+      <% row.with_cell(method: :non_residential_reason, type: :lookup) %>
+    <% end %>
+  <% end %> 
+  <% if @lbtt_return.non_residential_reason_other? %>  
+    <% table.with_row(model: @lbtt_return) do |row| %>
+      <% row.with_cell(method: :non_residential_reason_text, header: :label) %>
+      <% row.with_cell(method: :non_residential_reason_text, type: :string) %>
     <% end %>
   <% end %>
   <% table.with_row(model: @lbtt_return) do |row| %>

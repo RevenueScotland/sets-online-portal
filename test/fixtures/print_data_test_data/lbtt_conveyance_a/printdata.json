@@ -518,6 +518,18 @@
                     "itemdata": "Non-residential"
                 },
                 {
+                    "itemcode": "non_residential_reason",
+                    "itemformat": null,
+                    "itemlabel": "Why is the property non-residential?",
+                    "itemdata": "Other"
+                },
+                {
+                    "itemcode": "non_residential_reason_text",
+                    "itemformat": null,
+                    "itemlabel": "Other reason",
+                    "itemdata": "Test"
+                },
+                {
                     "itemcode": "effective_date",
                     "itemformat": "date",
                     "itemlabel": "Effective date of transaction",
@@ -554,7 +566,7 @@
                     "itemdata": "Yes"
                 }
             ],
-            "itemcount": 7
+            "itemcount": 9
         },
         {
             "sectioncode": "linked_transactions_ind",
@@ -736,6 +748,29 @@
             "itemcount": 5
         },
         {
+            "sectioncode": "non_notifiable",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Non notifiable return",
+            "listitem": [
+                {
+                    "itemcode": "non_notifiable_submit_ind",
+                    "itemformat": null,
+                    "itemlabel": "Do you still want to submit the return?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "non_notifiable_explanation",
+                    "itemformat": null,
+                    "itemlabel": "Why are you submitting a non-notifiable return?",
+                    "itemdata": "Test"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
             "sectioncode": "ads_consideration",
             "sectiontype": "list",
             "sectiondivider": true,
@@ -776,7 +811,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
-            "sectiontitle": "What is the address of the main residence that will be sold",
+            "sectiontitle": "What is the address of the main residence that will be sold?",
             "listitem": [
                 {
                     "itemcode": "address_line1",
@@ -1011,6 +1046,23 @@
                 }
             ],
             "itemcount": 6
+        },
+        {
+            "sectioncode": "edit_calculation_reason",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Edit calculation reason",
+            "listitem": [
+                {
+                    "itemcode": "edit_calc_reason",
+                    "itemformat": null,
+                    "itemlabel": "Reason for editing the calculation",
+                    "itemdata": "I disagree with calculated values"
+                }
+            ],
+            "itemcount": 1
         },
         {
             "sectioncode": "declaration",

@@ -29,6 +29,11 @@ module Dashboard
       params[:balance_page]
     end
 
+    # Check user is lbtt
+    def lbtt_user?
+      helpers.account_has_service?(:lbtt)
+    end
+
     # get the messages
     def load_messages
       return unless can? RS::AuthorisationHelper::VIEW_MESSAGES
@@ -42,7 +47,10 @@ module Dashboard
       return unless can? RS::AuthorisationHelper::VIEW_RETURNS
 
       @dashboard_returns, @returns_pagination =
-        DashboardReturn.list_all_returns(current_user, returns_page, DashboardReturnFilter.new(draft_only: 'Y'), 3)
+        DashboardReturn.list_all_returns(current_user,
+                                         returns_page,
+                                         DashboardReturnFilter.new(draft_only: 'Y',
+                                                                   my_returns_only: (lbtt_user? ? 'Y' : 'N')), 3)
     end
 
     # get the outstanding
@@ -50,7 +58,8 @@ module Dashboard
       @outstanding, @outstanding_pagination =
         DashboardReturn.list_all_returns(current_user,
                                          outstanding_page,
-                                         DashboardReturnFilter.new(outstanding_balance: 'Y', return_status: 'L'), 3)
+                                         DashboardReturnFilter.new(outstanding_balance: 'Y', return_status: 'L',
+                                                                   my_returns_only: (lbtt_user? ? 'Y' : 'N')), 3)
     end
   end
 end

@@ -8,7 +8,7 @@ module Core
   # hint text
   class LabellerDelegate
     # Regex that identifies if text is an english question
-    QUESTION_REGEX = /\A((ARE |DO |DOES |HAS |HAVE |HOW |IF |IS |SHOULD |WHAT |WHICH |WHO |WILL ))/i
+    QUESTION_REGEX = /\A((ARE |DO |DOES |HAS |HAVE |HOW |IF |IS |SHOULD |WHAT |WHICH |WHO |WILL |WHY ))/i
 
     # @param klass_or_model [Object] The class or model that requires labelling functionality
     # @param method [Symbol] The name of the method that requires labelling functionality

@@ -1,7 +1,7 @@
 <div class="ds_!_margin-bottom--2">
   <%= ds_table(caption: tag.h2(caption, class: 'ds_!_margin-bottom--0'),
                id: id, small_screen: small_screen) do |table| %>
-    <% table.with_link(name: t('.all_messages'), url: dashboard_messages_path) if show_all_link? && can?(RS::AuthorisationHelper::VIEW_MESSAGES) %>
+    <% table.with_link(name: t('.all_messages'), url: dashboard_messages_path("dashboard_message_filter[sort_by]": "MostRecent")) if show_all_link? && can?(RS::AuthorisationHelper::VIEW_MESSAGES) %>
     <% table.with_header(klass: Dashboard::Message) do |header| %>
       <% header.with_cell(method: :created_date) %>
       <% header.with_cell(method: :full_name) %>
@@ -27,7 +27,7 @@
             <%= t('.selected_message')%>
           <% else %>
             <%= ds_link(name: t('.view'),
-             url: dashboard_message_path(message),
+             url: dashboard_message_path(message,"mark_as_read": "Y"),
              subtype: :padded) if can?(RS::AuthorisationHelper::VIEW_MESSAGE_DETAIL) %>
           <% end %>
         <% end %>
