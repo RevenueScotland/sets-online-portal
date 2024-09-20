@@ -6,8 +6,8 @@
     <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, description: false,
                        supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb, 
                        fieldset_key: translation_path, 
-                       interpolations: {date_range_start: l(@claim_payment.effective_date - 18.months, format: :long),
-                                        date_range_end: l(@claim_payment.effective_date, format: :long)}  ) %>
+                       interpolations: {effective_date: l(@claim_payment.effective_date, format: :long),
+                                        link: ds_link(name: t('.occupancy_link'), url: external_link_url('LBTT_ADS_DISPOS'), target: '_blank')}  ) %>
   <% else %>
     <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, description: false,
                       optional: true, supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb) %>

@@ -40,7 +40,7 @@ module Core
 
     # Is the type one of the field group types
     def field_group_type?
-      (type == :field_group || type == :field_group_inline)
+      type == :field_group || type == :field_group_inline
     end
 
     # Set up the wrapper using the view context

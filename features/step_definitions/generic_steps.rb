@@ -169,6 +169,7 @@ When('I open the {string} summary item') do |string|
     clickable = find('details', text: string)
     open = false if clickable['open'].nil? || clickable['open'] == 'false'
   else
+    sleep(js_processing_wait)
     clickable = find('summary', text: string)
     details = clickable.ancestor('details')
     open = false if details['open'].nil? || details['open'] == 'false'
@@ -283,7 +284,7 @@ end
 # Use the in answer to the question step below in preference
 When('I check the {string} radio button in answer to the question {string}') do |label, question|
   node = find('legend', text: question).ancestor('fieldset')
-  log("...found the node #{node}")
+  log("...found node #{node}")
   within(node) do
     choose(label)
   end
@@ -309,8 +310,8 @@ When('I enter {string} in the {string} select or text field') do |text, field|
   elsif page.has_field?(field, type: 'text', wait: not_present_wait)
     log("...found text field #{field}")
     fill_in(field, with: text)
-    log('waiting for autocomplete text...')
     sleep(js_processing_wait) # give time for the autocomplete to complete
+    log('waiting for autocomplete text...')
   else
     assert false, "Cannot find #{field} to complete"
   end
@@ -321,7 +322,7 @@ When('I click on the {string} link of the first entry displayed') do |string|
 end
 
 When('I check the {string} checkbox') do |label|
-  check(label)
+  check(label, allow_label_click: true)
 end
 
 When('I check the {string} checkbox using the span') do |label|
@@ -612,7 +613,7 @@ end
 Then('the data is not displayed in table') do |table|
   data = table.hashes
   data.each do |row|
-    row.each do |_key, value|
+    row.each_value do |value|
       assert_equal(false, page.has_content?(value), "#{value} display in the table")
     end
   end

@@ -110,6 +110,7 @@ en:
         title: "Additional Dwelling Supplement (ADS)"
       ads_intending_sell:
         title: "Additional Dwelling Supplement (ADS)"
+        ads_relevant_disposal_period_link: "LBTT Additional Dwelling Supplement"
         address: "What is the address of the main residence that will be sold?"
       ads_amount:
         title: "Additional Dwelling Supplement (ADS)"

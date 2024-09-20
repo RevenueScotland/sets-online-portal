@@ -209,7 +209,8 @@ Feature: Slft applications
         Then I should see the "Declaration" page
         When I click on the "Submit" button
 
-        Then I should receive the message "The declaration must be accepted"
+        Then I should see the "Declaration" page
+        And I should receive the message "The declaration must be accepted"
         And I should receive the message "The requirement to notify declaration must be accepted"
         And I should receive the message "Full name can't be blank"
         And I should receive the message "Job title or position can't be blank"
@@ -793,7 +794,8 @@ Feature: Slft applications
         When I click on the "Continue" button
         Then I should see the "Supporting documentation" page
         When I click on the "Continue" button
-        Then I should receive the message "Evidence of the water content (naturally and added) of the waste must be accepted"
+        Then I should see the "Supporting documentation" page
+        And I should receive the message "Evidence of the water content (naturally and added) of the waste must be accepted"
         When I check the "Evidence of the water content (naturally and added) of the waste (mandatory)" checkbox
         And I click on the "Continue" button
         Then I should see the "Declaration" page
@@ -973,7 +975,8 @@ Feature: Slft applications
         # Check that evidence of water is content is mandatory even though other items checked
         When I check the "Results of the analysis referred to in your approval letter (Review/Renew only)" checkbox
         And I click on the "Continue" button
-        Then I should receive the message "Evidence of the water content (naturally and added) of the waste must be accepted"
+        Then I should see the "Supporting documentation" page
+        And I should receive the message "Evidence of the water content (naturally and added) of the waste must be accepted"
         When I check the "Evidence of the water content (naturally and added) of the waste (mandatory)" checkbox
         And I click on the "Continue" button
 

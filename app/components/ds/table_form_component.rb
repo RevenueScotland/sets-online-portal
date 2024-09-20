@@ -11,11 +11,11 @@ module DS
     include Core::ListValidator
 
     renders_one :header, lambda { |**args|
-      DS::TableComponent::HeaderComponent.new(**{ action_header: @action_header }.merge(args))
+      DS::TableComponent::HeaderComponent.new(action_header: @action_header, **args)
     }
     renders_many :form_rows, lambda { |**args|
                                TableComponent::FormRowComponent.new(
-                                 **{ builder: @builder, delete_link: @delete_links }.merge(args)
+                                 builder: @builder, delete_link: @delete_links, **args
                                )
                              }
 

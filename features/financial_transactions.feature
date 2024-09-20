@@ -22,7 +22,8 @@ Feature: Financial transaction
         And I should see the "Most recent" option selected in "Sort by"
 
         When I open the "Show more filter options" summary item
-        Then I should see the empty field "Amount"
+        Then I should see the "Transactions" page
+        And I should see the empty field "Amount"
         And I should see the empty field "Created date"
         And I should see the empty field "Effective date"
         And I should not see the text "List of transactions"
@@ -78,6 +79,7 @@ Feature: Financial transaction
         Then I should see the "Transactions" page
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Transactions" page
         And I enter " 1000" in the "Amount" field
         And I click on the "Find" button
         Then I should see the "Transactions" page
@@ -92,6 +94,7 @@ Feature: Financial transaction
         When I uncheck the "Only transactions for my returns" checkbox
         And I uncheck the "Only transactions with an outstanding balance" checkbox
         And I open the "Show more filter options" summary item
+        Then I should see the "Transactions" page
         And I enter "-900 " in the "Amount" field
         And I click on the "Find" button
         Then I should see the "Transactions" page
@@ -100,6 +103,7 @@ Feature: Financial transaction
             | 11/01/2019   | 11/01/2019     |           | Cheque      | £-900.00 | £0.00   | View related |
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Transactions" page
         And I enter "11-01-2019" in the "Created date" date field
         And I clear the "Amount" field
         And I clear the "Amount from (min)" field
@@ -111,6 +115,7 @@ Feature: Financial transaction
             | 11/01/2019   | 11/01/2019     |           | Cheque      | £-900.00 | £0.00   | View related |
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Transactions" page
         And I clear the "Created date" field
         And I clear the "Created date to" field
         And I clear the "Created date from" field
@@ -165,24 +170,29 @@ Feature: Financial transaction
 
         When I enter "RANDOM_STRING,31" in the "Reference" field
         And I click on the "Find" button
-        Then I should receive the message "Reference is too long"
+        Then I should see the "Transactions" page
+        And I should receive the message "Reference is too long"
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Transactions" page
         When I enter "1,000" in the "Amount to (max)" field
         And I enter "1.234" in the "Amount from (min)" field
         And I enter "one thousand" in the "Amount" field
         And I click on the "Find" button
-        Then I should receive the message "Reference is too long"
+        Then I should see the "Transactions" page
+        And I should receive the message "Reference is too long"
         And I should receive the message "Amount to (max) is not a number"
         And I should receive the message "Amount from (min) must be a number to 2 decimal places"
         And I should receive the message "Amount is not a number"
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Transactions" page
         When I enter "-1000000000000000000" in the "Amount to (max)" field
         And I enter "150" in the "Amount from (min)" field
         And I enter "1234567890123456789" in the "Amount" field
         And I click on the "Find" button
-        Then I should receive the message "Reference is too long"
+        Then I should see the "Transactions" page
+        And I should receive the message "Reference is too long"
         And I should receive the message "Amount to (max) must be greater than -1000000000000000000"
         And I should receive the message "Amount must be less than 1000000000000000000"
 

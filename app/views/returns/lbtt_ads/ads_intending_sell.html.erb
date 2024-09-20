@@ -2,7 +2,10 @@
 <%= ds_form_with(model: @ads, url: @post_path, method: :post) do |f| %>
   <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
     <% c.with_visibility_control_radio_group(builder: f.builder, method: :ads_sell_residence_ind,
-               options_list: @ads.list_ref_data(:ads_sell_residence_ind), alignment: :horizontal) %>
+               options_list: @ads.list_ref_data(:ads_sell_residence_ind), interpolations: { link:
+                                                    ds_link(name: t('.ads_relevant_disposal_period_link'),
+                                                    url: external_link_url('LBTT_ADS_DISPOS'), target: '_blank') },
+                                                    alignment: :horizontal) %>
     <%= ds_section_title(section_title: t('.address')) %>
     <%= f.ds_address_search(address_summary: @address_summary, search_results: @search_results ,
        address: @address_detail, show_address_detail: @show_manual_address, readonly: @address_read_only) %>

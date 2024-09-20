@@ -240,16 +240,18 @@ Feature: SLfT Returns
         And I should see the text "Management method can't be blank"
         And I should see the text "Has this waste been moved out of a non-disposal area (NDA)"
 
+        When I enter "RANDOM_text,256" in the "Description of waste" field
+        And I click on the "Continue" button
+        Then I should see the "Details of the waste for Waste Site 1" page
+        And I should receive the message "Description of waste is too long (maximum is 255 characters)"
+
         When I enter "05 01 02 Desalter sludges" in the "EWC code" select or text field
-        And I enter "RANDOM_text,256" in the "Description of waste" field
+        Then I wait for 2 seconds
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
         And I check the "Yes" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
-        And I click on the "Continue" button
-        Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
-        And I should receive the message "Description of waste is too long (maximum is 255 characters)"
-
-        When I enter "icky goo" in the "Description of waste" field
+        And I enter "icky goo" in the "Description of waste" field
+        And I should see "05 01 02 Desalter sludges" in the "EWC code" select or text field
         And I click on the "Continue" button
         Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
         And I should see the sub-title "Provide tonnage details for this waste type"
@@ -316,10 +318,10 @@ Feature: SLfT Returns
 
         When I click on the "Continue" button
         Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
-        Then I should see the text "NDA can't be blank"
-        Then I should see the text "Restoration can't be blank"
-        Then I should see the text "Other can't be blank"
-        Then I should see the text "NDA or restoration or other must be selected"
+        And I should see the text "NDA can't be blank"
+        And I should see the text "Restoration can't be blank"
+        And I should see the text "Other can't be blank"
+        And I should see the text "NDA or restoration or other must be selected"
 
         When I check the "Yes" radio button in answer to the question "NDA"
         Then I should see the empty field "NDA tonnage"
@@ -730,7 +732,8 @@ Feature: SLfT Returns
         And the radio button "Cheque" should not be selected
         # Check we can't submit without picking a payment method
         When I click on the "Submit return" button
-        Then I should receive the message "How are you paying can't be blank"
+        Then I should see the "Payment and submission" page
+        And I should receive the message "How are you paying can't be blank"
         And I should receive the message "The declaration must be accepted"
 
         When I check the "BACS" radio button in answer to the question "How are you paying?"

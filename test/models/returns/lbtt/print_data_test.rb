@@ -22,6 +22,8 @@ module Returns
         @savon.mock!
         fixture = File.read('test/fixtures/mocks/reference_data/reference_values_response.xml')
         @savon.expects(:get_reference_values_wsdl).returns(fixture)
+        fixture = File.read('test/fixtures/mocks/reference_data/system_parameters_response.xml')
+        @savon.expects(:get_system_parameters_wsdl).returns(fixture)
         fixture = File.read('test/fixtures/mocks/reference_data/tax_relief_types_response.xml')
         @savon.expects(:get_tax_relief_types_wsdl).returns(fixture)
 
@@ -37,8 +39,9 @@ module Returns
         @savon.expects(:maintain_user_wsdl).with(message: :any).returns(fixture)
 
         Rails.logger.debug { 'Mocking started' }
-        # Force cache population for ref data and tax relief types
+        # Force cache population for ref data, system parameters and tax relief types
         ReferenceData::ReferenceValue.lookup('TITLES', 'SYS', 'RSTU')
+        ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU')
         ReferenceData::TaxReliefType.lookup('RELIEF_TYPES', 'LBTT', 'RSTU')
 
         # The party refno's needs to match the party refno nested into current_user in the json files

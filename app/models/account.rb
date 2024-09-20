@@ -55,7 +55,7 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   # initialises a new instance with the hash passed, uses Active model to do this
   # @param attributes [Hash] a hash of objects that uses Active model
   def initialize(attributes = {})
-    super filter_attributes(attributes, Account.attribute_list)
+    super(filter_attributes(attributes, Account.attribute_list))
     self.current_user = User.new(filter_attributes(attributes, User.attribute_list)) if current_user.nil?
     return if account_type.present?
 
@@ -66,7 +66,7 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   # (which again matches the column names).
   # @param attributes [Hash] a hash of objects that uses Active model
   def assign_attributes(attributes)
-    super filter_attributes(attributes, Account.attribute_list)
+    super(filter_attributes(attributes, Account.attribute_list))
     assign_attributes_for(attributes, User, :current_user)
     assign_attributes_for(attributes, Company, :company)
     assign_attributes_for(attributes, AccountType, :account_type)
@@ -237,7 +237,7 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     filtered_attributes = filter_attributes(attributes, model.send(:attribute_list))
     return if filtered_attributes.nil? && filtered_attributes.empty?
 
-    send("#{attribute}=", model.to_s.constantize.new) if send(attribute).nil?
+    send(:"#{attribute}=", model.to_s.constantize.new) if send(attribute).nil?
     send(attribute).assign_attributes(filtered_attributes)
   end
 

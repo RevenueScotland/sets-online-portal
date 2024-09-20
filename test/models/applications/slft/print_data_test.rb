@@ -17,13 +17,18 @@ module Applications
       # This test relies on the cache so clear the cache first
       # and mock the calls to the back office to populate
       setup do
+        Rails.cache.clear
+
         @savon ||= Savon::SpecHelper::Interface.new
         @savon.mock!
         fixture = File.read('test/fixtures/mocks/reference_data/reference_values_response.xml')
         @savon.expects(:get_reference_values_wsdl).returns(fixture)
+        fixture = File.read('test/fixtures/mocks/reference_data/system_parameters_response.xml')
+        @savon.expects(:get_system_parameters_wsdl).returns(fixture)
         Rails.logger.debug { 'Mocking started' }
         # Force cache population for ref data
         ReferenceData::ReferenceValue.lookup('TITLES', 'SYS', 'RSTU')
+        ReferenceData::SystemParameter.lookup('PWS', 'SYS', 'RSTU')
 
         # Each unit test cases has their own setups after this, so see each test cases for their specific setups.
       end

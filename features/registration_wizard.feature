@@ -6,6 +6,7 @@ Feature: Registration Wizard
 
   Scenario: Register as an individual user validation
     When I go to the "Login" page
+    And if available, click the "Accept all cookies" button
     And I click on the "Register if you don't have an account" link
     Then I should see the text "Who are you signing up on behalf of?"
 

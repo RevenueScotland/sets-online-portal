@@ -7,7 +7,7 @@ module DS
     # A header component consisting of many cells
     class HeaderComponent < ViewComponent::Base
       renders_many :cells, lambda { |**args, &block|
-        HeaderCellComponent.new(**{ klass: @klass }.merge(args), &block)
+        HeaderCellComponent.new(klass: @klass, **args, &block)
       }
 
       # @param klass [Class] the name of the klass for the header, can be used for deriving labels

@@ -9,6 +9,9 @@ ruby '>= 3.0'
 gem 'rails', '~> 7.0'
 # Use Puma as the app server
 gem 'puma', '~> 6.0'
+# Locking rack to 2.0 because of savon/httpi issue
+# https://github.com/savonrb/savon/issues/992
+gem 'rack', '~> 2.0'
 # Use propshaft for asset management, currently using a main branch until next release due to  https://github.com/rails/propshaft/issues/103
 gem 'propshaft', git: 'https://github.com/rails/propshaft'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/jsbundling-rails

@@ -38,6 +38,15 @@ module DateFormatting
     date.strftime('%d/%m/%Y %H:%M')
   end
 
+  # Converts the date to the date with suffix format
+  # for example 01-Dec-2023 will be converted into 1st-December-2023
+  def self.to_display_date_suffix_format(date)
+    return if date.nil?
+
+    date = Date.parse(date) unless date.is_a? Date
+    date.strftime('<suffix> %B %Y').gsub('<suffix>', date.day.ordinalize)
+  end
+
   # Converts the parsable date into the correct date format ready to be used for requests for the webservices
   # @return [String] date in the format of 'YYYY-MM-DD'
   def self.to_xml_date_format(date)

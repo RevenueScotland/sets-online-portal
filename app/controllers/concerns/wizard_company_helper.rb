@@ -123,7 +123,7 @@ module WizardCompanyHelper
     company_attribute = overrides[:company_attribute] || :company
 
     Rails.logger.debug { "Storing company in object at #{wizard_page_object.class.name}##{company_attribute}" }
-    wizard_page_object.send("#{company_attribute}=".to_sym, company)
+    wizard_page_object.send(:"#{company_attribute}=", company)
 
     wizard_save(wizard_cached_object, overrides[:cache_index])
     true

@@ -1,6 +1,10 @@
 <% content_for(:page_title, t('.title')) %>
 <%= ds_section_title(section_title: t('.info_needed_heading')) %>
-<%= ds_paragraph{ t('.info_needed_description_html')} %>
+<% if @claim_payment.effective_date_checker == 'BEFORE_DATE' || @claim_payment.effective_date_checker.nil? %>
+  <%= ds_paragraph{ t('.info_needed_description_html')} %>
+<% else %>
+  <%= ds_paragraph{ t('.info_needed_description_after_html')} %>
+<% end %>
 <%= ds_section_title(section_title: t('.form_completion_heading')) %>
 <%= ds_paragraph{t('.form_completion_description_html',
    link: ds_link(url: login_path, name: t('.form_completion_description_link') ))} %>

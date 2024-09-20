@@ -31,7 +31,7 @@ module DS
     renders_many :items, types: {
       method: lambda { |**args|
                 # Note order of merge to allow for object to be overridden
-                DS::SummaryListComponent::MethodItemComponent.new(**{ model: @model }.merge(args))
+                DS::SummaryListComponent::MethodItemComponent.new(model: @model, **args)
               },
       base: DS::SummaryListComponent::BaseItemComponent
     }

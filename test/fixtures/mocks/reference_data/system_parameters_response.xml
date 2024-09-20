@@ -40,6 +40,20 @@
 					<DomainCode>COMMON</DomainCode>
 					<ServiceCode>LBTT</ServiceCode>
 					<WorkplaceCode>RSTU</WorkplaceCode>
+					<Code>ADS_LEG_EFFECT_DATE</Code>
+					<DateValue>01-DEC-2023</DateValue>
+				</SystemParameter>
+				<SystemParameter>
+					<DomainCode>COMMON</DomainCode>
+					<ServiceCode>LBTT</ServiceCode>
+					<WorkplaceCode>RSTU</WorkplaceCode>
+					<Code>ADS_LEG_RELEASE_DATE</Code>
+					<DateValue>30-OCT-2023</DateValue>
+				</SystemParameter>
+				<SystemParameter>
+					<DomainCode>COMMON</DomainCode>
+					<ServiceCode>LBTT</ServiceCode>
+					<WorkplaceCode>RSTU</WorkplaceCode>
 					<Code>DAYS_FOR_REFUND_PAY</Code>
 					<NumberValue>1</NumberValue>
 				</SystemParameter>
@@ -1204,6 +1218,13 @@ day which is, or precedes, the 44th calendar day after the end of the SLFT quart
 					<WorkplaceCode>RSTU</WorkplaceCode>
 					<Code>RELEVANT_DATE</Code>
 					<StringValue>https://www.revenue.scot/taxes/land-buildings-transaction-tax/lbtt-legislation-guidance/lbtt1001-how-tax-works/lbtt1009-relevant-date</StringValue>
+				</SystemParameter>
+				<SystemParameter>
+					<DomainCode>PWS_LINKS</DomainCode>
+					<ServiceCode>SYS</ServiceCode>
+					<WorkplaceCode>RSTU</WorkplaceCode>
+					<Code>LBTT_ADS_DISPOS</Code>
+					<StringValue>https://revenue.scot/taxes/land-buildings-transaction-tax/lbtt-legislation-guidance/additional-dwelling-supplement-ads-technical/ads-return-payment-amendments</StringValue>
 				</SystemParameter>
 				<SystemParameter>
 					<DomainCode>PWS_LINKS</DomainCode>

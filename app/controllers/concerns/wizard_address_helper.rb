@@ -118,8 +118,8 @@ module WizardAddressHelper # rubocop:disable Metrics/ModuleLength
     address = Address.new(address_params.merge!(default_country: overrides[:default_country]))
 
     # Are the details valid (and the address is a required object)
-    success = (required && address.valid?(add_validation_contexts(address_validation_contexts,
-                                                                  overrides)) && object_valid)
+    success = required && address.valid?(add_validation_contexts(address_validation_contexts,
+                                                                 overrides)) && object_valid
     # If the address details are valid then save it, and save the result
     success = wizard_save_address_in_object(wizard_cached_object, wizard_page_object, address, overrides) if success
 
@@ -232,7 +232,7 @@ module WizardAddressHelper # rubocop:disable Metrics/ModuleLength
 
     Rails.logger.debug { "Storing address in object #{wizard_page_object.class.name}##{address_attribute}" }
 
-    wizard_page_object.send("#{address_attribute}=".to_sym, address)
+    wizard_page_object.send(:"#{address_attribute}=", address)
     # revalidate the parent object to allow for any cross address validation
     wizard_valid?(wizard_cached_object, resolve_params(overrides), overrides)
   end

@@ -13,7 +13,8 @@ module Claim
 
     # Attributes for this class, in list so can re-use as permitted params list in the controller
     def self.attribute_list
-      %i[repayment_ref_no eligibility_checkers tare_reference case_reference
+      %i[repayment_ref_no effective_date_checker
+         eligibility_checkers eligibility_checkers_after tare_reference case_reference
          reason claim_desc address date_of_sale
          evidence_files full_repayment_of_ads claiming_amount taxpayers
          account_holder_name account_number branch_code bank_name
@@ -46,6 +47,8 @@ module Claim
     validate :validate_unauthenticated_declaration, on: :declaration, if: :claim_public?
     validate :validate_evidence_files, on: :evidence_files
     validate :validate_eligibility_checker, on: :eligibility_checkers
+    validate :validate_eligibility_checker_after, on: :eligibility_checkers_after
+    validates :effective_date_checker, presence: true, on: :effective_date_checker
 
     # Layout to print the data in this model
     # This defines the sections that are to be printed and the content and layout of those sections
@@ -66,7 +69,9 @@ module Claim
       # identifies which type of return it is and loads the radio button descriptions
       # eg:  CLAIMREASONS.LBTT.RSTU
       { reason: comp_key('CLAIMREASONS', @srv_code, 'RSTU'),
-        eligibility_checker: comp_key('ELIGIBILITY_LIST', 'SYS', 'RSTU') }
+        effective_date_checker: comp_key('EFFECTIVE_DATE_CHECKER', 'SYS', 'RSTU'),
+        eligibility_checker: comp_key('ELIGIBILITY_LIST', 'SYS', 'RSTU'),
+        eligibility_checker_after: comp_key('ELIGIBILITY_LIST_AFTER', 'SYS', 'RSTU') }
     end
 
     # Define the ref data codes associated with the attributes not to be cached in this model
@@ -111,6 +116,13 @@ module Claim
       # there are 4 eligibility checkers which are mandatory to select
       # @eligibility_checkers array contains selected option this arrays 0th element is always nil
       errors.add(:eligibility_checkers, :accepted) unless @eligibility_checkers.length == 5
+    end
+
+    # Validates that the reason chosen is valid
+    def validate_eligibility_checker_after
+      # there are 4 eligibility checkers which are mandatory to select
+      # @eligibility_checkers_after array contains selected option this arrays 0th element is always nil
+      errors.add(:eligibility_checkers, :accepted) unless @eligibility_checkers_after.length == 5
     end
 
     # Is the claim description required, which is when the reason is other
@@ -494,8 +506,8 @@ module Claim
       return amount_date_translation_attribute(attribute) if %i[claiming_amount date_of_sale
                                                                 full_repayment_of_ads].include?(attribute)
 
-      return "#{attribute}_#{account_type}".to_sym if %i[authenticated_declaration1
-                                                         authenticated_declaration2].include?(attribute)
+      return :"#{attribute}_#{account_type}" if %i[authenticated_declaration1
+                                                   authenticated_declaration2].include?(attribute)
 
       attribute
     end
@@ -504,7 +516,7 @@ module Claim
     def amount_date_translation_attribute(attribute)
       attribute = :claiming_amount_non_ads if @reason != 'ADS' && !claim_public? && attribute == :claiming_amount
 
-      "#{translation_prefix}_#{attribute}".to_sym
+      :"#{translation_prefix}_#{attribute}"
     end
 
     # layout for the header of the print data

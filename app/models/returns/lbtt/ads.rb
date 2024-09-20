@@ -18,7 +18,7 @@ module Returns
       attribute_list.each { |attr| attr_accessor attr }
 
       # Not including in the attribute_list so it can't be changed by the user
-      attr_accessor :flbt_type # HACK: values copied from LbttReturn
+      attr_accessor :flbt_type, :initial_submitted_date # HACK: values copied from LbttReturn
 
       # For each of the numeric fields create a setter, don't do this if there is already a setter
       strip_attributes :ads_amount_liable, :ads_consideration, :ads_repay_amount_claimed
@@ -51,6 +51,18 @@ module Returns
       # Validation method to check if ADS repayment is applicable.
       def ads_repayment?
         @ads_sold_main_yes_no == 'Y'
+      end
+
+      # get release date of ADS and compare with submission date of return's first version
+      def date_of_ads_sell_residence
+        @ads_leg_release_date ||= ReferenceData::SystemParameter.lookup(
+          'COMMON', 'LBTT', 'RSTU', safe_lookup: true
+        )['ADS_LEG_RELEASE_DATE']&.value
+        return true if @initial_submitted_date.nil? && DateTime.now >= Date.parse(@ads_leg_release_date)
+
+        return true if @initial_submitted_date.present? && @initial_submitted_date >= Date.parse(@ads_leg_release_date)
+
+        false
       end
 
       # Define the ref data codes associated with the attributes but which won't be cached in this model
@@ -105,6 +117,19 @@ module Returns
            type: :object }]
       end
 
+      # Returns a translation attribute where a given attribute may have more than one name based on e.g. a type
+      # it also allows for a different attribute name for the error region for e.g. long labels
+      # @param attribute [Symbol] the name of the attribute to translate
+      # @param _translation_options [Object] in this case the party type being processed passed from the page
+      # @return [Symbol] the name of the translation attribute
+      def translation_attribute(attribute, _translation_options = nil)
+        return :ads_relevant_disposal_period if attribute == :ads_sell_residence_ind && date_of_ads_sell_residence
+
+        return :ads_sell_residence_period if attribute == :ads_sell_residence_ind && !date_of_ads_sell_residence
+
+        attribute
+      end
+
       # Method to ensure the ADS sub-object is created and up to date with the values it needs copying into it.
       # Ideally the ADS model would have a reference to the LbttReturn model but for now, we're copying the required
       # values instead.
@@ -116,8 +141,8 @@ module Returns
 
         # ensure the Ads model exists and the important values are updated from values
         lbtt_return.ads ||= Lbtt::Ads.new
-        %i[flbt_type].each do |attr|
-          lbtt_return.ads.send("#{attr}=", lbtt_return.send(attr))
+        %i[flbt_type initial_submitted_date].each do |attr|
+          lbtt_return.ads.send(:"#{attr}=", lbtt_return.send(attr))
         end
       end
 
@@ -163,6 +188,11 @@ module Returns
         end
         # derive yes no based on the data now that we've finished moving it around
         derive_yes_nos_in(ads_output)
+
+        # populate values from main lbtt model, needed for validation
+        ads_output[:flbt_type] = output[:flbt_type]
+        ads_output[:initial_submitted_date] = output[:initial_submitted_date]
+
         Ads.new_from_fl(ads_output)
       end
 

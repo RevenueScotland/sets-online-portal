@@ -18,9 +18,22 @@ Feature: Claim payment
         Given I have signed out
         When I go to the "claim/claim_payments/public_claim_landing" page
         Then I should see the "Claim a repayment of Additional Dwelling Supplement" page
+        # And I should see the text "Following recent change in legislation, the eligibility to claim Additional Dwelling Supplement has changed for some transactions depending on the effective date."
+        # And I should see a link with text "LBTT Additional Dwelling Supplement"
+        And I should see the text "If you sold your previous home within the relevant disposal period of buying a new one, you may be eligible to claim a repayment of ADS. Find out more using our eligibility checker on the next page."
 
         When I click on the "Continue" link
+        # Then I should see the "Effective date" page
+        # And I should see the text "Following recent change in legislation, the eligibility to claim Additional Dwelling Supplement has changed for some transactions depending on the effective date."
+        # And I should see a link with text "LBTT Additional Dwelling Supplement"
+
+        # When I click on the "Continue" button
+        # Then I should see a link with text "Choose one of the following options can't be blank"
+
+        # When I check the "My transaction has an effective date of 1st December 2023 or later" radio button in answer to the question "Choose one of the following options"
+        And I click on the "Continue" button
         Then I should see the "Eligibility checker" page
+        # And I should see a link with text "LBTT Additional Dwelling Supplement"
 
         When I click on the "Continue" button
         Then I should see the text "Please confirm the following criteria are met in order to proceed with the application must be accepted"
@@ -28,9 +41,10 @@ Feature: Claim payment
         When I check the "ADS was paid on the new property purchase" checkbox
         And I check the "The previous property was sold within 18 months of buying the new one" checkbox
         And I check the "The new property is, or has been, the only or main residence of all buyers" checkbox
-        And I check the "The previous property was the only or main residence of all buyers of the new property at some time in the 18 month period before the new property was purchased" checkbox
+        And I check the "The previous property was the only or main residence of all buyers of the new property at some time in the 18 month period before the new property was purchased." checkbox
         And I click on the "Continue" button
         Then I should see the "Before you start" page
+        And I should see the text "You may also need to provide proof of sale of the previous property and evidence that all buyers occupied it as their only or main residence. We'll let you know if we need this once the first 3 questions have been answered."
 
         When I click on the "Start now" link
         Then I should see the "Return reference" page
@@ -45,11 +59,18 @@ Feature: Claim payment
         Then I should see the "Before you start" page
         When I click on the "Back" link
         Then I should see the "Eligibility checker" page
+        # When I click on the "Back" link
+        # Then I should see the "Effective date" page
         When I click on the "Back" link
         Then I should see the "Claim a repayment of Additional Dwelling Supplement" page
         # Now data is lost
         When I click on the "Continue" link
+        # Then I should see the "Effective date" page
+
+        # When I check the "My transaction has an effective date of 30th November 2023 or earlier" radio button in answer to the question "Choose one of the following options"
+        # And I click on the "Continue" button
         Then I should see the "Eligibility checker" page
+        And I should not see a link with text "LBTT Additional Dwelling Supplement"
 
         When I click on the "Continue" button
         Then I should see the text "Please confirm the following criteria are met in order to proceed with the application must be accepted"
@@ -60,6 +81,7 @@ Feature: Claim payment
         And I check the "The previous property was the only or main residence of all buyers of the new property at some time in the 18 month period before the new property was purchased" checkbox
         And I click on the "Continue" button
         Then I should see the "Before you start" page
+        And I should see the text "You may also need to provide proof of sale of the previous property and evidence that all buyers occupied it as their only or main residence. We'll let you know if we need this once the first 3 questions have been answered."
         When I click on the "Start now" link
         Then I should see the "Return reference" page
 
@@ -99,7 +121,8 @@ Feature: Claim payment
         And I click on the "Continue" button
 
         Then I should see the "Evidence to support your claim" page
-        And I should see the text "Evidence all buyers occupied the previous property as their only or main residence at any time between January 01, 2016 and July 01, 2017"
+        And I should see the text "Evidence all relevant buyers occupied the previous property as their only or main residence at any time within the relevant disposal period prior to the return’s effective date July 01, 2017."
+        And I should see the text "See guidance on LBTT Additional Dwelling Supplement (opens in a new window) for further details."
 
         When I click on the "Continue" button
         Then I should see the "Evidence to support your claim" page
@@ -278,7 +301,11 @@ Feature: Claim payment
 
         When I check the "I, Buyer 3 First name Buyer 3 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
         And I check the "I, Buyer 4 First name Buyer 4 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
-        And I check the "I, Additional Buyer First name Additional Buyer Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
+        And I click on the "Continue" button
+        Then I should see the "Declarations" page
+        And I should receive the message "The declaration must be accepted"
+        When I check the "I, Additional Buyer First name Additional Buyer Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
+        Then the checkbox "I, Additional Buyer First name Additional Buyer Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" should be checked
         And I click on the "Continue" button
         Then I should see the "Your request has been sent to Revenue Scotland" page
 
@@ -348,6 +375,8 @@ Feature: Claim payment
         And I click on the "Continue" button
 
         Then I should see the "Evidence to support the claim" page
+        And I should see the text "Evidence all relevant buyers occupied the previous property as their only or main residence at any time within the relevant disposal period prior to the return’s effective date July 01, 2017."
+        And I should see the text "See guidance on LBTT Additional Dwelling Supplement (opens in a new window) for further details."
 
         When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_portal_sale_file_data"
         When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_occupancy_file_data"
@@ -406,7 +435,8 @@ Feature: Claim payment
 
         Then I should see the "Declarations" page
         When I click on the "Continue" button
-        Then I should receive the message "The declaration must be accepted"
+        Then I should see the "Declarations" page
+        And I should receive the message "The declaration must be accepted"
         And I check the "claim_claim_payment_authenticated_declaration1" checkbox
         And I check the "claim_claim_payment_authenticated_declaration2" checkbox
 
@@ -488,7 +518,8 @@ Feature: Claim payment
 
         Then I should see the "Declarations" page
         When I click on the "Continue" button
-        Then I should receive the message "The declaration must be accepted"
+        Then I should see the "Declarations" page
+        And I should receive the message "The declaration must be accepted"
         And I check the "claim_claim_payment_authenticated_declaration1" checkbox
         And I check the "claim_claim_payment_authenticated_declaration2" checkbox
 
@@ -565,7 +596,8 @@ Feature: Claim payment
 
         Then I should see the "Declarations" page
         When I click on the "Continue" button
-        Then I should receive the message "The declaration must be accepted"
+        Then I should see the "Declarations" page
+        And I should receive the message "The declaration must be accepted"
         And I check the "claim_claim_payment_authenticated_declaration1" checkbox
         And I check the "claim_claim_payment_authenticated_declaration2" checkbox
 

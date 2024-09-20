@@ -59,7 +59,7 @@ module Returns
 
       # validate each site and associated waste details in the slft return
       def validate_site_waste_details(slft, errors)
-        slft.sites.values&.each do |site|
+        slft.sites&.each_value do |site|
           # only validate waste details if there are any
           return unless site.wastes.any?
 

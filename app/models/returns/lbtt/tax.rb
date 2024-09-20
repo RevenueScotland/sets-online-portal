@@ -202,7 +202,7 @@ module Returns
         # ensure the Tax model exists and the important values are updated from values
         lbtt_return.tax ||= Lbtt::Tax.new
         %i[flbt_type linked_ind prepopulated calculation_edited].each do |attr|
-          lbtt_return.tax.send("#{attr}=", lbtt_return.send(attr))
+          lbtt_return.tax.send(:"#{attr}=", lbtt_return.send(attr))
         end
         lbtt_return.tax.update_npv_linked_from_lbtt(lbtt_return)
       end
@@ -240,8 +240,8 @@ module Returns
           bo_hash_attr = (attr == :npv ? :net_present_value : attr)
           new_hash[attr] = bo_hash.delete(bo_hash_attr) if bo_hash.key?(bo_hash_attr)
 
-          orig_bo_hash_attr = "orig_#{bo_hash_attr}".to_sym
-          new_hash["orig_#{attr}".to_sym] = bo_hash.delete(orig_bo_hash_attr) if bo_hash.key?(orig_bo_hash_attr)
+          orig_bo_hash_attr = :"orig_#{bo_hash_attr}"
+          new_hash[:"orig_#{attr}"] = bo_hash.delete(orig_bo_hash_attr) if bo_hash.key?(orig_bo_hash_attr)
         end
       end
 

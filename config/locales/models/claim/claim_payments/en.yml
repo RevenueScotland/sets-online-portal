@@ -40,8 +40,10 @@ en:
         # Taxpayer details and Taxpayer address
         taxpayer: "Taxpayer"
         your: "Your"
+        effective_date_checker: "Choose one of the following options"
         # eligibility checker
         eligibility_checkers: "Please confirm the following criteria are met in order to proceed with the application"
+        eligibility_checkers_after: "Please confirm the following criteria are met in order to proceed with the application"
 
     hints:
       claim/claim_payment:

@@ -82,7 +82,7 @@ module LbttPartiesHelper
     # if the party_list is nil then we need to set the right attribute to a known object
     if party_list.nil?
       # setting empty hash in known Object
-      @lbtt.send("#{@party.lbtt_return_attribute}=", party_list = {})
+      @lbtt.send(:"#{@party.lbtt_return_attribute}=", party_list = {})
     end
 
     # saves the party details inside known object of lbtt controller

@@ -643,7 +643,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   #   from 1, so to use it on arrays don't forget to -1 it.
   def wizard_object_index(class_name = nil)
     key = :sub_object_index
-    key = "#{class_name.demodulize.singularize.underscore}_#{key}".to_sym unless class_name.nil?
+    key = :"#{class_name.demodulize.singularize.underscore}_#{key}" unless class_name.nil?
     return if params[key].nil?
 
     params[key].to_i

@@ -8,7 +8,7 @@ module DS
     # @see {FormRowComponent} which is similar
     class RowComponent < ViewComponent::Base
       renders_many :cells, lambda { |**args|
-        RowCellComponent.new(**{ model: @model }.merge(args))
+        RowCellComponent.new(model: @model, **args)
       }
 
       # @param model [Object] the model being rendered, can be used for deriving values

@@ -255,7 +255,7 @@ module Returns
       def export_site_wastes(parent_folder)
         return if @sites.blank?
 
-        @sites.each do |_, site|
+        @sites.each_value do |site|
           site.export_waste_csv_data tare_reference, parent_folder
         end
       end

@@ -2,7 +2,13 @@
 <%# use the request path to remove the new parameter %>
 <% content_for(:navigation_link, request.path) %>
 <%= ds_form_with(model: @claim_payment, url: @post_path, method: :post) do |f| %>
-  <%= f.ds_checkbox_group( method: :eligibility_checkers, options_list: @claim_payment.list_ref_data(:eligibility_checker)) %>
+  <% if before_date_of_release? || @claim_payment.effective_date_checker == 'BEFORE_DATE'%>
+    <%= f.ds_checkbox_group( method: :eligibility_checkers, options_list: @claim_payment.list_ref_data(:eligibility_checker)) %>
+  <% else %>
+    <%= f.ds_checkbox_group( method: :eligibility_checkers_after, options_list: @claim_payment.list_ref_data(:eligibility_checker_after)) %>
+    <%= ds_paragraph{t('.ads_guidance_html',
+     link: ds_link(url: external_link_url('LBTT_ADS_DISPOS'), name: t('.ads_guidance_link'), target: '_blank'  ))} %>
+  <% end %>
   <%= ds_paragraph{t('.unsure_description_html',
    link: ds_link(url: external_link_url('CLAIM_EXAMPLES'), name: t('.unsure_description_link'), target: '_blank'  ))} %>
 <% end %>

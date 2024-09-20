@@ -212,7 +212,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
 
     # Claim_Payments
-    namespace :claim do
+    namespace :claim do # rubocop:disable Metrics/BlockLength
       get '/download_claim',                             to: 'claim_payments#view_claim_pdf'
       get 'claim_payments/download-file',                to: 'claim_payments#download_file'
       match 'claim_payments/claim_reason',               to: 'claim_payments#claim_reason',         via: %i[get post]
@@ -229,6 +229,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'claim_payments/confirmation',               to: 'claim_payments#confirmation',         via: %i[get post]
       match 'claim_payments/before_you_start',           to: 'claim_payments#before_you_start',     via: %i[get post]
       match 'claim_payments/public_claim_landing',       to: 'claim_payments#public_claim_landing', via: %i[get post]
+      match 'claim_payments/effective_date',             to: 'claim_payments#effective_date',       via: %i[get post]
       match 'claim_payments/eligibility',                to: 'claim_payments#eligibility',          via: %i[get post]
       match 'claim_payments/return_reference_number',    to: 'claim_payments#return_reference_number',
                                                          via: %i[get post]

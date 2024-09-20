@@ -27,8 +27,8 @@ module ReferenceData
     # Override == to compare code data.
     # @param other [Object] the other object to compare to this one
     def ==(other)
-      (other.instance_of?(self.class) &&
-        html_text == other.html_text)
+      other.instance_of?(self.class) &&
+        html_text == other.html_text
     end
 
     # Create a new instance of this class using the back office data given.

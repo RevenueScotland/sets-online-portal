@@ -13,7 +13,7 @@ module AccountValidation
   def valid?(contexts)
     return super unless contexts.is_a?(Array)
 
-    result = super filter_attributes(contexts, Account.attribute_list)
+    result = super(filter_attributes(contexts, Account.attribute_list))
     result &= child_valid?(contexts, User, :current_user)
     result &= child_valid?(contexts, Company, :company)
     result &= child_valid?(contexts, AccountType, :account_type)

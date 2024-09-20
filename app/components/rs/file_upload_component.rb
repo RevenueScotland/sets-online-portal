@@ -94,7 +94,7 @@ module RS
       resource_items = @resource_items.select { |resource_item| resource_item.type == type }
       # If multiple uploads are allowed always show upload option
       # or if not file uploaded or errors on the previous file
-      show_upload = (@multiple || resource_items.empty? || current_resource_item.errors.any?)
+      show_upload = @multiple || resource_items.empty? || current_resource_item.errors.any?
       legend, hint = legend_and_hint(type)
       { show_upload: show_upload,
         legend: legend,
