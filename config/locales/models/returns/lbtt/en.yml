@@ -142,7 +142,9 @@ en:
         ads_main_address: Address of existing main residence        
         ads_amount_liable: Total consideration liable to ADS
         ads_consideration: Total consideration attributable to new main residence
-        ads_sell_residence_ind: Does the buyer intend to sell their main residence within 18 months
+        ads_sell_residence_period: Does the buyer intend to sell their main residence within 18 months
+        ads_relevant_disposal_period: Does the buyer intend to sell their main residence within the relevant disposal period
+        ads_sell_residence_ind: Does the buyer intend to sell their main residence
         ads_sold_main_yes_no: Are you amending the return because the buyer has sold or disposed of the previous main residence
         rrep_ads_sold_date: What is the date of sale or disposal of the previous main residence
         ads_repay_amount_claimed: "Amount of ADS you want to reclaim"
@@ -265,6 +267,7 @@ en:
       returns/lbtt/ads:
         ads_amount_liable: "The amount on which ADS is due - this will usually be the chargeable consideration of your new main residence but may change depending on your specific set of circumstances. See guidance on %{link}"
         ads_consideration: "If the consideration includes a new main residence, this is the chargeable consideration for your new main residence"
+        ads_relevant_disposal_period: "See guidance on %{link} for further details."
       returns/lbtt/relief_claim:
         mdr_number_dwellings_ads: "Only applicable if ADS applies to the transaction"
     errors:
@@ -290,6 +293,8 @@ en:
               past_date_error: "%{attribute} must be on or after %{start_date}"
               after_date_error: "%{attribute} must be after lease start date"
               equal_date_error: "%{attribute} must be the same as the relevant date"
+            remaining_chargeable:
+              must_be_calculated: "Total consideration remaining must be Total consideration plus Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
             base:
               missing_properties_entries: "At least one property must be present"
               missing_about_the_transaction: "Please fill in the 'About the transaction' section"

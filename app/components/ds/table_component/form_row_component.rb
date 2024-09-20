@@ -10,7 +10,7 @@ module DS
       attr_reader :builder, :model, :index
 
       renders_many :cells, lambda { |**args, &block|
-                             FormCellComponent.new(**{ builder: @builder }.merge(args), &block)
+                             FormCellComponent.new(builder: @builder, **args, &block)
                            }
 
       # @param builder [Object] The current builder being used this is the one created by field_for

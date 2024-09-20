@@ -18,9 +18,9 @@ module ReferenceData
     # Override == to compare code and value data.
     # @param other [Object] the other object to compare to this one
     def ==(other)
-      (other.instance_of?(self.class) &&
+      other.instance_of?(self.class) &&
         code == other.code &&
-        value == other.value)
+        value == other.value
     end
 
     # Returns a sort key used when getting the list method

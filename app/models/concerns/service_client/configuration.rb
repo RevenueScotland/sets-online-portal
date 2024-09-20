@@ -151,7 +151,7 @@ module ServiceClient
       # Preload all the currently configured clients in the ServiceClient class
       def preload
         @configuration.reject { |_, v| v[:service][:root].nil? }
-                      .each { |_, v| ServiceClient.get_client(v[:wsdl], v[:endpoint], v[:service], v[:savon_log]) }
+                      .each_value { |v| ServiceClient.get_client(v[:wsdl], v[:endpoint], v[:service], v[:savon_log]) }
       end
     end
   end

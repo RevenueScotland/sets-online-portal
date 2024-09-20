@@ -61,11 +61,12 @@ Feature: Dashboard All Returns
             | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 |                | Conveyance or transfer | 2       |         | Draft         | Download PDF | Continue     | Delete   |               |
             | RS3000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
             | RS2000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
+            | RS2000001HHHH    | AaBbCc                  | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Draft         | Download PDF | Continue     | Delete   |               |
+            | RS2000001SSSS    | AaBbCc                  | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
             | RS2000001AAAA    | CO99999.0001            | 01/07/2023     | Conveyance or transfer | 1       | £200.00 | Filed (Debit) | Download PDF | Transactions | Message  | Draft present |
-            | RS3000003EEEE    | XXXXX02-99              | 01/10/2019     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
             | RS2000003BBBB    | XXXXX02-99              | 01/06/2021     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
+            | RS3000003EEEE    | XXXXX02-99              | 01/10/2019     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
             | RS3000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
-            | RS2000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
         And I should not see a link with text "Download waste details"
         When I enter "b" in the "Your reference" field
         And I click on the "Find" button
@@ -74,6 +75,8 @@ Feature: Dashboard All Returns
             | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 |                | Conveyance or transfer | 2       |         | Draft        | Download PDF | Continue     | Delete   |          |
             | RS3000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Amend    | Message  |
             | RS2000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Amend    | Message  |
+            | RS2000001HHHH    | AaBbCc                  | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Draft        | Download PDF | Continue     | Delete   |          |
+            | RS2000001SSSS    | AaBbCc                  | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Amend    | Message  |
             | RS3000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Claim    | Message  |
             | RS2000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Claim    | Message  |
         When I clear the "Your reference" field
@@ -83,25 +86,28 @@ Feature: Dashboard All Returns
             | Return reference | Your reference          | Submitted date | Description            | Version | Balance | Status        | Action_1     | Action_2     | Action_3 | Action_4      |
             | RS2000001AAAA    | CO99999.0001            | 01/07/2023     | Conveyance or transfer | 1       | £200.00 | Filed (Debit) | Download PDF | Transactions | Message  | Draft present |
             | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 |                | Conveyance or transfer | 2       |         | Draft         | Download PDF | Continue     | Delete   |               |
+            | RS2000001HHHH    | AaBbCc                  | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Draft         | Download PDF | Continue     | Delete   |               |
+            | RS2000001SSSS    | AaBbCc                  | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
             | RS2000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
             | RS2000003BBBB    | XXXXX02-99              | 01/06/2021     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
             | RS2000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
             | RS3000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
             | RS3000003EEEE    | XXXXX02-99              | 01/10/2019     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
-            | RS3000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
 
     Scenario: Filter data to list down all that's needed to be seen
         Given I have signed in 'PORTAL.WASTE' and password 'Password1!'
         When I click on the 1 st "Find returns" link
         Then I should see the "Returns" page
-        And I open the "Show more filter options" summary item
-        When I enter "09-01-2099" in the "Submitted from date" date field
+        When I open the "Show more filter options" summary item
+        Then I should see the "Returns" page
+        And I enter "09-01-2099" in the "Submitted from date" date field
         And I select "" from the "Return status"
         And I click on the "Find" button
         Then I should see the "Returns" page
         And I should not see a link with text "Download PDF"
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Returns" page
         And I clear the "Submitted from date" field
         And I select "Draft" from the "Return status"
         And I click on the "Find" button
@@ -114,6 +120,8 @@ Feature: Dashboard All Returns
 
         When I click on the "Dashboard" menu item
         Then I should see the "Dashboard" page
+        And I should see the text "Find returns"
+        And I should see the text "Find transactions"
         When I click on the 1 st "Find returns" link
         Then I should see the "Returns" page
         When I enter "RS1008003OKAY" in the "Return reference" field
@@ -126,6 +134,7 @@ Feature: Dashboard All Returns
             | RS1008003OKAY    | 01/07/2023     | Q3 2019     | 2       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Transactions | Message         | Ongoing enquiry |
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Returns" page
         And I check the "Include previous versions" checkbox
         And I enter "RS1008003Okay" in the "Return reference" field
         And I click on the "Find" button
@@ -137,6 +146,7 @@ Feature: Dashboard All Returns
             | RS1008003OKAY    | 19/06/2023     | Q3 2019     | 1       | £0.00   | Filed (Paid) | Download PDF | Download waste details | Ongoing enquiry |                 |                 |
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Returns" page
         And I enter "20191111-01-09" in the "Submitted from date" field
         And I click on the "Find" button
         Then I should see the "Returns" page
@@ -187,6 +197,7 @@ Feature: Dashboard All Returns
 
         # A latest filed return that is under 12 months old
         When I open the "Show more filter options" summary item
+        Then I should see the "Returns" page
         And I enter "RS100001AAAAA" in the "Return reference" field
         And I select "Filed" from the "Return status"
         And I click on the "Find" button
@@ -203,6 +214,7 @@ Feature: Dashboard All Returns
 
         # An old version of a filed return
         When I open the "Show more filter options" summary item
+        Then I should see the "Returns" page
         And I enter "19-06-2023" in the "Submitted from date" date field
         And I enter "19-06-2023" in the "Submitted to date" date field
         And I check the "Include previous versions" checkbox
@@ -223,12 +235,15 @@ Feature: Dashboard All Returns
 
         When I enter "RANDOM_STRING,31" in the "Return reference" field
         And I click on the "Find" button
-        Then I should receive the message "Return reference is too long"
+        Then I should see the "Returns" page
+        And I should receive the message "Return reference is too long"
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Returns" page
         And I enter "RANDOM_STRING,256" in the "Description" field
         And I click on the "Find" button
-        Then I should receive the message "Description is too long"
+        Then I should see the "Returns" page
+        And I should receive the message "Description is too long"
 
     Scenario: To verify that returns created or modified by user are visible on dashboard
         # Check if the Return created by the user is visible
@@ -283,6 +298,8 @@ Feature: Dashboard All Returns
 
         When I click on the "Dashboard" menu item
         Then I should see the "Dashboard" page
+        And I should see a link with text "Find returns"
+        And I should see a link with text "Find transactions"
         When I click on the 2 nd "Find returns" link
         Then I should see the "Returns" page
         And the checkbox "Only returns with an outstanding balance" should be checked

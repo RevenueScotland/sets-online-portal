@@ -13,7 +13,9 @@ require 'action_controller/railtie'
 # require "action_mailbox/engine"
 # require "action_text/engine"
 require 'action_view/railtie'
-# require "action_cable/engine"
+# TODO: RSTP-1398: Using the action cable dependency for eager load issue
+# https://github.com/hotwired/turbo-rails/issues/512
+require 'action_cable/engine'
 require 'rails/test_unit/railtie'
 
 # Require the gems listed in Gemfile, including any gems
@@ -24,7 +26,12 @@ module RevScot
   # Main application class
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    config.load_defaults 7.1
+
+    # Please, add to the `ignore` list any other `lib` subdirectories that do
+    # not contain `.rb` files, or that should not be reloaded or eager loaded.
+    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    # config.autoload_lib(ignore: %w(assets tasks))
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -70,7 +77,7 @@ module RevScot
       url: ENV.fetch('REDIS_CACHE_URL', nil),
       db: 0,
       reconnect_attempts: 1, # Defaults to 0
-      pool_size: ENV.fetch('RAILS_MAX_THREADS', 5), # default to puma threads
+      pool: { size: ENV.fetch('RAILS_MAX_THREADS', 5) }, # default to puma threads
       error_handler: lambda { |method:, returning:, exception:|
         Rails.logger.error do
           "RedisCacheStore: #{method} failed, returned #{returning.inspect}: #{exception.class}: #{exception.message}"

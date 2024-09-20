@@ -24,7 +24,7 @@ module Returns
            repayment_ind repayment_amount_claimed repayment_declaration repayment_agent_declaration account_type
            ads change_reason orig_effective_date non_notifiable_submit_ind non_notifiable_explanation prepopulated
            pre_population_declaration orig_landlord_name taxpayer_email_id show_trans_declaration
-           edit_calc_reason uk_ind calculation_edited]
+           edit_calc_reason uk_ind calculation_edited initial_submitted_date]
       end
 
       attribute_list.each { |attr| attr_accessor attr }
@@ -87,12 +87,12 @@ module Returns
       validates :total_vat, :non_chargeable, numericality: {
         greater_than_or_equal_to: 0, less_than_or_equal_to: proc { |s| s.total_consideration.to_f }, allow_blank: true
       }, two_dp_pattern: true, presence: true, on: :remaining_chargeable, if: :convey?
-      validates :remaining_chargeable, numericality: { greater_than_or_equal_to: 0,
-                                                       less_than: 1_000_000_000_000_000_000,
+      validates :remaining_chargeable, numericality: { less_than: 1_000_000_000_000_000_000,
                                                        allow_blank: true },
                                        two_dp_pattern: true, presence: true,
                                        on: :remaining_chargeable,
                                        if: :convey?
+      validate :validate_remaining_chargeable, on: :remaining_chargeable, if: :convey?
 
       validates :linked_consideration, numericality: { greater_than_or_equal_to: 0,
                                                        less_than: 1_000_000_000_000_000_000,
@@ -655,6 +655,24 @@ module Returns
         errors.add(:sale_include_option, :one_must_be_chosen) if sale_include_option.compact_blank.empty?
       end
 
+      # Validation for transaction's remaining chargeable amount
+      def validate_remaining_chargeable
+        return if errors.any?
+
+        return if total_remaining_chargeable.to_f.abs == @remaining_chargeable.to_f.abs
+
+        errors.add(:remaining_chargeable, :must_be_calculated)
+      end
+
+      # Calculates the value for remaining chargeable field
+      def total_remaining_chargeable
+        if @linked_consideration.present?
+          ((@total_consideration.to_f + @linked_consideration.to_f) - @non_chargeable.to_f).round(2)
+        else
+          (@total_consideration.to_f - @non_chargeable.to_f).round(2)
+        end
+      end
+
       # condition to check repayment_ind is set to Yes
       def repayment_ind?
         @repayment_ind == 'Y'
@@ -787,6 +805,7 @@ module Returns
         output[:tare_reference] = lbtt[:tare_reference]
         output[:tare_refno] = lbtt[:tare_refno]
         output[:version] = lbtt[:version]
+        output[:initial_submitted_date] = lbtt[:initial_submitted_date]
 
         output.merge!(lbtt[:lbtt_return_details])
 
@@ -891,8 +910,8 @@ module Returns
         #  Depending on the property type, this changes the attribute to match the specific attribute
         #  that has the translation text that we want for when it's 'Residential to be displayed.
         return :total_consideration_residential if attribute == :total_consideration && @property_type == '1'
-        return "#{attribute}_#{flbt_type}".to_sym if %i[effective_date relevant_date annual_rent]
-                                                     .include?(attribute)
+        return :"#{attribute}_#{flbt_type}" if %i[effective_date relevant_date annual_rent]
+                                               .include?(attribute)
         return attribute unless %i[authority_ind repayment_agent_declaration lease_declaration declaration
                                    repayment_declaration transaction_declaration
                                    pre_population_declaration].include?(attribute)
@@ -1050,8 +1069,8 @@ module Returns
       # note we don't check all the amounts but if these are present which should have the others as well
       def amounts_for_tax_calc?
         # Note we use the remaining chargeable method not the actual attribute as values are defaulted
-        ((convey? && @total_consideration.present? && remaining_chargeable.present?) ||
-          (!convey? && @premium_paid.present?))
+        (convey? && @total_consideration.present? && remaining_chargeable.present?) ||
+          (!convey? && @premium_paid.present?)
       end
 
       # check that the validate return response is for the suitable lease
@@ -1218,7 +1237,7 @@ module Returns
                    "#{flbt_type}_#{user_account_type}"
                  end
 
-        "#{attribute}_#{suffix}".to_sym
+        :"#{attribute}_#{suffix}"
       end
 
       # print data for return reference

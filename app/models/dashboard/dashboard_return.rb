@@ -42,17 +42,17 @@ module Dashboard
 
     # The amend action code(s)
     def amend_action
-      RS::AuthorisationHelper.const_get("#{srv_code}_AMEND")
+      RS::AuthorisationHelper.const_get(:"#{srv_code}_AMEND")
     end
 
     # The continue action code(s)
     def continue_action
-      RS::AuthorisationHelper.const_get("#{srv_code}_CONTINUE")
+      RS::AuthorisationHelper.const_get(:"#{srv_code}_CONTINUE")
     end
 
     # The delete action code(s)
     def delete_action
-      RS::AuthorisationHelper.const_get("#{srv_code}_DELETE")
+      RS::AuthorisationHelper.const_get(:"#{srv_code}_DELETE")
     end
 
     # Used to display a summary status

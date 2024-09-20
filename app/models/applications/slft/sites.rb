@@ -160,8 +160,8 @@ module Applications
       # @param attribute [Symbol] the name of the attribute to translate
       # @return [Symbol] "attribute_" + extra information to make the translation key
       def translation_attribute(attribute, _translation_options = nil)
-        return "#{attribute}_#{application_type}".to_sym if %i[estimated_timescale
-                                                               type_of_waste_text wastes].include?(attribute)
+        return :"#{attribute}_#{application_type}" if %i[estimated_timescale
+                                                         type_of_waste_text wastes].include?(attribute)
 
         attribute
       end

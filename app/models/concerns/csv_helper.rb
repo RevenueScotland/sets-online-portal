@@ -78,7 +78,7 @@ module CsvHelper
     object = model.new
     col_index = 0
     attributes.each do |attr|
-      object.send("#{attr}=", row[col_index])
+      object.send(:"#{attr}=", row[col_index])
       col_index += 1
     end
     object.send(:post_csv_import) if object.respond_to?(:post_csv_import, true)

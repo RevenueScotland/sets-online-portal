@@ -208,6 +208,7 @@
 						<xs:element name="TareRefno" type="xs:integer" minOccurs="0"/>
 						<xs:element name="Version" type="xs:integer" minOccurs="0"/>
 						<xs:element name="Username" type="xs:string" minOccurs="0"/>
+						<xs:element name="InitialSubmittedDate" type="xs:date" minOccurs="0"/>
 						<xs:element name="ParRefno" type="xs:string" minOccurs="0"/>
 						<xs:element name="LBTTReturnDetails" minOccurs="0">
 							<xs:complexType>

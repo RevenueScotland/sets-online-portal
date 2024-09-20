@@ -15,7 +15,7 @@ module Claim
                       main_residence_address claiming_amount taxpayer_details taxpayer_address
                       claim_payment_bank_details upload_evidence public_claim_landing
                       final_declaration confirmation_of_payment download_claim download_file
-                      view_claim_pdf eligibility].freeze
+                      view_claim_pdf effective_date eligibility].freeze
 
     authorise requires: RS::AuthorisationHelper::CLAIM_REPAYMENT + RS::AuthorisationHelper::CLAIM_REPAYMENT_ATTACHMENT,
               allow_if: :public
@@ -24,7 +24,7 @@ module Claim
     skip_before_action :require_user, only: PUBLIC_PAGES
 
     # enforce the user isn't logged in on the public pages
-    before_action :enforce_public, only: %w[public_claim_landing eligibility before_you_start]
+    before_action :enforce_public, only: %w[public_claim_landing effective_date eligibility before_you_start]
 
     # List of steps for a claim. For public claim the entry point will be return_reference number
     # for authenticated claim it is claim reason. The following steps are skipped as you step through
@@ -32,9 +32,9 @@ module Claim
     # Agent steps unless unauthenticated and they says they are an agent
     # Second tax payer details unless there is a second tax payer, never for SLFT
     # see specific steps below
-    NEW_STEPS = %w[eligibility before_you_start return_reference_number claim_reason main_residence_address
-                   date_of_sale upload_evidence claiming_amount taxpayer_details taxpayer_address
-                   claim_payment_bank_details final_declaration
+    NEW_STEPS = %w[effective_date eligibility before_you_start return_reference_number claim_reason
+                   main_residence_address date_of_sale upload_evidence claiming_amount taxpayer_details
+                   taxpayer_address claim_payment_bank_details final_declaration
                    confirmation_of_payment].freeze
 
     # Create the standard wizard step actions
@@ -43,11 +43,17 @@ module Claim
     # Home page for unauthenticated wizard
     def public_claim_landing; end
 
-    # wizard page for unauthenticated user to check eligibility
-    def eligibility
-      # Call clear_cache whenever params[:new] is there
+    # Home page for unauthenticated wizard
+    def effective_date
       clear_cache = params[:new].present?
       Rails.logger.debug('New Claim Repayment') if clear_cache
+
+      wizard_step(NEW_STEPS) { { setup_step: :setup_eligibility_step, clear_cache: clear_cache } }
+    end
+
+    # wizard page for unauthenticated user to check eligibility
+    def eligibility
+      clear_cache = params[:new].present?
 
       wizard_step(NEW_STEPS) { { setup_step: :setup_eligibility_step, clear_cache: clear_cache } }
     end
@@ -128,7 +134,23 @@ module Claim
       "#{key}_#{index.to_i > 4 ? 'other' : index.to_s}"
     end
 
-    helper_method :translation_for_index
+    # Used to determine if the ADS 36 month disposal period changes should be used
+    # RSTP-1403 The Scottish Government have yet to confirm with Revenue Scotland
+    # the actual legislation date at which the 36 month disposal period for selling
+    # your previous property will come into effect
+    def before_date_of_release?
+      ads_leg_release_date ||= ReferenceData::SystemParameter.lookup(
+        'COMMON', 'LBTT', 'RSTU', safe_lookup: true
+      )['ADS_LEG_RELEASE_DATE']&.value
+      Rails.logger.debug do
+        "Dates #{Time.zone.today}, #{ads_leg_release_date} rv #{Time.zone.today < Date.parse(ads_leg_release_date)}"
+      end
+      return true if Time.zone.today < Date.parse(ads_leg_release_date)
+
+      false
+    end
+
+    helper_method :translation_for_index, :before_date_of_release?
 
     # Last step in the authenticated and unauthenticated claim
     def confirmation_of_payment
@@ -310,8 +332,11 @@ module Claim
                              else
                                [:claim_claim_payment, Claim::ClaimPayment.attribute_list]
                              end
-      params.require(required).permit(attributes, unauthenticated_declarations_ids: [], eligibility_checkers: []) if
-                                                                                                params[required]
+
+      return unless params[required]
+
+      params.require(required).permit(attributes, unauthenticated_declarations_ids: [], eligibility_checkers: [],
+                                                  eligibility_checkers_after: [])
     end
 
     # @return array of file types depend upon Authenticate user or not

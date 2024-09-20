@@ -110,7 +110,7 @@ module Core
     # @param other_hash [Hash] The other hash to merge
     # @return [Hash] the merged hash
     def merge_html_options(this_hash, other_hash)
-      this_hash.deep_merge(other_hash) do |_key, this_val, other_val|
+      this_hash.merge(other_hash) do |_key, this_val, other_val|
         [this_val, other_val].join(' ')
       end
     end

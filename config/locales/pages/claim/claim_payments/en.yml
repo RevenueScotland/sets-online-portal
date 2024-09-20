@@ -8,13 +8,21 @@ en:
         ads_heading: "What is Additional Dwelling Supplement?"
         ads_description: "Additional Dwelling Supplement (ADS) is a tax applicable to persons who own more than one residential property when they buy a new residential property. If you bought a new home before selling your previous home, you may have paid ADS."
         eligibility_heading: "Am I eligible to claim a repayment of ADS?"
-        eligibility_description: "If you sold your previous home within 18 months of buying a new one, you may be eligible to claim a repayment of ADS. Find out more using our eligibility checker on the next page."
+        eligibility_description: "If you sold your previous home within the relevant disposal period of buying a new one, you may be eligible to claim a repayment of ADS. Find out more using our eligibility checker on the next page."
         receive_repayment_heading: "When will I receive my repayment?"
         receive_repayment_description: "We aim to process claims within 10 working days."
+        ads_warning: "Following recent change in legislation, the eligibility to claim Additional Dwelling Supplement has changed for some transactions depending on the effective date. Please see the guidance at %{link}"
+        lbtt_ads_link: "LBTT Additional Dwelling Supplement"
       eligibility:
         title: "Eligibility checker"
         unsure_description_html: "If you’re unsure whether or not you are eligible for a refund, %{link}."
         unsure_description_link: look at these examples
+        ads_guidance_html: "See guidance on %{link} for further details."
+        ads_guidance_link: "LBTT Additional Dwelling Supplement"
+      effective_date:
+        title: "Effective date"
+        ads_warning: "Following recent change in legislation, the eligibility to claim Additional Dwelling Supplement has changed for some transactions depending on the effective date. Please see the guidance at %{link}"
+        lbtt_ads_link: "LBTT Additional Dwelling Supplement"
       before_you_start:
         title: "Before you start"
         info_needed_heading: "What you will need"
@@ -27,6 +35,15 @@ en:
           <li>your bank details</li>
           </ul>
           <p>You may also need to provide proof of sale of the previous property and evidence that all buyers occupied it as their only or main residence. We'll let you know if we need this once the first 3 questions have been answered.</p>"
+        info_needed_description_after_html:
+          "<p>To complete this form, you’ll need the following:</p>
+          <ul>
+          <li>tax return reference (the solicitor who dealt with your new property purchase will have this)</li>
+          <li>address and date of sale of the previous main residence</li>
+          <li>name, contact details and address of all buyers of the new property</li>
+          <li>your bank details</li>
+          </ul>
+          <p>You may also need to provide proof of sale of the previous property and evidence that all relevant buyers occupied it as their only or main residence. We'll let you know if we need this once the first 3 questions have been answered.</p>"
         form_completion_heading: "Completing the form"
         form_completion_description_html: "If more than one buyer was involved in the new property purchase, all buyers should be present when completing this form. Once you have started the form you will need to complete it - you won't be able to save a draft and go back to it later. If you have all the information to hand, the form should take 5-10 minutes to complete.<br/><br/> If you are an agent, please %{link} to make this claim."
         form_completion_description_link: Sign in
@@ -56,7 +73,8 @@ en:
           hint: "The following will be accepted as evidence:<br/><ul><li>The disposition of the sale</li><li>Land registration documents</li><li>A letter from the agent that clearly states the date of sale</li></ul>"
         occupancy:
           legend: "2. Evidence of occupancy of previous main residence"
-          hint: "Evidence all buyers occupied the previous property as their only or main residence at any time between %{date_range_start} and %{date_range_end}.<br/><br/>The following will be accepted as evidence:<ul><li>Council tax bill</li><li>Utilities bill</li><li>Bank statement</li></ul>"
+          hint: "Evidence all relevant buyers occupied the previous property as their only or main residence at any time within the relevant disposal period prior to the return’s effective date %{effective_date}.<br/>See guidance on %{link} for further details.<br/><br/>The following will be accepted as evidence:<ul><li>Council tax bill</li><li>Utilities bill</li><li>Bank statement</li></ul>"
+        occupancy_link: "LBTT Additional Dwelling Supplement"
       claiming_amount:
         claiming_amount_title: "Claim amount"
         non_ads_claiming_amount_title: "Details about your request for repayment"

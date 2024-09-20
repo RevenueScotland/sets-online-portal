@@ -681,14 +681,14 @@ module Returns
 
       # Convert the full name to get translation
       def translation_attribute_full_name
-        "#{party_type}_full_name".to_sym
+        :"#{party_type}_full_name"
       end
 
       # handle the translations based on party type which may be nil
       def translation_attribute_for_party_type(attribute)
-        return "type_#{party_type}".to_sym if attribute == :type
-        return "is_acting_as_trustee_#{party_type}".to_sym if attribute == :is_acting_as_trustee
-        return "#{party_type}_buyer_seller_linked_ind".to_sym if attribute == :buyer_seller_linked_ind
+        return :"type_#{party_type}" if attribute == :type
+        return :"is_acting_as_trustee_#{party_type}" if attribute == :is_acting_as_trustee
+        return :"#{party_type}_buyer_seller_linked_ind" if attribute == :buyer_seller_linked_ind
 
         attribute
       end
@@ -697,7 +697,7 @@ module Returns
       # @param attribute [Symbol] the name of the attribute to translate
       def translation_for_claim(attribute)
         acc_type = (party_type == 'UNAUTH_CLAIMANT' ? 'UNAUTHENTICATED' : 'AUTHENTICATED')
-        return "#{acc_type}_#{attribute}".to_sym if %i[telephone email_address same_address].include?(attribute)
+        return :"#{acc_type}_#{attribute}" if %i[telephone email_address same_address].include?(attribute)
 
         return :claim_org_name if attribute == :org_name
 

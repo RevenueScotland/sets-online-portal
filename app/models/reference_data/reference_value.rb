@@ -7,6 +7,7 @@ module ReferenceData
   # The lists are grouped by DomainCode, ServiceCode and Workplace code.
   # @see BackOfficeDataCaching#lookup (and similar methods) for how to call this class.
   class ReferenceValue < SystemParameter # rubocop:disable Metrics/ClassLength
+    include DateFormatting
     # additional fields
     attr_accessor :default, :sequence, :text
 
@@ -54,7 +55,9 @@ module ReferenceData
       output[format_composite_key('RETURN_STATUS', 'SYS', 'RSTU')] = return_status
       output[format_composite_key('RETURN_SORT_TYPES', 'SYS', 'RSTU')] = return_sort_types
       output[format_composite_key('BUYER TYPES', 'SYS', 'RSTU')] = buyer_types
+      output[format_composite_key('EFFECTIVE_DATE_CHECKER', 'SYS', 'RSTU')] = effective_date_checker
       output[format_composite_key('ELIGIBILITY_LIST', 'SYS', 'RSTU')] = eligibility_checkers
+      output[format_composite_key('ELIGIBILITY_LIST_AFTER', 'SYS', 'RSTU')] = eligibility_checkers_after
 
       output[format_composite_key('RENEWALORREVIEW', 'SYS', 'RSTU')] = renewal_or_review
       output[format_composite_key('RESTORATION-TYPE', 'SLFT', 'RSTU')] = restoration_type
@@ -164,6 +167,23 @@ module ReferenceData
       }
     end
 
+    # @return [hash] the effective date checker
+    def self.effective_date_checker # rubocop:disable Metrics/MethodLength
+      ads_leg_eff_date = Date.parse(ReferenceData::SystemParameter.lookup(
+        'COMMON', 'LBTT', 'RSTU', safe_lookup: true
+      )['ADS_LEG_EFFECT_DATE']&.value)
+
+      ads_leg_eff_date_past = DateFormatting.to_display_date_suffix_format(ads_leg_eff_date - 1)
+      ads_leg_eff_date = DateFormatting.to_display_date_suffix_format(ads_leg_eff_date)
+
+      value1 = "My transaction has an effective date of #{ads_leg_eff_date_past} or earlier"
+      value2 = "My transaction has an effective date of #{ads_leg_eff_date} or later"
+      {
+        'BEFORE_DATE' => ReferenceValue.new(code: 'BEFORE_DATE', value: value1, sequence: '10'),
+        'AFTER_DATE' => ReferenceValue.new(code: 'AFTER_DATE', value: value2, sequence: '20')
+      }
+    end
+
     # @return [hash] The internal buyer_types
     def self.eligibility_checkers
       {
@@ -176,6 +196,19 @@ module ReferenceData
                                                     'buyers of the new property at some time in the 18 month ' \
                                                     'period before the new property was purchased.', sequence: '40')
       }
+    end
+
+    # @return [hash] The eligibility check
+    def self.eligibility_checkers_after
+      { '0' => ReferenceValue.new(code: '0', value: 'ADS was paid on the new property purchase.', sequence: '10'),
+        '1' => ReferenceValue.new(code: '1', value: 'The previous property was sold within 36 months ' \
+                                                    'of buying the new one.', sequence: '20'),
+        '2' => ReferenceValue.new(code: '2', value: 'The new property is, or has been, ' \
+                                                    'the only or main residence of all buyers.', sequence: '30'),
+        '3' => ReferenceValue.new(code: '3', value: 'The previous property was the only or main residence of all ' \
+                                                    'relevant buyers ' \
+                                                    'of the new property at some time in the 36 month ' \
+                                                    'period before the new property was purchased.', sequence: '40') }
     end
 
     # Merge the two EWC lists together and sort

@@ -669,7 +669,7 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
-        Then I should receive the message "Does the buyer intend to sell their main residence within 18 months can't be blank"
+        Then I should receive the message "Does the buyer intend to sell their main residence can't be blank"
 
         When I check the "Yes" radio button in answer to the question "Does the buyer intend to sell their main residence within 18 months?"
         And I click on the "Continue" button
@@ -857,7 +857,7 @@ Feature: LBTT Returns
         Then I should receive the message "VAT amount can't be blank"
 
         When I enter "1000" in the "VAT amount" field
-        And I enter "1235565" in the "Total consideration remaining" field
+        And I enter "1234065" in the "Total consideration remaining" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -1354,11 +1354,13 @@ Feature: LBTT Returns
         And I should see the text "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete"
         And I should not see the text "I, the agent for the buyer(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         When I click on the "Submit return" button
-        Then I should see the text "How are you paying can't be blank"
+        Then I should see the "Payment and submission" page
+        And I should see the text "How are you paying can't be blank"
         And I should see the text "The declaration must be accepted"
 
         When I check the "BACS" radio button in answer to the question "How are you paying?"
         And I check the "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete" checkbox
+        And the checkbox "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete" should be checked
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should see the text "Your Land and Buildings Transaction Tax return has now been submitted."
@@ -1446,10 +1448,11 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "Declaration" page
-        Then I should not see the text "I, the agent for the buyer(s), confirm that the buyer(s) have authorised repayment to be made to these bank details"
+        And I should not see the text "I, the agent for the buyer(s), confirm that the buyer(s) have authorised repayment to be made to these bank details"
         And I should see the text "I, the buyer, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the refund claimed"
         When I click on the "Continue" button
-        Then I should receive the message "The refund declaration must be accepted"
+        Then I should see the "Declaration" page
+        And I should receive the message "The refund declaration must be accepted"
         And I should not receive the message "The bank account declaration must be accepted"
         When I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
         And I click on the "Continue" button
@@ -1618,7 +1621,8 @@ Feature: LBTT Returns
 
         # Declarations and re-submit
         When I click on the "Continue" button
-        Then I should receive the message "The refund declaration must be accepted"
+        Then I should see the "Declaration" page
+        And I should receive the message "The refund declaration must be accepted"
 
         When I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
         And I click on the "Continue" button
@@ -1969,6 +1973,20 @@ Feature: LBTT Returns
         And I should receive the message "Total consideration remaining is not a number"
 
         When I enter "900000" in the "Total consideration" field
+        And I enter "1100" in the "Linked transaction consideration" field
+        And I enter "125" in the "Non-chargeable consideration" field
+        And I enter "-100" in the "Total consideration remaining" field
+        And I click on the "Continue" button
+        Then I should see the text "Total consideration remaining must be Total consideration plus Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
+
+        When I enter "9000" in the "Total consideration" field
+        And I enter "100" in the "Linked transaction consideration" field
+        And I enter "125" in the "Non-chargeable consideration" field
+        And I enter "0" in the "Total consideration remaining" field
+        And I click on the "Continue" button
+        Then I should see the text "Total consideration remaining must be Total consideration plus Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
+
+        When I enter "900000" in the "Total consideration" field
         When I enter "1100" in the "Linked transaction consideration" field
         And I enter "125" in the "Non-chargeable consideration" field
         And I enter "900000" in the "Total consideration remaining" field
@@ -1984,8 +2002,8 @@ Feature: LBTT Returns
 
         When I enter "1234560" in the "Total consideration" field
         When I enter "1100" in the "Linked transaction consideration" field
-        And I enter "125" in the "Non-chargeable consideration" field
-        And I enter "1234560" in the "Total consideration remaining" field
+        And I enter "1250" in the "Non-chargeable consideration" field
+        And I enter "1234410" in the "Total consideration remaining" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -1996,7 +2014,7 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "Reliefs on this transaction" page
-        And I should see the text "106519" in field "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_0_relief_override_amount"
+        And I should see the text "106384" in field "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_0_relief_override_amount"
         And I should see the text "1630" in field "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_0_relief_override_amount_ads"
 
         When I click on the "Continue" button
@@ -2004,7 +2022,7 @@ Feature: LBTT Returns
         And the table of data is displayed
             | About the reliefs              |                                    | Edit reliefs                      |
             | Type of relief                 | Amount of LBTT tax saved by relief | Amount of ADS tax saved by relief |
-            | Charities relief (Full Relief) | £106,519                           | £1,630                            |
+            | Charities relief (Full Relief) | £106,384                           | £1,630                            |
 
         When I click on the "Edit reliefs" link
         Then I should see the "Reliefs on this transaction" page
@@ -2191,7 +2209,7 @@ Feature: LBTT Returns
         Then I should see the "Reliefs on this transaction" page
         And I should see the text "0" in field "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_0_relief_override_amount"
         And I should see the text "0" in field "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_1_relief_override_amount"
-        And I should see the text "106519" in field "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_2_relief_override_amount"
+        And I should see the text "106384" in field "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_2_relief_override_amount"
 
         When I click on the "Continue" button
         Then I should see the "Return Summary" page
@@ -2202,12 +2220,12 @@ Feature: LBTT Returns
             | Type of relief            | Amount of LBTT tax saved by relief |
             | Multiple dwellings relief | £0.00                              |
             | First-Time Buyer Relief   | £0.00                              |
-            | Public bodies relief      | £106,519.00                        |
+            | Public bodies relief      | £106,384.00                        |
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
-            | LBTT calculated            | £106,519.00      |
-            | Total LBTT reliefs claimed | £106,519.00      |
+            | LBTT calculated            | £106,384.00      |
+            | Total LBTT reliefs claimed | £106,384.00      |
             | Total tax payable          | £0.00            |
 
         #Validation on relief amounts
@@ -2236,7 +2254,7 @@ Feature: LBTT Returns
         And I enter "600" in the "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_1_relief_override_amount" field
         And I enter "0" in the "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_2_relief_override_amount" field
         And I click on the "Continue" button
-        Then I should receive the message "The amount you are claiming for reliefs cannot be more than the tax liability of £106519.00"
+        Then I should receive the message "The amount you are claiming for reliefs cannot be more than the tax liability of £106384.00"
 
         # check the invalid relief value has not been saved
         When I click on the "Back" link
@@ -2250,7 +2268,7 @@ Feature: LBTT Returns
             | Type of relief            | Amount of LBTT tax saved by relief |
             | Multiple dwellings relief | £0.00                              |
             | First-Time Buyer Relief   | £0.00                              |
-            | Public bodies relief      | £106,519.00                        |
+            | Public bodies relief      | £106,384.00                        |
 
         # Check the overridden linked transaction value is not changed by going through the wizard
         # The relief values are changed
@@ -2269,7 +2287,7 @@ Feature: LBTT Returns
         Then I should see the "Reliefs on this transaction" page
         And I should see the text "0" in field "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_0_relief_override_amount"
         And I should see the text "0" in field "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_1_relief_override_amount"
-        And I should see the text "106519" in field "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_2_relief_override_amount"
+        And I should see the text "106384" in field "returns_lbtt_lbtt_return_returns_lbtt_relief_claim_2_relief_override_amount"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And the table of data is displayed
@@ -2277,12 +2295,12 @@ Feature: LBTT Returns
             | Type of relief            | Amount of LBTT tax saved by relief |
             | Multiple dwellings relief | £0.00                              |
             | First-Time Buyer Relief   | £0.00                              |
-            | Public bodies relief      | £106,519.00                        |
+            | Public bodies relief      | £106,384.00                        |
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
-            | LBTT calculated            | £106,519.00      |
-            | Total LBTT reliefs claimed | £106,519.00      |
+            | LBTT calculated            | £106,384.00      |
+            | Total LBTT reliefs claimed | £106,384.00      |
             | Total tax payable          | £0.00            |
 
         # Check the calculation of the first time buyer relief before and after the 15th July 2021
@@ -2311,9 +2329,9 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
-            | LBTT calculated            | £106,519.00      |
+            | LBTT calculated            | £106,384.00      |
             | Total LBTT reliefs claimed | £600.00          |
-            | Total tax payable          | £105,919.00      |
+            | Total tax payable          | £106,384.00      |
         # check whether changing the date forces recalculation
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
@@ -2337,9 +2355,9 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
-            | LBTT calculated            | £106,519.00      |
+            | LBTT calculated            | £106,384.00      |
             | Total LBTT reliefs claimed | £600.00          |
-            | Total tax payable          | £106,519.00      |
+            | Total tax payable          | £106,384.00      |
 
         # Check the overridden linked transaction value is changed by changing the linked value
         When I click on the "Edit transaction details" link
@@ -2359,8 +2377,11 @@ Feature: LBTT Returns
         Then I should see the "About the conveyance or transfer" page
         And I should see the text "1234560" in field "Total consideration"
         And I should see the text "2000" in field "Linked transaction consideration"
-        And I should see the text "125" in field "Non-chargeable consideration"
-        And I should see the text "1234560" in field "Total consideration remaining"
+        And I should see the text "1250" in field "Non-chargeable consideration"
+        And I should see the text "1234410" in field "Total consideration remaining"
+        When I click on the "Continue" button
+        Then I should see the text "Total consideration remaining must be Total consideration plus Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
+        When I enter "1235310" in the "Total consideration remaining" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         # Check the date warning(s) and link
@@ -3418,10 +3439,11 @@ Feature: LBTT Returns
 
         # Create an assignation return
         When I click on the "Go to dashboard" link
-        And I click on the "Create LBTT return" menu item
+        Then I should see the "Dashboard" page
+        When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
         And I check the "Assignation" radio button in answer to the question "Which return do you want to submit?"
-        And I click on the "Continue" button
+        When I click on the "Continue" button
         Then I should see the "Return reference number" page
         And I click on the "Continue" button
         Then I should receive the message "What was the original return reference can't be blank"
@@ -3458,10 +3480,11 @@ Feature: LBTT Returns
         And I should see a link with text "Go to dashboard"
 
         When I click on the "Continue" button
-        Then I should see the text "The authority declaration must be accepted"
+        Then I should see the "Declaration" page
+        And I should see the text "The authority declaration must be accepted"
         # Agree to the pre population declaration
-        And I check the "returns_lbtt_lbtt_return_pre_population_declaration" checkbox
-        When I click on the "Continue" button
+        When I check the "I, the agent, confirm that I have authority to view the data for the return referred to above" checkbox
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Check no details are defaulted
@@ -3809,13 +3832,18 @@ Feature: LBTT Returns
         When I check the "returns_lbtt_lbtt_return_repayment_agent_declaration" checkbox
         And I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
         And I click on the "Continue" button
+
+
         Then I should see the "Payment and submission" page
+        And I should see the text "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s):"
+        And I should see the text "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        And I should see the text "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
 
         When I check the "BACS" radio button in answer to the question "How are you paying?"
         And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         And I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
         And I check the "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies" checkbox
-        When I click on the "Submit return" button
+        And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should store the reference from the notification panel as "notification_banner_reference"
         And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
@@ -3876,7 +3904,8 @@ Feature: LBTT Returns
         Then I should see the downloaded "PDF" content of "LBTT" by looking up "notification_banner_reference"
 
         When I click on the "Go to dashboard" link
-        And I click on the "Create LBTT return" menu item
+        Then I should see the "Dashboard" page
+        When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
         When I check the "3 year lease review" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
@@ -3983,6 +4012,7 @@ Feature: LBTT Returns
         And I enter "+12 123456789" in the "Telephone number" field
         And I enter "noreply@necsws.com" in the "Email" field
         And I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I select "ID Card" from the "Type of ID"
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
@@ -4118,6 +4148,7 @@ Feature: LBTT Returns
         And I enter "+12 123456789" in the "Telephone number" field
         And I enter "noreply@necsws.com" in the "Email" field
         And I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I select "ID Card" from the "Type of ID"
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
@@ -4317,6 +4348,7 @@ Feature: LBTT Returns
         And I enter "+12 123456789" in the "Telephone number" field
         And I enter "noreply@necsws.com" in the "Email" field
         And I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I select "ID Card" from the "Type of ID"
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
@@ -4370,6 +4402,7 @@ Feature: LBTT Returns
         And I should see the text "+12 123456789" in field "Telephone number"
         And I should see the text "noreply@necsws.com" in field "Email"
         And I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I should see the text "ID Card"
         And I should see the text "1" in field "Reference number of the ID"
 
@@ -4766,7 +4799,8 @@ Feature: LBTT Returns
         And I should see a link with text "Go to dashboard"
 
         When I click on the "Go to dashboard" link
-        And I click on the "Create LBTT return" menu item
+        Then I should see the "Dashboard" page
+        When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
         And I check the "Termination" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
@@ -4887,13 +4921,15 @@ Feature: LBTT Returns
         And I should see the text "noreply@necsws.com" in field "Email"
         And I should see the text "AB323455C" in field "National Insurance Number (NINO)"
         When I clear the "National Insurance Number (NINO)" field
-        Then I open the "Tenant does not have NINO" summary item
+        And I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I click on the "Continue" button
         Then I should receive the message "Provide a NINO or an alternate reference"
 
         When I enter "AB323455C" in the "National Insurance Number (NINO)" field
         And I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I select "ID Card" from the "Type of ID"
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
@@ -4901,6 +4937,7 @@ Feature: LBTT Returns
         Then I should receive the message "Don't provide the alternate reference if you provide a NINO"
 
         When I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I select "" from the "Type of ID"
         And I clear the "Country where ID was issued" field
         And I clear the "Reference number of the ID" field
@@ -5221,18 +5258,21 @@ Feature: LBTT Returns
         And I enter "noreply@necsws.com" in the "Email" field
         And I enter "AB123456C" in the "National Insurance Number (NINO)" field
         And I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I select "ID Card" from the "Type of ID"
         And I click on the "Continue" button
         Then I should receive the message "Country where ID was issued can't be blank"
         And I should receive the message "Reference number of the ID can't be blank"
         When I clear the "National Insurance Number (NINO)" field
         And I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I select "" from the "Type of ID"
         And I enter "1" in the "Reference number of the ID" field
         And I click on the "Continue" button
         Then I should receive the message "Type of ID can't be blank"
         And I should receive the message "Country where ID was issued can't be blank"
         When I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I select "ID Card" from the "Type of ID"
         And I click on the "Continue" button
@@ -5434,6 +5474,7 @@ Feature: LBTT Returns
         When I enter "lastname" in the "Last name" field
         And I select "Mrs" from the "Title"
         And I open the "Buyer does not have NINO" summary item
+        Then I should see the "Buyer details" page
         And I select "ID Card" from the "Type of ID"
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
@@ -5791,9 +5832,9 @@ Feature: LBTT Returns
         Then I should see the "About the conveyance or transfer" page
         And I should not see the text "Linked transaction consideration"
 
-        When I enter "1234565" in the "returns_lbtt_lbtt_return_total_consideration" field
+        When I enter "12345" in the "returns_lbtt_lbtt_return_total_consideration" field
         And I enter "0" in the "Non-chargeable consideration" field
-        And I enter "0" in the "returns_lbtt_lbtt_return_remaining_chargeable" field
+        And I enter "12345" in the "returns_lbtt_lbtt_return_remaining_chargeable" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -6082,6 +6123,7 @@ Feature: LBTT Returns
         And I enter "+12 123456789" in the "Telephone number" field
         And I enter "noreply@necsws.com" in the "Email" field
         And I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I select "ID Card" from the "Type of ID"
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
@@ -6483,6 +6525,7 @@ Feature: LBTT Returns
         And I enter "+12 123456789" in the "Telephone number" field
         And I enter "noreply@necsws.com" in the "Email" field
         And I open the "Tenant does not have NINO" summary item
+        Then I should see the "Tenant details" page
         And I select "ID Card" from the "Type of ID"
         And I enter "ENGLAND" in the "Country where ID was issued" select or text field
         And I enter "1" in the "Reference number of the ID" field
@@ -6780,7 +6823,7 @@ Feature: LBTT Returns
 
         # Submit the return as non notifiable checking the validation on the non notifiable pages
         Then I should see the "Non-notifiable return" page
-        And I should see the text "The lease is for less than 7 years and the chargeable consideration does not exceed the nil rate band so no tax is payable."
+        And I should see the text "The lease is for less than 7 years, and the rent is less than £1,000 per annum with premium less than or equal to the nil rate band £150,000, or the NPV tax calculation is less than or equal to the nil rate band £150,000."
         And I should see a link with text "notifiable lease transactions (opens in a new window)"
         And I should see a link with text "back to return summary"
         When I click on the "Continue" button
@@ -6958,7 +7001,8 @@ Feature: LBTT Returns
 
         # Create an 3 year lease review return
         When I click on the "Go to dashboard" link
-        And I click on the "Create LBTT return" menu item
+        Then I should see the "Dashboard" page
+        When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
         When I check the "3 year lease review" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
@@ -6977,7 +7021,7 @@ Feature: LBTT Returns
         And I should see the text "It is the responsibilty of the individual completing this return to check the data is correct and to update as needed (including any relief). Incorrect information can result in penalties and/or prosecution."
 
         When I check the "returns_lbtt_lbtt_return_pre_population_declaration" checkbox
-        When I click on the "Continue" button
+        And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Edit the calculation
@@ -7251,7 +7295,8 @@ Feature: LBTT Returns
 
         # Create an 3 year lease review return
         When I click on the "Go to dashboard" link
-        And I click on the "Create LBTT return" menu item
+        Then I should see the "Dashboard" page
+        When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
         When I check the "3 year lease review" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
@@ -7322,3 +7367,116 @@ Feature: LBTT Returns
         And I check the "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
+
+    Scenario: To test existing return getting populated with old question label for ADS region
+
+        Login with authenticated user
+        Search for the existing return
+        Amend a submitted return
+        Check the dynamic text for ads region
+
+        Given I have signed in
+        Then I should see the "Dashboard" page
+
+        When I click on the 2 nd "Find returns" link
+        Then I should see the "Returns" page
+
+        When I enter "RS2000001SSSS" in the "Return reference" field
+        And I uncheck the "Only my returns" checkbox
+        And I uncheck the "Only returns with an outstanding balance" checkbox
+        And I click on the "Find" button
+        Then I should see the "Returns" page
+
+        # Amend a submitted return
+        When I click on the "Amend" link
+        Then I should see the "Return Summary" page
+        And the table of data is displayed
+            | Address                                    | ADS? |
+            | 1 Peabody Avenue, Hemel Hempstead, HP2 7DX | Yes  |
+        #ADS === YES
+        And the table of data is displayed
+            | Address of existing main residence                                   |           |
+            | Does the buyer intend to sell their main residence within 18 months? | Yes       |
+            | Total consideration attributable to new main residence               |           |
+            | Total consideration liable to ADS                                    | £1,000.00 |
+
+        # Check the dynamic text for region
+        When I click on the "Edit ADS" link
+        Then I should see the "Additional Dwelling Supplement (ADS)" page
+        And I should see the text "Are you amending the return because the buyer has sold or disposed of the previous main residence?"
+
+        When I check the "No" radio button in answer to the question "Are you amending the return because the buyer has sold or disposed of the previous main residence?"
+        And I click on the "Continue" button
+        Then I should see the "Additional Dwelling Supplement (ADS)" page
+        And I should see the text "Is the buyer replacing their main residence?"
+        When I click on the "Continue" button
+        Then I should see the "Additional Dwelling Supplement (ADS)" page
+        And I should see the text "Total consideration liable to ADS"
+
+        When I click on the "Continue" button
+        Then I should see the "Additional Dwelling Supplement (ADS)" page
+        And the radio button "No" should be selected in answer to the question "Does the buyer intend to sell their main residence within 18 months?"
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
+    Scenario: To validate the return and generate the error for transaction section is there is any error in section
+
+        Login with authenticated user
+        Search for the existing return
+        Retrieve the draft return
+        Check the error for transaction section
+        Edit the transaction section
+        Validate the total consideration remaining field
+        Check the error again for transaction section
+
+        # Login with authenticated user
+        Given I have signed in
+        Then I should see the "Dashboard" page
+
+        # Search for the existing return
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+
+        When I enter "RS2000001HHHH" in the "Return reference" field
+        And I uncheck the "Only my returns" checkbox
+        And I click on the "Find" button
+        Then I should see the "Returns" page
+
+        # Retrieve the draft return
+        # Check the error for transaction section
+        When I click on the "Continue" link
+        Then I should see the "Return Summary" page
+        When I click on the "Submit return" button
+        Then I should see the text "There's an error somewhere in the about the transaction - please review the about the transaction section of the return and update it"
+
+        # Edit the transaction section
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+        And I click on the "Continue" button
+        And I should see the "About the dates" page
+        And I click on the "Continue" button
+        And I should see the "About the transaction" page
+        And I click on the "Continue" button
+        And I should see the "Linked transactions" page
+        And I click on the "Continue" button
+        And I should see the "About the transaction" page
+        And I click on the "Continue" button
+        Then I should see the "About future events" page
+        When I check the "No" radio button in answer to the question "Does any part of your consideration depend on future events, like planning permission?"
+        And I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+        And I should see the text "100000" in field "Total consideration"
+        And I should see the text "0" in field "Non-chargeable consideration"
+        And I should see the text "110000" in field "Total consideration remaining"
+        # Validate the total consideration remaining field
+        When I click on the "Continue" button
+        Then I should see the "About the conveyance or transfer" page
+        And I should see the text "Total consideration remaining must be Total consideration plus Linked transaction consideration minus Non-chargeable consideration, and not less than zero"
+
+        When I enter "100000" in the "Total consideration remaining" field
+        And I click on the "Continue" button
+        # Check if there is no error for transaction section
+        Then I should see the "Return Summary" page
+        When I click on the "Submit return" button
+        Then I should not see the text "There's an error somewhere in the about the transaction - please review the about the transaction section of the return and update it"

@@ -123,7 +123,7 @@ module WizardListHelper
       list_item = wizard_list_create_and_validate_item(list_contents[i], record, overrides)
       list_contents[i] = list_item
     end
-    wizard_page_object.send("#{list_attribute}=", list_contents)
+    wizard_page_object.send(:"#{list_attribute}=", list_contents)
     list_contents
   end
 

@@ -136,7 +136,7 @@ module Applications
 
       # is there naturally occurring water & it's WP-WD variant means that, naturally occurring percentage is required
       def naturally_occurring?
-        (naturally_occurring == 'Y' && waste_producer_water_discount?)
+        naturally_occurring == 'Y' && waste_producer_water_discount?
       end
 
       # is there a previous agreement, means that case reference is required
@@ -277,10 +277,10 @@ module Applications
       # @param attribute [Symbol] the name of the attribute to translate
       # @return [Symbol] "attribute_" + extra information to make the translation key
       def translation_attribute(attribute, _translation_options = nil)
-        return "#{attribute}_#{applicant_type}".to_sym if %i[existing_agreement
-                                                             previous_case_reference].include?(attribute)
+        return :"#{attribute}_#{applicant_type}" if %i[existing_agreement
+                                                       previous_case_reference].include?(attribute)
 
-        return "#{attribute}_#{application_type}".to_sym if attribute == :declaration
+        return :"#{attribute}_#{application_type}" if attribute == :declaration
 
         attribute
       end

@@ -61,7 +61,9 @@ module Returns
         # Validation for a blank section is in #save_validation
         return if lbtt_return.effective_date.blank?
 
-        add_error(errors, (I18n.t '.transaction'), lbtt_return) unless lbtt_return.valid?(transaction_attribute_list)
+        return if lbtt_return.valid?(transaction_attribute_list)
+
+        add_error(errors, (I18n.t '.returns.lbtt.summary.add_transaction_description'), lbtt_return)
       end
 
       # Validates the individual reliefs

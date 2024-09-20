@@ -2,6 +2,9 @@
 <% content_for(:page_title, t('.title')) %>
 <% content_for(:public_landing_return_link, t('cancel'))%>
 <% content_for(:notification_banner, rs_notification_banner(display_page: 'REPAYMENT')) %>
+<% unless before_date_of_release?%>
+  <%= ds_warning { t('.ads_warning', link: ds_link(url: external_link_url('LBTT_ADS_DISPOS'), name: t('.lbtt_ads_link'),target: '_blank')).html_safe } %>
+<% end %>
 <%= ds_section_title(section_title: t('.ads_heading')) %>
 <%= ds_paragraph{ t('.ads_description')} %>
 <%= ds_section_title(section_title: t('.eligibility_heading')) %>
@@ -9,4 +12,8 @@
 <%= ds_section_title(section_title: t('.receive_repayment_heading')) %>
 <%= ds_paragraph{ t('.receive_repayment_description')} %>
 <%= ds_button(name: t('cancel'), url: external_link_url('CANCEL_HOME'),type: :cancel ) %>
-<%= ds_button(name: t('continue'), url: claim_claim_payments_eligibility_path(new: true) ) %>
+<%= ds_button(name: t('continue'), url: if before_date_of_release?
+                                           claim_claim_payments_eligibility_path(new: true)
+                                        else 
+                                          claim_claim_payments_effective_date_path(new: true)
+                                        end   ) %>

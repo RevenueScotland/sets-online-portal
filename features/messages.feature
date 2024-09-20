@@ -389,12 +389,14 @@ Feature: Secure Communication
         Then I should see the "Messages" page
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Messages" page
         And I enter "RS2000001AAAA" in the "Reference" field
         And I enter "RANDOM_text,256" in the "Sent by" field
         And I click on the "Find" button
         Then I should receive the message "Sent by is too long (maximum is 255 characters)"
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Messages" page
         And I enter "USER ONE" in the "Sent by" field
         And I click on the "Find" button
         Then I should see the "Messages" page
@@ -404,6 +406,7 @@ Feature: Secure Communication
             | 22/03/2019 11:13 | Portal User One | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Messages" page
         And I clear the "Sent by" field
         And I select "Received" from the "Sent / received"
         And I enter "RS2000001AAAA" in the "Reference" field
@@ -415,6 +418,7 @@ Feature: Secure Communication
         And I should not see the text "Test Message 1 - Reply to Response"
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Messages" page
         And I select "Sent" from the "Sent / received"
         And I click on the "Find" button
         Then I should see the "Messages" page
@@ -425,6 +429,7 @@ Feature: Secure Communication
         And I should not see the text "Test Message 1 - Response"
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Messages" page
         And I select "" from the "Sent / received"
         And I select "General question" from the "Subject"
         And I click on the "Find" button
@@ -436,6 +441,7 @@ Feature: Secure Communication
             | 22/03/2019 11:13 | Portal User One  | Test Message 1                     | RS2000001AAAA | General question | No         | Sent | View     |
 
         When I open the "Show more filter options" summary item
+        Then I should see the "Messages" page
         And I select "" from the "Subject"
         And I enter "RS2000001AAAA" in the "Reference" field
         And I click on the "Find" button

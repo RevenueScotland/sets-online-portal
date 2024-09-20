@@ -412,7 +412,7 @@ def stashDeployables() {
  */
 def unstashDeployables(folder) {
 	dir (folder) {
-		sh "rm -rf *"
+		sh "sudo rm -rf *"
 		unstash name: "${this.getAppName()}-${this.getFullBuildVersion()}"
 	}
 }
@@ -437,7 +437,7 @@ def dockerImageBuild() {
 					cd NdsEnvironment/environment/apps/${APP_NAME}/app-servers-config/redis
 					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-redis redis "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../ui
-					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-app app "${RELEASE_VERSION}" AAA${APP_NAME}
+					sudo DOCKER_REG=lg-bld-cont01.development.local:8443/revscot DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot SRC_DOCKER_REG=lg-bld-cont01.development.local:8443/nds-app-servers SRC_DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-nds-app-servers ../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-app app "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../proxy
 					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-proxy proxy "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../selenium-firefox
