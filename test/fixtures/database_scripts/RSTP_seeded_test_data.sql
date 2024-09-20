@@ -43,6 +43,7 @@ AND wsp_sprm_code in ('PWS_WARN_PAST_DAYS');
 DECLARE
 
   l_par_refno parties.par_refno%TYPE; -- used to hold the current party reference
+  l_par_refno_new parties.par_refno%TYPE; -- used to hold the current party reference
   l_tare_refno tax_returns.tare_refno%TYPE; -- used to hold the current tax reference
   l_last_refno integer := 0; -- used to roll the sequence on for sites
   l_tmp_par_refno parties.par_refno%TYPE; -- used to hold the current party reference for buyers and sellers
@@ -446,6 +447,38 @@ BEGIN
    VALUES
     ('PORTAL.TWO','LBTT');  
 
+    INSERT INTO parties
+    (par_refno,par_type,par_per_surname,par_per_forename,par_marketing_ind,par_fact_type,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'PER','Portal-Test','Adam','N','TAXPAYER','PARTY_ACT_TYPES','SYS',1)
+  RETURNING par_refno INTO l_par_refno_new;
+  
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'3 Park Lane',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+  
+  
+  
+  INSERT INTO users
+     (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
+      usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
+  VALUES
+     ('PORTAL.THREE',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.THREE'||'Password3!'))),
+     TRUNC(SYSDATE),'N','Y','User Three','noreply@necsws.com',3,
+      'N',l_par_refno_new,'Portal User','Three','ENG',TRUNC(SYSDATE));
+      
+  INSERT INTO role_users
+    (rus_rol_code,rus_usr_username)
+  (SELECT rus_rol_code,'PORTAL.THREE'
+    FROM role_users
+   WHERE rus_usr_username = 'TEMPLATE_SELFSRV_USER');
+   
+   INSERT INTO user_services
+    (use_username, use_service)
+   VALUES
+    ('PORTAL.THREE','LBTT');
+
+
   INSERT INTO users
      (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
       usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
@@ -508,6 +541,9 @@ BEGIN
   -- Create the LBTT returns for the PORTAL.ONE account
   --*********************************
   -- Draft and Final
+
+  fl_variables.set_g_username('PORTAL.ONE');
+  
   INSERT INTO tax_returns
    (tare_refno, tare_reference, tare_srv_code)
   VALUES
@@ -527,7 +563,7 @@ BEGIN
     lbtt_calculated,lbtt_due_before_reliefs,lbtt_total_reliefs,lbtt_tax_due,
     lbtt_orig_calculated,lbtt_orig_due_before_reliefs,lbtt_orig_total_reliefs,lbtt_orig_tax_due,
     lbtt_ads_due_ind,lbtt_ads_due,lbtt_orig_ads_due,
-    lbtt_fpay_method,lbtt_fpay_frd_domain,lbtt_fpay_srv_code,lbtt_fpay_wrk_refno
+    lbtt_fpay_method,lbtt_fpay_frd_domain,lbtt_fpay_srv_code,lbtt_fpay_wrk_refno,lbtt_sche_code,lbtt_scve_version_id
 ) VALUES (
     l_tare_refno,1,'P','L','HS/XXX/TH/CO99999.0001',
     '1','PROPERTYTYPE','SYS',1, -- Residential
@@ -540,7 +576,7 @@ BEGIN
     1000,1000,0,1000,
     1000,1000,0,1000,
     'N',0,0,
-    'BACS','PAYMENT TYPE','LBTT',1);
+    'BACS','PAYMENT TYPE','LBTT',1,'LBTT_RATE', 0);
     
   INSERT INTO properties (
     pro_lau_code,pro_lau_frd_domain,pro_lau_wrk_refno, pro_lau_srv_code
@@ -660,7 +696,7 @@ BEGIN
     lbtt_calculated,lbtt_due_before_reliefs,lbtt_total_reliefs,lbtt_tax_due,
     lbtt_orig_calculated,lbtt_orig_due_before_reliefs,lbtt_orig_total_reliefs,lbtt_orig_tax_due,
     lbtt_ads_due_ind,lbtt_ads_due,lbtt_orig_ads_due,
-    lbtt_fpay_method,lbtt_fpay_frd_domain,lbtt_fpay_srv_code,lbtt_fpay_wrk_refno
+    lbtt_fpay_method,lbtt_fpay_frd_domain,lbtt_fpay_srv_code,lbtt_fpay_wrk_refno,lbtt_sche_code,lbtt_scve_version_id
 ) VALUES (
     l_tare_refno,2,'P','D','AAAA BB DDDDFFFF 9999.2',
     '1','PROPERTYTYPE','SYS',1, -- Residential
@@ -673,7 +709,7 @@ BEGIN
     1000,1000,0,1000,
     1000,1000,0,1000,
     'N',0,0,
-    'BACS','PAYMENT TYPE','LBTT',1);
+    'BACS','PAYMENT TYPE','LBTT',1,'LBTT_RATE', 0);
     
   INSERT INTO properties (
     pro_lau_code,pro_lau_frd_domain,pro_lau_wrk_refno, pro_lau_srv_code
@@ -779,7 +815,15 @@ BEGIN
     l_par_refno,l_tare_refno,2,
     'AGENT','LBTT','RETURNPARTYLINKS',1,
     'Y','N','N',l_h_version);
-    
+
+  fl_variables.set_g_username('PORTAL.TWO');
+
+  update lbtt_returns
+  set lbtt_modified_by = 'PORTAL.TWO'
+  where lbtt_tare_refno = l_tare_refno;
+
+  fl_variables.set_g_username('EXTPWSUSER');  
+
   --------
   -- FINAL conveyance more thant 12 months with no ADS claim
   INSERT INTO tax_returns

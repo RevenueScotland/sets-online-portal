@@ -10,7 +10,8 @@ module Dashboard
          customer_reference transaction_type transaction_type_group related_reference
          amount minimum_amount maximum_amount
          actual_date actual_date_from actual_date_to
-         effective_date effective_date_from effective_date_to]
+         effective_date effective_date_from effective_date_to my_returns_transactions_only
+         return_type trans_sort_by srv_code]
     end
 
     # Fields that can be set on a financial transaction filter
@@ -37,14 +38,24 @@ module Dashboard
       params.fetch(:dashboard_financial_transaction_filter, {}).permit(
         :related_reference, :minimum_amount, :maximum_amount, :amount,
         :actual_date, :actual_date_from, :actual_date_to,
-        :effective_date, :effective_date_from, :effective_date_to
+        :effective_date, :effective_date_from, :effective_date_to,
+        :my_returns_transactions_only, :include_outstanding_only,
+        :return_type, :transaction_type_group, :trans_sort_by, :srv_code
       )
+    end
+
+    # Define the ref data codes associated with the attributes to be cached in this model
+    # @return [Hash] <attribute> => <ref data composite key>
+    def cached_ref_data_codes
+      { trans_sort_by: comp_key('TRANSACTIONS_SORT', 'SYS', 'RSTU'),
+        return_type: comp_key('ALL RETURN TYPE', srv_code, 'RSTU'),
+        transaction_group: comp_key('TRANSACTION GROUPS TEXT', srv_code, 'RSTU') }
     end
 
     # Financial transaction filter elements to be passed onto backoffice calls
     # in order to retrieve more specific data
     def request_elements
-      { includeOutstandingOnly: include_outstanding_only,
+      { includeOutstandingOnly: include_outstanding_only?,
         excludeTransfers: exclude_transfers,
         excludeHolds: exclude_holds }
         .merge(request_optional_elements)
@@ -54,8 +65,8 @@ module Dashboard
     private
 
     # Custom override setter for include_outstanding_only to default of false if it's not been set.
-    def include_outstanding_only
-      @include_outstanding_only || false
+    def include_outstanding_only?
+      include_outstanding_only == 'Y'
     end
 
     # Custom override setter for exclude_transfers to default of false if it's not been set.
@@ -68,13 +79,21 @@ module Dashboard
       @exclude_holds || false
     end
 
+    # Custom override setter for my_returns_transactions to default of false if it's not been set.
+    def my_returns_transactions_only?
+      my_returns_transactions_only == 'Y'
+    end
+
     # Filter optional elements
     def request_optional_elements
       { TransactionReference: transaction_reference,
         CustomerReference: customer_reference, TransactionType: transaction_type,
         TransactionTypeGroup: transaction_type_group, RelatedReference: related_reference,
         MinimumAmount: amount.presence || minimum_amount,
-        MaximumAmount: amount.presence || maximum_amount }
+        MaximumAmount: amount.presence || maximum_amount,
+        TransactionsForMyReferencesOnly: my_returns_transactions_only?,
+        RelatedReferenceType: return_type,
+        SortBy: trans_sort_by }
     end
 
     # Filter optional date elements

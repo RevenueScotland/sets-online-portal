@@ -67,14 +67,14 @@ Feature: Roles and Actions
     Then I should see the "Dashboard" page
     And I should not see a link with text "Continue"
     Then I should not see a link with text "Delete"
-    When I click on the "See all returns" link
+    When I click on the 1 st "Find returns" link
     Then I should not see a link with text "Continue"
     Then I should not see a link with text "Delete"
     Then I should not see a link with text "Claim"
 
   Scenario: Read only access to messages
     Given I have signed in "PORTAL.NO.ACCESS" and password "Password1!"
-    When I click on the "See all messages" link
+    When I click on the "Find messages" link
     Then I should see the "Messages" page
     And I click on the 1 st "View" link
     Then I should see the "Message details" page

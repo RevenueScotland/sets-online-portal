@@ -494,6 +494,15 @@
 														<xs:restriction base="xs:decimal"/>
 													</xs:simpleType>
 												</xs:element>
+												<!-- TODO: RSTP-1321 Update LBTTCalculationScheme to CalculationScheme-->
+												<xs:element name="LBTTCalculationScheme" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>LBTT_RETURNS.LBTTCalculationScheme</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string"/>
+													</xs:simpleType>
+												</xs:element>
 											</xs:sequence>
 										</xs:complexType>
 									</xs:element>

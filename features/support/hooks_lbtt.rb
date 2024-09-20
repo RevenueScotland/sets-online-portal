@@ -36,6 +36,7 @@ Before('@mock_address_identifier_details') do
   mock_address_details
 
   lbtt = { :'ins0:FlbtType' => 'CONVEY', :'ins0:PropertyType' => nil,
+           'ins0:LBTTCalculationScheme' => nil,
            :'ins0:EffectiveDate' => nil, :'ins0:RelevantDate' => nil,
            :'ins0:ContractDate' => nil, :'ins0:PreviousOptionInd' => nil,
            :'ins0:ExchangeInd' => nil, :'ins0:UKInd' => nil,

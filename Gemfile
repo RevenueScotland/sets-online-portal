@@ -72,7 +72,8 @@ group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '~> 3.29'
   gem 'capybara-screenshot', require: false
-  gem 'cucumber-rails', require: false
+  # restricted to version 2 until version 3 comes out of beta phase
+  gem 'cucumber-rails', '~> 2.0', require: false
   gem 'selenium-webdriver'
   # add code coverage
   gem 'simplecov', require: false

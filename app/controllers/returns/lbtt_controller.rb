@@ -53,6 +53,9 @@ module Returns
 
       load_party_summary
 
+      # To check whether user have changed the calculated tax values
+      @lbtt_return.calculated_values_changed
+
       # methods above could have updated the return so save it to give wizards access to the new data
       wizard_save(@lbtt_return)
 
@@ -213,8 +216,11 @@ module Returns
 
     # Redirect after a valid submit
     def redirect_submit
+      # for calculated values, provide the reason for changing the values
+      if @lbtt_return.calculation_edited == 'Y'
+        redirect_to returns_lbtt_edit_calculation_reason_path
       # for amendments, provide the amendment reason and check if they want to request a repayment
-      if @lbtt_return.amendment?
+      elsif @lbtt_return.amendment?
         redirect_to returns_lbtt_amendment_reason_path
       # for lease review,assign, termination and amount payable is less than zero
       elsif @lbtt_return.any_lease_review? && @lbtt_return.tax.tax_due_for_return < '0'

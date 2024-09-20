@@ -63,7 +63,7 @@ Feature: User Maintenance
         And I click on the "Create a new user for your account" link
         Then I should see the "New user" page
         When I enter "RANDOM_USERNAME,10,UPCASE" in the "Username" field
-        And I check the "Current" radio button
+        And I check the "Current" radio button in answer to the question "Current"
         And I enter "New User" in the "First name" field
         And I enter "RANDOM_SURNAME,10,UPCASE" in the "Last name" field
         And I enter "noreply@necsws.com" in the "Email address" field

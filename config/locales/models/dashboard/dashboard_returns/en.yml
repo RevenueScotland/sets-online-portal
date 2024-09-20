@@ -51,6 +51,10 @@ en:
         description: "Description"
         return_status: "Return status"
         all_versions: "Include previous versions"
+        sort_by: "Sort by"
+        my_returns_only: "Only my returns"
+        outstanding_balance: "Only returns with an outstanding balance"
+        return_type: "Return type"
     hints:
       dashboard/dashboard_return_filter:
         tare_reference: "Enter part or all of the Revenue Scotland return reference"

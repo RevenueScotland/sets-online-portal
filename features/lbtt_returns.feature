@@ -54,6 +54,7 @@ Feature: LBTT Returns
         Reset the ads amount back to the original values
         Amend the calculation
         Amend the reliefs, checking the validation against the amend calculation values
+        Add reason for amending calculations
         Save the draft
         Retrieve the draft
         Check the data
@@ -82,7 +83,7 @@ Feature: LBTT Returns
 
         # Pick the wrong type at first to check the whole model validation on Submit return (later) works
         # with the correct type (ie doesn't get stuck with the old type)
-        When I check the "Lease" radio button
+        When I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         # Check the dynamic text for the calculation region
@@ -90,9 +91,9 @@ Feature: LBTT Returns
         When I click on the "Back" link
         And if available, click the confirmation dialog
         Then I should see the "About the return" page
-        And the radio button "Lease" should be selected
+        And the radio button "Lease" should be selected in answer to the question "Which return do you want to submit?"
         # Change to a conveyance
-        When I check the "Conveyance or transfer" radio button
+        When I check the "Conveyance or transfer" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         # Check the dynamic text for the calculation region
@@ -122,13 +123,13 @@ Feature: LBTT Returns
         # Add an other organisation (charity) buyer
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
-        When I check the "An other organisation" radio button
+        When I check the "An other organisation" radio button in answer to the question "Who is the buyer?"
         And I click on the "Continue" button
         Then I should see the "Organisation details" page
         And I click on the "Continue" button
         Then I should receive the message "Type of organisation can't be blank"
 
-        When I check the "Other" radio button
+        When I check the "Other" radio button in answer to the question "Type of organisation"
         And I click on the "Continue" button
         Then I should receive the message "Organisation description can't be blank"
 
@@ -147,14 +148,14 @@ Feature: LBTT Returns
 
         When I click on the "Back" link
         Then I should see the "About the buyer" page
-        And the radio button "An other organisation" should be selected
+        And the radio button "An other organisation" should be selected in answer to the question "Who is the buyer?"
 
         When I click on the "Continue" button
         Then I should see the "Organisation details" page
         And I should see the text "Type of organisation"
-        And the radio button "Other" should be selected
+        And the radio button "Other" should be selected in answer to the question "Type of organisation"
 
-        When I check the "Charity" radio button
+        When I check the "Charity" radio button in answer to the question "Type of organisation"
         And I click on the "Continue" button
         Then I should see the "Charity" page
         And I should see the sub-title "Charity details"
@@ -233,7 +234,7 @@ Feature: LBTT Returns
         And I should see a link with text "they are connected (opens in a new window)"
         When I click on the "Continue" button
         Then I should see the text "If they are linked can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the buyer connected to the seller?"
         And I enter "Test relation" in the "How are they connected?" field
         And I click on the "Continue" button
 
@@ -242,7 +243,7 @@ Feature: LBTT Returns
         And I should see a link with text "'representative partner' (opens in a new window)"
         When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the buyer acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
@@ -259,11 +260,11 @@ Feature: LBTT Returns
         # Add an other organisation (partnership) buyer with contact address
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
-        When I check the "An other organisation" radio button
+        When I check the "An other organisation" radio button in answer to the question "Who is the buyer?"
         And I click on the "Continue" button
         Then I should see the "Organisation details" page
 
-        When I check the "Partnership" radio button
+        When I check the "Partnership" radio button in answer to the question "Type of organisation"
         And I click on the "Continue" button
         Then I should see the "Partnership" page
         And I should see the sub-title "Partnership details"
@@ -306,14 +307,14 @@ Feature: LBTT Returns
         Then I should see the "Buyer details" page
         When I click on the "Continue" button
         Then I should see the text "If they are linked can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the buyer connected to the seller?"
         And I enter "Test relation" in the "How are they connected?" field
         And I click on the "Continue" button
 
         Then I should see the "Buyer details" page
         When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the buyer acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
@@ -323,7 +324,7 @@ Feature: LBTT Returns
         # Add a registered company buyer with contact address
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
-        When I check the "An organisation registered with Companies House" radio button
+        When I check the "An organisation registered with Companies House" radio button in answer to the question "Who is the buyer?"
         And I click on the "Continue" button
 
         Then I should see the "Registered company" page
@@ -382,10 +383,10 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer connected to the seller?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And I should see the text "JOHN LEWIS PLC"
@@ -395,12 +396,12 @@ Feature: LBTT Returns
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
 
-        When I check the "An other organisation" radio button
+        When I check the "An other organisation" radio button in answer to the question "Who is the buyer?"
         And I click on the "Continue" button
         Then I should see the "Organisation details" page
         And I should see the text "Type of organisation"
 
-        When I check the "Charity" radio button
+        When I check the "Charity" radio button in answer to the question "Type of organisation"
         And I click on the "Continue" button
         Then I should see the "Charity" page
 
@@ -446,10 +447,10 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "Buyer details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer connected to the seller?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And I should see the text "PrvAdrCheck"
@@ -459,7 +460,7 @@ Feature: LBTT Returns
         When I click on the "Add a seller" link
         Then I should see the "About the seller" page
 
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the seller?"
         And I click on the "Continue" button
 
         Then I should see the "Seller details" page
@@ -626,7 +627,7 @@ Feature: LBTT Returns
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should receive the message "Is the buyer replacing their main residence can't be blank"
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the buyer replacing their main residence?"
         And I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "Total consideration liable to ADS"
@@ -670,7 +671,7 @@ Feature: LBTT Returns
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         Then I should receive the message "Does the buyer intend to sell their main residence within 18 months can't be blank"
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Does the buyer intend to sell their main residence within 18 months?"
         And I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should receive the message "Use the postcode search or enter the address manually"
@@ -717,35 +718,43 @@ Feature: LBTT Returns
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
 
-        When I check the "Residential" radio button
+        When I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter "02-08-2022" in the "Effective date of transaction" date field
-        And I enter "03-08-2022" in the "Relevant date" date field
+        When I enter "02-08-2023" in the "Effective date of transaction" date field
+        And I enter "03-08-2023" in the "Relevant date" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
-        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the transaction part of the sale of a business?"
         And I click on the "Continue" button
         Then I should see the "About future events" page
 
-        When I check the "returns_lbtt_lbtt_return_contingents_event_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Does any part of your consideration depend on future events, like planning permission?"
         And I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
         And I should not see the text "Linked transaction consideration"
 
-        When I enter "1234565" in the "Total consideration" field
+        When I click on the "Continue" button
+        Then I should not see the text "VAT Amount"
+        And I should see the text "Total consideration can't be blank"
+        And I should see the text "Non-chargeable consideration can't be blank"
+        And I should see the text "Total consideration remaining can't be blank"
+
+        When I enter "1234565" in the "returns_lbtt_lbtt_return_total_consideration" field
+        Then I enter "500" in the "Non-chargeable consideration" field
+        And  I enter "1234065" in the "returns_lbtt_lbtt_return_remaining_chargeable" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -809,7 +818,23 @@ Feature: LBTT Returns
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
 
-        When I check the "Non-residential" radio button
+        When I check the "Non-residential" radio button in answer to the question "What is the property type for this transaction?"
+        And I click on the "Continue" button
+        Then I should see the "Non residential reason" page
+        And I click on the "Continue" button
+        Then I should receive the message "Why is the property non-residential can't be blank"
+        And I check the "Plots of land with no dwellings" radio button in answer to the question "Why is the property non-residential?"
+
+        When I check the "Other" radio button in answer to the question "Why is the property non-residential?"
+        Then I should see the text "Other reason"
+        And I click on the "Continue" button
+        Then I should receive the message "Other reason can't be blank"
+
+        When I enter "RANDOM_text,161" in the "Other reason" field
+        And I click on the "Continue" button
+        Then I should receive the message "Other reason is too long (maximum is 160 characters)"
+
+        When I enter "RANDOM_text,160" in the "Other reason" field
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
@@ -830,7 +855,6 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should receive the message "VAT amount can't be blank"
-        And I should receive the message "Total consideration remaining can't be blank"
 
         When I enter "1000" in the "VAT amount" field
         And I enter "1235565" in the "Total consideration remaining" field
@@ -841,11 +865,11 @@ Feature: LBTT Returns
         When I click on the "Edit transaction details" link
         Then I should see the "About the transaction" page
 
-        When I check the "Residential" radio button
+        When I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
-        And I should see the text "02/08/2022" in field "Effective date of transaction"
-        And I should see the text "03/08/2022" in field "Relevant date"
+        And I should see the text "02/08/2023" in field "Effective date of transaction"
+        And I should see the text "03/08/2023" in field "Relevant date"
 
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
@@ -863,7 +887,6 @@ Feature: LBTT Returns
         Then I should see the "About the conveyance or transfer" page
         And I should see the text "1234565" in field "Total consideration"
         And I should not see the text "VAT Amount"
-        And I should not see the text "Total consideration remaining"
 
         When I click on the "Continue" button
         Then I should see the "Return Summary" page
@@ -1007,12 +1030,12 @@ Feature: LBTT Returns
             | ADS - Family units        | £0.00                              | £1,630.00                         |
         And the table of data is displayed
             | About the calculation      | Edit calculation |
-            | LBTT calculated            | £106,497.00      |
+            | LBTT calculated            | £106,437.00      |
             | ADS calculated             | £1,630.00        |
-            | Total liability            | £108,127.00      |
+            | Total liability            | £108,067.00      |
             | Total LBTT reliefs claimed | £100.00          |
             | Total ADS reliefs claimed  | £1,630.00        |
-            | Total tax payable          | £106,397.00      |
+            | Total tax payable          | £106,337.00      |
 
         #Amend the reliefs
         When I click on the "Edit reliefs" link
@@ -1046,12 +1069,12 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
-            | LBTT calculated            | £106,497.00      |
+            | LBTT calculated            | £106,437.00      |
             | ADS calculated             | £1,630.00        |
-            | Total liability            | £108,127.00      |
+            | Total liability            | £108,067.00      |
             | Total LBTT reliefs claimed | £100.00          |
             | Total ADS reliefs claimed  | £1,000.00        |
-            | Total tax payable          | £107,027.00      |
+            | Total tax payable          | £106,967.00      |
 
         # reset the value on ads wizard changes
         When I click on the "Edit reliefs" link
@@ -1074,12 +1097,12 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the calculation      | Edit calculation |
-            | LBTT calculated            | £106,497.00      |
+            | LBTT calculated            | £106,437.00      |
             | ADS calculated             | £1,630.00        |
-            | Total liability            | £108,127.00      |
+            | Total liability            | £108,067.00      |
             | Total LBTT reliefs claimed | £100.00          |
             | Total ADS reliefs claimed  | £1,630.00        |
-            | Total tax payable          | £106,397.00      |
+            | Total tax payable          | £106,337.00      |
 
         # Check the full model validation passes before we touch the Calculate section
         When I click on the "Submit return" button
@@ -1101,12 +1124,12 @@ Feature: LBTT Returns
         Then I should see the "Return Summary" page
         And the table of data is displayed
             | About the calculation      | Edit calculation |
-            | LBTT calculated            | £106,497.00      |
+            | LBTT calculated            | £106,437.00      |
             | ADS calculated             | £2,030.00        |
-            | Total liability            | £108,527.00      |
+            | Total liability            | £108,467.00      |
             | Total LBTT reliefs claimed | £100.00          |
             | Total ADS reliefs claimed  | £2,030.00        |
-            | Total tax payable          | £106,397.00      |
+            | Total tax payable          | £106,337.00      |
 
         # reset the ads amount back to the original values
         When I click on the "Edit ADS" link
@@ -1122,17 +1145,17 @@ Feature: LBTT Returns
         Then I should see the "Return Summary" page
         And the table of data is displayed
             | About the calculation      | Edit calculation |
-            | LBTT calculated            | £106,497.00      |
+            | LBTT calculated            | £106,437.00      |
             | ADS calculated             | £1,630.00        |
-            | Total liability            | £108,127.00      |
+            | Total liability            | £108,067.00      |
             | Total LBTT reliefs claimed | £100.00          |
             | Total ADS reliefs claimed  | £1,630.00        |
-            | Total tax payable          | £106,397.00      |
+            | Total tax payable          | £106,337.00      |
 
         # Calculate
         When I click on the "Edit calculation" link
         Then I should see the "Calculated tax" page
-        And I should see the text "106497" in field "LBTT calculated"
+        And I should see the text "106437" in field "LBTT calculated"
         And I should see the text "1630" in field "ADS calculated"
 
         And I should see the text "100" in field "Total LBTT reliefs claimed"
@@ -1201,6 +1224,29 @@ Feature: LBTT Returns
             | Total ADS reliefs claimed  | £1,700.00        |
             | Total tax payable          | £106,900.00      |
 
+        # Check whether edit calculation reason page is shown if user edits calculated values
+        # Validation check
+        When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+
+        When I enter "RANDOM_text,4001" in the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
+        Then I should receive the message "Why are you editing the calculated values is too long (maximum is 4000 characters)"
+
+        When I clear the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
+        Then I should receive the message "Why are you editing the calculated values can't be blank"
+
+        When I enter "I disagree with calculated values" in the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
+        Then I should see the "Payment and submission" page
+
+        When I click on the "Back" link
+        Then I should see the "Edit calculation reason" page
+        And I should see the text "I disagree with calculated values" in field "Why are you editing the calculated values?"
+
+        When I click on the "Back" link
+        Then I should see the "Return Summary" page
         When I click on the "Save draft" button
         Then I should see the "Your return has been saved" page
         And I should see the text "You can complete or cancel it later using the reference below."
@@ -1213,11 +1259,13 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And I should see "Draft" in the "Return status" select or text field
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see a link with text "Continue"
 
         # Buyer
@@ -1293,12 +1341,12 @@ Feature: LBTT Returns
         # Transaction
         And the table of data is displayed
             | About the calculation      | Edit calculation |
-            | LBTT calculated            | £106,497.00      |
+            | LBTT calculated            | £106,437.00      |
             | ADS calculated             | £1,630.00        |
-            | Total liability            | £108,127.00      |
+            | Total liability            | £108,067.00      |
             | Total LBTT reliefs claimed | £100.00          |
             | Total ADS reliefs claimed  | £1,630.00        |
-            | Total tax payable          | £106,397.00      |
+            | Total tax payable          | £106,337.00      |
 
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
@@ -1309,8 +1357,8 @@ Feature: LBTT Returns
         Then I should see the text "How are you paying can't be blank"
         And I should see the text "The declaration must be accepted"
 
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should see the text "Your Land and Buildings Transaction Tax return has now been submitted."
@@ -1329,11 +1377,13 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 2 nd "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And the checkbox "Only returns with an outstanding balance" should be checked
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see a link with text "Amend"
 
         # Amend the return for a repayment
@@ -1356,7 +1406,7 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should receive the message "Do you want to request a repayment from Revenue Scotland can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Do you want to request a repayment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the "Claim repayment" page
 
@@ -1406,8 +1456,8 @@ Feature: LBTT Returns
         Then I should see the "Payment and submission" page
 
         # payment and submission
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete" checkbox
 
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
@@ -1419,12 +1469,13 @@ Feature: LBTT Returns
 
         When I have signed in "ADAM.PORTAL-TEST" and password "Password1!"
         Then I should see the "Dashboard" page
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
         When I enter the stored value "notification_banner_reference" in field "dashboard_dashboard_return_filter_tare_reference"
+        And I select "Filed" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
-        And I click on the "Amend" link
+        Then I should see the "Returns" page
+        When I click on the "Amend" link
         Then I should see the "Return Summary" page
 
         # Sell the main property
@@ -1433,7 +1484,7 @@ Feature: LBTT Returns
         And I should see the text "Are you amending the return because the buyer has sold or disposed of the previous main residence?"
 
         # Check that no navigates to the original pages
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are you amending the return because the buyer has sold or disposed of the previous main residence?"
         And I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "Is the buyer replacing their main residence?"
@@ -1442,12 +1493,12 @@ Feature: LBTT Returns
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "Are you amending the return because the buyer has sold or disposed of the previous main residence?"
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Are you amending the return because the buyer has sold or disposed of the previous main residence?"
         And I click on the "Continue" button
         And I click on the "Continue" button
         Then I should receive the message "What is the date of sale or disposal of the previous main residence can't be blank"
 
-        When I enter "03-07-2022" in the "What is the date of sale or disposal of the previous main residence?" date field
+        When I enter "03-07-2023" in the "What is the date of sale or disposal of the previous main residence?" date field
         And I click on the "Continue" button
         Then I should see the text "Confirm the address of the previous main residence that has been sold or disposed of"
         When I enter "EH1 1HU" in the "address_summary_postcode" field
@@ -1463,6 +1514,17 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
+        # Changes in calculations value
+        When I click on the "Edit calculation" link
+        Then I should see the "Calculated tax" page
+        When I enter "107000" in the "LBTT calculated" field
+        And I enter "1700" in the "ADS calculated" field
+        And I click on the "Continue" button
+        Then I should see the "Reliefs on this transaction" page
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+
         # Save the draft and reload it with the ads details on
         When I click on the "Save draft" button
         Then I should see the "Your return has been saved" page
@@ -1473,18 +1535,20 @@ Feature: LBTT Returns
 
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And I should see "Draft" in the "Return status" select or text field
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         When I click on the "Continue" link
         Then I should see the "Return Summary" page
 
         # Check the data is still present
         When I click on the "Edit ADS" link
         Then I should see the "Additional Dwelling Supplement (ADS)" page
-        And the radio button "returns_lbtt_ads_ads_sold_main_yes_no_y" should be selected
+        And the radio button "Yes" should be selected in answer to the question "Are you amending the return because the buyer has sold or disposed of the previous main residence?"
         And I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I click on the "Continue" button
@@ -1500,13 +1564,16 @@ Feature: LBTT Returns
 
         # request repayment and check amount is preset
         When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+        When I enter "Test" in the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
         Then I should see the "Amendment reason" page
 
         When I enter "Test" in the "Tell us why you are amending this return" field
         And I click on the "Continue" button
 
         Then I should see the "Repayment details" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Do you want to request a repayment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the "Claim repayment" page
         And I should see the text "4321" in field "How much are you claiming for repayment?"
@@ -1558,7 +1625,7 @@ Feature: LBTT Returns
         Then I should see the "Payment and submission" page
 
         # Submit amendment
-        When I check the "BACS" radio button
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
         And I check the "returns_lbtt_lbtt_return[declaration]" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
@@ -1573,7 +1640,7 @@ Feature: LBTT Returns
             | Property address           | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
             | Buyer                      | JOHN LEWIS PLC                            |
             | Description of transaction | Conveyance or transfer                    |
-            | Effective date             | 02/08/2022                                |
+            | Effective date             | 02/08/2023                                |
 
     Scenario: Make a Conveyance return without ADS for an Agent, check that DD is only available when previous return was DD
 
@@ -1620,7 +1687,7 @@ Feature: LBTT Returns
         Given I have signed in "PORTAL.NEW.USERS" and password "Password1!"
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
-        When I check the "Conveyance or transfer" radio button
+        When I check the "Conveyance or transfer" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -1636,11 +1703,12 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
 
         When I click on the 1 st "Download PDF" link to download a file
         Then I should see the downloaded "PDF" content of "LBTT" by looking up "notification_banner_reference"
@@ -1657,7 +1725,7 @@ Feature: LBTT Returns
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
 
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the buyer?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
 
@@ -1684,13 +1752,13 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "Buyer's contact address" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer connected to the seller?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And I should see the text "James Smith"
@@ -1699,7 +1767,7 @@ Feature: LBTT Returns
         #Registered company as a seller
         When I click on the "Add a seller" link
         Then I should see the "About the seller" page
-        When I check the "An organisation registered with Companies House" radio button
+        When I check the "An organisation registered with Companies House" radio button in answer to the question "Who is the seller?"
         And I click on the "Continue" button
 
         Then I should see the "Registered company" page
@@ -1764,7 +1832,7 @@ Feature: LBTT Returns
         And I should see the text "Does Additional Dwelling Supplement (ADS) apply to this transaction?"
         And I click on the "Continue" button
         Then I should receive the message "Does Additional Dwelling Supplement (ADS) apply to this transaction can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Does Additional Dwelling Supplement (ADS) apply to this transaction?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -1772,7 +1840,7 @@ Feature: LBTT Returns
         When I click on the "Add ADS" link
         Then I should see the "Additional Dwelling Supplement (ADS)" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer replacing their main residence?"
         And I click on the "Continue" button
 
         Then I should see the text "Total consideration liable to ADS"
@@ -1780,7 +1848,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "Additional Dwelling Supplement (ADS)" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Does the buyer intend to sell their main residence within 18 months?"
         And I click on the "Continue" button
 
 
@@ -1788,23 +1856,23 @@ Feature: LBTT Returns
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
 
-        When I check the "Residential" radio button
+        When I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter "02-08-2022" in the "Effective date of transaction" date field
-        And I enter "03-08-2022" in the "Relevant date" date field
-        And I enter "03-08-2022" in the "Date of contract or conclusion of missives" date field
+        When I enter "02-08-2023" in the "Effective date of transaction" date field
+        And I enter "03-08-2023" in the "Relevant date" date field
+        And I enter "03-08-2023" in the "Date of contract or conclusion of missives" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
-        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
         # Test core list processing for add and delete, including error handling
         Then I should see the "Linked transactions" page
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Are there any linked transactions?"
         Then I should not see the button with text "Delete row"
 
         When I click on the "Continue" button
@@ -1873,12 +1941,12 @@ Feature: LBTT Returns
         When I enter "1000" in the "returns_lbtt_lbtt_return_returns_lbtt_link_transactions_0_consideration_amount" field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the transaction part of the sale of a business?"
         And I check the "Goodwill" checkbox
         And I click on the "Continue" button
         And  I should see the "About future events" page
 
-        When I check the "returns_lbtt_lbtt_return_contingents_event_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Does any part of your consideration depend on future events, like planning permission?"
         And I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
         And I should see the text "1000" in field "Linked transaction consideration"
@@ -2393,19 +2461,22 @@ Feature: LBTT Returns
         And I should see the text "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s):"
         And I should see the text "I, the agent for the buyer(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         And I should not see the text "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
-        When I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "Direct Debit" radio button
+        When I check the "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "Direct Debit" radio button in answer to the question "How are you paying?"
         And I click on the "Submit return" button
         Then I should see the text "The authority declaration can't be blank"
         # Must be checked again as cleared on error
-        When I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        When I check the "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "Yes" radio button in answer to the question "I, the agent for the buyer(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should see the text "Return reference"
         And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
         And I should store the reference from the notification panel as "notification_banner_reference"
         And I should see the text "If you have any queries about this return"
+        And I should see a link with text "Download PDF"
+        When I click on the "Download PDF" link to download a file
+        Then I should see the downloaded "PDF" content of "LBTT" by looking up "notification_banner_reference"
         And the table of data is displayed
             | Title number (if provided) | ABN 1234                                  |
             | Property address           | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
@@ -2415,8 +2486,8 @@ Feature: LBTT Returns
         # Check you can't submit again
         When I go to the "returns/lbtt/declaration" page
         Then I should see the "Payment and submission" page
-        When I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        When I check the "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "Yes" radio button in answer to the question "I, the agent for the buyer(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         And I click on the "Submit return" button
         Then I should receive the message "This return has already been submitted. If you are unsure that the return has been submitted, save a draft version and check on the dashboard"
 
@@ -2424,11 +2495,13 @@ Feature: LBTT Returns
         When I click on the "Cancel" menu item
         And if available, click the confirmation dialog
         Then I should see the "Dashboard" page
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 2 nd "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And the checkbox "Only returns with an outstanding balance" should be checked
         When I enter the stored value "notification_banner_reference" in field "dashboard_dashboard_return_filter_tare_reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         When I click on the "Amend" link
         Then I should see the "Return Summary" page
         # Check no warning messages are shown on amend
@@ -2447,15 +2520,15 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Repayment details" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Do you want to request a repayment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
         And the radio button labelled "Direct Debit" should exist
-        And the radio button "Direct Debit" should be selected
+        And the radio button "Direct Debit" should be selected in answer to the question "How are you paying?"
         And I should not see the text "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
-        When I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
-        And I check the "Cheque" radio button
+        When I check the "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "Yes" radio button in answer to the question "I, the agent for the buyer(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        And I check the "Cheque" radio button in answer to the question "How are you paying?"
         And I click on the "Back" link
         Then I should see the "Repayment details" page
         When I click on the "Back" link
@@ -2474,11 +2547,12 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And I should see "Draft" in the "Return status" select or text field
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see a link with text "Continue"
 
         # Submit the returns as BACS checking that DD is still available
@@ -2489,15 +2563,15 @@ Feature: LBTT Returns
         When I enter "Test" in the "Tell us why you are amending this return" field
         And I click on the "Continue" button
         Then I should see the "Repayment details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Do you want to request a repayment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
         And the radio button labelled "Direct Debit" should exist
-        And the radio button "Direct Debit" should be selected
+        And the radio button "Direct Debit" should be selected in answer to the question "How are you paying?"
         And I should not see the text "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
-        When I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
-        And I check the "BACS" radio button
+        When I check the "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "Yes" radio button in answer to the question "I, the agent for the buyer(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        And I check the "BACS" radio button in answer to the question "How are you paying?"
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should see the text "Return reference"
@@ -2507,11 +2581,12 @@ Feature: LBTT Returns
         # Check that DD is no longer available
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
         When I enter the stored value "notification_banner_reference" in field "dashboard_dashboard_return_filter_tare_reference"
+        And I select "Filed" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         When I click on the "Amend" link
         Then I should see the "Return Summary" page
         When I click on the "Submit return" button
@@ -2519,7 +2594,7 @@ Feature: LBTT Returns
         When I enter "Test" in the "Tell us why you are amending this return" field
         And I click on the "Continue" button
         Then I should see the "Repayment details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Do you want to request a repayment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
         And the radio button labelled "Direct Debit" should not exist
@@ -2552,13 +2627,13 @@ Feature: LBTT Returns
         # Verify party details are cleared when starting a new return, first start a return
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
-        When I check the "Conveyance or transfer" radio button
+        When I check the "Conveyance or transfer" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
 
         # put party details into the wizard cache
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the buyer?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
         When I enter "Victoria" in the "Last name" field
@@ -2585,7 +2660,7 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        When I check the "Lease" radio button
+        When I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -2594,13 +2669,13 @@ Feature: LBTT Returns
         Then I should see the "About the tenant" page
         And I click on the "Continue" button
         Then I should receive the message "Who they are can't be blank"
-        When I check the "An other organisation" radio button
+        When I check the "An other organisation" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Organisation details" page
         And I click on the "Continue" button
         Then I should receive the message "Type of organisation can't be blank"
 
-        When I check the "Trust" radio button
+        When I check the "Trust" radio button in answer to the question "Type of organisation"
         And I click on the "Continue" button
         Then I should see the "Trust" page
         And I should see the sub-title "Trust details"
@@ -2645,14 +2720,14 @@ Feature: LBTT Returns
         Then I should see the "Tenant details" page
         And I should see the text "The tenant and landlord are connected if they have an existing personal or business relationship. See guidance on if they are connected (opens in a new window) for further details"
         And I should see a link with text "they are connected (opens in a new window)"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I enter "Test relation" in the "How are they connected?" field
         And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
         And I should see the text "See guidance on the meaning of 'representative partner' (opens in a new window) for further details"
         And I should see a link with text "'representative partner' (opens in a new window)"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
@@ -2663,11 +2738,11 @@ Feature: LBTT Returns
         #Landlord
         When I click on the "Add a landlord" link
         Then I should see the "About the landlord" page
-        When I check the "An other organisation" radio button
+        When I check the "An other organisation" radio button in answer to the question "Who is the landlord?"
         And I click on the "Continue" button
         Then I should see the "Organisation details" page
         # Company
-        When I check the "Company" radio button
+        When I check the "Company" radio button in answer to the question "Type of organisation"
         And I click on the "Continue" button
 
         Then I should see the "Company" page
@@ -2729,7 +2804,7 @@ Feature: LBTT Returns
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
 
-        When I check the "Residential" radio button
+        When I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
@@ -2746,29 +2821,29 @@ Feature: LBTT Returns
         And I should receive the message "Lease start date must be before lease end date"
         And I should receive the message "Lease end date must be after lease start date"
 
-        When I enter "02-08-2022" in the "Effective date of transaction" date field
-        And I enter "03-08-2022" in the "Relevant date" date field
+        When I enter "02-08-2023" in the "Effective date of transaction" date field
+        And I enter "03-08-2023" in the "Relevant date" date field
         And I enter "10-10-2022" in the "Lease start date" date field
         And I enter "08-10-2026" in the "Lease end date" date field
         And I clear the "Date of contract or conclusion of missives" field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
-        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
 
         Then I should see the "Linked transactions" page
         When I click on the "Continue" button
         Then I should receive the message "Are there any linked transactions can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Are there any linked transactions?"
         Then I should see the text "Return reference (if known)"
         And I should see the text "NPV (inc VAT)"
         And I should see the text "Premium (inc VAT)"
         When I enter "1234" in the "returns_lbtt_lbtt_return_returns_lbtt_link_transactions_0_npv_inc" field
         And I enter "456" in the "returns_lbtt_lbtt_return_returns_lbtt_link_transactions_0_premium_inc" field
-        And I click on the "Continue" button
+        And I press the enter button on the "returns_lbtt_lbtt_return_returns_lbtt_link_transactions_0_premium_inc" field
         Then I should see the "About the lease values" page
         # about the lease_values rental years
         And I click on the "Continue" button
@@ -2793,7 +2868,7 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should receive the message "Is this the same value for all rental years can't be blank"
         # Validation for rental years
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is this the same value for all rental years?"
         # Rental years
         Then I should see the text "Year 4"
         And I should not see the text "Year 5"
@@ -2871,7 +2946,7 @@ Feature: LBTT Returns
         # Premium paid
         And I click on the "Continue" button
         Then I should receive the message "Is a premium being paid can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is a premium being paid?"
         And I click on the "Continue" button
         Then I should receive the message "Premium amount (inc VAT) can't be blank"
         And I should receive the message "What is the relevant rent amount for this transaction can't be blank"
@@ -2880,14 +2955,14 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should receive the message "What is the relevant rent amount for this transaction can't be blank"
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is a premium being paid?"
         And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
 
         When I click on the "Back" link
         Then I should see the "About the lease values" page
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is a premium being paid?"
 
         When I enter "invalid" in the "Premium amount (inc VAT)" field
         And I enter "invalid" in the "What is the relevant rent amount for this transaction?" field
@@ -3001,8 +3076,8 @@ Feature: LBTT Returns
         And the table of data is displayed
             | About the transaction                                  | Edit        |
             | What is the property type for this transaction?        | Residential |
-            | Effective date of transaction                          | 02/08/2022  |
-            | Relevant date                                          | 03/08/2022  |
+            | Effective date of transaction                          | 02/08/2023  |
+            | Relevant date                                          | 03/08/2023  |
             | Lease start date                                       | 10/10/2022  |
             | Lease end date                                         | 08/10/2026  |
             | Are there any linked transactions?                     | Yes         |
@@ -3066,8 +3141,8 @@ Feature: LBTT Returns
         And the table of data is displayed
             | About the transaction                                  | Edit          |
             | What is the property type for this transaction?        | Residential   |
-            | Effective date of transaction                          | 02/08/2022    |
-            | Relevant date                                          | 03/08/2022    |
+            | Effective date of transaction                          | 02/08/2023    |
+            | Relevant date                                          | 03/08/2023    |
             | Lease start date                                       | 10/10/2022    |
             | Lease end date                                         | 08/10/2026    |
             | Are there any linked transactions?                     | Yes           |
@@ -3091,12 +3166,12 @@ Feature: LBTT Returns
         And I should see a link with text "Go to dashboard"
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
 
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see a link with text "Continue"
 
         When I click on the "Continue" link
@@ -3151,7 +3226,7 @@ Feature: LBTT Returns
         Then I should see the "About the return" page
 
         # Create an lease return
-        And I check the "Lease" radio button
+        And I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         # Validate the lease model
@@ -3194,7 +3269,7 @@ Feature: LBTT Returns
         Then I should see the "About the tenant" page
         And I click on the "Continue" button
         Then I should receive the message "Who they are can't be blank"
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
@@ -3223,12 +3298,12 @@ Feature: LBTT Returns
         Then I should see the "Tenant's contact address" page
         When I click on the "Continue" button
         Then I should receive the message "Should we use a different address for future correspondence in relation to this return can't be blank"
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
         Then I should see the text "Is the tenant connected to the landlord?"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I click on the "Continue" button
         Then I should receive the message "How are they connected can't be blank"
 
@@ -3241,7 +3316,7 @@ Feature: LBTT Returns
         Then I should see the "Tenant details" page
         When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
@@ -3255,7 +3330,7 @@ Feature: LBTT Returns
         Then I should see the "About the landlord" page
         And I click on the "Continue" button
         Then I should receive the message "Who they are can't be blank"
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the landlord?"
         And I click on the "Continue" button
         Then I should see the "Landlord details" page
 
@@ -3276,25 +3351,25 @@ Feature: LBTT Returns
         # Add transactions details
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
-        And I check the "Residential" radio button
+        And I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
-        When I enter "02-08-2022" in the "Effective date of transaction" date field
-        And I enter "03-08-2022" in the "Relevant date" date field
-        And I enter "03-08-2022" in the "Date of contract or conclusion of missives" date field
+        When I enter "02-08-2023" in the "Effective date of transaction" date field
+        And I enter "03-08-2023" in the "Relevant date" date field
+        And I enter "03-08-2023" in the "Date of contract or conclusion of missives" date field
         And I enter "10-10-2022" in the "Lease start date" date field
         And I enter "08-10-2026" in the "Lease end date" date field
         And I click on the "Continue" button
 
         Then I should see the "About the transaction" page
-        And I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
 
         Then I should see the "Linked transactions" page
         # linked-transactions - select no to get positive calculation results
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
@@ -3303,7 +3378,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is this the same value for all rental years?"
         # Rental years
         Then I should see the text "Year 4"
         When I enter "350100" in the "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_1_rent" field
@@ -3313,7 +3388,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is a premium being paid?"
         When I enter "352000" in the "Premium amount" field
         And I enter "351000" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
@@ -3328,8 +3403,8 @@ Feature: LBTT Returns
         # Save return reference
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
-        And I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         And I check the "returns_lbtt_lbtt_return[declaration]" checkbox
         And I check the "returns_lbtt_lbtt_return[lease_declaration]" checkbox
         And I click on the "Submit return" button
@@ -3345,7 +3420,7 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         And I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
-        And I check the "Assignation" radio button
+        And I check the "Assignation" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
         And I click on the "Continue" button
@@ -3370,7 +3445,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
         And I should receive the message "What was the original return effective date is invalid"
-        When I enter "02-08-2022" in the "What was the original return effective date" date field
+        When I enter "02-08-2023" in the "What was the original return effective date" date field
         And I click on the "Continue" button
 
         # Validate the pre population declaration page
@@ -3401,12 +3476,15 @@ Feature: LBTT Returns
         And I should see a link with text "Go to dashboard"
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 2 nd "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And the checkbox "Only returns with an outstanding balance" should be checked
 
         When I enter the stored value "notification_banner_reference" in field "Return reference"
+        And I uncheck the "Only returns with an outstanding balance" checkbox
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
 
         When I click on the "Continue" link
         Then I should see the "Return Summary" page
@@ -3512,12 +3590,12 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        And the radio button "No" should be selected
+        And the radio button "No" should be selected in answer to the question "Should we use a different address for future correspondence in relation to this return?"
 
         When I click on the "Continue" button
         Then I should see the "Tenant details" page
         And I should see the text "Is the tenant connected to the landlord?"
-        And the radio button "Yes" should be selected
+        And the radio button "Yes" should be selected in answer to the question "Is the tenant connected to the landlord?"
         And I should see the text "Test relation" in field "How are they connected?"
 
         When I click on the "Continue" button
@@ -3534,7 +3612,7 @@ Feature: LBTT Returns
         When I click on the "Add a new tenant" link
 
         Then I should see the "About the new tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the new tenant?"
         And I click on the "Continue" button
 
         Then I should see the "New tenant details" page
@@ -3566,20 +3644,20 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "New tenant's contact address" page
-        And I check the "No" radio button
+        And I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
 
         When I click on the "Continue" button
         Then I should see the "New tenant details" page
         When I click on the "Continue" button
         Then I should receive the message "If they are linked can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the new tenant connected to the landlord?"
         And I enter "Test relation" in the "How are they connected?" field
         And I click on the "Continue" button
 
         Then I should see the "New tenant details" page
         When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the new tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
@@ -3592,7 +3670,7 @@ Feature: LBTT Returns
         When I click on the "Add a new tenant" link
 
         Then I should see the "About the new tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the new tenant?"
         And I click on the "Continue" button
 
         Then I should see the "New tenant details" page
@@ -3620,16 +3698,16 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "New tenant's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
 
         Then I should see the "New tenant details" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the new tenant connected to the landlord?"
         And I enter "Test relation" in the "How are they connected?" field
         And I click on the "Continue" button
 
         Then I should see the "New tenant details" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the new tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
@@ -3647,17 +3725,17 @@ Feature: LBTT Returns
         When I click on the "Edit transaction details" link
         Then I should see the "About the dates" page
         # Please note that readonly dates are shown in DD/MM/YYYY format instead of the entered DD-MM-YYYY format
-        And I should see the text "02/08/2022" in field "Effective date of transaction"
+        And I should see the text "02/08/2023" in field "Effective date of transaction"
         And I should see the empty field "Relevant date"
-        And I enter "03/08/2022" in the "Relevant date" date field
-        And I should see the text "03/08/2022" in field "Date of contract or conclusion of missives"
+        And I enter "03/08/2023" in the "Relevant date" date field
+        And I should see the text "03/08/2023" in field "Date of contract or conclusion of missives"
         And I should see the text "10/10/2022" in field "Lease start date"
         And I should see the text "08/10/2026" in field "Lease end date"
         And I click on the "Continue" button
 
         Then I should see the "Linked transactions" page
         # linked-transactions - select no to get positive calculation results
-        When the radio button "No" should be selected
+        When the radio button "No" should be selected in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
@@ -3666,7 +3744,7 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        And the radio button "No" should be selected
+        And the radio button "No" should be selected in answer to the question "Is this the same value for all rental years?"
         # Rental years
         Then I should see the text "350100" in field "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_1_rent"
         And I should see the text "360200" in field "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_2_rent"
@@ -3675,7 +3753,7 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        And the radio button "Yes" should be selected
+        And the radio button "Yes" should be selected in answer to the question "Is a premium being paid?"
         And I should see the text "352000" in field "Premium amount"
         And I should see the text "351000" in field "What is the relevant rent amount for this transaction?"
         And I click on the "Continue" button
@@ -3689,8 +3767,8 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the transaction                                  | Edit          |
-            | Effective date of transaction                          | 02/08/2022    |
-            | Relevant date                                          | 03/08/2022    |
+            | Effective date of transaction                          | 02/08/2023    |
+            | Relevant date                                          | 03/08/2023    |
             | Lease start date                                       | 10/10/2022    |
             | Lease end date                                         | 08/10/2026    |
             | Are there any linked transactions?                     | No            |
@@ -3706,8 +3784,8 @@ Feature: LBTT Returns
             | LBTT tax liability on rent     | £11,530.00 |
             | LBTT tax liability on premium  | £7,600.00  |
             | Total tax payable              | £19,130.00 |
-            | Tax payable on previous return |            |
-            | Tax payable for this return    | £19,130.00 |
+            | Tax payable on previous return | £22,980.00 |
+            | Tax payable for this return    | £-3,850.00 |
 
         # Check the date warnings are not given for a lease assignation
         And I should not see the text "This is usually more recent than this."
@@ -3715,18 +3793,29 @@ Feature: LBTT Returns
         And I should not see a link with text "You can edit the transaction details if you need to"
 
         When I click on the "Submit return" button
+        Then I should see the "Claim repayment" page
+        And I should see the text "3850" in field "How much are you claiming for repayment?"
+        And field "How much are you claiming for repayment?" should be readonly
+        And I click on the "Continue" button
+        Then I should see the "Enter bank details" page
 
+        When I enter "Fred Flintstone" in the "Name of the account holder" field
+        And I enter "12345678" in the "Bank / building society account number" field
+        And I enter "10-11-12" in the "Branch sort code" field
+        And I enter "Natwest" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+
+        Then I should see the "Declaration" page
+        When I check the "returns_lbtt_lbtt_return_repayment_agent_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
-        And I should see the text "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s):"
-        And I should see the text "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
-        And I should see the text "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
 
-        When I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
-        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
-
-        And I click on the "Submit return" button
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        And I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies" checkbox
+        When I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should store the reference from the notification panel as "notification_banner_reference"
         And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
@@ -3734,11 +3823,12 @@ Feature: LBTT Returns
         # Load that return for amending
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
-        And I enter the stored value "notification_banner_reference" in field "dashboard_dashboard_return_filter_tare_reference"
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        When I enter the stored value "notification_banner_reference" in field "dashboard_dashboard_return_filter_tare_reference"
+        And I select "Filed" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I click on the "Amend" link
         Then I should see the "Return Summary" page
         And I should see the text "The amounts in this section will be automatically calculated when you create or update the transaction section. You can edit the 'LBTT tax liability on rent' or 'LBTT tax liability on premium' before you submit the return"
@@ -3748,11 +3838,28 @@ Feature: LBTT Returns
         When I enter "Test" in the "Tell us why you are amending this return" field
         And I click on the "Continue" button
 
+        Then I should see the "Claim repayment" page
+        And I should see the text "3850" in field "How much are you claiming for repayment?"
+        And field "How much are you claiming for repayment?" should be readonly
+        And I click on the "Continue" button
+        Then I should see the "Enter bank details" page
+
+        When I enter "Fred Flintstone" in the "Name of the account holder" field
+        And I enter "12345678" in the "Bank / building society account number" field
+        And I enter "10-11-12" in the "Branch sort code" field
+        And I enter "Natwest" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+
+        Then I should see the "Declaration" page
+        When I check the "returns_lbtt_lbtt_return_repayment_agent_declaration" checkbox
+        And I check the "returns_lbtt_lbtt_return_repayment_declaration" checkbox
+        And I click on the "Continue" button
+
         Then I should see the "Payment and submission" page
-        When I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
-        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
+        When I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        And I check the "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies" checkbox
 
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
@@ -3761,7 +3868,7 @@ Feature: LBTT Returns
             | Property address             | Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS |
             | Tenant                       | Mr TenantFirstname TenantSurname                                                 |
             | Description of transaction   | Assignation                                                                      |
-            | Effective date               | 02/08/2022                                                                       |
+            | Effective date               | 02/08/2023                                                                       |
             | Your reference (if provided) | my agent ref                                                                     |
         And I should see a link with text "Download PDF"
 
@@ -3771,12 +3878,12 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         And I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
-        When I check the "3 year lease review" radio button
+        When I check the "3 year lease review" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
 
         When I enter the stored value "notification_banner_reference_orig" in field "What was the original return reference"
-        And I enter "02-08-2022" in the "What was the original return effective date" date field
+        And I enter "02-08-2023" in the "What was the original return effective date" date field
         And I click on the "Continue" button
 
         # Validate the pre population declaration on Declaration page
@@ -3792,7 +3899,7 @@ Feature: LBTT Returns
         Then I should see the "Return Summary" page
         When I click on the "Edit transaction details" link
         Then I should see the "About the dates" page
-        And I enter "02-08-2025" in the "Relevant date" date field
+        And I enter "02-08-2026" in the "Relevant date" date field
         When I click on the "Continue" button
         Then I should see the "Linked transactions" page
         When I click on the "Continue" button
@@ -3860,13 +3967,13 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        And I check the "Lease" radio button
+        And I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I enter "surname" in the "Last name" field
@@ -3890,14 +3997,14 @@ Feature: LBTT Returns
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -3920,23 +4027,23 @@ Feature: LBTT Returns
 
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
-        And I check the "Residential" radio button
+        And I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
         And I enter "01-01-2019" in the "Effective date of transaction" date field
-        And I enter "01-01-2022" in the "Relevant date" date field
+        And I enter "01-01-2023" in the "Relevant date" date field
         And I enter "01-01-2019" in the "Lease start date" date field
         And I enter "01-01-2029" in the "Lease end date" date field
 
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
-        And I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
         And I should see the "About the lease values" page
         And I enter "1234440405" in the "How much is the rent for the first year (inc VAT)?" field
@@ -3944,10 +4051,10 @@ Feature: LBTT Returns
         Then I should see the "About the lease values" page
         When I click on the "Continue" button
         Then I should receive the message "Is this the same value for all rental years can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is this the same value for all rental years?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is a premium being paid?"
         And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
         When I enter "100" in the "Net Present Value (NPV)" field
@@ -3957,7 +4064,7 @@ Feature: LBTT Returns
         #Landlord
         When I click on the "Add a landlord" link
         Then I should see the "About the landlord" page
-        When I check the "An organisation registered with Companies House" radio button
+        When I check the "An organisation registered with Companies House" radio button in answer to the question "Who is the landlord?"
         And I click on the "Continue" button
 
         Then I should see the "Registered company" page
@@ -3975,9 +4082,12 @@ Feature: LBTT Returns
         And I should see the text "NORTHGATE PUBLIC SERVICES LIMITED"
 
         When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+        When I enter "Test" in the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
-        And I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         And I check the "returns_lbtt_lbtt_return[declaration]" checkbox
         And I check the "returns_lbtt_lbtt_return[lease_declaration]" checkbox
         And I click on the "Submit return" button
@@ -3992,13 +4102,13 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        And I check the "Lease" radio button
+        And I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I enter "surname" in the "Last name" field
@@ -4022,14 +4132,14 @@ Feature: LBTT Returns
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -4052,23 +4162,23 @@ Feature: LBTT Returns
 
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
-        And I check the "Residential" radio button
+        And I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
         And I enter "01-01-2019" in the "Effective date of transaction" date field
-        And I enter "01-01-2022" in the "Relevant date" date field
+        And I enter "01-01-2023" in the "Relevant date" date field
         And I enter "01-01-2019" in the "Lease start date" date field
         And I enter "01-01-2029" in the "Lease end date" date field
 
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
-        And I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
         And I should see the "About the lease values" page
         And I enter "12344404056675" in the "How much is the rent for the first year (inc VAT)?" field
@@ -4076,10 +4186,10 @@ Feature: LBTT Returns
         Then I should see the "About the lease values" page
         When I click on the "Continue" button
         Then I should receive the message "Is this the same value for all rental years can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is this the same value for all rental years?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is a premium being paid?"
         And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
         When I enter "100997979" in the "Net Present Value (NPV)" field
@@ -4089,7 +4199,7 @@ Feature: LBTT Returns
         #Landlord
         When I click on the "Add a landlord" link
         Then I should see the "About the landlord" page
-        When I check the "An organisation registered with Companies House" radio button
+        When I check the "An organisation registered with Companies House" radio button in answer to the question "Who is the landlord?"
         And I click on the "Continue" button
 
         Then I should see the "Registered company" page
@@ -4107,9 +4217,12 @@ Feature: LBTT Returns
         And I should see the text "NORTHGATE PUBLIC SERVICES LIMITED"
 
         When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+        When I enter "Test" in the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
-        And I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        And I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         And I check the "returns_lbtt_lbtt_return[declaration]" checkbox
         And I check the "returns_lbtt_lbtt_return[lease_declaration]" checkbox
         And I click on the "Submit return" button
@@ -4137,7 +4250,7 @@ Feature: LBTT Returns
         When I click on the "Start now" link
         Then I should see the "About the return" page
 
-        When I check the "3 year lease review" radio button
+        When I check the "3 year lease review" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
 
@@ -4194,7 +4307,7 @@ Feature: LBTT Returns
         # Add tenant to check validation for last pre-populated tenant
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I enter "tenant1last" in the "Last name" field
@@ -4218,14 +4331,14 @@ Feature: LBTT Returns
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -4241,7 +4354,7 @@ Feature: LBTT Returns
 
         When I click on the 1 st "Edit row" link
         Then I should see the "About the tenant" page
-        And the radio button "A private individual" should be selected
+        And the radio button "A private individual" should be selected in answer to the question "Who is the tenant?"
         And I should see the text "This field is read only. Contact Revenue Scotland if the value is not as expected."
         And I should not see the text "An organisation registered with Companies House"
         And I should not see the text "An other organisation"
@@ -4271,15 +4384,15 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        And the radio button "No" should be selected
+        And the radio button "No" should be selected in answer to the question "Should we use a different address for future correspondence in relation to this return?"
 
         When I click on the "Continue" button
         Then I should see the "Tenant details" page
-        And the radio button "No" should be selected
+        And the radio button "No" should be selected in answer to the question "Is the tenant connected to the landlord?"
 
         When I click on the "Continue" button
         Then I should see the "Tenant details" page
-        And the radio button "Yes" should be selected
+        And the radio button "Yes" should be selected in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
 
         When I click on the "Continue" button
         Then I should see the "Return Summary" page
@@ -4310,7 +4423,7 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "Linked transactions" page
-        And the radio button "No" should be selected
+        And the radio button "No" should be selected in answer to the question "Are there any linked transactions?"
 
         When I click on the "Continue" button
         Then I should see the "About the lease values" page
@@ -4318,11 +4431,11 @@ Feature: LBTT Returns
         And I enter "1234" in the "How much was the rent for the first year (inc VAT)?" field
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        And the radio button "Yes" should be selected
+        And the radio button "Yes" should be selected in answer to the question "Is this the same value for all rental years?"
 
         When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        And the radio button "No" should be selected
+        And the radio button "No" should be selected in answer to the question "Is a premium being paid?"
 
 
         When I click on the "Continue" button
@@ -4343,6 +4456,9 @@ Feature: LBTT Returns
 
         # submit
         When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+        When I enter "Test" in the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
         Then I should see the "Claim repayment" page
         Then I should see "1008479" in the "How much are you claiming for repayment?" select or text field
         And field "How much are you claiming for repayment?" should be readonly
@@ -4362,11 +4478,11 @@ Feature: LBTT Returns
         And I should not see the text "Direct Debit"
         And I should not see the text "I, the agent for the buyer"
         And I should see the text "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete"
-        And I should see the text "I, the tenant, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
+        And I should see the text "I, the taxpayer, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies"
 
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete" checkbox
+        And I check the "I, the taxpayer, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should not see the text "secure message"
@@ -4410,7 +4526,7 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        And I check the "Lease" radio button
+        And I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -4446,7 +4562,7 @@ Feature: LBTT Returns
         # Add a tenant (person)
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
@@ -4472,19 +4588,19 @@ Feature: LBTT Returns
         And I should see the text "LU1 1AA" in field "address_postcode"
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
         Then I should see the text "Is the tenant connected to the landlord?"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I enter "Test relation" in the "How are they connected?" field
         And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
         When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
-        And I check the "Yes" radio button
+        And I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
 
         When I click on the "Continue" button
         Then I should see the "Return Summary" page
@@ -4496,12 +4612,12 @@ Feature: LBTT Returns
         # Add a tenant (other organisation)
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "An other organisation" radio button
+        When I check the "An other organisation" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Organisation details" page
         And I click on the "Continue" button
         Then I should see the text "Type of organisation can't be blank"
-        When I check the "Charity" radio button
+        When I check the "Charity" radio button in answer to the question "Type of organisation"
 
         When I click on the "Continue" button
         Then I should see the "Charity" page
@@ -4543,14 +4659,14 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "Tenant details" page
         And I should see the text "Is the tenant connected to the landlord?"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I enter "Test relation" in the "How are they connected?" field
         And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
         When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
-        And I check the "Yes" radio button
+        And I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
 
         When I click on the "Continue" button
         Then I should see the "Return Summary" page
@@ -4564,7 +4680,7 @@ Feature: LBTT Returns
         Then I should see the "About the landlord" page
         And I click on the "Continue" button
         And I should receive the message "Who they are can't be blank"
-        And I check the "A private individual" radio button
+        And I check the "A private individual" radio button in answer to the question "Who is the landlord?"
 
         When I click on the "Continue" button
         Then I should see the "Landlord details" page
@@ -4585,25 +4701,25 @@ Feature: LBTT Returns
         # Add transactions details
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
-        And I check the "Residential" radio button
+        And I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
-        When I enter "02-08-2022" in the "Effective date of transaction" date field
-        And I enter "03-08-2022" in the "Relevant date" date field
-        And I enter "03-08-2022" in the "Date of contract or conclusion of missives" date field
+        When I enter "02-08-2023" in the "Effective date of transaction" date field
+        And I enter "03-08-2023" in the "Relevant date" date field
+        And I enter "03-08-2023" in the "Date of contract or conclusion of missives" date field
         And I enter "10-10-2022" in the "Lease start date" date field
         And I enter "08-10-2026" in the "Lease end date" date field
         And I click on the "Continue" button
 
         Then I should see the "About the transaction" page
-        And I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
 
         Then I should see the "Linked transactions" page
         # linked-transactions - select no to get positive calculation results
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
@@ -4612,7 +4728,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is this the same value for all rental years?"
         # Rental years
         Then I should see the text "Year 4"
         When I enter "350100" in the "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_1_rent" field
@@ -4622,7 +4738,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is a premium being paid?"
         When I enter "352000" in the "Premium amount" field
         And I enter "351000" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
@@ -4637,7 +4753,7 @@ Feature: LBTT Returns
         # Save return reference
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
-        And I check the "BACS" radio button
+        And I check the "BACS" radio button in answer to the question "How are you paying?"
         And I check the "returns_lbtt_lbtt_return[declaration]" checkbox
         And I check the "returns_lbtt_lbtt_return[lease_declaration]" checkbox
         And I click on the "Submit return" button
@@ -4652,7 +4768,7 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         And I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
-        And I check the "Termination" radio button
+        And I check the "Termination" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
 
@@ -4670,7 +4786,7 @@ Feature: LBTT Returns
         When I click on the "Back" link
         Then I should see the "Return reference number" page
         And I enter the stored value "notification_banner_reference" in field "What was the original return reference"
-        And I enter "02-08-2022" in the "What was the original return effective date" date field
+        And I enter "02-08-2023" in the "What was the original return effective date" date field
         And I click on the "Continue" button
 
         # Validate the pre population declaration page
@@ -4756,7 +4872,7 @@ Feature: LBTT Returns
         # Edit the private individual tenant, including international details and that the data is pre populated
         When I click on the 1 st "Edit row" link
         Then I should see the "About the tenant" page
-        And the radio button "A private individual" should be selected
+        And the radio button "A private individual" should be selected in answer to the question "Who is the tenant?"
         And I should see the text "This field is read only. Contact Revenue Scotland if the value is not as expected."
         And I should not see the text "An organisation registered with Companies House"
         And I should not see the text "An other organisation"
@@ -4798,17 +4914,17 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        And the radio button "No" should be selected
+        And the radio button "No" should be selected in answer to the question "Should we use a different address for future correspondence in relation to this return?"
 
         When I click on the "Continue" button
         Then I should see the "Tenant details" page
         And I should see the text "Is the tenant connected to the landlord?"
-        And the radio button "Yes" should be selected
+        And the radio button "Yes" should be selected in answer to the question "Is the tenant connected to the landlord?"
         And I should see the text "Test relation" in field "How are they connected?"
 
         When I click on the "Continue" button
         Then I should see the "Tenant details" page
-        And the radio button "Yes" should be selected
+        And the radio button "Yes" should be selected in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
 
         When I click on the "Continue" button
         Then I should see the "Return Summary" page
@@ -4820,12 +4936,12 @@ Feature: LBTT Returns
         When I click on the 2 nd "Edit row" link
         Then I should see the "About the tenant" page
         And I should see the text "This field is read only. Contact Revenue Scotland if the value is not as expected."
-        And the radio button "An other organisation" should be selected
+        And the radio button "An other organisation" should be selected in answer to the question "Who is the tenant?"
 
         When I click on the "Continue" button
         Then I should see the "Organisation details" page
         And I should see the text "This field is read only. Contact Revenue Scotland if the value is not as expected."
-        And the radio button "Charity" should be selected
+        And the radio button "Charity" should be selected in answer to the question "Type of organisation"
 
         When I click on the "Continue" button
         Then I should see the "Charity" page
@@ -4857,12 +4973,12 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "Tenant details" page
         And I should see the text "Is the tenant connected to the landlord?"
-        And the radio button "Yes" should be selected
+        And the radio button "Yes" should be selected in answer to the question "Is the tenant connected to the landlord?"
         And I should see the text "Test relation" in field "How are they connected?"
 
         When I click on the "Continue" button
         Then I should see the "Tenant details" page
-        And the radio button "Yes" should be selected
+        And the radio button "Yes" should be selected in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
 
         When I click on the "Continue" button
         Then I should see the "Return Summary" page
@@ -4874,7 +4990,7 @@ Feature: LBTT Returns
         # Transaction
         When I click on the "Edit transaction details" link
         Then I should see the "About the dates" page
-        And I should see the text "02/08/2022" in field "Effective date of transaction"
+        And I should see the text "02/08/2023" in field "Effective date of transaction"
         And field "Effective date of transaction" should be readonly
         And I should see the text "This field is read only. Contact Revenue Scotland if the value is not as expected."
         And I enter "08-11-2026" in the "Relevant date" date field
@@ -4905,7 +5021,7 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the "Linked transactions" page
         # linked-transactions - select no to get positive calculation results
-        And the radio button "No" should be selected
+        And the radio button "No" should be selected in answer to the question "Are there any linked transactions?"
 
         When I click on the "Continue" button
         Then I should see the "About the lease values" page
@@ -4914,7 +5030,7 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        And  the radio button "No" should be selected
+        And  the radio button "No" should be selected in answer to the question "Is this the same value for all rental years?"
         # Rental years
         And I should see the text "Year 4"
         And I should see the text "350100" in field "returns_lbtt_lbtt_return_returns_lbtt_yearly_rent_1_rent"
@@ -4924,7 +5040,7 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "About the lease values" page
-        And the radio button "Yes" should be selected
+        And the radio button "Yes" should be selected in answer to the question "Is a premium being paid?"
         And the radio button labelled "No" should not exist
         And I should see the text "352000" in field "Premium amount"
         And field "Premium amount" should be readonly
@@ -4943,7 +5059,7 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the transaction                                  | Edit          |
-            | Effective date of transaction                          | 02/08/2022    |
+            | Effective date of transaction                          | 02/08/2023    |
             | Relevant date                                          | 02/08/2026    |
             | Are there any linked transactions?                     | No            |
             | Is a premium being paid?                               | Yes           |
@@ -4991,18 +5107,19 @@ Feature: LBTT Returns
         Then I should see the downloaded "PDF" content of "LBTT" by looking up "notification_banner_reference"
 
         # Download test for the LBTT pdf on all returns index page
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And I should see "Draft" in the "Return status" select or text field
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see a link with text "Download PDF"
         When I click on the 1 st "Download PDF" link to download a file
         Then I should see the downloaded "PDF" content of "LBTT" by looking up "notification_banner_reference"
 
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see a link with text "Continue"
 
         When I click on the "Continue" link
@@ -5010,7 +5127,7 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the transaction                                  | Edit          |
-            | Effective date of transaction                          | 02/08/2022    |
+            | Effective date of transaction                          | 02/08/2023    |
             | Relevant date                                          | 02/08/2026    |
             | Lease start date                                       | 10/10/2022    |
             | Lease end date                                         | 02/08/2026    |
@@ -5031,7 +5148,7 @@ Feature: LBTT Returns
 
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I enter "Tenant3Surname" in the "Last name" field
@@ -5047,10 +5164,13 @@ Feature: LBTT Returns
         And I click on the "Back" link
 
         When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+        When I enter "Test" in the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
-        When I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
-        And I check the "BACS" radio button
+        When I check the "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete" checkbox
+        And I check the "I, the taxpayer, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies" checkbox
+        And I check the "BACS" radio button in answer to the question "How are you paying?"
 
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
@@ -5061,7 +5181,7 @@ Feature: LBTT Returns
             | Property address             | Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS |
             | Tenant                       | Mr firstname surname                                                             |
             | Description of transaction   | Termination                                                                      |
-            | Effective date               | 02/08/2022                                                                       |
+            | Effective date               | 02/08/2023                                                                       |
             | Your reference (if provided) | my agent ref                                                                     |
         And I should see a link with text "Download PDF"
 
@@ -5083,14 +5203,14 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        When I check the "Lease" radio button
+        When I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Tenant
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
@@ -5133,21 +5253,21 @@ Feature: LBTT Returns
         And I should see the text "LU1 1AA" in field "address_postcode"
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        And I check the "No" radio button
+        And I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
         Then I should see the text "Is the tenant connected to the landlord?"
         When I click on the "Continue" button
         Then I should receive the message "If they are linked can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I enter "Test relation" in the "How are they connected?" field
         And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
         When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
 
         Then I should see the "Return Summary" page
@@ -5159,7 +5279,7 @@ Feature: LBTT Returns
         #Landlord
         When I click on the "Add a landlord" link
         Then I should see the "About the landlord" page
-        When I check the "An organisation registered with Companies House" radio button
+        When I check the "An organisation registered with Companies House" radio button in answer to the question "Who is the landlord?"
         And I click on the "Continue" button
 
         Then I should see the "Registered company" page
@@ -5209,35 +5329,35 @@ Feature: LBTT Returns
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
 
-        When I check the "Residential" radio button
+        When I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
         Then I should see the "About the dates" page
         When I enter "02-08-2019" in the "Effective date of transaction" date field
-        And I enter "03-08-2022" in the "Relevant date" date field
+        And I enter "03-08-2023" in the "Relevant date" date field
         And I enter "03-08-2019" in the "Date of contract or conclusion of missives" date field
         And I enter "10-10-2019" in the "Lease start date" date field
         And I enter "08-10-2023" in the "Lease end date" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
-        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
 
         Then I should see the "Linked transactions" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         When I click on the "Continue" button
 
         Then I should see the "About the lease values" page
         When I enter "350000" in the "How much is the rent for the first year (inc VAT)?" field
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is this the same value for all rental years?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is a premium being paid?"
         And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
 
@@ -5257,12 +5377,13 @@ Feature: LBTT Returns
         And I should see a link with text "Go to dashboard"
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
 
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see a link with text "Continue"
 
         When I click on the "Continue" link
@@ -5270,10 +5391,10 @@ Feature: LBTT Returns
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
 
-        When I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_lease_declaration" checkbox
-        And I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
+        When I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "I, the agent of the tenant(s), confirm that I have made my client(s) aware of their obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date" checkbox
+        And I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should see the text "Return reference"
@@ -5362,10 +5483,10 @@ Feature: LBTT Returns
         When I enter "This is a test amendment reason" in the "Tell us why you are amending this return" field
         And I click on the "Continue" button
         Then I should see the "Repayment details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Do you want to request a repayment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
-        When I check the "BACS" radio button
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
 
         # data is mocked so won't show a real declaration so select by id
         And I check the "returns_lbtt_lbtt_return_declaration" checkbox
@@ -5399,7 +5520,7 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        When I check the "Conveyance or transfer" radio button
+        When I check the "Conveyance or transfer" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -5407,7 +5528,7 @@ Feature: LBTT Returns
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
 
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the buyer?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
 
@@ -5427,13 +5548,13 @@ Feature: LBTT Returns
         Then I should see the "Buyer address" page
         When I click on the "Continue" button
         Then I should see the "Buyer's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer connected to the seller?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -5441,7 +5562,7 @@ Feature: LBTT Returns
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
 
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the buyer?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
 
@@ -5462,13 +5583,13 @@ Feature: LBTT Returns
         When I click on the "Or edit the selected address" button
         And I click on the "Continue" button
         Then I should see the "Buyer's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer connected to the seller?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -5511,7 +5632,7 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        When I check the "Conveyance or transfer" radio button
+        When I check the "Conveyance or transfer" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -5524,7 +5645,7 @@ Feature: LBTT Returns
         When I click on the "Add a buyer" link
         Then I should see the "About the buyer" page
 
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the buyer?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
         When I enter "Victoria" in the "Last name" field
@@ -5544,13 +5665,13 @@ Feature: LBTT Returns
         Then I should see the "Buyer address" page
         When I click on the "Continue" button
         Then I should see the "Buyer's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer connected to the seller?"
         And I click on the "Continue" button
         Then I should see the "Buyer details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -5558,7 +5679,7 @@ Feature: LBTT Returns
         When I click on the "Add a seller" link
         Then I should see the "About the seller" page
 
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the seller?"
         And I click on the "Continue" button
 
         Then I should see the "Seller details" page
@@ -5583,7 +5704,7 @@ Feature: LBTT Returns
         When I click on the "Add a seller" link
         Then I should see the "About the seller" page
 
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the seller?"
         And I click on the "Continue" button
 
         Then I should see the "Seller details" page
@@ -5618,7 +5739,7 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "About the property" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Does Additional Dwelling Supplement (ADS) apply to this transaction?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
@@ -5628,7 +5749,7 @@ Feature: LBTT Returns
         When I click on the "Add ADS" link
         Then I should see the "Additional Dwelling Supplement (ADS)" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the buyer replacing their main residence?"
         And I click on the "Continue" button
 
         Then I should see the text "Total consideration liable to ADS"
@@ -5636,49 +5757,75 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "Additional Dwelling Supplement (ADS)" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Does the buyer intend to sell their main residence within 18 months?"
         And I click on the "Continue" button
 
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
 
-        When I check the "Residential" radio button
+        When I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
         When I enter 94 days ago in the "Effective date of transaction" date field
-        When I enter "22-07-2022" in the "Relevant date" date field
+        When I enter "22-07-2023" in the "Relevant date" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
-        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the transaction part of the sale of a business?"
         And I click on the "Continue" button
         Then I should see the "About future events" page
 
-        When I check the "returns_lbtt_lbtt_return_contingents_event_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Does any part of your consideration depend on future events, like planning permission?"
         And I click on the "Continue" button
         Then I should see the "About the conveyance or transfer" page
         And I should not see the text "Linked transaction consideration"
 
-        When I enter "1234565" in the "Total consideration" field
+        When I enter "1234565" in the "returns_lbtt_lbtt_return_total_consideration" field
+        And I enter "0" in the "Non-chargeable consideration" field
+        And I enter "0" in the "returns_lbtt_lbtt_return_remaining_chargeable" field
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
 
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "I, the buyer, declare that this return is, to the best of my knowledge, correct and complete" checkbox
+        And I click on the "Submit return" button
+
+        # Submit the return as non notifiable checking the validation on the non notifiable pages
+        Then I should see the "Non-notifiable return" page
+        And I should see the text "The total consideration remaining for this conveyance is less than £40,000."
+        And I should see a link with text "notifiable conveyance returns (opens in a new window)"
+        And I should see a link with text "back to return summary"
+        When I click on the "Continue" button
+        Then I should see the text "Do you still want to submit the return can't be blank"
+
+        When I check the "Yes" radio button in answer to the question "Do you still want to submit the return?"
+        And I click on the "Continue" button
+
+        # Enter the reason why the return is non notifiable
+        Then I should see the "Non-notifiable return" page
+        And I should see the text "Why are you submitting a non-notifiable return?"
+
+        When I click on the "Submit return" button
+        Then I should see the text "Why are you submitting a non-notifiable return can't be blank"
+        When I enter "RANDOM_text,4001" in the "Why are you submitting a non-notifiable return?" field
+        And I click on the "Submit return" button
+        And I should see the text "Why are you submitting a non-notifiable return is too long (maximum is 4000 characters)"
+
+        When I enter "abcd" in the "Why are you submitting a non-notifiable return?" field
         And I click on the "Submit return" button
 
         Then I should see the "Your return has been submitted" page
@@ -5687,11 +5834,12 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
-        And I enter the stored value "notification_banner_reference" in field "dashboard_dashboard_return_filter_tare_reference"
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        When I enter the stored value "notification_banner_reference" in field "dashboard_dashboard_return_filter_tare_reference"
+        And I select "Filed" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
 
         When I click on the "Amend" link
         Then I should see the "Return Summary" page
@@ -5704,16 +5852,16 @@ Feature: LBTT Returns
 
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
-
         And the table of data is displayed
             | Return reference              | Your reference | Description            | Version | Action_1 | Action_2     | Action_3 |
             | notification_banner_reference |                | Conveyance or transfer | 2       | Continue | Download PDF | Delete   |
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
         When I enter the stored value "notification_banner_reference" in field "Return reference"
+        And I select "" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should not see the text "This return is no longer amendable, use the claim option"
         And I should not see the text "You have until TOMORROW_DATE to complete this draft"
 
@@ -5748,11 +5896,14 @@ Feature: LBTT Returns
             | Return reference              | Your reference | Description            | Version | Action_1 | Action_2     | Action_3 | Action_4                                            |
             | notification_banner_reference |                | Conveyance or transfer | 2       | Continue | Download PDF | Delete   | You have until TOMORROW_DATE to complete this draft |
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 2 nd "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And the checkbox "Only returns with an outstanding balance" should be checked
         When I enter the stored value "notification_banner_reference" in field "Return reference"
+        And I uncheck the "Only returns with an outstanding balance" checkbox
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should not see the text "This return is no longer amendable, use the claim option"
         And I should see the text "You have until TOMORROW_DATE to complete this draft"
 
@@ -5789,11 +5940,12 @@ Feature: LBTT Returns
             | Return reference              | Your reference | Description            | Version | Action_1 | Action_2     | Action_3 | Action_4                                       |
             | notification_banner_reference |                | Conveyance or transfer | 2       | Continue | Download PDF | Delete   | You have until NOW_DATE to complete this draft |
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And I should see "Draft" in the "Return status" select or text field
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should not see the text "This return is no longer amendable, use the claim option"
         And I should see the text "You have until NOW_DATE to complete this draft"
 
@@ -5830,11 +5982,13 @@ Feature: LBTT Returns
             | Return reference              | Your reference | Description            | Version | Action_1     | Action_2 | Action_3                                                 |
             | notification_banner_reference |                | Conveyance or transfer | 2       | Download PDF | Delete   | This return is no longer amendable, use the claim option |
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And I should see "Draft" in the "Return status" select or text field
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see the text "This return is no longer amendable, use the claim option"
         And I should not see the text "You have until "
         And I should not see a link with text "Continue"
@@ -5843,14 +5997,12 @@ Feature: LBTT Returns
         Then if available, click the confirmation dialog
         Then I should see the "Dashboard" page
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
 
         When I enter the stored value "notification_banner_reference" in field "Return reference"
-        And I open the "Show more filter options" summary item
-        And I select "Draft" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
 
     Scenario: To test the lease return draft created prior to 12 months but does not submit until after the relevant date
 
@@ -5883,7 +6035,7 @@ Feature: LBTT Returns
         #Step 1:  Create new return and check Amend is available
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
-        And I check the "Lease" radio button
+        And I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         When I click on the "Submit return" button
@@ -5920,7 +6072,7 @@ Feature: LBTT Returns
 
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I enter "surname" in the "Last name" field
@@ -5944,14 +6096,14 @@ Feature: LBTT Returns
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         Then I should see the text "Mr firstname surname"
@@ -5963,7 +6115,7 @@ Feature: LBTT Returns
         Then I should see the "About the landlord" page
         And I click on the "Continue" button
         Then I should receive the message "Who they are can't be blank"
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the landlord?"
         And I click on the "Continue" button
         Then I should see the "Landlord details" page
 
@@ -5983,7 +6135,7 @@ Feature: LBTT Returns
 
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
-        And I check the "Residential" radio button
+        And I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
         And I enter 94 days ago in the "Effective date of transaction" date field
@@ -5993,14 +6145,14 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
-        And I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        And I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
 
         Then I should see the "Linked transactions" page
         # linked-transactions - select no to get positive calculation results
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
@@ -6009,12 +6161,12 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is this the same value for all rental years?"
         And I click on the "Continue" button
 
         Then I should see the "About the lease values" page
-        When I check the "Yes" radio button
-        And the radio button "Yes" should be selected
+        When I check the "Yes" radio button in answer to the question "Is a premium being paid?"
+        And the radio button "Yes" should be selected in answer to the question "Is a premium being paid?"
         And I enter "150000" in the "Premium amount" field
         And I enter "150000" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
@@ -6026,11 +6178,14 @@ Feature: LBTT Returns
         Then I should see the "Return Summary" page
 
         When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+        When I enter "Test" in the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return[lease_declaration]" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete" checkbox
+        And I check the "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         # Make sure the return reference is the same
@@ -6042,12 +6197,14 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And I should see "Draft" in the "Return status" select or text field
 
         When I enter the stored value "notification_banner_reference" in field "dashboard_dashboard_return_filter_tare_reference"
+        And I select "Filed" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
 
         When I click on the "Amend" link
         Then I should see the "Return Summary" page
@@ -6056,56 +6213,67 @@ Feature: LBTT Returns
         # The reason should not be shown as this is not the first version of the return (its an amendment) hence
         # the return is not treated as non notifiabe
         When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+        And I should see the text "Test" in field "Why are you editing the calculated values?"
+        When I click on the "Continue" button
         Then I should see the "Amendment reason" page
         When I enter "This is a test amendment reason" in the "Tell us why you are amending this return" field
         And I click on the "Continue" button
         Then I should see the "Repayment details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Do you want to request a repayment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_lease_declaration" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete" checkbox
+        And I check the "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should store the reference from the notification panel as "notification_banner_reference"
 
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
-        And I click on the "See all returns" link
-        Then I should see the "All returns" page
+        And I click on the 2 nd "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And the checkbox "Only returns with an outstanding balance" should be checked
 
         When I enter the stored value "notification_banner_reference" in field "dashboard_dashboard_return_filter_tare_reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
 
         When I click on the "Amend" link
         Then I should see the "Return Summary" page
 
         # Submit the return to check that the non notifiable reason is not shown
         When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+        And I should see the text "Test" in field "Why are you editing the calculated values?"
+        When I click on the "Continue" button
         Then I should see the "Amendment reason" page
         When I enter "This is a test amendment reason" in the "Tell us why you are amending this return" field
         And I click on the "Continue" button
         Then I should see the "Repayment details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Do you want to request a repayment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_lease_declaration" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete" checkbox
+        And I check the "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should store the reference from the notification panel as "notification_banner_reference"
 
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
-        And I click on the "See all returns" link
-        Then I should see the "All returns" page
+        And I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And I should see "Draft" in the "Return status" select or text field
 
         When I enter the stored value "notification_banner_reference" in field "dashboard_dashboard_return_filter_tare_reference"
+        And I select "Filed" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
 
         When I click on the "Amend" link
         Then I should see the "Return Summary" page
@@ -6116,18 +6284,19 @@ Feature: LBTT Returns
 
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
-
         And the table of data is displayed
             | Return reference              | Your reference | Description | Version | Action_1 | Action_2     | Action_3 |
             | notification_banner_reference |                | Lease       | 4       | Continue | Download PDF | Delete   |
 
         # Step 2: Save the created return in draft list with less than seven days left to submit return
         #         Check warning message is visible on screen
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And I should see "Draft" in the "Return status" select or text field
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should not see the text "This return is no longer amendable, use the claim option"
         And I should not see the text "You have until TOMORROW_DATE to complete this draft"
 
@@ -6143,7 +6312,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
         And I click on the "Continue" button
@@ -6165,11 +6334,13 @@ Feature: LBTT Returns
             | Return reference              | Your reference | Description | Version | Action_1 | Action_2     | Action_3 | Action_4                                            |
             | notification_banner_reference |                | Lease       | 4       | Continue | Download PDF | Delete   | You have until TOMORROW_DATE to complete this draft |
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And I should see "Draft" in the "Return status" select or text field
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should not see the text "This return is no longer amendable, use the claim option"
         And I should see the text "You have until TOMORROW_DATE to complete this draft"
 
@@ -6185,7 +6356,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
         And I click on the "Continue" button
@@ -6207,11 +6378,13 @@ Feature: LBTT Returns
             | Return reference              | Your reference | Description | Version | Action_1 | Action_2     | Action_3 | Action_4                                       |
             | notification_banner_reference |                | Lease       | 4       | Continue | Download PDF | Delete   | You have until NOW_DATE to complete this draft |
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And I should see "Draft" in the "Return status" select or text field
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should not see the text "This return is no longer amendable, use the claim option"
         And I should see the text "You have until NOW_DATE to complete this draft"
 
@@ -6233,7 +6406,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
         And I click on the "Continue" button
@@ -6255,11 +6428,13 @@ Feature: LBTT Returns
             | Return reference              | Your reference | Description | Version | Action_1     | Action_2 | Action_3                                                 |
             | notification_banner_reference |                | Lease       | 4       | Download PDF | Delete   | This return is no longer amendable, use the claim option |
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And I should see "Draft" in the "Return status" select or text field
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see the text "This return is no longer amendable, use the claim option"
         And I should not see the text "You have until "
         And I should not see a link with text "Continue"
@@ -6268,14 +6443,12 @@ Feature: LBTT Returns
         Then if available, click the confirmation dialog
         Then I should see the "Dashboard" page
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
 
         When I enter the stored value "notification_banner_reference" in field "Return reference"
-        And I open the "Show more filter options" summary item
-        And I select "Draft" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should not see a link with text "Continue"
 
     Scenario: To test no option when creating a return that is non notifable for authenticated
@@ -6294,14 +6467,14 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        When I check the "Lease" radio button
+        When I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Add a private individual tenant
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I enter "surname" in the "Last name" field
@@ -6324,24 +6497,24 @@ Feature: LBTT Returns
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Add an other organisation landlord
         When I click on the "Add a landlord" link
         Then I should see the "About the landlord" page
-        When I check the "An other organisation" radio button
+        When I check the "An other organisation" radio button in answer to the question "Who is the landlord?"
         And I click on the "Continue" button
         Then I should see the "Organisation details" page
-        When I check the "Company" radio button
+        When I check the "Company" radio button in answer to the question "Type of organisation"
         And I click on the "Continue" button
 
         Then I should see the "Company" page
@@ -6391,7 +6564,7 @@ Feature: LBTT Returns
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
 
-        When I check the "Residential" radio button
+        When I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
@@ -6402,22 +6575,22 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
-        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
         When I enter "799" in the "How much is the rent for the first year (inc VAT)?" field
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is this the same value for all rental years?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is a premium being paid?"
         And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
         When I enter "1000" in the "Net Present Value (NPV)" field
@@ -6426,11 +6599,14 @@ Feature: LBTT Returns
 
         # Submit the return (Cheque)
         When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+        When I enter "Test" in the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
-        When I check the "Cheque" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_lease_declaration" checkbox
+        When I check the "Cheque" radio button in answer to the question "How are you paying?"
+        And I check the "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete" checkbox
+        And I check the "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date" checkbox
         And I click on the "Submit return" button
         Then I should see the "Non-notifiable return" page
         And I should see the text "The lease is for 7 years or more and the rent is less than £1,000 per annum or any chargeable consideration other than rent is less than £40,000."
@@ -6442,7 +6618,7 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the text "Do you still want to submit the return can't be blank"
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Do you still want to submit the return?"
         And I click on the "Continue" button
         Then I should see the "Dashboard" page
 
@@ -6462,14 +6638,14 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        When I check the "Lease" radio button
+        When I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Add a private individual tenant
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I enter "surname" in the "Last name" field
@@ -6489,25 +6665,25 @@ Feature: LBTT Returns
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Add an other organisation landlord
         When I click on the "Add a landlord" link
         Then I should see the "About the landlord" page
-        When I check the "An other organisation" radio button
+        When I check the "An other organisation" radio button in answer to the question "Who is the landlord?"
         And I click on the "Continue" button
         Then I should see the "Organisation details" page
         # Company
-        When I check the "Company" radio button
+        When I check the "Company" radio button in answer to the question "Type of organisation"
         And I click on the "Continue" button
 
         Then I should see the "Company" page
@@ -6557,7 +6733,7 @@ Feature: LBTT Returns
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
 
-        When I check the "Residential" radio button
+        When I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
@@ -6568,22 +6744,22 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
-        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
         When I enter "800" in the "How much is the rent for the first year (inc VAT)?" field
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is this the same value for all rental years?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is a premium being paid?"
         And I click on the "Continue" button
         Then I should see the "Calculated Net Present Value (NPV)" page
         When I enter "100" in the "Net Present Value (NPV)" field
@@ -6592,11 +6768,14 @@ Feature: LBTT Returns
 
         # Submit the return (BACS)
         When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+        When I enter "Test" in the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_lease_declaration" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "I, the tenant, declare that this return is, to the best of my knowledge, correct and complete" checkbox
+        And I check the "I, the tenant, confirm that I am aware of my obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date" checkbox
         And I click on the "Submit return" button
 
         # Submit the return as non notifiable checking the validation on the non notifiable pages
@@ -6607,20 +6786,20 @@ Feature: LBTT Returns
         When I click on the "Continue" button
         Then I should see the text "Do you still want to submit the return can't be blank"
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Do you still want to submit the return?"
         And I click on the "Continue" button
 
         # Enter the reason why the return is non notifiable
         Then I should see the "Non-notifiable return" page
-        And I should see the text "Why are you submitting a non-notifiable return"
+        And I should see the text "Why are you submitting a non-notifiable return?"
 
         When I click on the "Submit return" button
         Then I should see the text "Why are you submitting a non-notifiable return can't be blank"
-        When I enter "RANDOM_text,4001" in the "Why are you submitting a non-notifiable return" field
+        When I enter "RANDOM_text,4001" in the "Why are you submitting a non-notifiable return?" field
         And I click on the "Submit return" button
         And I should see the text "Why are you submitting a non-notifiable return is too long (maximum is 4000 characters)"
 
-        When I enter "abcd" in the "Why are you submitting a non-notifiable return" field
+        When I enter "abcd" in the "Why are you submitting a non-notifiable return?" field
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
 
@@ -6643,14 +6822,14 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        When I check the "Lease" radio button
+        When I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Add a private individual tenant
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I enter "surname" in the "Last name" field
@@ -6670,21 +6849,21 @@ Feature: LBTT Returns
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Add an Private landlord
         When I click on the "Add a landlord" link
         Then I should see the "About the landlord" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the landlord?"
         And I click on the "Continue" button
         Then I should see the "Landlord details" page
         When I enter "firstname" in the "First name" field
@@ -6727,7 +6906,7 @@ Feature: LBTT Returns
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
 
-        When I check the "Residential" radio button
+        When I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
@@ -6738,22 +6917,22 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
-        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
         When I enter "50000" in the "How much is the rent for the first year (inc VAT)?" field
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        And I check the "Yes" radio button
+        And I check the "Yes" radio button in answer to the question "Is this the same value for all rental years?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "returns_lbtt_lbtt_return_premium_paid_y" radio button
+        When I check the "Yes" radio button in answer to the question "Is a premium being paid?"
         When I enter "25000" in the "Premium amount (inc VAT)" field
         And I enter "25000" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
@@ -6765,10 +6944,10 @@ Feature: LBTT Returns
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
 
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_lease_declaration" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        And I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "I, the agent of the tenant(s), confirm that I have made my client(s) aware of their obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should see the text "Return reference"
@@ -6781,7 +6960,7 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         And I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
-        When I check the "3 year lease review" radio button
+        When I check the "3 year lease review" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
 
@@ -6821,6 +7000,9 @@ Feature: LBTT Returns
 
         # submit
         When I click on the "Submit return" button
+        Then I should see the "Edit calculation reason" page
+        When I enter "Test" in the "Why are you editing the calculated values?" field
+        And I click on the "Continue" button
         Then I should see the "Claim repayment" page
         And I should see the text "1807" in field "How much are you claiming for repayment?"
         And field "How much are you claiming for repayment?" should be readonly
@@ -6845,12 +7027,59 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        And I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
+
+    Scenario: To test the rate change error message is shown correctly
+        Retrieve a draft return
+        Submit the return
+        Validate the error is shown
+        Recaluate the transaction flow
+        Submit the return
+        validate that no error is shown
+
+        Given I have signed in "PORTAL.ONE" and password "Password1!"
+        Then I should see the "Dashboard" page
+
+        When I click on the 2 nd "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And the checkbox "Only returns with an outstanding balance" should be checked
+
+        When I enter "RS2000001AAAA" in the "Return reference" field
+        And I uncheck the "Only returns with an outstanding balance" checkbox
+        And I click on the "Find" button
+        Then I should see the "Returns" page
+        And I click on the "Continue" link
+        Then I should see the "Return Summary" page
+        And I should see the text "There have been transitional rate changes that affect this return. Ensure you go to the transaction section to recalculate and check all figures prior to submitting the return"
+        And I click on the "Submit return" button
+        And I should see the text "There have been transitional rate changes that affect this return. Ensure you go to the transaction section to recalculate and check all figures prior to submitting the return"
+
+        When I click on the "Edit transaction details" link
+        Then I should see the "About the transaction" page
+        And I click on the "Continue" button
+        And I should see the "About the dates" page
+        And I click on the "Continue" button
+        And I should see the "About the transaction" page
+        And I click on the "Continue" button
+        And I should see the "Linked transactions" page
+        And I click on the "Continue" button
+        And I should see the "About the transaction" page
+        And I click on the "Continue" button
+        And I should see the "About future events" page
+        And I check the "No" radio button in answer to the question "Does any part of your consideration depend on future events, like planning permission?"
+        And I click on the "Continue" button
+        And I should see the "About the conveyance or transfer" page
+
+        When I click on the "Continue" button
+        Then I should see the "Return Summary" page
+        And I click on the "Submit return" button
+        And I should not see the text "There have been transitional rate changes that affect this return. Ensure you go to the transaction section to recalculate and check all figures prior to submitting the return"
 
     Scenario: To test existing relief getting populated on the lease review return
 
@@ -6874,14 +7103,14 @@ Feature: LBTT Returns
         When I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
 
-        When I check the "Lease" radio button
+        When I check the "Lease" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Add a private individual tenant
         When I click on the "Add a tenant" link
         Then I should see the "About the tenant" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the tenant?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
         When I enter "surname" in the "Last name" field
@@ -6901,21 +7130,21 @@ Feature: LBTT Returns
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Should we use a different address for future correspondence in relation to this return?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I click on the "Continue" button
         Then I should see the "Tenant details" page
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Add an Private landlord
         When I click on the "Add a landlord" link
         Then I should see the "About the landlord" page
-        When I check the "A private individual" radio button
+        When I check the "A private individual" radio button in answer to the question "Who is the landlord?"
         And I click on the "Continue" button
         Then I should see the "Landlord details" page
         When I enter "firstname" in the "First name" field
@@ -6958,7 +7187,7 @@ Feature: LBTT Returns
         When I click on the "Add transaction details" link
         Then I should see the "About the transaction" page
 
-        When I check the "Residential" radio button
+        When I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
@@ -6969,22 +7198,22 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
-        When I check the "returns_lbtt_lbtt_return_previous_option_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_exchange_ind_n" radio button
-        And I check the "returns_lbtt_lbtt_return_uk_ind_n" radio button
+        When I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
+        And I check the "No" radio button in answer to the question "Does the transaction include any element of exchange or part exchange?"
+        And I check the "No" radio button in answer to the question "Is this transaction part of a number of other transactions elsewhere in the UK, but outside Scotland?"
         And I click on the "Continue" button
         Then I should see the "Linked transactions" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are there any linked transactions?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
         When I enter "50000" in the "How much is the rent for the first year (inc VAT)?" field
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        And I check the "Yes" radio button
+        And I check the "Yes" radio button in answer to the question "Is this the same value for all rental years?"
         And I click on the "Continue" button
         Then I should see the "About the lease values" page
-        When I check the "returns_lbtt_lbtt_return_premium_paid_y" radio button
+        When I check the "Yes" radio button in answer to the question "Is a premium being paid?"
         When I enter "25000" in the "Premium amount (inc VAT)" field
         And I enter "25000" in the "What is the relevant rent amount for this transaction?" field
         And I click on the "Continue" button
@@ -7008,10 +7237,10 @@ Feature: LBTT Returns
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
 
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_lease_declaration" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        And I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "I, the agent of the tenant(s), confirm that I have made my client(s) aware of their obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should see the text "Return reference"
@@ -7024,7 +7253,7 @@ Feature: LBTT Returns
         When I click on the "Go to dashboard" link
         And I click on the "Create LBTT return" menu item
         Then I should see the "About the return" page
-        When I check the "3 year lease review" radio button
+        When I check the "3 year lease review" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
 
@@ -7087,9 +7316,9 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
-        When I check the "BACS" radio button
-        And I check the "returns_lbtt_lbtt_return_authority_ind_y" radio button
-        And I check the "returns_lbtt_lbtt_return_declaration" checkbox
-        And I check the "returns_lbtt_lbtt_return_pre_population_submit_declaration" checkbox
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        And I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        And I check the "I, the agent, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies" checkbox
         And I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page

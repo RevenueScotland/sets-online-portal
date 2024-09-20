@@ -781,7 +781,7 @@
         {
             "sectioncode": "repayment",
             "sectiontype": "list",
-            "sectiondivider": false,
+            "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
             "sectiontitle": "Repayment details",
@@ -833,9 +833,9 @@
                     "itemdata": "Yes"
                 },
                 {
-                    "itemcode": "pre_population_submit_declaration",
+                    "itemcode": "transaction_declaration",
                     "itemformat": null,
-                    "itemlabel": "I, the tenant, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies",
+                    "itemlabel": "I, the taxpayer, confirm that I have reviewed the values within the transaction details section, and the reliefs section, if relief applies",
                     "itemdata": "Yes"
                 }
             ],

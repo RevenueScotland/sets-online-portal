@@ -2,9 +2,11 @@
   <%= ds_table(caption: tag.h2(caption, class: 'ds_!_margin-bottom--0'), id: id, small_screen: small_screen) do |table| %>
     <% case show_link %>
     <% when :all_returns %>
-    <% table.with_link(name: t('.all_returns'), url: dashboard_dashboard_returns_path) if can?(RS::AuthorisationHelper::VIEW_RETURNS) %>
+      <% table.with_link(name: t('.all_returns'), url: dashboard_dashboard_returns_path("dashboard_dashboard_return_filter[outstanding_balance]": 'N', "dashboard_dashboard_return_filter[srv_code]": helpers.account_service, "dashboard_dashboard_return_filter[return_status]": "D")) if can?(RS::AuthorisationHelper::VIEW_RETURNS) %>
     <% when :all_transactions %>
-    <% table.with_link(name: t('.all_transactions'), url: dashboard_financial_transactions_path) if can?(RS::AuthorisationHelper::VIEW_RETURNS) %>
+      <% table.with_link(name: t('.all_returns'), url: dashboard_dashboard_returns_path("dashboard_dashboard_return_filter[outstanding_balance]": 'Y', "dashboard_dashboard_return_filter[srv_code]": helpers.account_service),
+      subtype: :padded) if can?(RS::AuthorisationHelper::VIEW_RETURNS) %>
+      <% table.with_link(name: t('.all_transactions'), url: dashboard_financial_transactions_path("dashboard_financial_transaction_filter[srv_code]": helpers.account_service)) if can?(RS::AuthorisationHelper::VIEW_RETURNS) %>
   <% end %>
   <% table.with_header(klass: Dashboard::DashboardReturn) do |header| %>
     <% case format %>
@@ -47,8 +49,8 @@
              url: load_dashboard_dashboard_return_path(dashboard_return),
              subtype: :padded) if dashboard_return.return_is_continuable? && can?(dashboard_return.continue_action) %>
     <%= ds_link(name: t('.transactions'),
-             url: dashboard_financial_transactions_path("dashboard_financial_transaction_filter[related_reference]": dashboard_return.tare_reference),
-             subtype: :padded) if dashboard_return.indicator_is_latest? %>
+             url: dashboard_financial_transactions_path("dashboard_financial_transaction_filter[related_reference]": dashboard_return.tare_reference,
+             "dashboard_financial_transaction_filter[srv_code]":dashboard_return.srv_code), subtype: :padded) if dashboard_return.indicator_is_latest? %>
     <%= ds_link(name: t('.download_pdf'),
              url: download_pdf_dashboard_dashboard_return_path(dashboard_return),
              target: '_blank',

@@ -785,7 +785,7 @@
                 {
                     "itemcode": "non_notifiable_explanation",
                     "itemformat": null,
-                    "itemlabel": "Why are you submitting a non-notifiable return",
+                    "itemlabel": "Why are you submitting a non-notifiable return?",
                     "itemdata": "Test"
                 }
             ],
@@ -906,6 +906,23 @@
                 }
             ],
             "itemcount": 6
+        },
+        {
+            "sectioncode": "edit_calculation_reason",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Edit calculation reason",
+            "listitem": [
+                {
+                    "itemcode": "edit_calc_reason",
+                    "itemformat": null,
+                    "itemlabel": "Reason for editing the calculation",
+                    "itemdata": "I disagree with calculated values"
+                }
+            ],
+            "itemcount": 1
         },
         {
             "sectioncode": "declaration",

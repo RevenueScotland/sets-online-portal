@@ -19,7 +19,7 @@ Feature: SLfT Returns
         When I click on the "Continue" button
         Then I should see the text "year can't be blank"
         And I should see the text "quarter can't be blank"
-        When I check the "April to June (Quarter 1)" radio button
+        When I check the "April to June (Quarter 1)" radio button in answer to the question "SLfT quarter"
         And I click on the "Continue" button
         Then I should see the text "year can't be blank"
         When I select "2018/19" from the "year"
@@ -27,11 +27,11 @@ Feature: SLfT Returns
         Then I should see the "Non disposal area information" page
         When I click on the "Continue" button
         Then I should see the text "non-disposal area on any of your sites can't be blank"
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Have you designated a new non-disposal area on any of your sites?"
         And I click on the "Continue" button
         When I click on the "Continue" button
         Then I should see the text "Have you ceased to operate a non-disposal area on any of your sites can't be blank"
-        And I check the "No" radio button
+        And I check the "No" radio button in answer to the question "Have you ceased to operate a non-disposal area on any of your sites?"
         And I click on the "Continue" button
         Then I should see the "Return summary" page
 
@@ -40,7 +40,7 @@ Feature: SLfT Returns
         When I click on the "Continue" button
         Then I should see the "Non disposal area information" page
         And I should see the text "Have you designated a new non-disposal area on any of your sites?"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Have you designated a new non-disposal area on any of your sites?"
         And I click on the "Continue" button
         Then I should see the text "Tell us which sites have a new non disposal area can't be blank"
         When I enter "RANDOM_text,4001" in the "Tell us which sites have a new non disposal area" field
@@ -50,7 +50,7 @@ Feature: SLfT Returns
         And I click on the "Continue" button
         Then I should see the "Non disposal area information" page
         And I should see the text "Have you ceased to operate a non-disposal area on any of your sites?"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Have you ceased to operate a non-disposal area on any of your sites?"
         And I click on the "Continue" button
         Then I should see the text "Tell us which sites you have removed a non-disposal area from can't be blank"
         When I enter "RANDOM_text,4001" in the "Tell us which sites you have removed a non-disposal area from" field
@@ -80,13 +80,13 @@ Feature: SLfT Returns
         Then I should see the downloaded "WASTE" content of "SLFT" by looking up "notification_banner_reference"
         When I click on the 1 st "Download PDF" link to download a file
         Then I should see the downloaded "PDF" content of "SLFT" by looking up "notification_banner_reference"
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
 
         # Download tests for slft pdf and slft waste (.zip) on the all returns page
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see a link with text "Download PDF"
         And I should see a link with text "Download waste details"
         When I click on the 1 st "Download waste details" link to download a file
@@ -112,7 +112,7 @@ Feature: SLfT Returns
         When I click on the "Continue" button
         Then I should see the "Environmental credit" page
         And I should see the text "Are you claiming a credit in relation to an environmental contribution can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Are you claiming a credit in relation to an environmental contribution?"
         And I click on the "Continue" button
         Then I should see the "Environmental credit" page
         And I should see the text "Contribution to environmental bodies can't be blank"
@@ -149,12 +149,12 @@ Feature: SLfT Returns
         Then I should see the "Bad debt credit" page
         When I click on the "Continue" button
         Then I should see the text "Do you have any claims to make in relation to bad debt can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Do you have any claims to make in relation to bad debt?"
         And I enter "abc" in the "Bad debt claim amount" field
         And I click on the "Continue" button
         Then I should see the "Bad debt credit" page
         And I should see the text "Bad debt claim amount is not a number"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Do you have any claims to make in relation to bad debt?"
         And I enter "-123.44" in the "Bad debt claim amount" field
         And I click on the "Continue" button
         Then I should see the "Bad debt credit" page
@@ -166,7 +166,7 @@ Feature: SLfT Returns
         When I click on the "Continue" button
         Then I should see the "Permanent removal credit" page
         And I should see the text "Are you claiming a credit for permanent removal can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Are you claiming a credit for permanent removal?"
         And I enter "abc.22" in the "Permanent removal claim amount" field
         And I click on the "Continue" button
         Then I should see the "Permanent removal credit" page
@@ -203,7 +203,7 @@ Feature: SLfT Returns
         Then I should see the "Bad debt credit" page
         And I should see the text "7123" in field "Bad debt claim amount"
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Do you have any claims to make in relation to bad debt?"
         And I click on the "Continue" button
         Then I should see the "Permanent removal credit" page
         When I click on the "Continue" button
@@ -244,7 +244,7 @@ Feature: SLfT Returns
         And I enter "RANDOM_text,256" in the "Description of waste" field
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
-        And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
+        And I check the "Yes" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
         And I click on the "Continue" button
         Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
         And I should receive the message "Description of waste is too long (maximum is 255 characters)"
@@ -301,7 +301,7 @@ Feature: SLfT Returns
         And I should see the text "icky goo" in field "Description of waste"
         And I should see "Falkirk" in the "returns_slft_waste_lau_code" select or text field
         And I should see "Landfill" in the "returns_slft_waste_fmme_method" select or text field
-        And the radio button "returns_slft_waste_from_non_disposal_ind_y" should be selected
+        And the radio button "Yes" should be selected in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
 
         When I click on the "Continue" button
         Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
@@ -321,11 +321,11 @@ Feature: SLfT Returns
         Then I should see the text "Other can't be blank"
         Then I should see the text "NDA or restoration or other must be selected"
 
-        When I check the "returns_slft_waste_nda_ex_yes_no_y" radio button
+        When I check the "Yes" radio button in answer to the question "NDA"
         Then I should see the empty field "NDA tonnage"
-        When I check the "returns_slft_waste_restoration_ex_yes_no_y" radio button
+        When I check the "Yes" radio button in answer to the question "Restoration"
         Then I should see the empty field "Restoration tonnage"
-        When I check the "returns_slft_waste_other_ex_yes_no_y" radio button
+        When I check the "Yes" radio button in answer to the question "Other"
         Then I should see the empty field "Other tonnage"
 
         # They each have the same validation so check each combination in one go
@@ -339,8 +339,8 @@ Feature: SLfT Returns
         And I should see the text "Other tonnage must be greater than 0"
 
 
-        When I check the "returns_slft_waste_nda_ex_yes_no_n" radio button
-        And I check the "returns_slft_waste_restoration_ex_yes_no_n" radio button
+        When I check the "No" radio button in answer to the question "NDA"
+        And I check the "No" radio button in answer to the question "Restoration"
         And I enter " 12.3 " in the "Other tonnage" field
         And I click on the "Continue" button
         Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
@@ -367,7 +367,7 @@ Feature: SLfT Returns
         And I enter "don't breath it" in the "Description of waste" field
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
-        And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
+        And I check the "Yes" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
         And I click on the "Continue" button
         Then I should see the "Details of the 06 13 04 waste for Waste Site 1" page
         And I should see the sub-title "Provide tonnage details for this waste type"
@@ -394,7 +394,7 @@ Feature: SLfT Returns
         And I enter "something else" in the "Description of waste" field
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
-        And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
+        And I check the "Yes" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
         And I click on the "Continue" button
         Then I should see the "Details of the 08 01 15 waste for Waste Site 1" page
         And I should see the sub-title "Provide tonnage details for this waste type"
@@ -414,7 +414,7 @@ Feature: SLfT Returns
         And I enter "it gets worse" in the "Description of waste" field
         And I select "Falkirk" from the "Geographical area"
         And I select "Recycled" from the "Management method"
-        And I check the "returns_slft_waste_from_non_disposal_ind_n" radio button
+        And I check the "No" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
         And I click on the "Continue" button
         Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
         When I enter "1" in the "Standard tonnage" field
@@ -510,7 +510,7 @@ Feature: SLfT Returns
         And I enter "it gets worse" in the "Description of waste" field
         And I select "Falkirk" from the "Geographical area"
         And I select "Recycled" from the "Management method"
-        And I check the "returns_slft_waste_from_non_disposal_ind_n" radio button
+        And I check the "No" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
         And I click on the "Continue" button
         Then I should see the "Details of the 05 01 02 waste for Waste Site 2" page
         And I should see the sub-title "Provide tonnage details for this waste type"
@@ -530,7 +530,7 @@ Feature: SLfT Returns
         And I enter "exempt other line" in the "Description of waste" field
         And I select "Fife" from the "Geographical area"
         And I select "Incinerated" from the "Management method"
-        And I check the "returns_slft_waste_from_non_disposal_ind_n" radio button
+        And I check the "No" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
         And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
@@ -538,9 +538,9 @@ Feature: SLfT Returns
         And I click on the "Continue" button
 
         Then I should see the sub-title "Why is some tonnage exempt?"
-        When I check the "returns_slft_waste_nda_ex_yes_no_n" radio button
-        And I check the "returns_slft_waste_restoration_ex_yes_no_n" radio button
-        And I check the "returns_slft_waste_other_ex_yes_no_y" radio button
+        When I check the "No" radio button in answer to the question "NDA"
+        And I check the "No" radio button in answer to the question "Restoration"
+        And I check the "Yes" radio button in answer to the question "Other"
         And I enter "11.24" in the "Other tonnage" field
         And I enter "my other exemption reason" in the "Description of other exemption reason" field
         And I click on the "Continue" button
@@ -608,11 +608,11 @@ Feature: SLfT Returns
         Then I should see the "Sign in" page
         When I have signed in "portal.waste.new" and password "Password1!"
         Then I should see the "Dashboard" page
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         When I click on the "Continue" link
         Then I should see the "Return summary" page
 
@@ -642,14 +642,14 @@ Feature: SLfT Returns
         Then I should see the "Environmental credit" page
         And I should see the text "1234" in field "Contribution to environmental bodies"
         And I should see the text "59.3" in field "Credit claimed in relation to the contribution"
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are you claiming a credit in relation to an environmental contribution?"
         And I click on the "Continue" button
         Then I should see the "Bad debt credit" page
-        And the radio button "returns_slft_slft_return_bad_debt_yes_no_n" should be selected
+        And the radio button "No" should be selected in answer to the question "Do you have any claims to make in relation to bad debt?"
         When I click on the "Continue" button
         Then I should see the "Permanent removal credit" page
         And I should see the text "564.22" in field "Permanent removal claim amount"
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are you claiming a credit for permanent removal?"
         And I click on the "Continue" button
         Then I should see the "Return summary" page
 
@@ -687,7 +687,7 @@ Feature: SLfT Returns
         And I should see the text "exempt other line" in field "Description of waste"
         And I should see the "Fife" option selected in "Geographical area"
         And I should see the "Incinerated" option selected in "Management method"
-        And the radio button "returns_slft_waste_from_non_disposal_ind_n" should be selected
+        And the radio button "No" should be selected in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
         When I click on the "Continue" button
         Then I should see the "Details of the 01 01 01 waste for Waste Site 2" page
         And I should see the sub-title "Provide tonnage details for this waste type"
@@ -696,9 +696,9 @@ Feature: SLfT Returns
 
         Then I should see the "Details of the 01 01 01 waste for Waste Site 2" page
         And I should see the sub-title "Why is some tonnage exempt?"
-        And the radio button "returns_slft_waste_nda_ex_yes_no_n" should be selected
-        And the radio button "returns_slft_waste_restoration_ex_yes_no_n" should be selected
-        And the radio button "returns_slft_waste_other_ex_yes_no_y" should be selected
+        And the radio button "No" should be selected in answer to the question "NDA"
+        And the radio button "No" should be selected in answer to the question "Restoration"
+        And the radio button "Yes" should be selected in answer to the question "Other"
         And I should see the text "11.24" in field "Other tonnage"
         And I should see the text "my other exemption reason" in field "Description of other exemption reason"
         When I click on the "Continue" button
@@ -733,7 +733,7 @@ Feature: SLfT Returns
         Then I should receive the message "How are you paying can't be blank"
         And I should receive the message "The declaration must be accepted"
 
-        When I check the "BACS" radio button
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
         And I check the "returns_slft_slft_return_declaration" checkbox
         When I click on the "Back" link
         Then I should see the "Calculated tax liability" page
@@ -770,9 +770,9 @@ Feature: SLfT Returns
         When I click on the "Continue" button
         Then I should see the "Details of the 03 02 02 waste for Waste Site 1" page
         And I should see the sub-title "Why is some tonnage exempt?"
-        When I check the "returns_slft_waste_nda_ex_yes_no_n" radio button
-        And I check the "returns_slft_waste_restoration_ex_yes_no_n" radio button
-        And I check the "returns_slft_waste_other_ex_yes_no_y" radio button
+        When I check the "No" radio button in answer to the question "NDA"
+        And I check the "No" radio button in answer to the question "Restoration"
+        And I check the "Yes" radio button in answer to the question "Other"
         And I enter "18" in the "Other tonnage" field
         When I click on the "Continue" button
 
@@ -829,14 +829,14 @@ Feature: SLfT Returns
         Then I should see the text "Do you want to request a repayment from Revenue Scotland can't be blank"
 
         # without repayment
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Do you want to request a repayment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
         When I click on the "Back" link
 
         # with repayment
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Do you want to request a repayment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the text "How much are you claiming from Revenue Scotland can't be blank"
         When I enter "aaa" in the "How much are you claiming from Revenue Scotland?" field
@@ -889,7 +889,7 @@ Feature: SLfT Returns
         Then I should see the "Enter bank details" page
         When I click on the "Back" link
         Then I should see the "Repayment details" page
-        And I check the "No" radio button
+        And I check the "No" radio button in answer to the question "Do you want to request a repayment from Revenue Scotland?"
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
 
@@ -919,15 +919,15 @@ Feature: SLfT Returns
         When I click on the "Edit credit details" link
         Then I should see the "Environmental credit" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are you claiming a credit in relation to an environmental contribution?"
         And I click on the "Continue" button
         Then I should see the "Bad debt credit" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Do you have any claims to make in relation to bad debt?"
         And I click on the "Continue" button
         Then I should see the "Permanent removal credit" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Are you claiming a credit for permanent removal?"
         And I click on the "Continue" button
         Then I should see the "Return summary" page
 
@@ -1003,10 +1003,10 @@ Feature: SLfT Returns
         When I click on the "Continue" button
         Then I should see the "Payment and submission" page
         # Verify the fpay_method has been stored
-        And the radio button "BACS" should be selected
+        And the radio button "BACS" should be selected in answer to the question "How are you paying?"
         And the radio button "Cheque" should not be selected
 
-        When I check the "BACS" radio button
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
         And I check the "returns_slft_slft_return_declaration" checkbox
         And I click on the "Submit return" button
         Then I should see the text "Your amendment to your Scottish Landfill tax return RS1000947STMD has now been submitted."
@@ -1045,7 +1045,7 @@ Feature: SLfT Returns
         And I enter "icky goo" in the "Description of waste" field
         And I select "EU" from the "Geographical area"
         And I select "Landfill" from the "Management method"
-        And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
+        And I check the "Yes" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
         And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
@@ -1063,7 +1063,7 @@ Feature: SLfT Returns
         And I enter "icky goo2" in the "Description of waste" field
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
-        And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
+        And I check the "Yes" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
         And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
@@ -1094,7 +1094,7 @@ Feature: SLfT Returns
         And I enter "icky goo" in the "Description of waste" field
         And I select "Falkirk" from the "Geographical area"
         And I select "Landfill" from the "Management method"
-        And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
+        And I check the "Yes" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
         And I click on the "Continue" button
         Then I should see the sub-title "Provide tonnage details for this waste type"
 
@@ -1132,22 +1132,22 @@ Feature: SLfT Returns
         When I click on the "Go to dashboard" link
         Then I should see the "Dashboard" page
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
 
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see a link with text "Delete"
 
         When I click on the "Delete" link
         Then if available, click the confirmation dialog
         Then I should see the "Dashboard" page
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
 
         When I enter the stored value "notification_banner_reference" in field "Return reference"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         Then I should not see a link with text "Download PDF"

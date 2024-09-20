@@ -23,9 +23,12 @@ Feature: Dashboard All Returns
         And I should not see the text "Q1 2019"
         And I should not see the text "19/06/2023"
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
-        And the table of data is displayed
+        When I click on the 2 nd "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only returns with an outstanding balance" should be checked
+        When I uncheck the "Only returns with an outstanding balance" checkbox
+        And I click on the "Find" button
+        Then the table of data is displayed
             | Return reference | Submitted date | Description | Version | Balance   | Status        | Action_1     | Action_2               | Action_3     | Action_4        | Action_5        |
             | RS1008003OKAY    |                | Q3 2019     | 3       |           | Draft         | Download PDF | Download waste details | Delete       | Ongoing enquiry |                 |
             | RS1008002WAUW    |                | Q4 2019     | 1       |           | Draft         | Download PDF | Download waste details | Continue     | Delete          |                 |
@@ -45,9 +48,14 @@ Feature: Dashboard All Returns
             | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 | Conveyance or transfer | 2       | Continue | Download PDF | Delete   |
         And I should not see a link with text "Download waste details"
 
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
-        And the table of data is displayed
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only my returns" should be checked
+        And I should see "Draft" in the "Return status" select or text field
+        When I uncheck the "Only my returns" checkbox
+        And I select "" from the "Return status"
+        And I click on the "Find" button
+        Then the table of data is displayed
             # Note we only use partial references in those with \ as the code inserts a zero width space to allow breaking
             | Return reference | Your reference          | Submitted date | Description            | Version | Balance | Status        | Action_1     | Action_2     | Action_3 | Action_4      |
             | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 |                | Conveyance or transfer | 2       |         | Draft         | Download PDF | Continue     | Delete   |               |
@@ -68,22 +76,36 @@ Feature: Dashboard All Returns
             | RS2000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Amend    | Message  |
             | RS3000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Claim    | Message  |
             | RS2000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Claim    | Message  |
+        When I clear the "Your reference" field
+        And I select "Return reference" from the "Sort by"
+        And I click on the "Find" button
+        Then the table of data is displayed
+            | Return reference | Your reference          | Submitted date | Description            | Version | Balance | Status        | Action_1     | Action_2     | Action_3 | Action_4      |
+            | RS2000001AAAA    | CO99999.0001            | 01/07/2023     | Conveyance or transfer | 1       | £200.00 | Filed (Debit) | Download PDF | Transactions | Message  | Draft present |
+            | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 |                | Conveyance or transfer | 2       |         | Draft         | Download PDF | Continue     | Delete   |               |
+            | RS2000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
+            | RS2000003BBBB    | XXXXX02-99              | 01/06/2021     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
+            | RS2000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
+            | RS3000002AAAA    | ABcC                    | 01/07/2017     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
+            | RS3000003EEEE    | XXXXX02-99              | 01/10/2019     | Lease                  | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Claim    | Message       |
+            | RS3000004DDDD    | ABcC                    | 01/07/2023     | Conveyance or transfer | 1       | £0.00   | Filed (Paid)  | Download PDF | Transactions | Amend    | Message       |
 
     Scenario: Filter data to list down all that's needed to be seen
         Given I have signed in 'PORTAL.WASTE' and password 'Password1!'
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
         And I open the "Show more filter options" summary item
         When I enter "09-01-2099" in the "Submitted from date" date field
+        And I select "" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should not see a link with text "Download PDF"
 
         When I open the "Show more filter options" summary item
         And I clear the "Submitted from date" field
         And I select "Draft" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And the table of data is displayed
             | Return reference | Submitted date | Description | Version | Balance | Status | Action_1     | Action_2               | Action_3 | Action_4        | Action_5 |
             | RS1008003OKAY    |                | Q3 2019     | 3       |         | Draft  | Download PDF | Download waste details | Delete   | Ongoing enquiry |          |
@@ -92,11 +114,12 @@ Feature: Dashboard All Returns
 
         When I click on the "Dashboard" menu item
         Then I should see the "Dashboard" page
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
         When I enter "RS1008003OKAY" in the "Return reference" field
+        And I select "" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And the table of data is displayed
             | Return reference | Submitted date | Description | Version | Balance | Status       | Action_1     | Action_2               | Action_3     | Action_4        | Action_5        |
             | RS1008003OKAY    |                | Q3 2019     | 3       |         | Draft        | Download PDF | Download waste details | Delete       | Ongoing enquiry |                 |
@@ -106,7 +129,7 @@ Feature: Dashboard All Returns
         And I check the "Include previous versions" checkbox
         And I enter "RS1008003Okay" in the "Return reference" field
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And the table of data is displayed
             | Return reference | Submitted date | Description | Version | Balance | Status       | Action_1     | Action_2               | Action_3        | Action_4        | Action_5        |
             | RS1008003OKAY    |                | Q3 2019     | 3       |         | Draft        | Download PDF | Download waste details | Delete          | Ongoing enquiry |                 |
@@ -116,7 +139,7 @@ Feature: Dashboard All Returns
         When I open the "Show more filter options" summary item
         And I enter "20191111-01-09" in the "Submitted from date" field
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see the text "Submitted from date is invalid"
 
     Scenario: Checking access
@@ -132,10 +155,12 @@ Feature: Dashboard All Returns
     Scenario: Checking action links are correctly shown for specific type of returns
         Given I have signed in 'PORTAL.WASTE' and password 'Password1!'
         # A draft return
-        When I click on the "See all returns" link
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And I should see "Draft" in the "Return status" select or text field
         And I enter "RS100002AAAAA" in the "Return reference" field
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see the text "Draft"
         And I should see a link with text "Download PDF"
         And I should see a link with text "Download waste details"
@@ -147,8 +172,9 @@ Feature: Dashboard All Returns
 
         # A latest filed return that is over 12 months old
         When I enter "RS1008001HalO" in the "Return reference" field
+        And I select "" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see the text "Filed (Paid)"
         And I should see the text "Q1 2016"
         And I should see a link with text "Download PDF"
@@ -164,7 +190,7 @@ Feature: Dashboard All Returns
         And I enter "RS100001AAAAA" in the "Return reference" field
         And I select "Filed" from the "Return status"
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see the text "Filed (Debit)"
         And I should see the text "Q1 2023"
         And I should see a link with text "Download PDF"
@@ -181,7 +207,7 @@ Feature: Dashboard All Returns
         And I enter "19-06-2023" in the "Submitted to date" date field
         And I check the "Include previous versions" checkbox
         And I click on the "Find" button
-        Then I should see the "All returns" page
+        Then I should see the "Returns" page
         And I should see the text "Filed (Debit)"
         And I should see a link with text "Download PDF"
         And I should see a link with text "Download waste details"
@@ -192,8 +218,8 @@ Feature: Dashboard All Returns
 
     Scenario: Filtering validation
         Given I have signed in 'PORTAL.WASTE' and password 'Password1!'
-        When I click on the "See all returns" link
-        Then I should see the "All returns" page
+        When I click on the 2 nd "Find returns" link
+        Then I should see the "Returns" page
 
         When I enter "RANDOM_STRING,31" in the "Return reference" field
         And I click on the "Find" button
@@ -203,3 +229,76 @@ Feature: Dashboard All Returns
         And I enter "RANDOM_STRING,256" in the "Description" field
         And I click on the "Find" button
         Then I should receive the message "Description is too long"
+
+    Scenario: To verify that returns created or modified by user are visible on dashboard
+        # Check if the Return created by the user is visible
+        Given I have signed in 'PORTAL.ONE' and password 'Password1!'
+        Then I should see the "Dashboard" page
+        And the table of data is displayed
+            | Return reference | Your reference          | Description            | Version | Action_1 | Action_2     | Action_3 |
+            | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 | Conveyance or transfer | 2       | Continue | Download PDF | Delete   |
+
+        # Check if the Return modified by the user is visible
+        Given I have signed in 'PORTAL.TWO' and password 'Password2!'
+        Then I should see the "Dashboard" page
+        And the table of data is displayed
+            | Return reference | Your reference          | Description            | Version | Action_1 | Action_2     | Action_3 |
+            | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 | Conveyance or transfer | 2       | Continue | Download PDF | Delete   |
+        # Check if the Return is not visible to this user on Dashboard
+        Given I have signed in 'PORTAL.THREE' and password 'Password3!'
+        Then I should see the "Dashboard" page
+        And the data is not displayed in table
+            | Return reference | Your reference          |
+            | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 |
+
+    Scenario: To check the filtering of returns using lbtt user
+        Given I have signed in 'PORTAL.ONE' and password 'Password1!'
+        Then I should see the "Dashboard" page
+        And I should see the sub-title "Draft returns"
+        And the table of data is displayed
+            | Return reference | Your reference          | Description            | Version | Action_1 | Action_2     | Action_3 |
+            | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 | Conveyance or transfer | 2       | Continue | Download PDF | Delete   |
+
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And I should see "Draft" in the "Return status" select or text field
+        And the checkbox "Only my returns" should be checked
+
+        When I select "" from the "Return status"
+        And I click on the "Find" button
+        Then I should see the "Returns" page
+        And the table of data is displayed
+            | Return reference | Your reference          | Submitted date | Description            | Version | Balance | Status        | Action_1     | Action_2     | Action_3 | Action_4      |
+            | RS2000001AAAA    | AAAA BB DDDDFFFF 9999.2 |                | Conveyance or transfer | 2       |         | Draft         | Download PDF | Continue     | Delete   |               |
+            | RS2000001AAAA    | CO99999.0001            | 01/07/2023     | Conveyance or transfer | 1       | £200.00 | Filed (Debit) | Download PDF | Transactions | Message  | Draft present |
+
+        When I select "Lease (all types)" from the "Return type"
+        And I uncheck the "Only my returns" checkbox
+        And I click on the "Find" button
+        Then I should see the "Returns" page
+        And the table of data is displayed
+            | Return reference | Your reference | Submitted date | Description | Version | Balance | Status       | Action_1     | Action_2     | Action_3 | Action_4 |
+            | RS2000003BBBB    | XXXXX02-99     | 01/06/2021     | Lease       | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Claim    | Message  |
+            | RS3000003EEEE    | XXXXX02-99     | 01/10/2019     | Lease       | 1       | £0.00   | Filed (Paid) | Download PDF | Transactions | Claim    | Message  |
+
+        When I click on the "Dashboard" menu item
+        Then I should see the "Dashboard" page
+        When I click on the 2 nd "Find returns" link
+        Then I should see the "Returns" page
+        And the checkbox "Only returns with an outstanding balance" should be checked
+        And the checkbox "Only my returns" should be checked
+
+        When I select "Filed" from the "Return status"
+        And I uncheck the "Only my returns" checkbox
+        And I click on the "Find" button
+        Then I should see the "Returns" page
+        And the table of data is displayed
+            | Return reference | Your reference | Submitted date | Description            | Version | Balance | Status        | Action_1     | Action_2     | Action_3 | Action_4      |
+            | RS2000001AAAA    | CO99999.0001   | 01/07/2023     | Conveyance or transfer | 1       | £200.00 | Filed (Debit) | Download PDF | Transactions | Message  | Draft present |
+
+        When I select "Draft" from the "Return status"
+        And the checkbox "Only returns with an outstanding balance" should be checked
+        And I click on the "Find" button
+        Then I should see the "Returns" page
+        And the table of data is displayed
+            | Return reference | Your reference | Submitted date | Description | Version | Balance | Status |

@@ -8,7 +8,7 @@ module Dashboard
     # see AllMessageSubject for accessors for subject_code
     attr_accessor :direction_code, :from_datetime, :to_datetime, :reference, :sent_by,
                   :subject_domain, :wrk_refno, :srv_code,
-                  :unread_only, :selected_message_smsg_refno, :smsg_original_refno
+                  :unread_only, :selected_message_smsg_refno, :smsg_original_refno, :sort_by
 
     validates :reference, length: { maximum: 30 }
     validates :sent_by, length: { maximum: 255 }
@@ -18,14 +18,15 @@ module Dashboard
     # Define the ref data codes associated with the attributes to be cached in this model
     # @return [Hash] <attribute> => <ref data composite key>
     def cached_ref_data_codes
-      { subject_code: comp_key('MESSAGE_SUBJECT', 'SYS', 'RSTU'), direction_code: comp_key('DIRECTION', 'SYS', 'RSTU') }
+      { subject_code: comp_key('MESSAGE_SUBJECT', 'SYS', 'RSTU'), direction_code: comp_key('DIRECTION', 'SYS', 'RSTU'),
+        sort_by: comp_key('MESSAGE_SORT_TYPES', 'SYS', 'RSTU') }
     end
 
     # Provides permitted filter request params
     def self.params(params)
       params.fetch(:dashboard_message_filter, {}).permit(
         :direction_code, :reference, :subject_code, :subject_full_key_code,
-        :sent_by, :from_datetime, :to_datetime
+        :sent_by, :from_datetime, :to_datetime, :sort_by
       )
     end
 
@@ -37,7 +38,8 @@ module Dashboard
         SearchUserName: @sent_by,
         Reference: @reference,
         Direction: direction_description,
-        UnreadOnly: @unread_only.to_s }.merge(request_date_filter)
+        UnreadOnly: @unread_only.to_s,
+        SortBy: @sort_by }.merge(request_date_filter)
     end
 
     # @return a hash containing date values suitable for use in a list secure messages filter

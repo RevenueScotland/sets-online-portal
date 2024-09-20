@@ -1,7 +1,7 @@
 <% content_for(:page_title, t('.title')) %>
 <%= ds_paragraph{ t('.description_1_html', link: 
                  ds_link(name: t('.description_1_link'), url: external_link_url('TAX_RELIEFS'), target: '_blank'))}%>
-<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f|  %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post, hidden_submit: true) do |f|  %>
   <%# <% TODO: RSTP-1190 change to !@lbtt_return.pre_populated? so we dont need the if%>
   <%= f.ds_table_form(add_link: !@lbtt_return.show_pre_pop_reliefs?, delete_links:  true
 ) do |table| %>

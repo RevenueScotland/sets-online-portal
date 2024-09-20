@@ -11,7 +11,7 @@ module DS
 
     renders_one :header, DS::TableComponent::HeaderComponent
     renders_many :rows, DS::TableComponent::RowComponent
-    renders_one :link, DS::LinkComponent
+    renders_many :links, DS::LinkComponent
 
     attr_reader :caption, :id, :small_screen
 

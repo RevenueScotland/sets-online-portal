@@ -21,6 +21,7 @@
     <link rel="shortcut icon" href="<%= image_path("favicon.ico") %>" type="image/vnd.microsoft.icon" >
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <meta name="robots" content="noindex, nofollow">
   </head>
   <body data-controller="ds timeout-warning accessibility cancel-warning" 
         data-timeout-warning-message-value="<%= t('.timeout_warning_message') %>" 

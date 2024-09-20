@@ -6,9 +6,9 @@ module ReferenceData
   # The complete list of reference values is long, so they are retrieved and cached.
   # The lists are grouped by DomainCode, ServiceCode and Workplace code.
   # @see BackOfficeDataCaching#lookup (and similar methods) for how to call this class.
-  class ReferenceValue < SystemParameter
+  class ReferenceValue < SystemParameter # rubocop:disable Metrics/ClassLength
     # additional fields
-    attr_accessor :default, :sequence
+    attr_accessor :default, :sequence, :text
 
     # override the sort sequence to be the provided sequence if present
     def sort_key
@@ -26,8 +26,8 @@ module ReferenceData
     # @note returns [Object] a new instance
     private_class_method def self.make_object(data)
       ReferenceValue.new(domain_code: data[:domain_code], service_code: data[:service_code],
-                         workplace_code: data[:workplace_code],
-                         code: data[:code], value: data[:name], default: data[:default], sequence: data[:sequence])
+                         workplace_code: data[:workplace_code], code: data[:code], value: data[:name],
+                         text: data[:comment], default: data[:default], sequence: data[:sequence])
     end
 
     # Calls the correct service and specifies where the results are in the response body
@@ -50,17 +50,28 @@ module ReferenceData
       #               'N' => ReferenceValue.new(code: 'N', value: 'Inactive') }
       output[format_composite_key('CURRENT_INACTIVE', 'SYS', 'RSTU')] = current_inactive
       output[format_composite_key('DIRECTION', 'SYS', 'RSTU')] = direction
+      output[format_composite_key('MESSAGE_SORT_TYPES', 'SYS', 'RSTU')] = messages_sort_by
       output[format_composite_key('RETURN_STATUS', 'SYS', 'RSTU')] = return_status
+      output[format_composite_key('RETURN_SORT_TYPES', 'SYS', 'RSTU')] = return_sort_types
       output[format_composite_key('BUYER TYPES', 'SYS', 'RSTU')] = buyer_types
       output[format_composite_key('ELIGIBILITY_LIST', 'SYS', 'RSTU')] = eligibility_checkers
 
       output[format_composite_key('RENEWALORREVIEW', 'SYS', 'RSTU')] = renewal_or_review
       output[format_composite_key('RESTORATION-TYPE', 'SLFT', 'RSTU')] = restoration_type
+      output[format_composite_key('TRANSACTIONS_SORT', 'SYS', 'RSTU')] = trans_sort_type
 
       # merge the two EWC hashes into one
       output[format_composite_key('EWC_LIST', 'SLFT', 'RSTU')] = merge_ewc_codes(existing_values)
       # merge the three message subject lists into one
       output[format_composite_key('ALL_MESSAGE_SUBJECT', 'SYS', 'RSTU')] = merge_message_subjects(existing_values)
+      # Creating new Return type list by including new list for sort
+      output[format_composite_key('ALL RETURN TYPE', 'LBTT', 'RSTU')] = merge_lbtt_return_types(existing_values)
+      output[format_composite_key('ALL RETURN TYPE', 'SLFT', 'RSTU')] =
+        existing_values[format_composite_key('RETURN TYPE', 'SLFT', 'RSTU')]
+      output[format_composite_key('TRANSACTION GROUPS TEXT', 'LBTT', 'RSTU')] =
+        transaction_group(existing_values, 'LBTT')
+      output[format_composite_key('TRANSACTION GROUPS TEXT', 'SLFT', 'RSTU')] =
+        transaction_group(existing_values, 'SLFT')
 
       output
     end
@@ -81,11 +92,49 @@ module ReferenceData
       }
     end
 
+    # @return [hash] The internal sorting list of messages
+    private_class_method def self.messages_sort_by
+      {
+        'MostRecent' => ReferenceValue.new(code: 'MostRecent', value: 'Most recent', sequence: '10'),
+        'Oldest' => ReferenceValue.new(code: 'Oldest', value: 'Oldest', sequence: '20'),
+        'ReturnReference' => ReferenceValue.new(code: 'ReturnReference', value: 'Reference', sequence: '30'),
+        'SenderName' => ReferenceValue.new(code: 'SenderName', value: 'Sender name', sequence: '40'),
+        'Subject' => ReferenceValue.new(code: 'Subject', value: 'Subject', sequence: '50')
+      }
+    end
+
+    # @return [hash] The internal sorting list of returns
+    private_class_method def self.return_sort_types
+      {
+        'MostRecent' => ReferenceValue.new(code: 'MostRecent', value: 'Most recent', sequence: '10'),
+        'Oldest' => ReferenceValue.new(code: 'Oldest', value: 'Oldest', sequence: '20'),
+        'BalanceDesc' => ReferenceValue.new(code: 'BalanceDesc', value: 'Balance : High - Low', sequence: '30'),
+        'BalanceAsc' => ReferenceValue.new(code: 'BalanceAsc', value: 'Balance : Low - High', sequence: '40'),
+        'ReturnReference' => ReferenceValue.new(code: 'ReturnReference', value: 'Return reference', sequence: '50'),
+        'YourReference' => ReferenceValue.new(code: 'YourReference', value: 'Your reference', sequence: '60'),
+        'Description' => ReferenceValue.new(code: 'Description', value: 'Description', sequence: '70')
+      }
+    end
+
     # @return [hash] The slft application type list
     private_class_method def self.restoration_type
       {
         'PART' => ReferenceValue.new(code: 'PART', value: 'Part', sequence: '10'),
         'FULL' => ReferenceValue.new(code: 'FULL', value: 'Full', sequence: '20')
+      }
+    end
+
+    # @return [hash] The internal sorting options for transactions
+    private_class_method def self.trans_sort_type
+      {
+        'MostRecent' => ReferenceValue.new(code: 'MostRecent', value: 'Most recent', sequence: '10'),
+        'Oldest' => ReferenceValue.new(code: 'Oldest', value: 'Oldest', sequence: '20'),
+        'AmountDesc' => ReferenceValue.new(code: 'AmountDesc', value: 'Amount : High - Low', sequence: '30'),
+        'AmountAsc' => ReferenceValue.new(code: 'AmountAsc', value: 'Amount : Low - High', sequence: '40'),
+        'BalanceDesc' => ReferenceValue.new(code: 'BalanceDesc', value: 'Balance : High - Low', sequence: '50'),
+        'BalanceAsc' => ReferenceValue.new(code: 'BalanceAsc', value: 'Balance : Low - High', sequence: '60'),
+        'RelatedReference' => ReferenceValue.new(code: 'RelatedReference', value: 'Related reference', sequence: '70'),
+        'Description' => ReferenceValue.new(code: 'Description', value: 'Description', sequence: '80')
       }
     end
 
@@ -101,8 +150,7 @@ module ReferenceData
     private_class_method def self.return_status
       {
         'L' => ReferenceValue.new(code: 'L', value: 'Filed'),
-        'D' => ReferenceValue.new(code: 'D', value: 'Draft'),
-        'Y' => ReferenceValue.new(code: 'Y', value: 'Disregarded')
+        'D' => ReferenceValue.new(code: 'D', value: 'Draft')
       }
     end
 
@@ -138,6 +186,15 @@ module ReferenceData
       haz.merge!(non)
     end
 
+    # Merge the return type Lease (all types) to existing LBTT return types
+    # @return [hash] merged LBTT return types reference data
+    private_class_method def self.merge_lbtt_return_types(existing_values)
+      lbtt_types = existing_values[format_composite_key('RETURN TYPE', 'LBTT', 'RSTU')]
+      lease_all = { 'ALL_LEASE_TYPES' => ReferenceValue.new(code: 'ALL_LEASE_TYPES',
+                                                            value: 'Lease (all types)', sequence: '1') }
+      lbtt_types.merge(lease_all)
+    end
+
     # Merge the three subject lists into one, with a key value based on the full key
     # @return [hash] sorted EWC reference data codes list
     private_class_method def self.merge_message_subjects(existing_values)
@@ -148,6 +205,19 @@ module ReferenceData
         existing_values[comp_key]&.each_value do |value|
           output[value.full_key_code] = value
         end
+      end
+
+      output
+    end
+
+    # Overrides the value of object to text
+    # @return [hash] List of transaction group
+    private_class_method def self.transaction_group(existing_values, srv_code)
+      output = {}
+
+      existing_values[format_composite_key('TRANSACTION GROUPS', srv_code, 'RSTU')]&.each_value do |obj|
+        obj.value = obj.text
+        output[obj] = obj
       end
 
       output

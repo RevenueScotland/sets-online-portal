@@ -17,7 +17,7 @@ module Dashboard
                   :attachment, :document, :smsg_refno,
                   :original_smsg_refno, :direction, :wrk_refno, :created_date,
                   :srv_code, :read_indicator, :subject_domain, :has_attachment,
-                  :read_datetime, :attachments, :forename, :surname
+                  :read_datetime, :attachments, :forename, :surname, :status_update
 
     validates :reference, presence: true, length: { maximum: 30 }
     validates :title, presence: true, length: { maximum: 255 }
@@ -98,15 +98,15 @@ module Dashboard
       message
     end
 
-    # Finds a specific message linked to the party_refno of the user and updates the read to 'Y'.
+    # Finds a specific message linked to the party_refno of the user and updates the read to 'Y'
     # This method is mainly used for when the user is viewing a specific message.
     # @param smsg_refno [String] The internal reference of the message to be shown
     # @param requested_by [String] The user who made a find request that the messages are linked to
     # @return [Object] an instance of a Message object with the correct matching smsg_refno
-    def self.find(smsg_refno, requested_by)
+    def self.find(smsg_refno, requested_by, mark_as_read = nil)
       message = ''
       success = call_ok?(:get_secure_message_details,
-                         request_secure_message_details(requested_by, smsg_refno)) do |response|
+                         request_secure_message_details(requested_by, smsg_refno, mark_as_read)) do |response|
         break if response.blank?
 
         message = Message.new_from_fl(convert_back_office_hash(response.merge!(subject_domain: 'MESSAGE_SUBJECT')))
@@ -166,6 +166,13 @@ module Dashboard
       call_ok?(:delete_attachment, request_delete_attachment(requested_by, doc_refno))
     end
 
+    # sends the request to the bo to toggle the status of the message
+    # @param smsg_refno [Number] the secure message refno
+    # @param requested_by [String] who requested the status toggle
+    def self.toggle_read_status(smsg_refno, requested_by)
+      call_ok?(:secure_message_update, request_update_status(smsg_refno, requested_by))
+    end
+
     # retrieve document from backoffice
     # @param requested_by [Object] the user who requested to get access for the specific set of data.
     # @param doc_refno [String] document reference number
@@ -184,8 +191,12 @@ module Dashboard
     # @!method self.secure_message_details_request(requested_by, id)
     # request to send backoffice to get secure message details
     # @return [Object] a hash suitable for use in a list secure messages request to the back office
-    private_class_method def self.request_secure_message_details(requested_by, id)
-      request_user(requested_by).merge!(SmsgRefno: id)
+    private_class_method def self.request_secure_message_details(requested_by, id, mark_as_read)
+      output = request_user(requested_by)
+      output['ins1:SmsgRefno'] = id
+      output['ins1:MarkAsRead'] = mark_as_read
+
+      output
     end
 
     # @!method self.request_list_secure_messages(requested_by, pagination, message_filter, smsg_original_refno)
@@ -288,6 +299,14 @@ module Dashboard
     # @return a hash suitable for use in a get attachment to the back office
     private_class_method def self.request_get_attachment(requested_by, doc_refno, type)
       request_user(requested_by).merge!(AttachmentRefno: doc_refno, AttachmentType: type)
+    end
+
+    # @return a hash suitable for use in updating the read status in the back office
+    private_class_method def self.request_update_status(smsg_refno, requested_by)
+      { 'ins1:ParRefno': requested_by.party_refno,
+        'ins1:UserName': requested_by.username,
+        'ins1:SmsgRegno': smsg_refno,
+        'ins1:ToggleReadIndicator': 'Y' }
     end
 
     private :request_add_attachment, :request_delete_attachment

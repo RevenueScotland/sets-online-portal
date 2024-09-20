@@ -22,22 +22,22 @@ Feature: Slft applications
         Then I should see the "What is your role in the application?" page
         When I click on the "Continue" button
         Then I should receive the message "Select the relevant option that describes your role can't be blank"
-        When I check the "Landfill operator" radio button
+        When I check the "Landfill operator" radio button in answer to the question "Select the relevant option that describes your role"
         And I click on the "Continue" button
 
         Then I should see the "Choose required application" page
         When I click on the "Continue" button
         Then I should receive the message "What application are you completing can't be blank"
-        When I check the "Application for an alternative weighing method" radio button
+        When I check the "Application for an alternative weighing method" radio button in answer to the question "What application are you completing?"
         And I click on the "Continue" button
 
         Then I should see the "Review or new application" page
         When I click on the "Continue" button
         Then I should receive the message "Is there an existing agreement can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is this application a review of an existing agreement?"
         And I click on the "Continue" button
         Then I should receive the message "Existing agreement number can't be blank"
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is this application a review of an existing agreement?"
         And I click on the "Continue" button
 
         Then I should see the "Landfill operator details" page
@@ -268,15 +268,15 @@ Feature: Slft applications
         When I click on the "Continue" link
         Then I should see the "What is your role in the application?" page
 
-        When I check the "Landfill operator" radio button
+        When I check the "Landfill operator" radio button in answer to the question "Select the relevant option that describes your role"
         And I click on the "Continue" button
         Then I should see the "Choose required application" page
 
-        When I check the "Application for an alternative weighing method" radio button
+        When I check the "Application for an alternative weighing method" radio button in answer to the question "What application are you completing?"
         And I click on the "Continue" button
         Then I should see the "Review or new application" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is this application a review of an existing agreement?"
         And I click on the "Continue" button
         Then I should see the "Landfill operator details" page
 
@@ -286,14 +286,14 @@ Feature: Slft applications
         When I click on the "Back" link
         Then I should see the "Choose required application" page
 
-        When I check the "Application for a non-disposal area" radio button
+        When I check the "Application for a non-disposal area" radio button in answer to the question "What application are you completing?"
         And I click on the "Continue" button
         Then I should see the "Review or new application" page
 
         When I click on the "Continue" button
         Then I should receive the message "Is there an existing agreement can't be blank"
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is this application a review of an existing agreement?"
         And I click on the "Continue" button
         Then I should see the "Landfill operator details" page
 
@@ -392,14 +392,14 @@ Feature: Slft applications
 
         When I click on the "Continue" link
         Then I should see the "What is your role in the application?" page
-        When I check the "Landfill operator" radio button
+        When I check the "Landfill operator" radio button in answer to the question "Select the relevant option that describes your role"
         And I click on the "Continue" button
         Then I should see the "Choose required application" page
 
-        When I check the "Restoration notification" radio button
+        When I check the "Restoration notification" radio button in answer to the question "What application are you completing?"
         And I click on the "Continue" button
         Then I should see the "Review or new application" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is this application a review of an existing agreement?"
         And I click on the "Continue" button
         Then I should see the "Landfill operator details" page
 
@@ -444,7 +444,7 @@ Feature: Slft applications
         And I should receive the message "Type of waste can't be blank"
         And I should receive the message "Estimated tonnage can't be blank"
 
-        When I check the "Full" radio button
+        When I check the "Full" radio button in answer to the question "Is this a part or full site restoration?"
         And I enter "12345678" in the "Provide an estimate of the timescale for the restoration exercise" field
         And I click on the "Continue" button
         Then I should receive the message "Type of waste can't be blank"
@@ -490,13 +490,13 @@ Feature: Slft applications
         Then I should see the "Online SLfT application form" page
         When I click on the "Continue" link
         Then I should see the "What is your role in the application?" page
-        When I check the "Landfill operator" radio button
+        When I check the "Landfill operator" radio button in answer to the question "Select the relevant option that describes your role"
         And I click on the "Continue" button
         Then I should see the "Choose required application" page
-        When I check the "Application to receive water discounted waste" radio button
+        When I check the "Application to receive water discounted waste" radio button in answer to the question "What application are you completing?"
         And I click on the "Continue" button
         Then I should see the "Review or new application" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is this application a review of an existing agreement?"
         And I click on the "Continue" button
         Then I should see the "Landfill operator details" page
 
@@ -592,18 +592,18 @@ Feature: Slft applications
 
         When I click on the "Continue" link
         Then I should see the "What is your role in the application?" page
-        When I check the "Waste producer" radio button
+        When I check the "Waste producer" radio button in answer to the question "Select the relevant option that describes your role"
         And I click on the "Continue" button
         Then I should see the "Water discount renewal, review or new" page
 
         When I click on the "Continue" button
         Then I should receive the message "Is there an existing agreement can't be blank"
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Does this form relate to an existing water discount agreement?"
         And I click on the "Continue" button
         Then I should receive the message "Existing agreement number can't be blank"
         And I should receive the message "Is this a renewal or review of an existing water discount agreement can't be blank"
 
-        When I check the "Review" radio button
+        When I check the "Review" radio button in answer to the question "Is this a renewal or review of an existing water discount agreement?"
         And I enter "12345678" in the "Provide the previously approved water discount agreement number" field
         And I click on the "Continue" button
         Then I should see the "Waste producer details" page
@@ -631,7 +631,7 @@ Feature: Slft applications
         When I click on the "Continue" button
         Then I should receive the message "Choose the relevant options below which describes how the water to be discounted relates to the waste can't be blank"
 
-        When I check the "The water in the waste is present because it has been used for extraction of minerals" radio button
+        When I check the "The water in the waste is present because it has been used for extraction of minerals" radio button in answer to the question "Choose the relevant options below which describes how the water to be discounted relates to the waste"
         And I click on the "Continue" button
         Then I should see the "Banned liquid waste" page
 
@@ -656,7 +656,7 @@ Feature: Slft applications
         And I should receive the message "What is the water content of the waste can't be blank"
         Then I should receive the message "What is the added water content can't be blank"
 
-        When I check the "Yes" radio button
+        When I check the "Yes" radio button in answer to the question "Is there naturally occurring water in the waste?"
         And I enter "102" in the "What is the water content of the waste" field
         And I enter "102" in the "What is the added water content" field
         And I click on the "Continue" button
@@ -664,7 +664,7 @@ Feature: Slft applications
         And I should receive the message "What is the water content of the waste must be less than 100"
         And I should receive the message "What is the added water content must be less than 100"
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is there naturally occurring water in the waste?"
         And I enter " 5" in the "What is the water content of the waste" field
         And I enter "5" in the "What is the added water content" field
         And I click on the "Continue" button
@@ -713,7 +713,7 @@ Feature: Slft applications
         Then I should see the "Separate mailing address for landfill operator" page
         When I click on the "Continue" button
         Then I should receive the message "Does the landfill site operator have a separate mailing address can't be blank"
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Does the landfill site operator have a separate mailing address?"
         And I click on the "Continue" button
         Then I should see the "Site waste details" page
 
@@ -746,7 +746,7 @@ Feature: Slft applications
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Separate mailing address for landfill operator" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Does the landfill site operator have a separate mailing address?"
         And I click on the "Continue" button
         Then I should see the "Site waste details" page
 
@@ -777,7 +777,7 @@ Feature: Slft applications
         When I click on the "Continue" button
         Then I should see the "Separate mailing address for landfill operator" page
 
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Does the landfill site operator have a separate mailing address?"
         And I click on the "Continue" button
         Then I should see the "Site waste details" page
         When I enter "plastic" in the "What type of waste will be sent to this site" field
@@ -849,11 +849,11 @@ Feature: Slft applications
         When I click on the "Continue" link
 
         Then I should see the "What is your role in the application?" page
-        When I check the "Waste producer" radio button
+        When I check the "Waste producer" radio button in answer to the question "Select the relevant option that describes your role"
         And I click on the "Continue" button
 
         Then I should see the "Water discount renewal, review or new" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Does this form relate to an existing water discount agreement?"
         And I click on the "Continue" button
 
         Then I should see the "Waste producer details" page
@@ -871,7 +871,7 @@ Feature: Slft applications
         Then I should see the "Waste producer address" page
         When I click on the "Continue" button
         Then I should see the "About the waste water" page
-        When I check the "The water has been added to the waste for transportation to disposal" radio button
+        When I check the "The water has been added to the waste for transportation to disposal" radio button in answer to the question "Choose the relevant options below which describes how the water to be discounted relates to the waste"
         And I click on the "Continue" button
 
         Then I should see the "Banned liquid waste" page
@@ -885,7 +885,7 @@ Feature: Slft applications
         And I click on the "Continue" button
 
         Then I should see the "Tell us about the water content" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Is there naturally occurring water in the waste?"
         And I enter "5" in the "What is the water content of the waste" field
         And I enter "5" in the "What is the added water content" field
         And I click on the "Continue" button
@@ -919,7 +919,7 @@ Feature: Slft applications
 
         When I click on the "Continue" button
         Then I should see the "Separate mailing address for landfill operator" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Does the landfill site operator have a separate mailing address?"
         And I click on the "Continue" button
 
         Then I should see the "Site waste details" page
@@ -953,7 +953,7 @@ Feature: Slft applications
 
         When I click on the "Continue" button
         Then I should see the "Separate mailing address for landfill operator" page
-        When I check the "No" radio button
+        When I check the "No" radio button in answer to the question "Does the landfill site operator have a separate mailing address?"
         And I click on the "Continue" button
 
         Then I should see the "Site waste details" page

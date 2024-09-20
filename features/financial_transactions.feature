@@ -5,45 +5,96 @@ Feature: Financial transaction
     I want to be able to see my financial transaction and the related transaction with it
     So that I can view a list of transaction, view a transaction in full details with their related transactions
 
+    Uncheck the transactions for my returns check box and Outstanding balance checkbox then search should return
+    all the transactions for that account
+
+    Change the value in the sort by dropdown and search result should be displayed as per the new sort order
+
     # Index page tests
-    Scenario: View list of all transactions
+    Scenario: View list of transactions
         Given I have signed in
         Then I should see the "Dashboard" page
-        When I click on the "See all transactions" link
-        Then I should see the "All transactions" page
+        When I click on the "Find transactions" link
+        Then I should see the "Transactions" page
+        And the checkbox "Only transactions for my returns" should be checked
+        And the checkbox "Only transactions with an outstanding balance" should be checked
         And I should see the empty field "Reference"
+        And I should see the "Most recent" option selected in "Sort by"
 
         When I open the "Show more filter options" summary item
         Then I should see the empty field "Amount"
         And I should see the empty field "Created date"
         And I should see the empty field "Effective date"
+        And I should not see the text "List of transactions"
+
+        When I click on the "Find" button
+        Then I should see the "Transactions" page
+        And the table of data is displayed
+            | Created date | Effective date | Reference     | Description                     | Amount    | Balance |              |
+            | 01/01/2019   | 01/01/2019     | RS2000001AAAA | LBTT 1st Failure to Make Return | £100.00   | £100.00 | View related |
+            | 10/01/2019   | 10/01/2019     | RS2000001AAAA | LBTT Residential Tax            | £1,000.00 | £100.00 | View related |
+
+        When I uncheck the "Only transactions for my returns" checkbox
+        And I uncheck the "Only transactions with an outstanding balance" checkbox
+        And I click on the "Find" button
+        Then I should see the "Transactions" page
+        And the table of data is displayed
+            | Created date | Effective date | Reference     | Description                     | Amount    | Balance |              |
+            | 01/01/2019   | 01/01/2019     | RS2000001AAAA | LBTT 1st Failure to Make Return | £100.00   | £100.00 | View related |
+            | 11/01/2019   | 11/01/2019     |               | Cheque                          | £-900.00  | £0.00   | View related |
+            | 10/01/2019   | 10/01/2019     | RS2000001AAAA | LBTT Residential Tax            | £1,000.00 | £100.00 | View related |
+
+        When I select "Amount : Low - High" from the "Sort by"
+        And I click on the "Find" button
+        Then I should see the "Transactions" page
         And the table of data is displayed
             | Created date | Effective date | Reference     | Description                     | Amount    | Balance |              |
             | 11/01/2019   | 11/01/2019     |               | Cheque                          | £-900.00  | £0.00   | View related |
-            | 10/01/2019   | 10/01/2019     | RS2000001AAAA | LBTT Residential Tax            | £1,000.00 | £100.00 | View related |
             | 01/01/2019   | 01/01/2019     | RS2000001AAAA | LBTT 1st Failure to Make Return | £100.00   | £100.00 | View related |
+            | 10/01/2019   | 10/01/2019     | RS2000001AAAA | LBTT Residential Tax            | £1,000.00 | £100.00 | View related |
 
     Scenario: Filter the transactions and see only the items that I want to see
         Given I have signed in
-        When I click on the "See all transactions" link
-        Then I should see the "All transactions" page
+        When I click on the "Find transactions" link
+        Then I should see the "Transactions" page
+
+        When I select "Conveyance or transfer" from the "Return type"
+        And I click on the "Find" button
+        Then I should see the "Transactions" page
+        And the table of data is displayed
+            | Created date | Effective date | Reference     | Description                     | Amount    | Balance |              |
+            | 01/01/2019   | 01/01/2019     | RS2000001AAAA | LBTT 1st Failure to Make Return | £100.00   | £100.00 | View related |
+            | 10/01/2019   | 10/01/2019     | RS2000001AAAA | LBTT Residential Tax            | £1,000.00 | £100.00 | View related |
+
+        When I select "Penalties issued, negative values denotes cancelled penalties" from the "Transaction group"
+        And I click on the "Find" button
+        Then I should see the "Transactions" page
+        And the table of data is displayed
+            | Created date | Effective date | Reference     | Description                     | Amount  | Balance |              |
+            | 01/01/2019   | 01/01/2019     | RS2000001AAAA | LBTT 1st Failure to Make Return | £100.00 | £100.00 | View related |
+
+        Given I have signed in
+        When I click on the "Find transactions" link
+        Then I should see the "Transactions" page
 
         When I open the "Show more filter options" summary item
         And I enter " 1000" in the "Amount" field
         And I click on the "Find" button
-        Then I should see the "All transactions" page
+        Then I should see the "Transactions" page
         And the table of data is displayed
             | Created date | Effective date | Reference     | Description          | Amount    | Balance |              |
             | 10/01/2019   | 10/01/2019     | RS2000001AAAA | LBTT Residential Tax | £1,000.00 | £100.00 | View related |
 
         Given I have signed in
-        When I click on the "See all transactions" link
-        Then I should see the "All transactions" page
+        When I click on the "Find transactions" link
+        Then I should see the "Transactions" page
 
-        When I open the "Show more filter options" summary item
+        When I uncheck the "Only transactions for my returns" checkbox
+        And I uncheck the "Only transactions with an outstanding balance" checkbox
+        And I open the "Show more filter options" summary item
         And I enter "-900 " in the "Amount" field
         And I click on the "Find" button
-        Then I should see the "All transactions" page
+        Then I should see the "Transactions" page
         And the table of data is displayed
             | Created date | Effective date | Reference | Description | Amount   | Balance |              |
             | 11/01/2019   | 11/01/2019     |           | Cheque      | £-900.00 | £0.00   | View related |
@@ -54,7 +105,7 @@ Feature: Financial transaction
         And I clear the "Amount from (min)" field
         And I clear the "Amount to (max)" field
         And I click on the "Find" button
-        Then I should see the "All transactions" page
+        Then I should see the "Transactions" page
         And the table of data is displayed
             | Created date | Effective date | Reference | Description | Amount   | Balance |              |
             | 11/01/2019   | 11/01/2019     |           | Cheque      | £-900.00 | £0.00   | View related |
@@ -65,7 +116,7 @@ Feature: Financial transaction
         And I clear the "Created date from" field
         And I enter "01-01-2019" in the "Effective date" date field
         And I click on the "Find" button
-        Then I should see the "All transactions" page
+        Then I should see the "Transactions" page
         And the table of data is displayed
             | Created date | Effective date | Reference     | Description                     | Amount  | Balance |              |
             | 01/01/2019   | 01/01/2019     | RS2000001AAAA | LBTT 1st Failure to Make Return | £100.00 | £100.00 | View related |
@@ -74,13 +125,14 @@ Feature: Financial transaction
         # View the related financial transaction of a transaction with it's details carried over
         When I click on the "Dashboard" menu item
         Then I should see the "Dashboard" page
-        And I should see a link with text "See all transactions"
-        When I click on the "See all transactions" link
-        Then I should see the "All transactions" page
+        And I should see a link with text "Find transactions"
+        When I click on the "Find transactions" link
+        Then I should see the "Transactions" page
 
-        When I enter "RS2000001AAAA" in the "Reference" field
+        When I select "Oldest" from the "Sort by"
+        And I enter "RS2000001AAAA" in the "Reference" field
         And I click on the "Find" button
-        Then I should see the "All transactions" page
+        Then I should see the "Transactions" page
         Then the table of data is displayed
             | Created date | Effective date | Reference     | Description                     | Amount    | Balance |              |
             | 10/01/2019   | 10/01/2019     | RS2000001AAAA | LBTT Residential Tax            | £1,000.00 | £100.00 | View related |
@@ -108,8 +160,8 @@ Feature: Financial transaction
 
     Scenario: Filtering validation
         Given I have signed in
-        When I click on the "See all transactions" link
-        Then I should see the "All transactions" page
+        When I click on the "Find transactions" link
+        Then I should see the "Transactions" page
 
         When I enter "RANDOM_STRING,31" in the "Reference" field
         And I click on the "Find" button

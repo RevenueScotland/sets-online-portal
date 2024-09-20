@@ -110,6 +110,8 @@
             "parent_title_number": "7907"
         }
     },
+    "non_residential_reason": "OTHER",
+    "non_residential_reason_text": "Test",
     "effective_date": "2019-11-07",
     "relevant_date": "2019-11-07",
     "contract_date": "2019-11-07",
@@ -245,6 +247,10 @@
     "total_vat": "790",
     "non_chargeable": "6670",
     "remaining_chargeable": "30",
+    "calculation_edited": "Y",
+    "edit_calc_reason": "I disagree with calculated values",
+    "non_notifiable_submit_ind": "Y",
+    "non_notifiable_explanation": "Test",
     "contingents_event_ind": "Y",
     "declaration": "Y",
     "lease_declaration": "N",

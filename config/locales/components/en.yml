@@ -83,7 +83,7 @@ en:
     financial_transaction_table_component:
       show: "View related"
     message_table_component:
-      all_messages: "See all messages"
+      all_messages: "Find messages"
       selected_message: "Selected message"
       view: "View"
     notification_banner_component:
@@ -125,8 +125,8 @@ en:
     resource_item_table_component:
       delete_resource: Delete file
     return_table_component:
-      all_returns: "See all returns"
-      all_transactions: "See all transactions"
+      all_returns: "Find returns"
+      all_transactions: "Find transactions"
       amend: "Amend"
       amendable_period: "You have until %{value} to complete this draft"
       continue: "Continue"

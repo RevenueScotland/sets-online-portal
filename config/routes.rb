@@ -59,6 +59,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
           get 'retrieve-file-attachment'
           get 'download-file', to: 'messages#download_file'
           match 'confirmation', to: 'messages#confirmation', via: %i[get patch]
+          match 'toggle-read-status', to: 'messages#toggle_read_status', via: %i[get patch]
         end
       end
       resources :financial_transactions, only: %i[index show]
@@ -126,8 +127,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
       match 'lbtt/about_the_property', to: 'lbtt_properties#about_the_property', via: %i[get post]
       match 'lbtt/property_address(/:property_id)', to: 'lbtt_properties#property_address',
-                                                    as: 'lbtt_property_address',                      via: %i[get post]
-      match 'lbtt/property_ads_applies',           to: 'lbtt_properties#property_ads_applies',        via: %i[get post]
+                                                    as: 'lbtt_property_address', via: %i[get post]
+      match 'lbtt/property_ads_applies', to: 'lbtt_properties#property_ads_applies', via: %i[get post]
       resources :properties, only: %i[destroy], controller: :lbtt_properties, param: :property_id
 
       match 'lbtt/agent_details',                  to: 'lbtt_agent#agent_details',                    via: %i[get post]
@@ -148,6 +149,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
                                                    via: %i[get post]
       match 'lbtt/npv',                            to: 'lbtt_tax#npv', as: 'lbtt_tax_npv', via: %i[get post]
 
+      match 'lbtt/edit_calculation_reason',        to: 'lbtt_submit#edit_calculation_reason',          via: %i[get post]
       match 'lbtt/amendment_reason',               to: 'lbtt_submit#amendment_reason',                 via: %i[get post]
       match 'lbtt/repayment_claim',                to: 'lbtt_submit#repayment_claim',                  via: %i[get post]
       match 'lbtt/repayment_claim_amount',         to: 'lbtt_submit#repayment_claim_amount',           via: %i[get post]
@@ -163,6 +165,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
                                                    via: %i[get post]
 
       match 'lbtt/property-type',                  to: 'lbtt_transactions#property_type',             via: %i[get post]
+      match 'lbtt/non-residential-reason',         to: 'lbtt_transactions#non_residential_reason',    via: %i[get post]
       match 'lbtt/transaction-dates',              to: 'lbtt_transactions#transaction_dates',         via: %i[get post]
       match 'lbtt/sale-of-business',               to: 'lbtt_transactions#sale_of_business',          via: %i[get post]
       match 'lbtt/conveyance-values',              to: 'lbtt_transactions#conveyance_values',         via: %i[get post]

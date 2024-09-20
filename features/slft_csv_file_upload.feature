@@ -97,7 +97,7 @@ Feature: SLfT CSV File Upload
     And I should see the text "Entry 5" in field "Description of waste"
     And I should see "Dundee" in the "Geographical area" select or text field
     And I should see "Landfill" in the "Management method" select or text field
-    And the radio button "returns_slft_waste_from_non_disposal_ind_n" should be selected
+    And the radio button "No" should be selected in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
 
     When I click on the "Continue" button
     Then I should see the sub-title "Provide tonnage details for this waste type"
@@ -108,10 +108,10 @@ Feature: SLfT CSV File Upload
 
     When I click on the "Continue" button
     Then I should see the sub-title "Why is some tonnage exempt?"
-    And the radio button "returns_slft_waste_nda_ex_yes_no_y" should be selected
+    And the radio button "Yes" should be selected in answer to the question "NDA"
     And I should see the text "20" in field "NDA tonnage"
-    And the radio button "returns_slft_waste_restoration_ex_yes_no_n" should be selected
-    And the radio button "returns_slft_waste_other_ex_yes_no_y" should be selected
+    And the radio button "No" should be selected in answer to the question "Restoration"
+    And the radio button "Yes" should be selected in answer to the question "Other"
     And I should see the text "20" in field "Other tonnage"
     And I should see the text "Some Reason" in field "Description of other exemption reason"
 
@@ -124,7 +124,7 @@ Feature: SLfT CSV File Upload
     And I should see the text "Entry 3" in field "Description of waste"
     And I should see "Dundee" in the "Geographical area" select or text field
     And I should see "Landfill" in the "Management method" select or text field
-    And the radio button "returns_slft_waste_from_non_disposal_ind_n" should be selected
+    And the radio button "No" should be selected in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
 
     When I click on the "Continue" button
     Then I should see the sub-title "Provide tonnage details for this waste type"
@@ -135,10 +135,10 @@ Feature: SLfT CSV File Upload
 
     When I click on the "Continue" button
     Then I should see the sub-title "Why is some tonnage exempt?"
-    And the radio button "returns_slft_waste_nda_ex_yes_no_n" should be selected
-    And the radio button "returns_slft_waste_restoration_ex_yes_no_y" should be selected
+    And the radio button "No" should be selected in answer to the question "NDA"
+    And the radio button "Yes" should be selected in answer to the question "Restoration"
     And I should see the text "40" in field "Restoration tonnage"
-    And the radio button "returns_slft_waste_other_ex_yes_no_n" should be selected
+    And the radio button "No" should be selected in answer to the question "Other"
 
     When I click on the "Continue" button
     Then I should see the "Waste details summary" page
@@ -159,7 +159,7 @@ Feature: SLfT CSV File Upload
     And I enter "don't breath it" in the "Description of waste" field
     And I select "Falkirk" from the "Geographical area"
     And I select "Landfill" from the "Management method"
-    And I check the "returns_slft_waste_from_non_disposal_ind_y" radio button
+    And I check the "Yes" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
     And I click on the "Continue" button
 
     And I enter "15" in the "Standard tonnage" field

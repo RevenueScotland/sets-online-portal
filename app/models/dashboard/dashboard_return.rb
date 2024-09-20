@@ -332,7 +332,8 @@ module Dashboard
       { SRVCode: nil, ParRefno: requested_by.party_refno, Username: requested_by.username,
         OutstandingBalance: filter.lookup_ref_data_value(:outstanding_balance)&.downcase,
         AllVersions: filter.lookup_ref_data_value(:all_versions).downcase,
-        DraftOnly: filter.lookup_ref_data_value(:draft_only).downcase }
+        DraftOnly: filter.lookup_ref_data_value(:draft_only).downcase,
+        MyReturnsOnly: filter.lookup_ref_data_value(:my_returns_only).downcase }
         .merge(request_optional_elements(filter, pagination))
     end
 
@@ -344,7 +345,8 @@ module Dashboard
         TAREReference: filter.tare_reference, AgentReference: filter.agent_reference,
         REturnStatus: filter.return_status, DescriptionSearch: filter.description,
         FromReturnDate: DateFormatting.to_xml_date_format(filter.from_return_date),
-        ToReturnDate: DateFormatting.to_xml_date_format(filter.to_return_date) }
+        ToReturnDate: DateFormatting.to_xml_date_format(filter.to_return_date),
+        SortBy: filter.sort_by, ReturnType: filter.return_type }
     end
 
     # When the back office data is being extracted, this method set the specific attributes

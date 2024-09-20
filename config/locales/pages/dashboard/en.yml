@@ -9,12 +9,12 @@ en:
         outstanding_balance: "Outstanding balance"
     dashboard_returns:
       index:
-        title: "All returns"
+        title: "Returns"
         filter_show: "Show more filter options"
         caption: "List of returns"
     financial_transactions:
       index:
-        title: "All transactions"
+        title: "Transactions"
         filter_show: "Show more filter options"
         caption: "List of transactions"
       show:
@@ -38,3 +38,5 @@ en:
         caption: "Attachments"
         heading: "Related messages"
         reply: "Reply"
+        unread: "Mark as unread"
+        read: "Mark as read"

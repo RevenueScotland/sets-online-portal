@@ -2,17 +2,24 @@
 <% content_for(:navigation_link, :clear_stack) %>
 <%= ds_form_with(model: @dashboard_return_filter, url: dashboard_dashboard_returns_path, method: :get,
                  button_action: :find, autofocus: @on_filter_find) do |f| %>
+  <%= f.ds_hidden_field(:srv_code) %>
+  <%= f.ds_checkbox(method: :my_returns_only) %>
+  <%= f.ds_checkbox(method: :outstanding_balance) %>
+  <%= f.ds_select(method: :return_status, select_options: ReferenceData::ReferenceValue.list('RETURN_STATUS', 'SYS', 'RSTU')) %>
+  <%= f.ds_select(method: :return_type,
+                  select_options: @dashboard_return_filter.list_ref_data(:return_type)) %>
   <%= f.ds_text_field(method: :tare_reference) %>
   <%= f.ds_text_field(method: :agent_reference) if account_has_service?(:lbtt) %>
+  <%= f.ds_select(method: :sort_by, select_options: @dashboard_return_filter.list_ref_data(:sort_by),
+     include_blank: false, width: 20) %>
   <%= ds_details(header: t('.filter_show')) do %>
     <%= ds_field_set do %>
       <%= f.ds_date_picker(method: :from_return_date) %>
       <%= f.ds_date_picker(method: :to_return_date) %>
     <% end %>
     <%= f.ds_text_field(method: :description) %>
-    <%= f.ds_select(method: :return_status, select_options: ReferenceData::ReferenceValue.list('RETURN_STATUS', 'SYS', 'RSTU')) %>
     <%= f.ds_checkbox(method: :all_versions) %>
   <% end %>
 <% end %>
 <%= rs_return_table(returns:@dashboard_returns, caption: t('.caption'), id: 'dashboard_returns', 
-      small_screen: 'scrolling', pagination_collection: @pagination_collection) %>
+      small_screen: 'scrolling', pagination_collection: @pagination_collection) if @dashboard_returns %>

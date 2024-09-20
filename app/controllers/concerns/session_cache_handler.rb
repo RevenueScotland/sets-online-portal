@@ -65,7 +65,7 @@ module SessionCacheHandler
   # @param cache_index [String] the identifier for the cache index
   def validate_session_cache_name(cache_index)
     return unless cache_index.nil? && cache_index.casecmp('class') && cache_index.include?('Controller')
-  rescue StandardError
+
     raise Error::AppError.new('wizard', "'#{cache_index}' is not a controller class")
   end
 

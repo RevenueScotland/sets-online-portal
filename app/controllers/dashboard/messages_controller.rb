@@ -25,8 +25,7 @@ module Dashboard
     # This processes the message to find that was chosen from the list of messages from the index page
     # and a list of messages that are related to it, by looking at their origin_id.
     def show
-      @message = Message.find(params[:smsg_refno], current_user)
-      Rails.logger.debug { "Calling show method of (class) #{params[:smsg_refno]} with #{current_user}" }
+      @message = Message.find(params[:smsg_refno], current_user, params[:mark_as_read])
       @message_filter = show_message_filter
       @messages, @pagination_collection =
         Message.list_paginated_messages(current_user, params[:page], @message_filter)
@@ -70,7 +69,7 @@ module Dashboard
 
         # clear cache
         clear_resource_items
-        redirect_to dashboard_messages_path
+        redirect_to dashboard_messages_path('dashboard_message_filter[sort_by]': 'MostRecent')
       end
     end
 
@@ -97,6 +96,12 @@ module Dashboard
       return unless success
 
       send_file_from_attachment(attachments[:attachment])
+    end
+
+    # Toggles message read status
+    def toggle_read_status
+      Message.toggle_read_status(params[:smsg_refno], current_user)
+      redirect_to dashboard_message_path
     end
 
     private

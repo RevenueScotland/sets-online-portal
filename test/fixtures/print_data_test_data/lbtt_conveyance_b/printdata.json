@@ -855,6 +855,12 @@
                     "itemdata": "Non-residential"
                 },
                 {
+                    "itemcode": "non_residential_reason",
+                    "itemformat": null,
+                    "itemlabel": "Why is the property non-residential?",
+                    "itemdata": "A home or other institution for persons in need of personal care due to age, disability, drug or alcohol dependency or mental health conditions"
+                },
+                {
                     "itemcode": "effective_date",
                     "itemformat": "date",
                     "itemlabel": "Effective date of transaction",
@@ -891,7 +897,7 @@
                     "itemdata": "Yes"
                 }
             ],
-            "itemcount": 7
+            "itemcount": 8
         },
         {
             "sectioncode": "linked_transactions_ind",
@@ -1073,6 +1079,29 @@
             "itemcount": 5
         },
         {
+            "sectioncode": "non_notifiable",
+            "sectiontype": "list",
+            "sectiondivider": false,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectiontitle": "Non notifiable return",
+            "listitem": [
+                {
+                    "itemcode": "non_notifiable_submit_ind",
+                    "itemformat": null,
+                    "itemlabel": "Do you still want to submit the return?",
+                    "itemdata": "Yes"
+                },
+                {
+                    "itemcode": "non_notifiable_explanation",
+                    "itemformat": null,
+                    "itemlabel": "Why are you submitting a non-notifiable return?",
+                    "itemdata": "Test"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
             "sectioncode": "ads_consideration",
             "sectiontype": "list",
             "sectiondivider": true,
@@ -1113,7 +1142,7 @@
             "sectiondivider": false,
             "pagebreak": null,
             "displaytitle": true,
-            "sectiontitle": "What is the address of the main residence that will be sold",
+            "sectiontitle": "What is the address of the main residence that will be sold?",
             "listitem": [
                 {
                     "itemcode": "address_line1",
@@ -1421,7 +1450,7 @@
         {
             "sectioncode": "repayment",
             "sectiontype": "list",
-            "sectiondivider": false,
+            "sectiondivider": true,
             "pagebreak": null,
             "displaytitle": true,
             "sectiontitle": "Repayment details",

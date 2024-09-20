@@ -16,7 +16,7 @@ module Returns
 
     # @return [Boolean] whether or not this return is an amendment based on the version number and form type
     def amendment?
-      @version.to_i > 1 || (@version.to_i == 1 && @previous_form_type != 'D')
+      @version.to_i > 1 || (@version.to_i == 1 && @previous_form_type.present? && @previous_form_type != 'D')
     end
 
     # Sets form type to draft and calls #save

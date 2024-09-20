@@ -118,8 +118,7 @@ module Core
     # @param anchor [String] An anchor back to the table
     def create_page_link(page, page_name, anchor)
       additional_parameters = Rack::Utils.parse_query("#{page_name}=#{page}")
-      current_parameters = Rack::Utils.parse_query(request.env['QUERY_STRING'])
-      "?#{current_parameters.merge(additional_parameters).to_query}#{"##{anchor}" if anchor}"
+      "?#{request.query_parameters.merge(additional_parameters).to_query}#{"##{anchor}" if anchor}"
     end
   end
 end

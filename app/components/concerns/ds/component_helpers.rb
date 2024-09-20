@@ -33,7 +33,8 @@ module DS
       ds_summary_list: 'DS::SummaryListComponent',
       ds_skip_link: 'DS::SkipLinkComponent',
       ds_table: 'DS::TableComponent',
-      ds_warning: 'DS::WarningComponent'
+      ds_warning: 'DS::WarningComponent',
+      ds_phase_banner: 'DS::PhaseBannerComponent'
     }.freeze
 
     # Supported list of Digital Scotland form components

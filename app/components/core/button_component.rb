@@ -11,7 +11,7 @@ module Core
     attr_reader :name, :type, :url, :extra_classes, :data_options
 
     # List of allowed button types
-    ALLOWED_TYPES = %i[primary secondary cancel].freeze
+    ALLOWED_TYPES = %i[primary secondary cancel hidden].freeze
 
     # @param name [String] the name to appear on the button. This will default to continue
     # @param type [Symbol] the type of button

@@ -1,8 +1,14 @@
 <% content_for(:navigation_link, :clear_stack) %>
 <% content_for(:page_title, t('.title')) %>
-<%= ds_form_with(model: @transaction_filter, url: dashboard_financial_transactions_path, method: :get, 
-                 button_action: :find, autofocus: @on_filter_find) do |f| %>
+<%= ds_form_with(model: @transaction_filter, url: dashboard_financial_transactions_path,
+                  method: :get, button_action: :find, autofocus: @on_filter_find) do |f| %>
+  <%= f.ds_hidden_field(:srv_code) %>
+  <%= f.ds_checkbox(method: :my_returns_transactions_only) %>
+  <%= f.ds_checkbox(method: :include_outstanding_only) %>
+  <%= f.ds_select(method: :return_type, select_options: @transaction_filter.list_ref_data(:return_type)) %>
+  <%= f.ds_select(method: :transaction_type_group, select_options: @transaction_filter.list_ref_data(:transaction_group)) %>
   <%= f.ds_text_field(method: :related_reference) %>
+  <%= f.ds_select(method: :trans_sort_by, select_options: @transaction_filter.list_ref_data(:trans_sort_by), include_blank: false) %>
   <%= ds_details(header: t('.filter_show')) do %>
     <%= f.ds_currency(method: :amount) %>
     <%= ds_field_set do %>
@@ -22,5 +28,7 @@
   <% end %>
 <% end %>
 <br>
-<%= rs_financial_transaction_table(financial_transactions:@transactions, caption: t('.caption'), id: 'financial_transactions',
-                                   small_screen: 'scrolling', pagination_collection: @pagination_collection)%>
+<% if @on_filter_find || !@transaction_filter.related_reference.nil?%>
+  <%= rs_financial_transaction_table(financial_transactions:@transactions, caption: t('.caption'), id: 'financial_transactions',
+                                   small_screen: 'scrolling', pagination_collection: @pagination_collection) %>
+<% end %>

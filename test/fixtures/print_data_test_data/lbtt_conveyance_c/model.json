@@ -166,6 +166,7 @@
     "change_reason": "This is the entered change reason",
     "contingents_event_ind": "N",
     "total_consideration": "1500",
+    "non_chargeable": "40",
     "declaration": "Y",
     "lease_declaration": "N",
     "fpay_method": "CHEQUE",

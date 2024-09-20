@@ -178,25 +178,25 @@ module Returns
       # Getter for nda_ex_tonnage taking into account flags
       # @return [String] the string for the tonnage
       def nda_ex_tonnage
-        return @nda_ex_tonnage if nda_ex_details_needed?
+        @nda_ex_tonnage if nda_ex_details_needed?
       end
 
       # Getter for restoration_ex_tonnage taking into account flags
       # @return [String] the string for the tonnage
       def restoration_ex_tonnage
-        return @restoration_ex_tonnage if restoration_ex_details_needed?
+        @restoration_ex_tonnage if restoration_ex_details_needed?
       end
 
       # Getter for other_ex_tonnage taking into account flags
       # @return [String] the string for the tonnage
       def other_ex_tonnage
-        return @other_ex_tonnage if other_ex_details_needed?
+        @other_ex_tonnage if other_ex_details_needed?
       end
 
       # Getter for nda_ex_tonnage taking into account flags
       # @return [String] the string for the tonnage
       def other_ex_description
-        return @other_ex_description if other_ex_details_needed?
+        @other_ex_description if other_ex_details_needed?
       end
 
       # Getter to work out the total

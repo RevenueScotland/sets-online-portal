@@ -110,7 +110,7 @@
     ],
     "declaration": "Y",
     "lease_declaration": "N",
-    "pre_population_submit_declaration": "Y",
+    "transaction_declaration": "Y",
     "fpay_method": "BACS",
     "authority_ind": "Y",
     "form_type": "D",

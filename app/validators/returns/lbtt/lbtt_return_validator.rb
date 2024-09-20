@@ -154,10 +154,12 @@ module Returns
         model.errors.add(:base, :missing_seller_entries, link_id: 'add_a_seller') if model.sellers.blank?
         missing_ads_non_individual_validation(model)
         ads_summary_validation(model)
+        non_residential_validation(model) if model.property_type == '3'
       end
 
       # validation specific to transaction
       def transaction_validation(model)
+        model.errors.add(:base, :recalc_return, link_id: 'edit_transaction_details') if model.recalc_required == 'Y'
         return if model.effective_date.present?
 
         model.errors.add(:base, :missing_about_the_transaction, link_id: 'add_transaction_details')
@@ -188,6 +190,13 @@ module Returns
         return unless model.show_ads? && model.ads.ads_consideration_yes_no.blank?
 
         model.errors.add(:base, :missing_ads, link_id: 'add_ads')
+      end
+
+      # validation when the property type is non-residential and return type is CONVEY
+      def non_residential_validation(model)
+        return if model.non_residential_reason.present?
+
+        model.errors.add(:non_residential_reason, :reason_must_be_provided, link_id: 'edit_transaction_details')
       end
 
       # validation specific to lease LBTT returns

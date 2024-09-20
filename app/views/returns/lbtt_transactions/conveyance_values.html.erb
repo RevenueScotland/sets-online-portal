@@ -2,7 +2,7 @@
 <%= ds_section_title(section_title: t('.subtitle')) %>
 <%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post) do |f| %>
   <%= f.ds_currency(method: :total_consideration, interpolations: { link:                                                      
-                                                   ds_link(name: t('.total_consideration_link'), url: external_link_url('DET_CHARGE_CONS'), target: '_blank')}, width: 'one-third') %>
+                                                   ds_link(name: t('.total_consideration_link'), url: external_link_url('DET_CHARGE_CONS'), target: '_blank')}) %>
   <%# Total VAT field is shown only if property type is selected as Non-Resedential %>
   <% if @lbtt_return.property_type == '3' %>
     <%= f.ds_currency(method: :total_vat, interpolations: { link: ds_link(name: t('.total_vat_link'),
@@ -12,16 +12,8 @@
     <%= f.ds_currency(method: :linked_consideration, interpolations: { link: ds_link(name: t('.linked_consideration_link'),
                                                url: external_link_url('LINKED_TRANS'), target: '_blank')}) %>
   <% end %>
-  <%# Non Chargeable field is shown only if "Is the transaction part of the sale of a business?"
-       is selected as Yes %>
-  <% if @lbtt_return.business_ind == 'Y' %>
-    <%= f.ds_currency(method: :non_chargeable, interpolations: { link: ds_link(name: t('.non_chargeable_link'),
-                                                     url: external_link_url('NON_CHARGE_CONS'), target: '_blank')}) %>
-  <% end %>
-  <%# Remaining Chargeable field is shown only if atleast one of the three 
-       fields(:total_vat, :linked_consideration, :non_chargeable) are present on the page %>
-  <% if @lbtt_return.property_type == '3' || @lbtt_return.business_ind == 'Y' || @lbtt_return.linked_ind == 'Y' %>
-    <%= f.ds_currency(method: :remaining_chargeable, interpolations: { link: ds_link(name: t('.remaining_chargeable_link'),
-                                                    url: external_link_url('DET_CHARGE_CONS'), target: '_blank')}) %>
-  <% end %>
+  <%= f.ds_currency(method: :non_chargeable, interpolations: { link: ds_link(name: t('.non_chargeable_link'),
+                                                    url: external_link_url('NON_CHARGE_CONS'), target: '_blank')}) %>
+  <%= f.ds_currency(method: :remaining_chargeable, interpolations: { link: ds_link(name: t('.remaining_chargeable_link'),
+                                                  url: external_link_url('DET_CHARGE_CONS'), target: '_blank')}) %>
 <% end %>

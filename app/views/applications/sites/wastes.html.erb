@@ -1,5 +1,5 @@
 <% content_for :page_title, t('.title_' + @site.application_type) %>
-<%= ds_form_with(model: @site, url: @post_path) do |f| %>
+<%= ds_form_with(model: @site, url: @post_path, hidden_submit: true) do |f| %>
   <% if @site.restoration_agreement? %>
     <%= f.ds_radio_group(method: :full_or_part, options_list: @site.list_ref_data(:full_or_part), alignment: :horizontal) %>
     <%= f.ds_text_field(method: :estimated_timescale) %>

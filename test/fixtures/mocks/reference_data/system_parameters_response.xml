@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<soap:Body>
-		<GetSystemParametersResponse xmlns="http://www.northgate-is.com/FL/GetSystemParameters" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+		<GetSystemParametersResponse xmlns="http://www.northgate-is.com/FL/GetSystemParameters"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:core="http://northgate-is.com/FL/Core">
 			<core:Success>true</core:Success>
 			<SystemParameters>
 				<SystemParameter>
@@ -1242,6 +1246,13 @@ day which is, or precedes, the 44th calendar day after the end of the SLFT quart
 					<WorkplaceCode>RSTU</WorkplaceCode>
 					<Code>TAX_RELIEFS</Code>
 					<StringValue>https://www.revenue.scot/land-buildings-transaction-tax/guidance/lbtt-legislation-guidance/exemptions-reliefs/lbtt3010-tax</StringValue>
+				</SystemParameter>
+				<SystemParameter>
+					<DomainCode>PWS_LINKS</DomainCode>
+					<ServiceCode>SYS</ServiceCode>
+					<WorkplaceCode>RSTU</WorkplaceCode>
+					<Code>FDBK_PAGE</Code>
+					<StringValue>https://www.revenue.scot/</StringValue>
 				</SystemParameter>
 				<SystemParameter>
 					<DomainCode>PWS_PARAM</DomainCode>
