@@ -11,7 +11,7 @@
             <%= builder.text_field(method,
            wrapper.add_ds_html_options(add_html_options({class: "ds_input js-autocomplete-input", 
              "aria-autocomplete": "list","aria-expanded": "false", "aria-owns": "autocomplete-suggestions",
-             "data-action": "blur->autocomplete#copySelected"}),
+             "data-action": "blur->autocomplete#copySelected", "role": "combobox", "aria-activedescendant": ""}),
              ds_width_class: ds_width_class)) %>
             <a href="#" class="ds_button" id="show_all">
               <span class="visually-hidden"><%=t('.show_all')%></span>

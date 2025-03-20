@@ -1,0 +1,6 @@
+<% content_for(:page_title, t('.dec_title')) %>
+  <%= ds_form_with(model: @sat_return, url: @post_path, method: :post) do |f| %>
+      <%= ds_warning { t('.dd_warning') } if @sat_return.show_amend_dd_warning?%> 
+      <%= ds_warning{t('.warning')} %>
+      <%= f.ds_checkbox(method: :claim_declaration) %>
+  <% end %>

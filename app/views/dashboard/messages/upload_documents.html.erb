@@ -1,0 +1,10 @@
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:cancel_warning_custom_message, t("layouts.application.cancel_message_wizard")) %>
+<%= ds_form_with(model: @message, url: @post_path, file_upload: true, method: :patch, button_action: (@resource_items.count == 10 ? :continue : :none) ) do |f|%>
+	<% if can? RS::AuthorisationHelper::CREATE_ATTACHMENT %>
+		<%= f.ds_hidden_field(:smsg_refno) %>    
+    <input type='hidden' name="dashboard_message[upload_from_wizard]" value="true">
+    <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, optional: true,
+                       supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb, multiple: true, max_uploads: @max_file_upload_limit,  hide_uploaded_files_section: true, button_label: t("ds.submit_component.continue"), button_type: :primary) %>
+  <% end %>
+<% end %>

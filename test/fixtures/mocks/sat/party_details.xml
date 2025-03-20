@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <GetPartyDetailsResponse xmlns="http://northgateps.com/FL/GetPartyDetailsResponse" xmlns:flc="http://northgateps.com/FLCommonTypes" xmlns:core="http://northgate-is.com/FL/Core">
+      <core:Success>true</core:Success>
+      <CompanyName>Kevin Peterson Partnership</CompanyName>
+      <EmailAddress>noreply@necsws.com</EmailAddress>
+      <PhoneNumber>07700900321</PhoneNumber>
+      <Address>
+        <core:AddressLine1>1 Acacia Avenue</core:AddressLine1>
+        <core:AddressLine2>Garden Village</core:AddressLine2>
+        <core:AddressTownOrCity>NORTHTOWN</core:AddressTownOrCity>
+        <core:AddressCountyOrRegion>Northshire</core:AddressCountyOrRegion>
+        <core:AddressPostcodeOrZip>RG1 1PB</core:AddressPostcodeOrZip>
+        <core:AddressCountryCode>GB</core:AddressCountryCode>
+      </Address>
+      <CurrDDInstructionAvail>true</CurrDDInstructionAvail>
+    </GetPartyDetailsResponse>
+  </soap:Body>
+</soap:Envelope>

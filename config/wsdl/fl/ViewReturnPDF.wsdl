@@ -200,6 +200,8 @@
 														<xs:enumeration value="LBTT Receipt"/>
 														<xs:enumeration value="SLFT Return"/>
 														<xs:enumeration value="SLFT Receipt"/>
+														<xs:enumeration value="SAT Return"/>
+														<xs:enumeration value="SAT Receipt"/>
 													</xs:restriction>
 												</xs:simpleType>
 											</xs:element>

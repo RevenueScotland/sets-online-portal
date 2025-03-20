@@ -86,7 +86,7 @@ module Returns
     # between a version that needs login and one that doesn't (ie so we don't mix them up accidentally).
     # Clears the cache and sets up the model.
     def public_return_type
-      wizard_step(PUBLIC_STEPS) { { setup_step: :setup_step, clear_cache: true } }
+      wizard_step(PUBLIC_STEPS) { { setup_step: :setup_step } }
     end
 
     # lease review, assignation and termination step

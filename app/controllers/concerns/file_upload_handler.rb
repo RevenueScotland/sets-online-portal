@@ -131,7 +131,7 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # @param overrides [Hash] check handle_file_upload
   def add_files(resource_params, overrides)
     create_resource_items(resource_params, overrides).each do |resource_item|
-      if resource_item.valid? expected_max_size, valid_content_types, valid_file_extensions
+      if resource_item.valid? expected_max_size, valid_content_types, valid_file_extensions, filename_limit
         add_valid_individual_file(overrides, resource_item)
       end
     end
@@ -189,8 +189,17 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
                          ''
                        end
     @supported_max_size_mb = expected_max_size
-
+    @max_filename_length = filename_limit
     @resource_items = session_cache_data_load(file_upload_session_key) || []
+  end
+
+  # Returns the filename limit if defined in the class
+  def filename_limit
+    if respond_to?(:max_filename_length, true)
+      max_filename_length
+    else
+      0
+    end
   end
 
   # Make sure we have the correct types in the resource items hash

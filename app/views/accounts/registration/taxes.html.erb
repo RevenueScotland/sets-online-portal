@@ -1,7 +1,5 @@
 <% content_for :page_title, t('.title') %>
 <%= ds_form_with(model: @account, url: @post_path) do |f| %>
-  <%= f.ds_checkbox_group(method: :taxes, 
-        options_list:@account.list_ref_data(:taxes)) %>
-  <%= f.ds_radio_group(method: :party_account_type, 
-        options_list: @account.list_ref_data(:party_account_type) ) %>
+  <%= f.ds_radio_group(method: :taxes, 
+        options_list:@account.portal_services) %>
 <% end %>

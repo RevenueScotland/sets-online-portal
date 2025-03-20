@@ -30,7 +30,7 @@ Feature: Back Link
         And I check the "3 year lease review" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         And I enter "RS2000003BBBB" in the "What was the original return reference" field
-        And I enter "01-06-2021" in the "What was the original return effective date" date field
+        And I enter "01-06-2022" in the "What was the original return effective date" date field
         And I click on the "Continue" button
         Then I should see the "Declaration" page
         And I check the "returns_lbtt_lbtt_return_pre_population_declaration" checkbox
@@ -58,7 +58,7 @@ Feature: Back Link
         Then I should see the "Tenant address" page
         # This should re-load page B
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Tenant address" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"

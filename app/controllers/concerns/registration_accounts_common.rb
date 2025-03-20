@@ -11,7 +11,7 @@ module RegistrationAccountsCommon
     account_type_params = register_account_type_params
 
     # Allow for taxes
-    permitted = Account.attribute_list.map { |attr| (attr == :taxes ? { taxes: [] } : attr) }
+    permitted = Account.attribute_list
 
     parameter_types = %w[current_user account_type company]
     # current user is processed separately so reject it

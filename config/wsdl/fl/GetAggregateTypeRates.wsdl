@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:ns="http://www.necsws.com/RSTS/GetAggregateTypeRates"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.necsws.com/RSTS/GetAggregateTypeRates.wsdl"
+	xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://www.necsws.com/RSTS/GetAggregateTypeRates.wsdl" name="GetAggregateTypeRates">
+	<wsdl:types>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference for the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Service" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example service is the name of the requesting system, e.g. RB or the database from which the request is coming from, e.g. RBDEV</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example requestor is the name of the Local Authority from which the request is being sent</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xs:schema xmlns="http://www.necsws.com/RSTS/GetAggregateTypeRates"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:flc="http://northgate-is.com/FL/Core" targetNamespace="http://www.necsws.com/RSTS/GetAggregateTypeRates" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+			<xs:element name="GetAggregateTypeRatesRequest">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Service" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Service code for which the reference data is required to fetch
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="RateEffectiveDate" type="xs:date">
+							<xs:annotation>
+								<xs:documentation>The scheme version start date that this return breakdown period falls into
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetAggregateTypeRatesResponse">
+				<xs:annotation>
+					<xs:documentation>Response of aggregate type rates</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="core:StandardResponseStructure">
+							<xs:sequence>
+								<xs:element name="AggregateTypes" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="AggregateType" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Code" type="xs:string">
+															<xs:annotation>
+																<xs:documentation>Code of aggregate type</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Description" type="xs:string">
+															<xs:annotation>
+																<xs:documentation>Aggregate type description</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Rate" type="xs:decimal">
+															<xs:annotation>
+																<xs:documentation>Rate for the aggregate type</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="StartDate" type="xs:date">
+															<xs:annotation>
+																<xs:documentation>Effective date of aggregate type Rate</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="GetAggregateTypeRatesRequest">
+		<wsdl:part name="parameters" element="ns:GetAggregateTypeRatesRequest"/>
+	</wsdl:message>
+	<wsdl:message name="GetAggregateTypeRatesResponse">
+		<wsdl:part name="parameters" element="ns:GetAggregateTypeRatesResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="GetAggregateTypeRatesWSDLPort">
+		<wsdl:operation name="GetAggregateTypeRatesWSDL">
+			<wsdl:input message="tns:GetAggregateTypeRatesRequest"/>
+			<wsdl:output message="tns:GetAggregateTypeRatesResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetAggregateTypeRatesWSDLBinding" type="tns:GetAggregateTypeRatesWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="GetAggregateTypeRatesWSDL">
+			<soap:operation soapAction="http://www.necsws.com/RSTS/GetAggregateTypeRates"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetAggregateTypeRatesWSDLService">
+		<documentation>necsws.com Get Aggregate Type Rates</documentation>
+		<wsdl:port name="GetAggregateTypeRatesWSDLPort" binding="tns:GetAggregateTypeRatesWSDLBinding">
+			<soap:address location="https://[server]/[port]/communication/GetAggregateTypeRates"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

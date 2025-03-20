@@ -225,9 +225,10 @@ Feature: User Maintenance
         Then I should see the "Account users" page
         And I should receive the message "Name is too long"
 
-    Scenario: User should not be able to create any subordinate users if they have no services
-        Given I have signed in 'portal.no.services' and password 'Password1!'
-        When I go to the "Account" page
-        And I click on the "Create or update users for this account" link
-        Then I should see the "Account users" page
-        And I should not see a link with text "Create a new user for your account"
+    # RSTP-1550 Commenting the scenario as it is no longer valid
+    # Scenario: User should not be able to create any subordinate users if they have no services
+    #     Given I have signed in 'portal.no.services' and password 'Password1!'
+    #     When I go to the "Account" page
+    #     And I click on the "Create or update users for this account" link
+    #     Then I should see the "Account users" page
+    #     And I should not see a link with text "Create a new user for your account"

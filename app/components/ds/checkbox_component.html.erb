@@ -1,5 +1,5 @@
 <div class="ds_question <%= 'ds_question--error' if error_list.present? %>">
-  <fieldset <%= "aria-describedby=\"#{hint_id}\"" if hint_text.present?%>>
+  <div <%= "aria-describedby=\"#{hint_id}\"" if hint_text.present?%>>
     <% if hint_text.present? %>
       <p id="<%=hint_id%>" class="ds_hint-text">
         <%= hint_text %>
@@ -18,5 +18,5 @@
         <%= builder.label(method, label_text, class: "ds_checkbox__label") %>
       </div>
     </div>
-  </fieldset>
+  </div>
 </div>

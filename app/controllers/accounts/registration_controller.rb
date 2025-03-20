@@ -10,16 +10,31 @@ module Accounts
     include RegistrationAccountsCommon
 
     # navigation steps in the new registration wizard
-    STEPS = %w[account_for company_registered company org_contact rep_address taxes account_details address
-               user_details confirmation].freeze
+    STEPS = %w[taxes account_type enrol_ref account_for company_registered company address org_contact rep_address
+               account_details user_details confirmation].freeze
 
     # Allow all wizard pages to be unauthenticated
     # rubocop exception as &:to_sym isn't supported here
     skip_before_action :require_user, only: STEPS.map { |s| s.to_sym } # rubocop:disable Style/SymbolProc
 
-    # renders form for who the account is for (company, individual, etc...). First step, sets up the wizard model.
+    # renders form for obtaining which taxes the registration applies for. First step, sets up the wizard model.
+    def taxes
+      wizard_step(STEPS) { { setup_step: :setup_step } }
+    end
+
+    # renders form for obtaining account type (agent, taxpayer, UK tax representative)
+    def account_type
+      wizard_step(STEPS) { { next_step: :account_type_next_step } }
+    end
+
+    # renders form for obtaining enrolment reference
+    def enrol_ref
+      wizard_step(STEPS)
+    end
+
+    # renders form for who the account is for (company, individual, etc...)
     def account_for
-      wizard_step(STEPS) { { setup_step: :setup_step, next_step: :account_for_next_step } }
+      wizard_step(STEPS) { { next_step: :account_for_next_step } }
     end
 
     # renders form for brand new account (and therefore user too) ie the registration form
@@ -60,11 +75,6 @@ module Accounts
       wizard_address_step(STEPS)
     end
 
-    # renders form for obtaining which taxes the registration applies for
-    def taxes
-      wizard_step(STEPS)
-    end
-
     # renders form for obtaining which organisation contact details
     def org_contact
       wizard_step(STEPS) { { next_step: :org_contact_next_step } }
@@ -92,9 +102,16 @@ module Accounts
       @account.save
     end
 
+    # Determines which is the next step after the account_type page
+    def account_type_next_step
+      return accounts_registration_enrol_ref_path if @account.service?(:sat)
+
+      accounts_registration_account_for_path
+    end
+
     # Determines which is the next step after the account_for page
     def account_for_next_step
-      return accounts_registration_taxes_path if AccountType.individual?(@account.account_type)
+      return accounts_registration_account_details_path if AccountType.individual?(@account.account_type)
 
       return accounts_registration_company_path unless AccountType.registered_organisation?(@account.account_type)
 
@@ -103,14 +120,14 @@ module Accounts
 
     # Determines which is the next step after the address page, depending on the registration type.
     def address_next_step
-      return STEPS if AccountType.individual?(@account.account_type)
+      return accounts_registration_user_details_path if AccountType.individual?(@account.account_type)
 
       accounts_registration_org_contact_path
     end
 
     # Determines which is the next step after the account details page, depending on the registration type.
     def account_details_next_step
-      return STEPS if AccountType.individual?(@account.account_type)
+      return accounts_registration_address_path if AccountType.individual?(@account.account_type)
 
       accounts_registration_user_details_path
     end
@@ -119,7 +136,7 @@ module Accounts
     def org_contact_next_step
       return accounts_registration_rep_address_path if AccountType.other_organisation?(@account.account_type)
 
-      accounts_registration_taxes_path
+      accounts_registration_account_details_path
     end
 
     # Sets up wizard model if it doesn't already exist in the cache
@@ -133,7 +150,7 @@ module Accounts
     # @return [Account] the model for wizard saving
     def load_step(_sub_object_attribute = nil)
       @post_path = wizard_post_path
-      @account = wizard_load_or_redirect(accounts_registration_account_for_url)
+      @account = wizard_load_or_redirect(accounts_registration_taxes_url)
     end
 
     # Return the parameter list filtered for the attributes of the registration model

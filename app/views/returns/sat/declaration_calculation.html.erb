@@ -1,0 +1,7 @@
+<% content_for(:page_title, t('.title')) %>
+  <%= ds_form_with(model: @sat_return, url: @post_path, method: :post, button_action: :submit, button_label: t('.sumbit')) do |f| %>
+      <%= ds_warning { t('.dd_warning') } if @sat_return.show_amend_dd_warning?%> 
+      <%= f.ds_radio_group(method: :fpay_method, options_list: @sat_return.list_payment_types(account_has_dd_instruction: @sat_return.enrolment_has_dd_instruction?)) %>
+      <%= ds_warning{t('.warning')} %>
+      <%= f.ds_checkbox(method: :declaration) %>
+  <% end %>

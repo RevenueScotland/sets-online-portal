@@ -9,7 +9,7 @@ module RS
     # Override the default width for currency fields
     def initialize(**args)
       args[:width] = 10 # Hard code to 10 otherwise CSS positioning doesn't work
-      super(**args)
+      super
     end
   end
 end

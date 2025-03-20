@@ -8,17 +8,15 @@ ruby '>= 3.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 7.0'
 # Use Puma as the app server
+gem 'propshaft', '~> 1.1.0'
 gem 'puma', '~> 6.0'
-# Locking rack to 2.0 because of savon/httpi issue
-# https://github.com/savonrb/savon/issues/992
-gem 'rack', '~> 2.0'
-# Use propshaft for asset management, currently using a main branch until next release due to  https://github.com/rails/propshaft/issues/103
-gem 'propshaft', git: 'https://github.com/rails/propshaft'
+gem 'rack', '~> 3.0'
+
 # Transpile app-like JavaScript. Read more: https://github.com/rails/jsbundling-rails
 # We build the css using sass-loader so not cssbundling-rails
 gem 'jsbundling-rails'
 # Turbo https://github.com/hotwired/turbo-rails
-gem 'turbo-rails', '~>1.0'
+gem 'turbo-rails', '~>2.0'
 # Stimulus https://github.com/hotwired/stimulus-rails
 gem 'stimulus-rails'
 # Include view component
@@ -36,7 +34,7 @@ gem 'bootsnap', '~> 1.4', require: false
 gem 'useragent', '~> 0.16'
 # Used for making SOAP calls
 # Locked to 1.12 see RSTP-1065
-gem 'savon', '~> 2.12'
+gem 'savon', '~> 3.0.0.rc1'
 # Wraps warden for security
 gem 'rails_warden', '~> 0.6'
 # Used for making REST calls
@@ -75,13 +73,10 @@ group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '~> 3.29'
   gem 'capybara-screenshot', require: false
-  # restricted to version 2 until version 3 comes out of beta phase
-  gem 'cucumber-rails', '~> 2.0', require: false
+  gem 'cucumber-rails', '~> 3.0', require: false
   gem 'selenium-webdriver'
   # add code coverage
   gem 'simplecov', require: false
 end
 
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-# Remove platform check following ruby 3.1 upgrade https://github.com/rubygems/rubygems/issues/5269
-gem 'tzinfo-data' # , platforms: %i[mingw mswin x64_mingw jruby]
+gem 'tzinfo-data'

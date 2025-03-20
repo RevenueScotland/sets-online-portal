@@ -10,6 +10,7 @@ class ResourceItem < FLApplicationRecord
   validates :file_data, presence: true
   validate :file_size?
   validate :content_type?
+  validate :filename_length_valid?
 
   # check if resource_item is valid
   # @param max_file_size [Integer] @see file_upload_expected_max_size_mb to find where this is being set.
@@ -17,10 +18,11 @@ class ResourceItem < FLApplicationRecord
   #   the content_type of the file being validated.
   # @param file_extension_allowlist [Array] contains strings which is the conversion of the content_type_allowlist
   #   to the suffix equivalent, for example ".csv" and ".docx"
-  def valid?(max_file_size, content_type_allowlist, file_extension_allowlist)
+  def valid?(max_file_size, content_type_allowlist, file_extension_allowlist, max_filename_length)
     @max_file_size = max_file_size
     @content_type_allowlist = content_type_allowlist
     @file_extension_allowlist = file_extension_allowlist
+    @max_filename_length = max_filename_length
     super()
   end
 
@@ -72,6 +74,14 @@ class ResourceItem < FLApplicationRecord
   end
 
   private
+
+  def filename_length_valid?
+    return true if !defined?(@max_filename_length) || !@max_filename_length.to_i.positive? || @max_filename_length.nil?
+
+    length_exceeded = (original_filename.length >= @max_filename_length.to_i)
+    errors.add(:file_data, :invalid_filename, count: @max_filename_length) if length_exceeded
+    true
+  end
 
   # Validate the file size isn't too big
   def file_size?

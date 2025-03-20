@@ -56,7 +56,7 @@ en:
   none_provided: "None provided"
   close: "Close"
   optional: "optional"
-  opens_new_window: "opens in a new window"  
+  opens_new_tab: "opens in a new tab"
   give_feed_back: "Give feedback about this service"
   notification:
     one: "Your password expires in 1 day"

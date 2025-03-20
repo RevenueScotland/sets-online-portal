@@ -1,0 +1,168 @@
+en:
+  activemodel:
+    attributes:
+      returns/sat/sat_return:
+        sat_period: "SAT period"
+        fpay_method: "How are you paying"
+        declaration: "I, the taxpayer declare that the return is to the best of my knowledge correct and complete or, I the representative of the taxpayer certify that the taxpayer has declared that the information provided in the return is to the best of the taxpayer's knowledge correct and complete."
+        claim_declaration: "I, the taxpayer, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed, or I, the representative of the taxpayer certify that the taxpayer has declared that this claim is to the best of the taxpayer's knowledge correct and complete, and confirm they are eligible for the repayment claimed"
+        # Print data labels
+        enrolment_reference: "Enrolment Registration Ref"
+        enrm_name: "Enrolment name"
+        tare_reference: "Return reference"
+        current_return_period: "Return period"
+        form_type: "Status"
+        net_tax_due: "Total tax due"
+        net_tax_credits: "Total credit"
+        net_tax_payable: "Total payable"
+        aggregate_type: "Aggregate type"
+        aggregate_type_display: "Type"
+        tax_liability: "Tax liability"
+        change_reason: "Tell us why you are amending this return"
+        repayment_ind: "Do you want to request a repayment from Revenue Scotland"
+        claiming_amount: "How much are you claiming from Revenue Scotland"
+        account_holder_name: "Name of the account holder"
+        account_number: "Bank / building society account number"
+        branch_code: "Branch sort code"
+        bank_name: "Name of bank / building society"
+        net_taxable_tonnage: "Total taxable tonnage"
+        net_exempt_tonnage: "Total exempt tonnage"
+      returns/sat/sites:
+        tld_nil_submit: 'Do you have aggregate activity/tax credits you wish to submit for this site for this period'
+        tld_display_value: 'Do you have aggregate activity/tax credits you wish to submit for this site for this period'
+        tld_value: 'Nil submission'
+        site_party_name: "Company"
+        site_name: "Site"
+        period_bdown_start: "Period start"
+        period_bdown_end: "Period end"
+        taxable_tonnage: "Taxable tonnage"
+        exempt_tonnage: "Exempt tonnage"
+        tax_due: "Tax due"
+        tax_credits: "Tax credits"
+        tax_payable: "Tax payable"
+        aggregate_type_display: "Type"
+        comm_exploitation_type_display: "Type of commercial exploitation"
+        exploited_tonnage: "Exploited tonnage"
+        water_tonnage: "Water tonnage"
+        alternate_weighing_method: "Alternative Weighing \n Method"
+        taxable_tonnage: "Taxable tonnage"
+        rate: "Rate"
+        tax_due: "Tax due"
+        exempt_type_display: "Exempt description"
+        exempt_tonnage: "Exempt tonnage"
+        tax_credit_type_display: "Tax credit\nDescription"
+        related_return_to: "Return\nrelates to"
+        period_relates_to: "Period\nrelates to"
+        tax_tonnage: "Tonnage"
+        tax_tonnage_display: "Tonnage"
+        tax_rate: "Rate"
+        credit_amount: "Credit amount"
+      returns/sat/taxable_aggregates:  
+        aggregate_type_display: "Type"
+        title: "Gross taxable aggregate"
+      returns/sat/taxable_aggregate:
+        aggregate_type: "Aggregate type"
+        comm_exploitation_type: "Type of commercial exploitation"
+        exploited_tonnage: "Exploited tonnage"
+        water_tonnage: "Water discount tonnage"
+        mixed_ind: "Is any part of the Aggregate Activity subject to an Alternative Weighing Method Agreement"        
+      returns/sat/exempt_aggregate:
+        title: "Exempt aggregate"
+        aggregate_type: "Exempt aggregate type"
+        exempt_type: "Description of exemption"
+        exempt_tonnage: "Exempt tonnage"
+      returns/sat/credit_claim:
+        title: "Tax credit"
+        aggregate_type: "Aggregate type"
+        tax_credit_type: "Description of tax credit"
+        tax_period_ind: "Does this tax credit relate to a transaction in the current period"
+        related_return: "Return period the transaction relating to this tax credit is in"
+        current_return: "Return period the transaction relating to this tax credit is in"
+        tax_tonnage: "Tonnage"
+        tax_tonnage_display: "Tonnage"
+        tax_rate: "Rate"
+      returns/sat/bad_debt:        
+        bad_debt_present: "Do you have any claims to make in relation to bad debt"
+        bad_debt_credit_amount: "Bad debt credit claim amount"
+        bad_debt_details: "Bad debt credit claim description"
+        bad_debt_declaration: "I, the taxpayer confirm that the requirements to claim a bad debt tax credit have been met or, I the representative of the taxpayer certify that the taxpayer has confirmed that the requirements to claim a bad debt tax credit have been met."
+    labels:
+        returns/sat/taxable_aggregate:
+          aggregate_type_display:
+            default: "%{label}"
+            pdf_label: "Type"
+        returns/sat/exempt_aggregate:
+          aggregate_type_display:
+            default: "%{label}"
+            pdf_label: "Type"
+        returns/sat/credit_claim:
+          aggregate_type:
+            default: "%{label}"
+            pdf_label: "Type"
+          relates_to_pdf:
+            default: "%{label}"
+            pdf_label: "Return relates to"
+          return_period_display:
+            default: "%{label}"
+            pdf_label: "Period relates to"
+        returns/sat/sites:
+          site_name:
+            default: "%{label}"
+            pdf_label: "Site name"
+          selected_return_period:
+            default: "%{label}"
+            pdf_label: "Period"
+          net_taxable_tonnage:
+            default: "%{label}"
+            pdf_label: "Total Taxable Tonnage"
+          net_exempt_tonnage:
+            default: "%{label}"
+            pdf_label: "Total Exempt Tonnage"
+          total_tax_due:
+            default: "%{label}"
+            pdf_label: "Total Tax Due"
+          total_credit_amount:
+            default: "%{label}"
+            pdf_label: "Total Tax Credits"
+          tax_payable:
+            default: "%{label}"
+            pdf_label: "Total Tax Payable"
+          sites:
+            title: "%{label}"
+          tld_nil_submit:
+            default: "%{label}"
+            pdf_label: "Nil Submission"
+        returns/sat/bad_debt:
+          bad_debt_credit_amount:
+            default: "%{label}"
+            pdf_label: "Bad debt credit amount"
+          bad_debt_details:
+            default: "%{label}"
+            pdf_label: "Bad debt credit claim description"
+    hints:
+      returns/sat/sat_return:
+        account_number: "This should be 8 digits"
+        branch_code: "The sort code should be entered in the format 99-99-99"
+    errors:
+      models:      
+        returns/sat/sat_return:
+          attributes:
+            # Custom messages for the summary page
+            base:
+              missing_about_the_transaction: "Please fill in the 'Return period' section"
+              file_empty: "File empty"
+              missing_columns: "Missing columns in the file : %{columns}"              
+              reimport_file: "Imported file contains validation errors. Correct these in the file, and the import the file again"
+              row_error: "Error at row %{row} : %{errors}"
+              invalid_site_error: "Invalid Site Name at row %{row}"
+              invalid_record_type_error: "Error at row %{row} : Invalid Record Type"
+              errors_indicator: "%{error_count} Error(s) found"
+              error_stmts: "%{errors}"              
+              import_row_error:
+                one: "%{description} has the following error: %{messages}"
+                other: "%{description} has the following errors: %{messages}"
+        returns/sat/taxable_aggregate:
+          attributes:
+            water_tonnage:
+              must_be_greater: "%{attribute} cannot be greater than exploited tonnage"
+          

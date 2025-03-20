@@ -1,0 +1,333 @@
+{
+    "section": [
+        {
+            "sectioncode": "enrolment_details",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectionfooter": null,
+            "sectiontitle": "Enrolment details",
+            "listitem": [
+                {
+                    "itemcode": "enrolment_reference",
+                    "itemformat": null,
+                    "itemlabel": "Enrolment Registration Ref",
+                    "itemdata": "SAT1000000TVTV"
+                },
+                {
+                    "itemcode": "enrm_name",
+                    "itemformat": null,
+                    "itemlabel": "Enrolment name",
+                    "itemdata": "Kevin Peterson Partnership"
+                }
+            ],
+            "itemcount": 2
+        },
+        {
+            "sectioncode": "return_type",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectionfooter": null,
+            "sectiontitle": "About the return",
+            "listitem": [
+                {
+                    "itemcode": "tare_reference",
+                    "itemformat": null,
+                    "itemlabel": "Return reference",
+                    "itemdata": "\u003c%TARE_REFERENCE%\u003e"
+                },
+                {
+                    "itemcode": "version",
+                    "itemformat": null,
+                    "itemlabel": "Version",
+                    "itemdata": "\u003c%VERSION%\u003e"
+                },
+                {
+                    "itemcode": "current_return_period",
+                    "itemformat": null,
+                    "itemlabel": "Return period",
+                    "itemdata": "01/01/2024 to 01/02/2024"
+                },
+                {
+                    "itemcode": "form_type",
+                    "itemformat": null,
+                    "itemlabel": "Status",
+                    "itemdata": "Filed"
+                },
+                {
+                    "itemcode": "submitted_date",
+                    "itemformat": null,
+                    "itemlabel": "Submitted date",
+                    "itemdata": "<%RECEIPT_DATE%>"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "sites",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": false,
+            "displaytitle": true,
+            "sectionfooter": " ",
+            "sectiontitle": "Burhan Sites Co",
+            "listitem": [
+                {
+                    "itemcode": "site_name",
+                    "itemformat": null,
+                    "itemlabel": "Site name",
+                    "itemdata": "Site 1"
+                },
+                {
+                    "itemcode": "selected_return_period",
+                    "itemformat": null,
+                    "itemlabel": "Period",
+                    "itemdata": "01/01/2024 to 01/02/2024"
+                },
+                {
+                    "itemcode": "tld_nil_submit",
+                    "itemformat": null,
+                    "itemlabel": "Nil Submission",
+                    "itemdata": "Y"
+                }
+            ],
+            "itemcount": 3
+        },
+        {
+            "sectioncode": "taxable_aggregates",
+            "sectiontype": "table",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectionfooter": null,
+            "sectiontitle": "Gross taxable aggregate",
+            "tableheadings": [
+                "Type",
+                "Type of commercial exploitation",
+                "Exploited tonnage",
+                "Water discount tonnage",
+                "Alternative weighing method",
+                "Rate",
+                "Tax due"
+            ],
+            "tablecolumncount": 7,
+            "tablerow": [
+                {
+                    "rowdata": [
+                        {
+                            "rowcell": [
+                                "Rock"
+                            ]
+                        },
+                        {
+                            "rowcell": [
+                                "Used for Construction"
+                            ]
+                        },
+                        {
+                            "rowcell": [
+                                "500"
+                            ]
+                        },
+                        {
+                            "rowcell": [
+                                "1"
+                            ]
+                        },
+                        {
+                            "rowcell": [
+                                "Yes"
+                            ]
+                        },
+                        {
+                            "rowcell": [
+                                "2.03"
+                            ]
+                        },
+                        {
+                            "rowcell": [
+                                "1012.97"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "tablerowcount": 1
+        },
+        {
+            "sectioncode": "exempt_aggregates",
+            "sectiontype": "table",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectionfooter": null,
+            "sectiontitle": "Exempt aggregate",
+            "tableheadings": [
+                "Type",
+                "Description of exemption",
+                "Exempt tonnage"
+            ],
+            "tablecolumncount": 3,
+            "tablerow": [
+                {
+                    "rowdata": [
+                        {
+                            "rowcell": [
+                                "Rock"
+                            ]
+                        },
+                        {
+                            "rowcell": [
+                                "Result of Dredging"
+                            ]
+                        },
+                        {
+                            "rowcell": [
+                                "10"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "tablerowcount": 1
+        },
+        {
+            "sectioncode": "credit_claims",
+            "sectiontype": "table",
+            "sectiondivider": null,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectionfooter": null,
+            "sectiontitle": "Tax credit",
+            "tableheadings": [
+                "Type",
+                "Tax credit type display",
+                "Return relates to",
+                "Period relates to",
+                "Tonnage",
+                "Rate",
+                "Credit amount"
+            ],
+            "tablecolumncount": 7,
+            "tablerow": [
+                {
+                    "rowdata": [
+                        {
+                            "rowcell": [
+                                "ROCK"
+                            ]
+                        },
+                        {
+                            "rowcell": [
+                                "Excepted Process Applied"
+                            ]
+                        },
+                        {
+                            "rowcell": []
+                        },
+                        {
+                            "rowcell": []
+                        },
+                        {
+                            "rowcell": [
+                                "100"
+                            ]
+                        },
+                        {
+                            "rowcell": [
+                                "2.03"
+                            ]
+                        },
+                        {
+                            "rowcell": [
+                                "203.00"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "tablerowcount": 1
+        },
+        {
+            "sectioncode": "tax_liability",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectionfooter": null,
+            "sectiontitle": "Tax liability",
+            "listitem": [
+                {
+                    "itemcode": "net_taxable_tonnage",
+                    "itemformat": null,
+                    "itemlabel": "Total taxable tonnage",
+                    "itemdata": "499"
+                },
+                {
+                    "itemcode": "net_exempt_tonnage",
+                    "itemformat": null,
+                    "itemlabel": "Total exempt tonnage",
+                    "itemdata": "10"
+                },
+                {
+                    "itemcode": "total_tax_due",
+                    "itemformat": "money",
+                    "itemlabel": "Total tax due",
+                    "itemdata": "1012.97"
+                },
+                {
+                    "itemcode": "total_credit",
+                    "itemformat": "money",
+                    "itemlabel": "Total credit",
+                    "itemdata": "200"
+                },
+                {
+                    "itemcode": "tax_payable",
+                    "itemformat": "money",
+                    "itemlabel": "Tax payable",
+                    "itemdata": "812.97"
+                }
+            ],
+            "itemcount": 5
+        },
+        {
+            "sectioncode": "declaration_calculation",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectionfooter": null,
+            "sectiontitle": "Payment and submission",
+            "listitem": [
+                {
+                    "itemcode": "fpay_method",
+                    "itemformat": null,
+                    "itemlabel": "How are you paying?",
+                    "itemdata": "BACS"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
+            "sectioncode": "declaration_submitted",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectionfooter": null,
+            "sectiontitle": "Declaration",
+            "listitem": [
+                {
+                    "itemcode": "declaration",
+                    "itemformat": null,
+                    "itemlabel": "I, the taxpayer declare that the return is to the best of my knowledge correct and complete or, I the representative of the taxpayer certify that the taxpayer has declared that the information provided in the return is to the best of the taxpayer's knowledge correct and complete.",
+                    "itemdata": "Yes"
+                }
+            ],
+            "itemcount": 1
+        }
+    ]
+}

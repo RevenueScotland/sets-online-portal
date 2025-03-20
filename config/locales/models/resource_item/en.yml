@@ -19,6 +19,7 @@ en:
           new: "You will be able to upload more documents on the next page</br>The file must be one of %{supported_file_types} with a maximum size of %{max_file_size_mb} mb per file"
           create: "You will be able to upload more documents on the next page</br>The file must be one of %{supported_file_types} with a maximum size of %{max_file_size_mb} mb per file"
           site_waste_summary: "The file must be a %{supported_file_types} with a maximum size of %{max_file_size_mb} mb per file"
+          upload_documents: "The file must be one of %{supported_file_types} with a maximum size of %{max_file_size_mb} mb per file.</br> The file name must be no longer than 100 characters (including the file extension).</br> You can upload one file at a time.</br> You will be able to upload more files on the next page."
     errors:
       models:
         resource_item:
@@ -26,6 +27,7 @@ en:
             file_data:
               invalid_file_type: Invalid file type
               invalid_file_size: File should be less than %{supported_max_size_mb} mb
+              invalid_filename: "File name is too long (maximum is %{count} characters)" #This is specifically added for file upload component in messages.
             original_filename:
               too_long:
                 one: "Filename is too long (maximum is 1 character)"

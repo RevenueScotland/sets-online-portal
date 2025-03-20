@@ -37,4 +37,12 @@ module AllMessageSubject
     end
     @subject_description_list
   end
+
+  # RSTP-1602
+  # This method returns the subject_codes data where usage is USR
+  def usr_subject_description_list(current_user)
+    subject_description_list(current_user).select do |x|
+      x.usage == 'USR'
+    end
+  end
 end

@@ -10,26 +10,35 @@
       <% header.with_cell(method: :subject_description)%>
       <% header.with_cell(method: :has_attachment )%>
       <% header.with_cell(method: :read_indicator)%>
+      <% header.with_cell(cell_as_header: true)%>
     <% end %>
     <% messages&.each do |message| %>
       <% table.with_row(model: message) do |row| %>
         <% row.with_cell(method: :created_date, type: :date) %>
         <% row.with_cell(method: :full_name) %>
         <% row.with_cell(method: :title) %>
-        <% row.with_cell(method: :reference)%>
+        <% row.with_cell(method: :reference_details)%>
         <% row.with_cell(method: :subject_description) %>
         <% row.with_cell(method: :has_attachment) %>
         <% row.with_cell(method: :read_indicator) %>
-      <% end %>
-      <% table.with_row do |row| %>
-        <% row.with_cell(colspan:  7) do %>
-          <% if message.selected%>
-            <%= t('.selected_message')%>
-          <% else %>
-            <%= ds_link(name: t('.view'),
-             url: dashboard_message_path(message,"mark_as_read": "Y"),
-             subtype: :padded) if can?(RS::AuthorisationHelper::VIEW_MESSAGE_DETAIL) %>
-          <% end %>
+        <% row.with_cell(cell_as_row: true) do %>
+          <div class='rs_cell'>
+            <div class='rs_view_link'>
+              <% if message.selected%>
+                <%= t('.selected_message')%>
+              <% else %>
+                <%= ds_link(name: t('.view'),
+                url: dashboard_message_path(message,"mark_as_read": "Y"),
+                subtype: :padded,
+                visually_hidden_text: t('.hidden_text', reference: message.reference)) if can?(RS::AuthorisationHelper::VIEW_MESSAGE_DETAIL) %>
+              <% end %>
+            </div>
+            <div class='rs_preview_text'>
+              <%= tag.span(t('.hidden_preview_text', reference: message.reference,
+                  preview: message.body), class: 'visually-hidden') %>
+              <%= ds_paragraph{ message.body } %>
+            </div>
+          </div>
         <% end %>
       <% end %>
     <% end %>

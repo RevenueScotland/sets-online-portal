@@ -287,13 +287,20 @@ module Claim
     # @return a hash suitable for use in all message request
     def request_user_instance
       if claim_public?
-        { 'ins1:Authenticated': 'no', 'ins1:ObjectRefno': @case_reference, 'ins1:ObjectType': 'CASE',
-          'ins1:DocumentType': 'CLAIMDOC' }
+        request = { 'ins1:Authenticated': 'no', 'ins1:ObjectRefno': @case_reference, 'ins1:ObjectType': 'CASE',
+                    'ins1:DocumentType': 'CLAIMDOC' }
       else
-        { 'ins1:ParRefNo': @current_user.party_refno, 'ins1:Username': @current_user.username,
-          'ins1:Authenticated': 'yes', 'ins1:ObjectRefno': @case_reference, 'ins1:ObjectType': 'CASE',
-          'ins1:DocumentType': 'CLAIMDOC' }
+        request = { 'ins1:ParRefNo': @current_user.party_refno, 'ins1:Username': @current_user.username,
+                    'ins1:Authenticated': 'yes', 'ins1:ObjectRefno': @case_reference, 'ins1:ObjectType': 'CASE',
+                    'ins1:DocumentType': 'CLAIMDOC' }
       end
+      @srv_code.include?('SAT') ? request.merge(request_portal_objects_elements(@current_user)) : request
+    end
+
+    # @return a hash suitable to add a document for portal object
+    def request_portal_objects_elements(requested_by)
+      { PortalObjectType: requested_by.portal_object_type,
+        PortalObjectReference: requested_by.portal_object_reference }
     end
 
     # @return a hash suitable for use in store document request to the back office
@@ -374,7 +381,9 @@ module Claim
         { 'ins1:Authenticated': 'no' }.merge!(request_save)
       else
         { 'ins1:ParRefNo': current_user.party_refno,
-          Username: current_user.username }.merge!(request_save)
+          Username: current_user.username,
+          PortalObjectType: current_user.portal_object_type,
+          PortalObjectReference: current_user.portal_object_reference }.merge!(request_save)
       end
     end
 
@@ -504,6 +513,16 @@ module Claim
       prefix
     end
 
+    # This method returns the authenticated declarations as per RSTP-1584
+    # The method returns the default translation_attribute unless its for a SAT TAXPAYER repayment
+    # @param attribute [Symbol] the name of the attribute to translate
+    # @return [Symbol] "attribute_" + extra information to make the translation key
+    def auth_declaration_translation(attribute)
+      return :"#{attribute}_#{srv_code}" if srv_code == 'SAT'
+
+      :"#{attribute}_#{account_type}"
+    end
+
     # Dynamically returns the translation key based on the translation_options provided by the page if it exists
     # or else the flbt_type.
     # @param attribute [Symbol] the name of the attribute to translate
@@ -513,8 +532,8 @@ module Claim
       return amount_date_translation_attribute(attribute) if %i[claiming_amount date_of_sale
                                                                 full_repayment_of_ads].include?(attribute)
 
-      return :"#{attribute}_#{account_type}" if %i[authenticated_declaration1
-                                                   authenticated_declaration2].include?(attribute)
+      return auth_declaration_translation(attribute) if %i[authenticated_declaration1
+                                                           authenticated_declaration2].include?(attribute)
 
       attribute
     end

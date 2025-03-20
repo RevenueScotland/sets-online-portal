@@ -9,7 +9,7 @@ Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :fl_users_strategy
 end
 
-# Override standard warden serialiser
+# Override standard warden serializer
 module Warden
   # This class is called by warden an handles the retrieval of the current user into the
   # current request scope based on the details stored in the cookie
@@ -32,8 +32,7 @@ Warden::Strategies.add(:fl_users_strategy) do
   def valid?
     user = params[:user]
     Rails.logger.debug { "Checking valid? with : #{user[:username]}" }
-    return false if user.key?(:password) && user[:password].blank?
-    return false if user.key?(:token) && user[:token].blank?
+    return false if (user.key?(:password) && user[:password].blank?) || (user.key?(:token) && user[:token].blank?)
 
     user[:username].present?
   end
@@ -54,14 +53,17 @@ Warden::Strategies.add(:fl_users_strategy) do
 
     # If the user isn't registered they may not have completed/activated the registration
     # so need to signal back
-    user&.user_is_registered ? success!(user) : fail!(reason: :login_not_activated, user: user)
+    # Return fail if user has not been approved from BO
+    return fail!(reason: :login_not_activated, user: user) unless user&.user_is_registered
+    return fail!(reason: :unapproved_login, user: user) unless user.user_is_approved
+
+    success!(user)
   end
 
   # handle the un-authentication case when logging in.
   def handle_unauthenticated(user)
-    return :login_invalid if user.nil?
     # check for the account being locked first, as both locked as 2FA are set to TRUE if 2FA is enabled
-    return :login_locked if user.user_locked
+    return :login_invalid if user.nil? || user.user_locked
     return :invalid_token if user.token_invalid?
     return :token_expired if user.token_expired?
     return :token_required if user.user_is2_fa

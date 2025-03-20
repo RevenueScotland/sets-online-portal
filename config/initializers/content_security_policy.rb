@@ -13,7 +13,11 @@ Rails.application.configure do
     policy.img_src     :self, 'https://*.google-analytics.com', 'https://*.googletagmanager.com'
     policy.object_src  :none
     policy.script_src  :self, 'https://www.googletagmanager.com/'
-    policy.connect_src :self, 'https://*.google-analytics.com', 'https://*.analytics.google.com', ' https://*.googletagmanager.com'
+    policy.base_uri    :self
+    policy.connect_src :self,
+                       'https://*.google-analytics.com',
+                       'https://*.analytics.google.com',
+                       'https://*.googletagmanager.com'
     policy.style_src :self,
                      # Turbo hash
                      "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='",

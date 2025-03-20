@@ -75,5 +75,7 @@ Before('@mock_slft_load_submit_draft') do
   slft_update_fixture = File.read("#{FIXTURES_MOCK_ROOT}slft/slft_update.xml")
   @savon.expects(:slft_tax_return_wsdl).with(message: {}).returns(slft_update_fixture)
 
+  mock_get_secure_message_reference('117', 'VALID.USER', 'RS1000947STMD')
+
   Rails.logger.debug { "Mocking configured : #{@savon.inspect}" }
 end

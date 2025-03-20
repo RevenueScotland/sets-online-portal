@@ -121,7 +121,8 @@ module AccountPersistence
       Username: user.new_username, Password: user.new_password, ForcePasswordChange: 'N', UserIsCurrent: 'N',
       UserPhoneNumber: contact_number, Forename: user.forename, Surname: user.surname, EmailAddress: email_address,
       ConfirmEmailAddress: email_address_confirmation, PartyAccountType: party_account_type, PartyNINO: nino,
-      EmailDataIndicator: email_data_ind }
+      EmailDataIndicator: email_data_ind, 'ins2:RegistrationType' => enrolment_type,
+      'ins2:RegistrationValue' => enrolment_ref, 'ins2:RegistrationNotes' => registration_notes }
   end
 
   # Create a partial back office request for an address
@@ -171,7 +172,7 @@ module AccountPersistence
   # @param taxes [hash of strings] the taxes to map onto the request to the back office
   # @return hash map
   def register_account_request_other(taxes)
-    { UserServices: { 'ins2:UserService' => taxes.compact_blank } }
+    { UserServices: { 'ins2:UserService' => taxes } }
   end
 
   # Return the contact address. If it's a registered company without a specific contact address

@@ -1,0 +1,5 @@
+<% content_for :page_title, t('.title') %>
+<%= ds_form_with(model: @account, url: @post_path) do |f| %>
+  <%= f.ds_radio_group(method: :party_account_type, 
+        options_list: @account.party_types ) %>
+<% end %>

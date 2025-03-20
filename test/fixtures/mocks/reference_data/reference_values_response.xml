@@ -13226,6 +13226,14 @@
                 </ReferenceValue>
                 <ReferenceValue>
                     <DomainCode>PAYMENT TYPE</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>BACS</Code>
+                    <Name>BACS</Name>
+                    <Default>no</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>PAYMENT TYPE</DomainCode>
                     <ServiceCode>LBTT</ServiceCode>
                     <WorkplaceCode>RSTU</WorkplaceCode>
                     <Code>BACS</Code>
@@ -13242,6 +13250,14 @@
                 </ReferenceValue>
                 <ReferenceValue>
                     <DomainCode>PAYMENT TYPE</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>CHEQUE</Code>
+                    <Name>Cheque</Name>
+                    <Default>no</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>PAYMENT TYPE</DomainCode>
                     <ServiceCode>LBTT</ServiceCode>
                     <WorkplaceCode>RSTU</WorkplaceCode>
                     <Code>CHEQUE</Code>
@@ -13251,6 +13267,14 @@
                 <ReferenceValue>
                     <DomainCode>PAYMENT TYPE</DomainCode>
                     <ServiceCode>LBTT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>DDEBIT</Code>
+                    <Name>Direct Debit</Name>
+                    <Default>no</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>PAYMENT TYPE</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
                     <WorkplaceCode>RSTU</WorkplaceCode>
                     <Code>DDEBIT</Code>
                     <Name>Direct Debit</Name>
@@ -15664,6 +15688,156 @@
                     <Name>Other</Name>
                     <Default>no</Default>
                     <Sequence>13</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>COMMEXPLOITREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>CONSTRUCT</Code>
+                    <Name>Used for Construction</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>COMMEXPLOITREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>MIXED</Code>
+                    <Name>Mixed with any material or substance (other than water)</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>COMMEXPLOITREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>REMOVED</Code>
+                    <Name>Removed from Site</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>COMMEXPLOITREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>SUPPLY</Code>
+                    <Name>Agreement To Supply</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>EXEMPTREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>CHARGE</Code>
+                    <Name>Already Subject To Charge</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>EXEMPTREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>CONSTRUCT</Code>
+                    <Name>Previously Used for Construction</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>EXEMPTREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>CWOCLS</Code>
+                    <Name>Consists wholly of coal, lignite, slate, etc</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>EXEMPTREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>CWOSOCLS</Code>
+                    <Name>Consists wholly of spolis of coal, lignite, slate, etc</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>EXEMPTREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>DREDGING</Code>
+                    <Name>Result of Dredging</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>EXEMPTREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>MOVED</Code>
+                    <Name>Moved From Another Site</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>EXEMPTREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>WON</Code>
+                    <Name>Won on the site of any structure, or infrastructure for transport or utilities to build, maintain or improve them</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>TAXCREDITREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>DEBT</Code>
+                    <Name>Bad Debt</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>TAXCREDITREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>DISPOSED</Code>
+                    <Name>Disposed of</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>TAXCREDITREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>EXCEPTED</Code>
+                    <Name>Excepted Process Applied</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                 <ReferenceValue>
+                    <DomainCode>TAXCREDITREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>EXPORTED</Code>
+                    <Name>Exported outwith UK</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>TAXCREDITREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>MOVED</Code>
+                    <Name>Moved within UK</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>TAXCREDITREASON</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>SPECIFIED</Code>
+                    <Name>Used in Specified Industrial or Agricultural Process</Name>
+                    <Default>yes</Default>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>AGGREGATE TYPE</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>ROCK</Code>
+                    <Name>Rock</Name>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>AGGREGATE TYPE</DomainCode>
+                    <ServiceCode>SAT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>SAND</Code>
+                    <Name>Sand/Gravel</Name>
                 </ReferenceValue>
             </ReferenceValues>
         </GetReferenceValuesResponse>

@@ -1,6 +1,6 @@
 <% content_for(:page_title, t('.title')) %>
 <%= ds_paragraph{ t('.description')} %>
-<%= ds_form_with(model: @site, url: @post_path) do |f| %>
+<%= ds_form_with(model: @site, url: @post_path, button_action: (@show_manual_address ? :continue : :none)) do |f| %>
   <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail, 
       show_address_detail: @show_manual_address, readonly: @address_read_only) %>
 <% end %>

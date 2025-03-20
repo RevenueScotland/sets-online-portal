@@ -22,6 +22,7 @@
         <%= rs_site_header_navigation(format: :mobile) unless content_for(:hide_navigation) %>
       </div>
     </div>
+    <%= rs_environment_banner %>
     <%= ds_phase_banner(banner_tag_text: nil,banner_text:t('.feedback_html', link: ds_link(url: external_link_url('FDBK_PAGE'), name: t('.feedback_link'),target: '_blank')).html_safe) %>
     <div class="ds_site-header__navigation">
       <div class="ds_wrapper">

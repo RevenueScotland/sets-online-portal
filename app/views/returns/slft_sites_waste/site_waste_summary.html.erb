@@ -27,8 +27,10 @@
     <% end %>
     <% table.with_row do |row| %>
       <% row.with_cell(colspan: 6) do %>
-        <%= ds_link(name: t('.edit_row'), url: returns_slft_waste_description_path(waste: waste), subtype: :padded) %>
-        <%= ds_link(name: t('.delete_row'), url: returns_waste_path(waste: waste), delete: true, confirm_message: t('.delete' , value: waste.ewc_code_and_description ), subtype: :padded) %>
+        <%= ds_link(name: t('.edit_row'), url: returns_slft_waste_description_path(waste: waste), subtype: :padded,
+        visually_hidden_text: t('.hidden_text', ewc_code: waste.ewc_code_and_description)) %>
+        <%= ds_link(name: t('.delete_row'), url: returns_waste_path(waste: waste), delete: true, confirm_message: t('.delete' , value: waste.ewc_code_and_description ), subtype: :padded,
+        visually_hidden_text: t('.hidden_text', ewc_code: waste.ewc_code_and_description)) %>
       <% end %>
     <% end %>
   <% end %>

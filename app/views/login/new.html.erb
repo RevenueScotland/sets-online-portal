@@ -7,7 +7,7 @@
   <%= f.ds_password_field(method: :password, autocomplete: "current-password") %>
   <%= ds_paragraph { ds_link(url: forgotten_password_path, name: t('.forgotten_your_password'))} %>
   <br/>
-  <%= ds_paragraph { ds_link(url: accounts_registration_account_for_path, name: t('.register_if_dont_have_account'))} %>
+  <%= ds_paragraph { ds_link(url: accounts_registration_taxes_path, name: t('.register_if_dont_have_account'))} %>
   <%= ds_paragraph do %>
     <%= t('.activate_account_sentence', link: ds_link(url: activate_account_account_path, name: t('.activate_account_link'))).html_safe %>
   <% end %>

@@ -7,9 +7,11 @@
     <%= u.ds_password_field(method: :new_password, autocomplete: "new-password") %>
     <%= u.ds_password_field(method: :new_password_confirmation, autocomplete: "new-password") %>
   <% end %>
-  <%= f.ds_checkbox(method: :terms_and_conditions, 
-        interpolations: {link: ds_link(url: website_text_path('REGTSANDCS', clear_stack: true),  name: t('activemodel.labels.account.terms_and_conditions_link'), target: '_blank') }) %>
+  <%= ds_link(url: website_text_path('REGTSANDCS', clear_stack: true),  
+              name: t('.terms_and_conditions_link'),  target: '_blank')%>
+  <%= f.ds_checkbox(method: :terms_and_conditions) %>
+  <%= ds_link(url: website_text_path('EMAILAGREE', clear_stack: true), 
+              name: t('.email_data_link'), target: '_blank') %>
   <%= f.ds_radio_group(method: :email_data_ind, options_list: @account.list_ref_data(:email_data_ind),
-        alignment: :horizontal, 
-        interpolations: {link: ds_link(url: website_text_path('EMAILAGREE', clear_stack: true), name: t('activemodel.labels.account.email_data_ind_link'), target: '_blank') })%>
+                       alignment: :horizontal)%>
 <% end %>

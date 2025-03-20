@@ -31,6 +31,8 @@ class ApplicationController < ActionController::Base
   def account_service
     return 'LBTT' if account_has_service?(:lbtt)
 
+    return 'SAT' if account_has_service?(:sat)
+
     'SLFT' if account_has_service?(:slft)
   end
 
@@ -66,7 +68,8 @@ class ApplicationController < ActionController::Base
   end
 
   # Forces redirects if the user needs to change the password or confirm the terms and conditions
-  def force_redirects
+  # or user has access to portal objects (enrolments)
+  def force_redirects # rubocop:disable Metrics/AbcSize
     if current_user.check_password_change_required?
       Rails.logger.debug('User needs to change password')
 
@@ -74,6 +77,20 @@ class ApplicationController < ActionController::Base
     elsif current_user.check_tcs_required?
       Rails.logger.debug('User needs to update T&C')
       redirect_to user_update_tcs_path unless %w[update_tcs process_update_tcs].include?(action_name)
+    elsif current_user.check_object_needed? && current_user.portal_object_index.nil?
+      redirect_enrolment
+    end
+  end
+
+  # redirect to enrolment selection to select the portal object if there are multiple portal objects
+  # else select the current portal object index
+  def redirect_enrolment
+    references = current_user.portal_objects_access
+    if references.size == 1
+      current_user.portal_object_index = 0
+      request.env['warden'].set_user(current_user)
+    elsif references.size > 1
+      redirect_to user_select_enrolment_path unless %w[select_enrolment process_enrolment].include?(action_name)
     end
   end
 

@@ -1,0 +1,7 @@
+<% content_for(:navigation_link, request.path.chomp('/new')) %>
+<% content_for(:page_title, t('.title', site: @taxable_aggregate.site_name)) %>
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_form_with(model: @taxable_aggregate, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_select(method: :aggregate_type, select_options: @taxable_aggregate.aggregate_types_list) %>
+  <%= f.ds_select(method: :comm_exploitation_type, select_options: @taxable_aggregate.list_ref_data(:comm_exploitation_type)) %>
+<% end %>

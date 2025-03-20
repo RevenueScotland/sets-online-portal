@@ -17,16 +17,16 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   def self.attribute_list
     %i[current_user forename surname terms_and_conditions registration_token contact_number address email_address
        email_address_confirmation taxes company account_type reg_company_contact_address_yes_no party_account_type
-       nino email_data_ind dd_instruction_available]
+       nino email_data_ind dd_instruction_available enrolment_ref tp_business_name tp_busi_postcode tp_busi_email_addr]
   end
 
   attribute_list.each { |attr| attr_accessor attr }
 
+  validates :taxes, presence: true, on: %i[create taxes]
   validates :email_data_ind, presence: true, on: %i[create email_data_ind]
   validate  :names_are_valid, on: %i[update update_basic]
   validates :email_address, presence: true, email_address: true, on: %i[create update email_address update_basic]
   validates :email_address, confirmation: true, on: %i[create update email_address update_basic]
-  validate  :one_tax_is_choosen, on: %i[create taxes]
   validate  :company_valid?, on: :update
   validate  :basic_company_details_valid?, on: :update_basic
   validates :reg_company_contact_address_yes_no, presence: true, on: :reg_company_contact_address_yes_no
@@ -34,9 +34,15 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   validates :nino, presence: true, nino: true, on: %i[nino update_basic],
                    unless: proc { |p| AccountType.registered_organisation?(p.account_type) }
   validates :contact_number, presence: true, phone_number: true, on: %i[contact_number update_basic]
+  validates :enrolment_ref, presence: true, enrolment_reference: true, on: :enrolment_ref
+
+  validates :tp_business_name, presence: true, on: :tp_business_name
+  validates :tp_busi_postcode, presence: true, on: :tp_busi_postcode
+  validates :tp_busi_email_addr, presence: true, on: :tp_busi_email_addr
   validates :terms_and_conditions, acceptance: { accept: 'Y' }, on: %i[create terms_and_conditions]
   # Custom validation context for activating account
   validates :registration_token, length: { maximum: 100 }, presence: true, on: :process_activate_account
+  validates :tp_busi_email_addr, email_address: true, if: proc { |p| p.tp_busi_email_addr.present? }
 
   # Define the ref data codes associated with the attributes to be cached in this model
   # @return [Hash] <attribute> => <ref data composite key>
@@ -151,6 +157,13 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     [forename, surname].join(' ')
   end
 
+  # returns enrolment type for registering new account
+  def enrolment_type
+    return nil if taxes != 'SAT'
+
+    'SAT registration'
+  end
+
   # element list to retrieve user account details
   def account_details_element_list(requested_by)
     { PartyRef: requested_by.party_refno, 'ins1:Requestor': requested_by.username }
@@ -172,6 +185,28 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     self.company = Company.new(company_number: response[:registration_number],
                                company_name: response[:company_name])
     company_address(company, address) unless address.nil?
+  end
+
+  # @return [Array] list of portal taxes for registration
+  def portal_services
+    services ||= list_ref_data(:taxes)
+
+    sat_service ||= ReferenceData::SystemParameter.lookup(
+      'COMMON', 'SAT', 'RSTU', safe_lookup: true
+    )['PWS_ACCT_REG_ALLOWED']&.value
+
+    services.delete_if { |srv| srv.code == 'SAT' } if sat_service == 'N'
+
+    services
+  end
+
+  # @return [Array] list of party types for registration
+  def party_types
+    party_types ||= list_ref_data(:party_account_type)
+
+    party_types.delete_if { |type| type.code == 'UKTAXREP' } unless taxes == 'SAT'
+
+    party_types
   end
 
   # Remove any spaces from the provided nino value
@@ -197,6 +232,7 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   # @param extra [Object] additional information for the translation process
   # @return [Symbol] the name of the translation attribute
   def translation_attribute(attribute, extra = nil)
+    return :"#{attribute}_#{taxes}" if %i[party_account_type].include?(attribute)
     return :ORG_nino if attribute == :nino && AccountType.other_organisation?(account_type)
     return @company.translation_attribute(attribute, extra) unless @company.nil?
 
@@ -215,6 +251,18 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   def no_services?
     # taxes is a array which contains services if allocated by back-office
     taxes.empty?
+  end
+
+  # This method returns the registration notes for the new user registration
+  def registration_notes
+    return '' if taxes != 'SAT'
+
+    acct_type = list_ref_data(:party_account_type).select { |x| x.code == party_account_type }.map(&:value).join(', ')
+    I18n.t('activemodel.attributes.account.registration_notes', enrolment_ref: enrolment_ref,
+                                                                account_type: acct_type,
+                                                                taxpayer_name: tp_business_name,
+                                                                taxpayer_postcode: tp_busi_postcode,
+                                                                taxpayer_email: tp_busi_email_addr).html_safe
   end
 
   private

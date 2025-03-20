@@ -1,9 +1,12 @@
 // Entry point for your Sass build
-@import "@scottish-government/pattern-library/src/pattern-library.scss";
+@import "@scottish-government/design-system/src/design-system.scss";
 @import "_rs_layout-rs.scss";
 @import "_rs_autocomplete.scss";
 @import "_rs_file_field.scss";
 @import "_rs_link.scss";
 @import "_rs_percent.scss";
 @import "_rs_table.scss";
-@import "_rs_readonly.scss"
+@import "_rs_readonly.scss";
+@import "_rs_screen_reader_hidden.scss";
+@import "_rs_custom.scss";
+@import "_rs_environment_banner.scss";

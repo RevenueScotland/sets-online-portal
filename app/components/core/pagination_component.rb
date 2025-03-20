@@ -95,7 +95,7 @@ module Core
       start_range = 2 if start_range < 2
       end_range = [start_range + 2, total_pages - 1].min
       # Middle three pages or last three pages
-      [*(start_range..end_range)].each do |page|
+      [*(start_range..end_range)].each do |page| # rubocop:disable Style/MapIntoArray
         page_list << create_page_list_entry(page, page_name, page == current_page, anchor)
       end
       page_list

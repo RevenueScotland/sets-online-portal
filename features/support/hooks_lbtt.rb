@@ -23,6 +23,8 @@ Before('@mock_update_lbtt_details') do
   lbtt_update_fixture = File.read("#{FIXTURES_MOCK_ROOT}lbtt/lbtt_update.xml")
   @savon.expects(:lbtt_tax_return_wsdl).with(message: {}).returns(lbtt_update_fixture)
 
+  mock_get_secure_message_reference('117', 'VALID.USER', 'RS1000202XWQY')
+
   Rails.logger.debug { "Mocking configured : #{@savon.inspect}" }
 end
 

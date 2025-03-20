@@ -1,0 +1,22 @@
+{
+    "section": [
+        {
+            "sectioncode": "about_transaction",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectionfooter": null,
+            "sectiontitle": "Return period",
+            "listitem": [
+                {
+                    "itemcode": "tare_reference",
+                    "itemformat": null,
+                    "itemlabel": "Return reference",
+                    "itemdata": "\u003c%TARE_REFERENCE%\u003e"
+                }
+            ],
+            "itemcount": 1
+        }
+    ]
+}

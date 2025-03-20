@@ -196,3 +196,110 @@ Feature: Financial transaction
         And I should receive the message "Amount to (max) must be greater than -1000000000000000000"
         And I should receive the message "Amount must be less than 1000000000000000000"
 
+    Scenario: SAT users should only see transactions for the enrolment they have access to
+        Given I have signed in "PORTAL.SAT.ONE" and password "Password1!"
+        Then I should see the "Dashboard : SAT1000000TVTV Kevin Peterson Partnership" page
+        And the table of data is displayed
+            | Return reference | Your reference | Description             | Version |
+            | RS11000000TVTV   |                | 01/07/2024 - 31/07/2024 | 1       |
+        And the table of data is displayed
+            | Return reference | Your reference | Submitted date | Description             | Version | Balance | Status        |
+            | RS10000001RPTS   |                | 25/06/2024     | 01/07/2024 - 31/07/2024 | 1       | £150.00 | Filed (Debit) |
+        And I click on the "Find transactions" link
+        Then I should see the "Transactions" page
+        And the checkbox "Only transactions with an outstanding balance" should be checked
+
+        When I click on the "Find" button
+        Then I should see the "Transactions" page
+        And the table of data is displayed
+            | Created date | Effective date | Effective date | Description             | Amount  | Balance |              |
+            | 10/01/2024   | 10/01/2024     | RS10000002ZPTS | Scottish Aggregates Tax | £150.00 | £150.00 | View related |
+            | 10/01/2024   | 10/01/2024     | RS10000001RPTS | Scottish Aggregates Tax | £150.00 | £150.00 | View related |
+
+        When I check the "Only transactions for my returns" checkbox
+        Then I click on the "Find" button
+        Then I should see the "Transactions" page
+        And the table of data is displayed
+            | Created date | Effective date | Effective date | Description             | Amount  | Balance |              |
+            | 10/01/2024   | 10/01/2024     | RS10000001RPTS | Scottish Aggregates Tax | £150.00 | £150.00 | View related |
+        And I should not see the text "RS10000002ZPTS"
+
+        When I click on the "View related" link
+        Then I should see the "Financial transaction" page
+        And I should see the text "Created date"
+        And I should see the text "10/01/2024"
+        And I should see the text "Effective date"
+        And I should see the text "10/01/2024"
+        And I should see the text "Reference"
+        And I should see the text "RS10000001RPTS"
+        And I should see the text "Description"
+        And I should see the text "Scottish Aggregates Tax"
+        And I should see the text "Amount"
+        And I should see the text "£150.00"
+        And I should see the text "Balance"
+        And I should see the text "£150.00"
+
+    Scenario: Checking for a SAT return submitted for one enrolment is not visible to the other enrolments linked to that user
+        Given I have signed in "PORTAL.SAT.ONE" and password "Password1!"
+        Then I should see the "Dashboard : SAT1000000TVTV Kevin Peterson Partnership" page
+        And the table of data is displayed
+            | Return reference | Your reference | Submitted date | Description             | Version | Balance | Status        |
+            | RS11000000TVTV   |                | 25/06/2024     | 01/07/2024 - 31/07/2024 | 1       | £150.00 | Filed (Debit) |
+        When I click on the "Find transactions" link
+        Then I should see the "Transactions : SAT1000000TVTV Kevin Peterson Partnership" page
+        When I enter "RS10000001RPTS" in the "Reference" field
+        And I click on the "Find" button
+        Then I should see the "Transactions : SAT1000000TVTV Kevin Peterson Partnership" page
+        And the table of data is displayed
+            | Created date | Effective date | Effective date | Description             | Amount  | Balance |              |
+            | 10/01/2024   | 10/01/2024     | RS10000001RPTS | Scottish Aggregates Tax | £150.00 | £150.00 | View related |
+
+        When I click on the "Sign out" menu item
+        Then I should see the text "Sign in"
+        When I enter "PORTAL.SAT.USERS" in the "Username" field
+        And I enter "Password1!" in the "Password" field
+        And I click on the "Sign in" button
+        Then I should see the "Select your SAT registration" page
+        And I check the "SAT1000000RPRP Marks & Spencer Group" radio button in answer to the question "Which of your SAT registrations do you wish to view?"
+        And I click on the "Continue" button
+
+        Then I should see the "Dashboard : SAT1000000RPRP Marks & Spencer Group" page
+        When I click on the "Find transactions" link
+        Then I should see the "Transactions : SAT1000000RPRP Marks & Spencer Group" page
+        When I enter "RS10000001RPTS" in the "Reference" field
+        And I click on the "Find" button
+        Then I should see the "Transactions : SAT1000000RPRP Marks & Spencer Group" page
+        And I should not see the text "Continue"
+
+        And I enter "RS10000006AAFC" in the "Reference" field
+        And I click on the "Find" button
+        Then I should see the "Transactions : SAT1000000RPRP Marks & Spencer Group" page
+        And the table of data is displayed
+            | Created date | Effective date | Effective date | Description             | Amount  | Balance |              |
+            | 10/04/2024   | 10/04/2024     | RS10000006AAFC | Scottish Aggregates Tax | £240.00 | £240.00 | View related |
+
+        When I uncheck the "Only transactions with an outstanding balance" checkbox
+        And I click on the "Find" button
+        Then I should see the "Transactions : SAT1000000RPRP Marks & Spencer Group" page
+        And the table of data is displayed
+            | Created date | Effective date | Effective date | Description             | Amount  | Balance |              |
+            | 10/04/2024   | 10/04/2024     | RS10000006AAFC | Scottish Aggregates Tax | £240.00 | £240.00 | View related |
+
+        When I click on the "Sign out" menu item
+        Then I should see the text "Sign in"
+        When I enter "PORTAL.SAT.USERS" in the "Username" field
+        And I enter "Password1!" in the "Password" field
+        And I click on the "Sign in" button
+        Then I should see the "Select your SAT registration" page
+        And I check the "SAT1000000VVVV Black Sands Group" radio button in answer to the question "Which of your SAT registrations do you wish to view?"
+        And I click on the "Continue" button
+
+        Then I should see the "Dashboard : SAT1000000VVVV Black Sands Group" page
+        When I click on the "Find transactions" link
+        Then I should see the "Transactions : SAT1000000VVVV Black Sands Group" page
+        When I enter "RS10000006AAFC" in the "Reference" field
+        And I click on the "Find" button
+        Then I should see the "Transactions : SAT1000000VVVV Black Sands Group" page
+        And the table of data is displayed
+            | Created date | Effective date | Effective date | Description | Amount | Balance |
+        And I should not see the text "Continue"

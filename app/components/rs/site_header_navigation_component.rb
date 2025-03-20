@@ -30,11 +30,22 @@ module RS
 
     private
 
+    # Show cancel actions only for the given paths in the application
+    # TODO : make the following more configurable/ generic
+    def show_cancel_action_only?(path)
+      messages_wizard_pages = ['dashboard/messages/upload-documents', 'dashboard/messages/send-message',
+                               'dashboard/messages/new']
+      (path.include?('returns/') && !path.ends_with?('/save_draft') &&
+         !path.ends_with?('/declaration_submitted')) || messages_wizard_pages.any? { |page| path.include? page }
+    end
+
     # Create the menu for an authenticated user
     def create_authenticated_menu_items
-      if request.path.include?('returns/') && !request.path.ends_with?('/save_draft') &&
-         !request.path.ends_with?('/declaration_submitted')
+      path = request.path
+      if show_cancel_action_only?(path)
         create_return_authenticated_menu_items
+      elsif path.include?('/select_enrolment') || path.include?('/process_enrolment')
+        create_select_enrolment_menu_items
       else
         create_standard_authenticated_menu_items
       end
@@ -54,6 +65,11 @@ module RS
     # Create the menu for an authenticated user (returns)
     def create_return_authenticated_menu_items
       cancel_item
+    end
+
+    # Create the menu for select enrolment page
+    def create_select_enrolment_menu_items
+      logout_item
     end
 
     # Create the menu for an unauthenticated user
@@ -87,7 +103,7 @@ module RS
 
     # Create the return menu items (non, one or two)
     # @return [Array] menu items
-    def create_return_items
+    def create_return_items # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
       menu_items = []
       if helpers.account_has_service?(:lbtt) && helpers.can?(RS::AuthorisationHelper::LBTT_SUMMARY)
         menu_items += create_lbtt_return_item
@@ -95,6 +111,10 @@ module RS
       if helpers.account_has_service?(:slft) && helpers.can?(RS::AuthorisationHelper::SLFT_SUMMARY)
         menu_items += create_slft_return_item
       end
+      if helpers.account_has_service?(:sat) && helpers.can?(RS::AuthorisationHelper::SAT_SUMMARY)
+        menu_items += create_sat_return_item
+      end
+
       menu_items
     end
 
@@ -110,11 +130,17 @@ module RS
          current?: request.path.include?('returns/slft') }]
     end
 
+    # Create an SAT return menu item
+    def create_sat_return_item
+      [{ name: t('.sat_return'), link: returns_sat_return_period_path(new: true),
+         current?: request.path.include?('returns/sat') }]
+    end
+
     # Create a secure message menu item
     def create_message_item
       return [] unless helpers.can?(RS::AuthorisationHelper::CREATE_MESSAGE)
 
-      [{ name: t('.new_message'), link: new_dashboard_message_path,
+      [{ name: t('.new_message'), link: new_dashboard_message_path(step1: true),
          current?: current_page?(new_dashboard_message_path) }]
     end
 

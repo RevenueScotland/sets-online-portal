@@ -60,11 +60,6 @@ module AccountValidation
     current_user.valid?(:save) && valid?(:create) && address_valid?(:save)
   end
 
-  # Validation for taxes, user must have selected only one non-blank service
-  def one_tax_is_choosen
-    errors.add(:taxes, :one_must_be_chosen) if taxes.compact_blank.size != 1
-  end
-
   # Validation for names, if it's not a company
   def names_are_valid
     return nil unless AccountType.individual?(account_type)

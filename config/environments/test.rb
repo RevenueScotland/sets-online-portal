@@ -67,15 +67,10 @@ Rails.application.configure do
   # rather than the RoR default.  Off on dev so we see the red stacktrace page.
   config.x.error_handler.rescue_standard_error = true
 
-  # override the refresh so it doesn't run during the tests otherwise
-  # it can break the savon mocking expectations
-  config.x.scheduled_jobs.refresh_ref_data_every = 180.minutes
-  config.x.scheduled_jobs.refresh_sys_params_every = 180.minutes
-  config.x.scheduled_jobs.refresh_pws_text_every = 180.minutes
-  config.x.scheduled_jobs.refresh_tax_relief_type_every = 180.minutes
-  config.x.scheduled_jobs.refresh_system_notice_every = 180.minutes
-  config.x.authorisation.cache_expiry = 180.minutes
-
   # Prevent jobs running during unit tests
-  config.x.scheduled_jobs.job_offset = (ENV.key?('UNIT_TEST') ? 0.seconds : 2.seconds)
+  config.x.scheduled_jobs.job_offset = 0.seconds
+
+  # Stop the authorisation cache refreshing during the test
+  # It doesn't follow the job refresh pattern
+  config.x.authorisation.cache_expiry = 180.minutes
 end

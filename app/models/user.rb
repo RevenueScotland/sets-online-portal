@@ -30,7 +30,8 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     %i[party_refno user_roles work_place_refno forename surname email_address phone_number preferred_language
        email_address_confirmation old_password new_password new_password_confirmation password password_change_required
        password_expiry_date user_is_authenticated user_is_registered user_locked user_is_current username new_username
-       token user_is2_fa token_valid2_fa user_is_signed_ta_cs ]
+       token user_is2_fa token_valid2_fa user_is_signed_ta_cs portal_objects_access portal_object_index
+       portal_object_display_name portal_object_display_reference user_is_approved]
   end
 
   # Fields that can be set on a user
@@ -75,6 +76,15 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     call_ok?(:maintain_user, update_password_request)
   end
 
+  # Validation for portal object access
+  def confirm_portal_object(user_params)
+    assign_attributes(user_params)
+
+    return false unless valid?(:select_portal_object)
+
+    true
+  end
+
   # Update the back office that the user has read the T&Cs
   def confirm_tcs(update_tcs_params)
     assign_attributes(update_tcs_params)
@@ -99,7 +109,8 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   # sets the attributes that will be serialised in the session
   def attributes
     { 'username' => nil, 'work_place_refno' => nil, 'party_refno' => nil, 'user_roles' => nil,
-      'password_change_required' => nil, 'password_expiry_date' => nil, 'user_is_signed_ta_cs' => nil }
+      'portal_objects_access' => nil, 'password_change_required' => nil, 'password_expiry_date' => nil,
+      'user_is_signed_ta_cs' => nil, 'portal_object_index' => nil }
   end
 
   # Returns the paginated users list linked to the current username, optionally restricted by a UserFilter.
@@ -114,6 +125,54 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     users = user_values.select { |u| filter.include?(u) } unless filter.nil?
     users_filtered, pagination_collection = Pagination.paginate_record(users, page, 10)
     [users_filtered, pagination_collection]
+  end
+
+  # list of portal objects if user have access
+  def list_portal_objects
+    return @enrolments if @enrolments
+
+    @enrolments = []
+
+    portal_objects_access.each_with_index do |obj, i|
+      @enrolments.push(ReferenceData::ReferenceValue.new(code: i,
+                                                         value: "#{obj[:display_reference]} #{obj[:display_name]}"))
+    end
+
+    @enrolments
+  end
+
+  # returns the type of selected portal object
+  def portal_object_type
+    return if @portal_objects_access.empty?
+
+    @portal_object_type ||= @portal_objects_access[@portal_object_index][:object_type]
+  end
+
+  # returns the reference number of selected portal object
+  def portal_object_reference
+    return if @portal_objects_access.empty?
+
+    @portal_object_reference ||= @portal_objects_access[@portal_object_index][:object_reference]
+  end
+
+  # returns the enrolment reference on selected portal object
+  def portal_object_display_reference
+    return if @portal_objects_access.empty?
+
+    @portal_object_display_reference ||= @portal_objects_access[@portal_object_index][:display_reference]
+  end
+
+  # returns the name to be displayed for selected portal object
+  def portal_object_display_name
+    @portal_object_display_name ||= @portal_objects_access[@portal_object_index][:display_name]
+  end
+
+  # returns the selected portal object (enrolment) reference and name
+  def portal_account_name
+    return if @portal_objects_access.empty?
+
+    I18n.t('account_name', scope: [i18n_scope, :attributes, model_name.i18n_key],
+                           reference: portal_object_display_reference, name: portal_object_display_name)
   end
 
   # what is the account type

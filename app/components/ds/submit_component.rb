@@ -37,7 +37,7 @@ module DS
 
     # Clear the autofocus if errors
     def before_render
-      super()
+      super
       @autofocus = false if content_for?(:error_summary)
     end
   end

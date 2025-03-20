@@ -1,0 +1,9 @@
+<% content_for(:page_title, t('.title', site: @credit_claim.site_name)) %>
+<% content_for(:navigation_link, request.path.chomp('/new')) %>
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_form_with(model: @credit_claim, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_select(method: :aggregate_type, select_options: @credit_claim.aggregate_types_list) %>
+  <%= f.ds_select(method: :tax_credit_type, select_options: @credit_claim.list_ref_data(:tax_credit_type)) %>
+  <%= f.ds_radio_group(method: :tax_period_ind, options_list: @credit_claim.list_ref_data(:tax_period_ind),
+                       alignment: :horizontal)%>
+<% end %>

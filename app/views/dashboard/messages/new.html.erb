@@ -1,13 +1,34 @@
-<% content_for(:page_title, t('.title')) %>
-<%= ds_form_with(model: @message, url: dashboard_messages_path, file_upload: true, 
-                 button_action: :submit, button_label: t('.send')) do |f|%>
-  <%= f.ds_hidden_field(:original_smsg_refno) %>
-  <%= f.ds_select(method: :subject_code, select_options: options_for_select(@message.subject_description_list(current_user).collect { |v| [v.value, v.full_key_code] }, @message.subject_code)) %>
+<% content_for(:page_title, @reply_thread ? t('.reply_message') : t('.title')) %>
+<% content_for(:navigation_link, request.path.chomp("?step1=true")) %>
+<% content_for(:back_link_data_action, "cancel-warning#displayWarning") %>
+<% content_for(:cancel_warning_custom_message, t("layouts.application.cancel_message_wizard")) %>
+<%= ds_form_with(model: @message, url: dashboard_messages_path, file_upload: true) do |f|%>
+  <%= f.ds_hidden_field(:original_smsg_refno) %>  
+  <% if @reply_thread %>
+    <div class="ds_question">
+      <label class="ds_label" for="dashboard_message_subject_code">
+        <%= t("activemodel.attributes.dashboard/message.subject_code") %>
+      </label>
+      <%= f.ds_hidden_field(:subject_code) %>
+      <%= f.ds_hidden_field(:subject_desc) %>
+      <div>
+        <%= @message.subject_description %>
+      </div>
+    </div>
+  <% else %>
+    <%= f.ds_select(method: :subject_code, select_options: options_for_select(@message.usr_subject_description_list(current_user).collect { |v| [v.value, v.full_key_code] }, @message.subject_code)) %>
+  <% end %>
   <%= f.ds_text_field(method: :reference) %>
+  <%= f.ds_text_field(method: :agent_reference) if account_has_service?(:lbtt) %>
   <%= f.ds_text_field(method: :title, width: nil) %>
-  <%= f.ds_text_area(method: :body, width: nil, rows: 5) %>
+  <%= f.ds_text_area(method: :body, width: nil, rows: 5) %>  
+
   <% if can? RS::AuthorisationHelper::CREATE_ATTACHMENT %>
-    <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, optional: true,
-                       supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb) %>
+    <div class="grid-container">
+      <div class="ds_question ">
+        <label class="ds_label"><%= t(".upload_supporting_files") %></label>
+        <p class="ds_hint-text"> <%= t(".upload_files_hint") %> </p>
+      </div>
+    </div>
   <% end %>
 <% end %>

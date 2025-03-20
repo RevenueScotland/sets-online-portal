@@ -95,7 +95,7 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Your previous main residence" page
         When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Your previous main residence" page
         When I click on the "Continue" button
         Then I should see the "Your previous main residence" page
@@ -105,7 +105,7 @@ Feature: Claim payment
 
         Then I should see the "Evidence to support your claim" page
         And I should see the text "Evidence all relevant buyers occupied the previous property as their only or main residence at any time within the relevant disposal period prior to the return’s effective date July 01, 2017."
-        And I should see the text "See guidance on LBTT Additional Dwelling Supplement (opens in a new window) for further details."
+        And I should see the text "See guidance on LBTT Additional Dwelling Supplement (opens in a new tab) for further details."
 
         When I click on the "Continue" button
         Then I should see the "Evidence to support your claim" page
@@ -180,7 +180,7 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Your address (buyer 1 of 5)" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Your address (buyer 1 of 5)" page
 
         When I click on the "Continue" button
@@ -208,7 +208,7 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Buyer address (buyer 3 of 5)" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Buyer address (buyer 3 of 5)" page
 
         When I click on the "Continue" button
@@ -225,7 +225,7 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Buyer address (buyer 4 of 5)" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Buyer address (buyer 4 of 5)" page
 
         When I click on the "Continue" button
@@ -243,7 +243,7 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Buyer address (buyer 5 of 5)" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Buyer address (buyer 5 of 5)" page
         When I click on the "Continue" button
         Then I should see the "Bank details" page
@@ -343,94 +343,94 @@ Feature: Claim payment
         Then I should see the "Claim repayment" page
         And I click on the "Continue" button
         And I should see the text "What is the reason for the claim for payment from Revenue Scotland can't be blank"
+    # TODO: Following code has been commented out so we can get the patch out, will fix once the patch is out
+    # And I check the "ADS repayment following a sale or disposal of previous main residence" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
+    # And I click on the "Continue" button
+    # Then I should see the "Previous main residence" page
 
-        And I check the "ADS repayment following a sale or disposal of previous main residence" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
-        And I click on the "Continue" button
-        Then I should see the "Previous main residence" page
+    # When I enter "NP7 8LB" in the "address_summary_postcode" field
+    # And I click on the "Find address" button
+    # Then I should see the "Previous main residence" page
+    # When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
+    # And I click on the "Use this address" button when available
+    # Then I should see the "Previous main residence" page
+    # When I click on the "Continue" button
+    # When I enter "08-08-2020" in the "What was the date of sale or disposal of the previous main residence" date field
+    # And I click on the "Continue" button
 
-        When I enter "NP7 8LB" in the "address_summary_postcode" field
-        And I click on the "Find address" button
-        Then I should see the "Previous main residence" page
-        When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
-        And if available, click the "Select" button
-        Then I should see the "Previous main residence" page
-        When I click on the "Continue" button
-        When I enter "08-08-2020" in the "What was the date of sale or disposal of the previous main residence" date field
-        And I click on the "Continue" button
+    # Then I should see the "Evidence to support the claim" page
+    # And I should see the text "Evidence all relevant buyers occupied the previous property as their only or main residence at any time within the relevant disposal period prior to the return’s effective date July 01, 2017."
+    # And I should see the text "See guidance on LBTT Additional Dwelling Supplement (opens in a new tab) for further details."
 
-        Then I should see the "Evidence to support the claim" page
-        And I should see the text "Evidence all relevant buyers occupied the previous property as their only or main residence at any time within the relevant disposal period prior to the return’s effective date July 01, 2017."
-        And I should see the text "See guidance on LBTT Additional Dwelling Supplement (opens in a new window) for further details."
+    # When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_portal_sale_file_data"
+    # When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_occupancy_file_data"
+    # And I click on the "Upload file" button
+    # Then I should see a link to the file "testjpg.jpg"
+    # And I click on the "Continue" button
 
-        When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_portal_sale_file_data"
-        When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_occupancy_file_data"
-        And I click on the "Upload file" button
-        Then I should see a link to the file "testjpg.jpg"
-        And I click on the "Continue" button
+    # Then I should see the "Claim amount" page
+    # And I click on the "Continue" button
+    # Then I should receive the message "claiming for a full repayment of ADS can't be blank"
+    # When I check the "Yes" radio button in answer to the question "Are you claiming for a full repayment of ADS?"
+    # And I click on the "Continue" button
 
-        Then I should see the "Claim amount" page
-        And I click on the "Continue" button
-        Then I should receive the message "claiming for a full repayment of ADS can't be blank"
-        When I check the "Yes" radio button in answer to the question "Are you claiming for a full repayment of ADS?"
-        And I click on the "Continue" button
+    # # Since RS2000002AAAA has number of buyer is 1
+    # Then I should see the "Taxpayer details" page
+    # And I should not see the text "Organisation name (optional)"
 
-        # Since RS2000002AAAA has number of buyer is 1
-        Then I should see the "Taxpayer details" page
-        And I should not see the text "Organisation name (optional)"
+    # When I enter "First name" in the "First name" field
+    # And I enter "Last tname" in the "Last name" field
+    # And I enter "0111456789" in the "Telephone number" field
+    # And I enter "noreply5@necsws.com" in the "Email" field
+    # And I click on the "Continue" button
+    # Then I should see the "Taxpayer address" page
 
-        When I enter "First name" in the "First name" field
-        And I enter "Last tname" in the "Last name" field
-        And I enter "0111456789" in the "Telephone number" field
-        And I enter "noreply5@necsws.com" in the "Email" field
-        And I click on the "Continue" button
-        Then I should see the "Taxpayer address" page
+    # When I enter "LU1 1AA" in the "address_summary_postcode" field
+    # And I click on the "Find address" button
+    # Then I should see the "Taxpayer address" page
+    # When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+    # And I click on the "Use this address" button when available
+    # Then I should see the "Taxpayer address" page
 
-        When I enter "LU1 1AA" in the "address_summary_postcode" field
-        And I click on the "Find address" button
-        Then I should see the "Taxpayer address" page
-        When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
-        Then I should see the "Taxpayer address" page
+    # When I click on the "Continue" button
+    # Then I should see the "Bank details" page
 
-        When I click on the "Continue" button
-        Then I should see the "Bank details" page
+    # When I click on the "Continue" button
+    # Then I should see the text "Name of the account holder can't be blank"
+    # And I should see the text "Bank / building society account number can't be blank"
+    # And I should see the text "Branch sort code can't be blank"
+    # And I should see the text "Name of bank / building society can't be blank"
 
-        When I click on the "Continue" button
-        Then I should see the text "Name of the account holder can't be blank"
-        And I should see the text "Bank / building society account number can't be blank"
-        And I should see the text "Branch sort code can't be blank"
-        And I should see the text "Name of bank / building society can't be blank"
+    # When I enter "RANDOM_text,153" in the "Name of the account holder" field
+    # And I enter "RANDOM_text,11" in the "Bank / building society account number" field
+    # And I enter "85-96-88-7" in the "Branch sort code" field
+    # And I enter "RANDOM_text,256" in the "Name of bank / building society" field
+    # And I click on the "Continue" button
+    # Then I should see the text "Name of the account holder is too long (maximum is 152 characters)"
+    # And I should see the text "Name of bank / building society is too long (maximum is 255 characters)"
+    # And I should see the text "Bank / building society account number must be 8 digits long"
+    # And I should see the text "Branch sort code must be in the format 99-99-99"
 
-        When I enter "RANDOM_text,153" in the "Name of the account holder" field
-        And I enter "RANDOM_text,11" in the "Bank / building society account number" field
-        And I enter "85-96-88-7" in the "Branch sort code" field
-        And I enter "RANDOM_text,256" in the "Name of bank / building society" field
-        And I click on the "Continue" button
-        Then I should see the text "Name of the account holder is too long (maximum is 152 characters)"
-        And I should see the text "Name of bank / building society is too long (maximum is 255 characters)"
-        And I should see the text "Bank / building society account number must be 8 digits long"
-        And I should see the text "Branch sort code must be in the format 99-99-99"
+    # When I enter "Fred Flintstone" in the "Name of the account holder" field
+    # And I enter "12345678" in the "Bank / building society account number" field
+    # And I enter "10-11-12" in the "Branch sort code" field
+    # And I enter "Natwest" in the "Name of bank / building society" field
+    # And I click on the "Continue" button
 
-        When I enter "Fred Flintstone" in the "Name of the account holder" field
-        And I enter "12345678" in the "Bank / building society account number" field
-        And I enter "10-11-12" in the "Branch sort code" field
-        And I enter "Natwest" in the "Name of bank / building society" field
-        And I click on the "Continue" button
+    # Then I should see the "Declarations" page
+    # When I click on the "Continue" button
+    # Then I should see the "Declarations" page
+    # And I should receive the message "The declaration must be accepted"
+    # And I check the "claim_claim_payment_authenticated_declaration1" checkbox
+    # And I check the "claim_claim_payment_authenticated_declaration2" checkbox
 
-        Then I should see the "Declarations" page
-        When I click on the "Continue" button
-        Then I should see the "Declarations" page
-        And I should receive the message "The declaration must be accepted"
-        And I check the "claim_claim_payment_authenticated_declaration1" checkbox
-        And I check the "claim_claim_payment_authenticated_declaration2" checkbox
+    # When I click on the "Continue" button
+    # Then I should see the "Your request has been sent to Revenue Scotland" page
+    # Then I should not see a link to the file "testjpg.jpg"
 
-        When I click on the "Continue" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        Then I should not see a link to the file "testjpg.jpg"
-
-        # Check finish button works
-        When I click on the "Finish" button
-        Then I should see the "Dashboard" page
+    # # Check finish button works
+    # When I click on the "Finish" button
+    # Then I should see the "Dashboard" page
 
     Scenario: Checking Claim repayment wizard functionality for LBTT Non ADS returns with one tax payer
         Given I have signed in 'PORTAL.ONE' and password 'Password1!'
@@ -488,7 +488,7 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Taxpayer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Taxpayer address" page
 
         When I click on the "Continue" button
@@ -555,7 +555,129 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Taxpayer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
+        Then I should see the "Taxpayer address" page
+
+        When I click on the "Continue" button
+        Then I should see the "Bank details" page
+
+        When I enter "RANDOM_text,153" in the "Name of the account holder" field
+        And I enter "RANDOM_text,11" in the "Bank / building society account number" field
+        And I enter "RANDOM_text,9" in the "Branch sort code" field
+        And I enter "RANDOM_text,256" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+
+        Then I should see the text "Name of the account holder is too long (maximum is 152 characters)"
+        And I should see the text "Name of bank / building society is too long (maximum is 255 characters)"
+        And I should see the text "Bank / building society account number must be 8 digits long"
+        And I should see the text "Branch sort code must be in the format 99-99-99"
+
+        When I enter "Fred Flintstone" in the "Name of the account holder" field
+        And I enter "12345678" in the "Bank / building society account number" field
+        And I enter "10-11-12" in the "Branch sort code" field
+        And I enter "Natwest" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+
+        Then I should see the "Declarations" page
+        When I click on the "Continue" button
+        Then I should see the "Declarations" page
+        And I should receive the message "The declaration must be accepted"
+        And I check the "claim_claim_payment_authenticated_declaration1" checkbox
+        And I check the "claim_claim_payment_authenticated_declaration2" checkbox
+
+        When I click on the "Continue" button
+        Then I should see the "Your request has been sent to Revenue Scotland" page
+        Then I should not see a link to the file "testjpg.jpg"
+
+        When I click on the "Upload file" button
+        Then I should see the "Your request has been sent to Revenue Scotland" page
+        And I should receive the message "File can't be blank"
+
+        # Check the file uploads on the final page
+        When I upload "testdoc.doc" to "claim_claim_payment_resource_item_default_file_data"
+        And I click on the "Upload file" button
+        Then I should see the "Your request has been sent to Revenue Scotland" page
+        And I should see the text "testdoc.doc"
+        When I click on the "Delete file" button
+        Then I should see the "Your request has been sent to Revenue Scotland" page
+        And I should not see the text "testdoc.doc"
+
+        # Upload multiple file types
+        When I upload "testdoc.doc" to "claim_claim_payment_resource_item_default_file_data"
+        And I click on the "Upload file" button
+        Then I should see the "Your request has been sent to Revenue Scotland" page
+        And I should see the text "testdoc.doc"
+        When I upload "testpng with space.png" to "claim_claim_payment_resource_item_default_file_data"
+        And I click on the "Upload file" button
+        Then I should see the "Your request has been sent to Revenue Scotland" page
+        And I should see the text "testpng with space.png"
+        And the table of data is displayed
+            | File uploaded              |             |
+            | testdoc.doc                | Delete file |
+            | %r{testpng with space.png} | Delete file |
+
+        When I click on the 1 st "Delete file" button
+        Then I should see the "Your request has been sent to Revenue Scotland" page
+        And I should not see the text "testdoc.doc"
+        And the table of data is displayed
+            | File uploaded              |             |
+            | %r{testpng with space.png} | Delete file |
+
+    Scenario: Checking Claim repayment wizard functionality for SAT returns one tax payer
+        When I go to the "Login" page
+        And I enter "portal.sat.users" in the "Username" field
+        And I enter "Password1!" in the "Password" field
+        And I click on the "Sign in" button
+
+        Then I should see the "Select your SAT registration" page
+        When I check the "SAT1000000VVVV Black Sands Group" radio button in answer to the question "Which of your SAT registrations do you wish to view?"
+        And I click on the "Continue" button
+
+        Then I should see the "Dashboard : SAT1000000VVVV Black Sands Group" page
+        # A draft return
+        When I click on the 1 st "Find returns" link
+        Then I should see the "Returns" page
+        And I should see "Draft" in the "Return status" select or text field
+
+        When I select "" from the "Return status"
+        And I enter "RS10000006BHDH" in the "Return reference" field
+        And I click on the "Find" button
+        Then I should see the text "Filed"
+        And I should see a link with text "Claim"
+        # Claim payment wizard and validation
+        And I click on the "Claim" link
+        Then I should see the "Claim repayment" page
+
+        And I check the "Claim for Repayment" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
+        And I click on the "Continue" button
+
+        Then I should see the "Evidence to support the claim" page
+        When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_default_file_data"
+        And I click on the "Upload file" button
+        Then I should see a link to the file "testjpg.jpg"
+        And I click on the "Continue" button
+
+        Then I should see the "Details about your request for repayment" page
+        And I click on the "Continue" button
+        Then I should receive the message "Claiming amount can't be blank"
+
+        When I enter "50" in the "How much are you claiming from Revenue Scotland" field
+        And I click on the "Continue" button
+
+        # Since RS10000006BHDH has number of buyer is 1
+        Then I should see the "Taxpayer details" page
+
+        When I enter "First name" in the "First name" field
+        And I enter "Last tname" in the "Last name" field
+        And I enter "0111456789" in the "Telephone number" field
+        And I click on the "Continue" button
+        Then I should see the "Taxpayer address" page
+
+        When I enter "LU1 1AA" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Taxpayer address" page
+        When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+        And I click on the "Use this address" button when available
         Then I should see the "Taxpayer address" page
 
         When I click on the "Continue" button

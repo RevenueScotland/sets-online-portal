@@ -23,5 +23,10 @@ module DS
       @value_method = value_method
       @data_action = (conditional_visibility ? { 'data-action': 'visibility#toggleRegion' } : {})
     end
+
+    # Gets the code of the first option of a radio list
+    def first_options_code
+      @options_list[0].send(@code_method).to_s.downcase
+    end
   end
 end

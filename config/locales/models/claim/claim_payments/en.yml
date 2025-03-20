@@ -44,6 +44,8 @@ en:
         # eligibility checker
         eligibility_checkers: "Please confirm the following criteria are met in order to proceed with the application"
         eligibility_checkers_after: "Please confirm the following criteria are met in order to proceed with the application"
+        authenticated_declaration1_SAT: "I, the taxpayer, declare that this repayment or claim request is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed, or I, the representative of the taxpayer certify that the taxpayer has declared that this claim is to the best of the taxpayer's knowledge correct and complete, and confirm they are eligible for the repayment claimed"
+        authenticated_declaration2_SAT: "I, the taxpayer or I, the representative of the taxpayer, declare that Revenue Scotland can contact me regarding this repayment or claim request"
 
     hints:
       claim/claim_payment:

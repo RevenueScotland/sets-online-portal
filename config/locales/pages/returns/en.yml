@@ -1,5 +1,155 @@
 en:
   returns:
+    sat:
+      repayment_request: 
+        title: "Repayment details"
+      repayment_request_bank_details:
+        title: "Enter bank details"
+      bad_debt: 
+        title: "Bad debt credit claim"
+      exempt_aggregate:
+        title: "Exempt aggregate"
+      credit_claim:
+        title: "Tax credit"
+      amendment_reason:
+        title: "Amendment reason"
+      sites:
+        title: "%{site_party_name}"
+        site_party_name: "%{site_party_name}"
+      enrolment_details:
+        title: "Enrolment details"
+      return_period:
+          title: "What accounting period is this return for?"
+          no_periods: "There are no outstanding returns due or relevant return periods"
+      return_type:
+        title: "About the return"
+      taxable_location: 
+        title: "Registered sites"
+      taxable_aggregates: 
+        title: "Gross taxable aggregate"  
+      tax_liability:
+        title: "Tax liability"  
+      summary:
+          title: "Return Summary"
+          subtitle: "Your return summary"
+          transaction_subtitle: "Return period"
+          description: "The SAT return is split into sections which can be completed in any order"
+          save_changes_warning: "Before leaving the return, save your changes by clicking on the ‘save draft’ button. Any unsaved changes will be lost."
+          return_period: "Return period"
+          registered_site_list: "Registered site list"
+          save_draft: "Save draft"
+          calculate: "Calculate"
+          no_sites_description:  "No registered sites for this period, please contact Revenue Scotland"
+          add_sat_details: "Add SAT details"
+          edit_sat_details: "Edit SAT details"
+          to: "to"        
+          total: "Total"
+          missing_sat_details: "Sat details section for a site(s)"
+      repayment_declaration:
+        dec_title: "Declaration"
+        warning: "If you give false information, you may face penalties and/or prosecution"
+      declaration_calculation:
+        title: "Payment and submission"
+        warning: "If you give false information, you may face penalties and/or prosecution"
+        dd_warning: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debt"
+        sumbit: "Submit return"
+      calculated_tax_liability:
+        title: "Calculated tax liability"
+        sub_title: "If these figures are not as expected then click back and update the relevant details in the return"
+        submit: "Submit"
+      save_draft:
+        title: "Return saved"
+        information: "Your tax return has been saved so that you can return to either complete or cancel it."
+        caution: "It has not been submitted to Revenue Scotland."
+        back_to_return_summary: "Back to return summary"
+        go_to_dashboard: "Go to dashboard"
+      declaration_submitted:
+        title: "Declaration"
+        return_submitted: "Your return has been submitted"
+        ref: "Your reference number is : "
+      csv_import:
+        invalid_period_start: "Invalid Period Start"
+        invalid_period_end: "Invalid Period End"
+        invalid_company_name: "Invalid Company Name"
+        invalid_aggr_type_code: "Invalid Aggregate Type Code"
+        invalid_expl_type_code: "Invalid Exploitation Type Code"
+        invalid_alt_weigh_method: "Invalid Alternate Weighing Method"
+        invalid_exempt_type_code: "Invalid Exemption Reason Code"
+        invalid_credit_type_code: "Invalid Tax Credit Type code"
+        invalid_credit_period: "Invalid Tax Credit Period"
+        invalid_credit_period_start: "Invalid Tax Credit Period Start"
+        invalid_credit_period_end: "Invalid Tax Credit Period End"
+        invalid_credit_rate: "Invalid Tax Credit Rate"
+        invalid_credit_tonnage: "Invalid Tax Credit Tonnage"
+        invalid_water_tonnage: "Invalid Discount Tonnage"
+        invalid_exploited_tonnage: "Invalid Exploited Tonnage"
+        invalid_exempt_tonnage: "Invalid Exempt Tonnage"
+        row_error: "Error at row %{row} : %{errors}"
+        invalid_site_name: "Error at row %{row} : Invalid Site name"
+        invalid_record_type: "Invalid Record Type"
+        ex_tonnage_value_exceeded: "Exploited Tonnage must be less than 1000000000000000000"
+        water_tonnage_value_exceeded: "Discount Tonnage must be less than 1000000000000000000"
+        exe_tonnage_value_exceeded: "Exempt Tonnage must be less than 1000000000000000000"
+        tax_tonnage_value_exceeded: "Tax Credit Tonnage must be less than 1000000000000000000"
+        water_tonnage_greater_err: "Water discount tonnage cannot be greater than exploited tonnage"
+        credit_rate_value_exceeded: "Tax Credit Rate must be less than 1000000000000000000"
+      confirm_data_import:
+        title: "Overwrite existing site data?"
+        save_data_confirm: "Return Site Data is already present. Continuing with csv load will clear and load data from csv file. Do you wish to proceed?"
+        proceed: "Proceed"
+        cancel: "Cancel"
+    sat_sites:
+      site_summary:
+        title: "SAT details summary"
+        section_title: "SAT details summary for %{site} for period %{period}"
+        add_new_taxable_aggregate: "Add taxable aggregate"
+        taxable_aggregate_title: "Gross taxable aggregate"
+        add_new_exempt_aggregate: "Add exempt aggregate"
+        exempt_aggregate_title: "Exempt aggregate"
+        add_new_credit_claims: "Add tax credit"
+        credit_claims_title: "Tax credits"
+        delete_all: "Delete all"
+        delete_all_taxable_aggregates: "Delete all taxable aggregates?"
+        delete_all_exempt_aggregates: "Delete all exempt aggregates?"
+        delete_all_credit_claims: "Delete all tax claims?"
+        edit_row: "Edit row"
+        delete_row: "Delete row"
+        delete: "Delete %{value}?"
+        hidden_text_aggregate: "for aggregate type %{aggregate}"
+        hidden_text_exempt: "for exempt type %{aggregate}"
+        save_draft: "Save draft"
+        return_summary: "Return summary"
+        return_saved: "Your return has been saved"
+        information: "You can complete or cancel it later using the reference below."
+        hidden_text_all_aggregate: "taxable aggregates"
+        hidden_text_all_exempt_aggregates: "exempt aggregates"
+        hidden_text_all_credit_claims: "tax claims"
+      aggregate_activity:
+        title: 'Aggregate Activity?'
+    sat_taxable_aggregates:
+      aggregate_details:
+        title: "Details of the taxable aggregate for %{site}"
+        subtitle: "Provide the following aggregate details"
+      aggregate_tonnage:
+        title: "Details of the taxable tonnage for %{site}"
+        subtitle: "Provide the following aggregate tonnages"
+    sat_exempt_aggregates:
+      exempt_aggregate_details:
+        title: "Details of the exempt aggregate for %{site}"
+        subtitle: "Provide the following aggregate details"
+    sat_credit_claims:
+      tax_credit_details:
+        title: "Details of the tax credit for %{site}"
+        subtitle: "Provide the following aggregate details"
+      tax_credit_tonnage:
+        title: "Details of the tax credit tonnage for %{site}"
+        subtitle: "Provide the return period & tonnage for this tax credit"
+    sat_bad_debt_credit_claims:
+      bad_debts:
+        title: 'Bad debt credit claim'
+      bad_debts_details:
+        title: 'Bad debt credit claim details'
+
     lbtt:
       summary:
         title: "Return Summary"
@@ -42,7 +192,7 @@ en:
           other: "%{attribute_name} is %{count} days in the future. This has typically already happened."
         link:
           change_the_transaction: "You can edit the transaction details if you need to"
-          non_notifiable_return_link: "notifiable lease transactions (opens in a new window)"
+          non_notifiable_return_link: "notifiable lease transactions (opens in a new tab)"
       public_landing:
         title: "To complete this return, you will need the following information:"
         info_needed_html:
@@ -271,8 +421,8 @@ en:
         NEWTENANT_title: "New tenant's contact address"
       parties_relation:
         BUYER_title: "Buyer details"
-        BUYER_buyer_seller_linked_ind: "the buyer and seller are connected (opens in a new window)"
-        TENANT_buyer_seller_linked_ind: "the tenant and landlord are connected (opens in a new window)"
+        BUYER_buyer_seller_linked_ind: "the buyer and seller are connected (opens in a new tab)"
+        TENANT_buyer_seller_linked_ind: "the tenant and landlord are connected (opens in a new tab)"
         SELLER_title: "Seller details"
         LANDLORD_title: "Landlord details"
         TENANT_title: "Tenant details"
@@ -391,6 +541,7 @@ en:
         return_saved: "Your return has been saved"
         information: "You can complete or cancel it later using the reference below."
         save_draft: "Save draft"
+        hidden_text: "for EWC code %{ewc_code}"
       waste_description:
         title: "Details of the %{waste} waste for %{site_name}"
         subtitle: "Provide the following waste details" 
@@ -432,4 +583,12 @@ en:
         claim_text: "If you have claimed for a repayment of tax, we will aim to process it within 10 working days.We will contact you if we need further information."
         amend_return_reference_text: "Your amendment to your Land and Buildings Transaction Tax return has now been submitted."
         amend_payment_method_html: "If you need to pay additional tax, you must arrange to make your payment now. Help and advice on %{link} is available."
+      sat:
+        amend_return_reference_text: "Your amendment to your Scottish Aggregates tax return %{return_reference} has now been submitted."
+        payment_due_text: "Payment is due no later than filing date, which is 30 days after the end of the relevant accounting period. If the return is submitted close to the filing date you must ensure that full payment reaches us no later than the filing date for the return.<p>If the return has been filed or amended after the 30 day period, then payment is due immediately.</p>"
+        payment_method_html: "You have stated that you are going to pay by %{payment_method}. Details on how to make payments can be found on our website."
+        submit_text: "Interest is chargeable on any outstanding tax that is not paid by the filing date. If the return is submitted late you may be liable to a penalty. If tax is paid late, interest is chargeable and you may also become liable to a penalty. Further guidance on interest and penalties is available on our website."
+        amend_submit_text: "If your amendment has resulted in a payment due to Revenue Scotland then your payment is due by the latter of either the last working day which is, or precedes, the 30th calendar day after the end of the return period or 5 working days after submission of the return."
+        amend_late_text: "If tax is paid late, interest is chargeable and you may also become liable to a penalty, depending on how late the tax is paid. Further guidance on interest and penalties is available on our website."
+        payment_method_link: "website"
         

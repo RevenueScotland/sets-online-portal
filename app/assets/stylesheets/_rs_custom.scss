@@ -1,0 +1,67 @@
+// This stylesheet is used to add custom stylings apart from the core-components
+.grid-container {
+	width: 100%;
+	float: left;
+	clear: both;
+}
+
+.md-6-div {
+	width: 60%;
+	float: left;
+}
+
+.md-4-div {
+	width: 40%;
+	float: left;
+}
+
+.md-9-div {
+	width: 90%;
+	float: left;
+}
+
+.md-1-div {
+	width: 10%;
+	float: left;
+}
+
+.md-8-div {
+	width: 80%;
+	float: left;
+}
+
+.md-2-div {
+	width: 20%;
+	float: left;
+}
+
+.md-text-right {
+	text-align: right;
+}
+
+// This addition is in response to make the upload documents table responsive & the filenames & 
+// para dont overflow through the table columns
+.table-column-responsive table tbody td {
+	overflow: auto;
+}
+
+.table-column-responsive table tbody td a,
+.table-column-responsive table tbody td p {
+	word-wrap: break-word;
+}
+
+@media only screen and (max-width: 768px) {
+
+	.md-6-div,
+	.md-4-div,
+	.md-9-div,
+	.md-1-div,
+	.md-8-div,
+	.md-2-div {
+		width: 100%;
+	}
+
+	.xs-text-left {
+		text-align: left;
+	}
+}

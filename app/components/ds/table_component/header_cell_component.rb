@@ -17,7 +17,7 @@ module DS
       # @param method [Symbol] The name of the method, used to derive the label
       # @param align [Symbol] Is the cell right aligned, default is left
       # @param interpolations [Hash] Hash of options that are passed down to @see LabellerDelegate
-      def initialize(klass: nil, method: nil, align: nil, interpolations: {})
+      def initialize(klass: nil, method: nil, align: nil, cell_as_header: false, interpolations: {})
         super()
 
         @klass = klass
@@ -25,6 +25,7 @@ module DS
         @interpolations = interpolations
         @options = { scope: 'col' }
         @options[:align] =  self.class.fetch_or_fallback(ALLOWED_ALIGNMENT, align, :left) if align
+        @cell_as_header = cell_as_header
       end
 
       # sets up the LabellerDelegate using the view_context
@@ -39,7 +40,7 @@ module DS
       # Renders the cell
       def call
         body = safe_join([(labeller ? label_text : ''), content])
-        tag.th(body, **@options)
+        @cell_as_header ? tag.th(body, **@options, class: 'rs_cell_as_header') : tag.th(body, **@options)
       end
 
       private

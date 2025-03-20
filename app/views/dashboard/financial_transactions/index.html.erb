@@ -1,5 +1,5 @@
 <% content_for(:navigation_link, :clear_stack) %>
-<% content_for(:page_title, t('.title')) %>
+<% content_for(:page_title, t('.title', name: current_user.portal_account_name)) %>
 <%= ds_form_with(model: @transaction_filter, url: dashboard_financial_transactions_path,
                   method: :get, button_action: :find, autofocus: @on_filter_find) do |f| %>
   <%= f.ds_hidden_field(:srv_code) %>

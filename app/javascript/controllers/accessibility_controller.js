@@ -4,7 +4,11 @@ import { Controller } from "@hotwired/stimulus"
 // this works round the turbo issues where the page is silently replaced
 export default class extends Controller {
     connect() {
-        var header = this.element.querySelector('h1');
+        if (document.getElementById("error-summary")) {
+            var header = this.element.querySelector('h2');
+        } else {
+            var header = document.getElementsByClassName('ds_skip-links');
+        }
         header.style = "outline:none";
         header.focus();
     }

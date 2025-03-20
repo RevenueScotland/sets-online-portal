@@ -133,10 +133,23 @@ end
 When('I click on the {string} button') do |string|
   # It seems the button is not always clicked correctly as js processing
   # has not finished, therefore wait and scroll introduced
+  wait_for_turbo(js_processing_wait, page_processing_wait)
   sleep(js_processing_wait) unless Capybara.current_driver == :rack_test
   scroll_to(find_button(string), align: :center) unless Capybara.current_driver == :rack_test
   # This finds the button again, useful if the page is still processing
   click_button(string)
+end
+
+# This button is only shown when the user is not using JS, when they are using JS it will auto move to the next screen
+When('I click on the {string} button when available') do |string|
+  if %i[selenium_firefox selenium_remote_firefox].include?(Capybara.current_driver)
+    assert true
+  else
+    sleep(js_processing_wait) unless Capybara.current_driver == :rack_test
+    scroll_to(find_button(string), align: :center) unless Capybara.current_driver == :rack_test
+    # This finds the button again, useful if the page is still processing
+    click_button(string)
+  end
 end
 
 When('I click on the {int} st/nd/rd/th {string} button') do |integer, string|
@@ -252,6 +265,24 @@ When('The field with id {string} should get focus') do |id|
   page.evaluate_script('document.activeElement.id') == id unless Capybara.current_driver == :rack_test
 end
 
+When('The item with class name of {string} should get focus') do |classname|
+  # Check the focus on element if page is using JS (same as above but uses class name in place of ID)
+  # Rack_test doesn't focus on element as it doesn't support JS
+  page.evaluate_script('document.activeElement.className') == classname unless Capybara.current_driver == :rack_test
+end
+
+When('The field with id {string} should not have focus') do |id|
+  # Check the focus is not on a element if page is using JS
+  # Rack_test doesn't focus on element as it doesn't support JS
+  page.evaluate_script('document.activeElement.id') != id unless Capybara.current_driver == :rack_test
+end
+
+When('The item with class name of {string} should not have focus') do |classname|
+  # Check the focus is not on a element if page is using JS (same as above but uses class name in place of ID)
+  # Rack_test doesn't focus on element as it doesn't support JS
+  page.evaluate_script('document.activeElement.className') != classname unless Capybara.current_driver == :rack_test
+end
+
 When('I click on the {string} menu item') do |string|
   # Digital Scotland has two nav components, so only pick the first one
   find_all(:xpath, "//nav//a[.='#{string}']")[0].click
@@ -358,6 +389,24 @@ When('I upload {string} to {string}') do |filename, field|
   page.attach_file(field, File.join(ENV.fetch('TEST_FILE_UPLOAD_PATH', nil), filename))
 end
 
+# Upload a file and click continue
+# This step is introduced to match the uploads for the new upload step in message wizard
+When('I upload {string} to {string} and continue') do |filename, field|
+  step "I upload '#{filename}' to '#{field}'"
+  step 'I click on the "Continue" button'
+end
+
+# Upload a file to the field
+# Used when testing large files, as this needs selenium to work
+When('I upload {string} to {string} and continue via the browser') do |filename, field|
+  if %i[selenium_firefox selenium_remote_firefox].include?(Capybara.current_driver)
+    step "I upload '#{filename}' to '#{field}'"
+    step 'I click on the "Continue" button'
+  else
+    assert true
+  end
+end
+
 # For a test which changes values, flip flop between two values.
 # Ie detects the current value and sets it to the other one (or the first one if no value set)
 # This means we don't have to reset values in tests, and means if a failure happens, it doesn't leave
@@ -378,7 +427,7 @@ end
 
 # Temp step to allow you to put a wait in an individual test
 When('I take a picture called {string}') do |filename|
-  page.save_screenshot(filename)
+  page.save_screenshot(filename) # rubocop:disable Lint/Debugger
 end
 
 # Step allows to store the value consist by particular control_id
@@ -736,6 +785,12 @@ end
 Then('I should see a phase banner with the text {string} and a link to {string}') do |message, url|
   assert page.find_by_id('ds_phase-banner__text').text.include?(message)
   assert page.find_by_id('ds_phase-banner').has_link?(url)
+end
+
+# check the environment banner is visible with content
+Then('I should see a environment banner with the text {string} with the colour class of {string}') do |text, colour|
+  assert page.find_by_id('rs_phase-banner__text').text.include?(text)
+  page.evaluate_script('document.activeElement.className') != colour unless Capybara.current_driver == :rack_test
 end
 
 # Replicates a enter key press

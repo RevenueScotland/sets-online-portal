@@ -419,7 +419,6 @@ module Wizard # rubocop:disable Metrics/ModuleLength
                          else
                            load_step(overrides[:sub_object_attribute])
                          end
-
     return [objects_from_setup.first, objects_from_setup.last] if objects_from_setup.is_a? Array
 
     # This is the standard scenario where we only have one object

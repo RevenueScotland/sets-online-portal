@@ -6,7 +6,7 @@
     <%= f.ds_table_form do |table| %>
       <% table.with_header(klass: Returns::Lbtt::YearlyRent) do |header| %>
         <% header.with_cell(method: :year) %>
-        <% header.with_cell(method: :rent) %>
+        <% header.with_cell do "Rent" end %>
       <% end %>
       <% @lbtt_return.yearly_rents.each_with_index do |yearly_rent, index| %>
         <% table.with_form_row(model: yearly_rent, index: index) do |row| %>
@@ -18,7 +18,7 @@
           <% end %>
           <% row.with_cell do |r| %>
             <% capture do %>
-              <%= r.ds_currency(method: :rent) %>
+              <%= r.ds_currency(method: :rent, interpolations: {year: (index + 1)}) %>
             <% end %>
           <% end %>
         <% end %>

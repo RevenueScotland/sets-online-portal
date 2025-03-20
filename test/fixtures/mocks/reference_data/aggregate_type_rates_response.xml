@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+    <GetAggregateTypeRatesResponse xmlns="http://www.necsws.com/RSTS/GetAggregateTypeRates" xmlns:flc="http://northgateps.com/FLCommonTypes" xmlns:core="http://northgate-is.com/FL/Core">
+      <core:Success>true</core:Success>
+      <AggregateTypes>
+        <AggregateType>
+          <Code>GRAVEL</Code>
+          <Description>SAT Gravel Tax Rate</Description>
+          <Rate>2.03</Rate>
+          <StartDate>01-APR-24</StartDate>
+        </AggregateType>
+        <AggregateType>
+          <Code>ROCK</Code>
+          <Description>SAT Rock Tax Rate</Description>
+          <Rate>2.03</Rate>
+          <StartDate>01-APR-24</StartDate>
+        </AggregateType>
+        <AggregateType>
+          <Code>SAND</Code>
+          <Description>SAT Sand Tax Rate</Description>
+          <Rate>2.03</Rate>
+          <StartDate>01-APR-24</StartDate>
+        </AggregateType>
+      </AggregateTypes>
+    </GetAggregateTypeRatesResponse>
+  </soap:Body>
+</soap:Envelope>

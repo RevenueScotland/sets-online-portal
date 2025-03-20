@@ -88,6 +88,7 @@ module UserLogin
       # The TaCs is held as a Y/N to display the check box on the page
       # Note that we must get the false back otherwise we assume they are signed up
       body[:user_is_signed_ta_cs] = (body[:user_is_signed_ta_cs] == false ? 'N' : 'Y')
+      body[:portal_objects_access] = convert_portal_objects_hash(body[:portal_objects_access])
       user = User.new(body)
       user.username = username # Back office doesn't pass the username back so need to add
       user.token = user.password = nil # clear any tokens or passwords
@@ -96,6 +97,18 @@ module UserLogin
       user.user_roles&.stringify_keys!
 
       user
+    end
+
+    # Extracts portal object details from the back office result to create the portal object item
+    # and assigned back to user
+    # @param body [Object] the back office result
+    def convert_portal_objects_hash(body)
+      portal_objects = []
+      ServiceClient.iterate_element(body) do |object|
+        portal_objects.push(object)
+      end
+
+      portal_objects
     end
   end
 end

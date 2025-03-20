@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<soap:Body>
+		<SATReturnResponse xmlns="http://www.necsws.com/RSTS/SATReturn" xmlns:bbc="http://northgate-is.com/FL/Core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+			<core:Success>true</core:Success>
+			<ReturnReference>RS1000500XBBG</ReturnReference>
+			<ReturnRefno>1339</ReturnRefno>
+			<Version>2</Version>
+		</SATReturnResponse>
+	</soap:Body>
+</soap:Envelope>

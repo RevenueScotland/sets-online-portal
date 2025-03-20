@@ -37,7 +37,7 @@ module.exports = {
     // copy here
     new CopyPlugin({
       patterns: [
-        { from: "node_modules/@scottish-government/pattern-library/dist/images", to: "assets/images" }
+        { from: "node_modules/@scottish-government/design-system/dist/images", to: "assets/images" }
       ]
     }),
     new MiniCssExtractPlugin()

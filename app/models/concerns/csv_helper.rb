@@ -61,7 +61,7 @@ module CsvHelper
   # @return [Array] The array of imported models
   def import_csv_data(csv_data, model, attributes)
     imported = []
-    csv_data.each do |row|
+    csv_data.each do |row| # rubocop:disable Style/MapIntoArray
       imported.push import_csv_row_for_model(model, attributes, row)
     end
     imported

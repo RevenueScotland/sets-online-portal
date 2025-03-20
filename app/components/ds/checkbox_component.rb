@@ -9,9 +9,7 @@ module DS
     # see {Core::CheckboxComponent#initialize}
     def initialize(builder:, method:, readonly: false, one_question: false, interpolations: {},
                    checked_value: 'Y', unchecked_value: 'N')
-      super(builder: builder, method: method, readonly: readonly, one_question: one_question,
-            interpolations: interpolations, checked_value: checked_value,
-            unchecked_value: unchecked_value)
+      super
     end
   end
 end

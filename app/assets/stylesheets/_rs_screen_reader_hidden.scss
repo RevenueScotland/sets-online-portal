@@ -1,0 +1,7 @@
+/*------------------------------------*\
+    Fixes screen reader hidden items
+\*------------------------------------*/
+
+.ds_back-to-top.visually-hidden {
+  visibility: hidden;
+}

@@ -283,9 +283,9 @@ Feature: Account
         And I click on the "Confirm" button
         Then I should see the "Update address" page
         And I should receive the message "Building and street is too long (maximum is 255 characters)"
-        And I should receive the message "Address line 2 is too long (maximum is 255 characters)"
-        And I should receive the message "Address line 3 is too long (maximum is 255 characters)"
-        And I should receive the message "Address line 4 is too long (maximum is 255 characters)"
+        And I should receive the message "Building and street line 2 is too long (maximum is 255 characters)"
+        And I should receive the message "Building and street line 3 is too long (maximum is 255 characters)"
+        And I should receive the message "Building and street line 4 is too long (maximum is 255 characters)"
         And I should receive the message "County is too long (maximum is 50 characters)"
         And I should receive the message "Town is too long (maximum is 100 characters)"
 

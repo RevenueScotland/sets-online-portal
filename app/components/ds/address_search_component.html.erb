@@ -23,26 +23,24 @@
         </dd>
       </dl>
     <% else %>
-      <fieldset>
-        <%= as.ds_text_field(method: :postcode, width: 10) %>
-        <%= button_tag "search", { :class => 'ds_button  ds_no-margin--top', :name => 'search' } do
-            t('.search')
-         end %>
-      </fieldset>
+      <% unless show_postcode_as_label || (@show_address_detail && !@readonly) %>
+      <%= button_tag "hidden_search", { :class => 'fully-hidden', :name => 'search' } do
+              t('.hidden_search')
+      end %>
+        <% end %>
+      <%= as.ds_text_field(method: :postcode, width: 10) %>
     <% end %>
     <% unless search_results.nil? %>
       <div class="ds_question" data-controller="select">
         <%= label_tag "search_results", t('.address_select'), class: 'ds_label' %>
-        <%# An autofocus is added here so that when the user has clicked on the "Find Address" button, 
-          which should show the select field, it would then focus on the select field. %>
-        <div class="ds_select-wrapper">
+        <div class="ds_select-wrapper" >
           <%= select_tag "search_results", options_for_select(search_results.collect { |v| [v.formatted_address, v.address_identifier] }),
-                     {class: 'ds_select', include_blank: true, autofocus: true, "data-action": "select#clickTarget" } %>
+                     {class: 'ds_select', include_blank: true, "data-action": "select#clickTarget", "aria-label":"Select an address, To expand the list, use the return key, then use the arrow keys to highlight the address, to select the address use the return key again, this will automatically redirect you to the confirm address page"} %>
           <span class="ds_select-arrow" aria-hidden="true"></span>
         </div>
         <div>
           <%= button_tag "select", { :class => 'ds_button ds_no-margin', :name => 'select', "data-select-target": "button"} do
-            t('.select')
+            t('.select_button')
          end %>
         </div>
       </div>
@@ -52,6 +50,18 @@
             t('.manual_address')
          end %>
     </p>
+    <% unless @nested%>
+      <% unless search_results.nil? %>
+        <%= button_tag "select", { :class => 'ds_button ds_button--fixed', :name => 'select'} do
+          t('.select')
+        end %>
+      <% end %>
+    <% end %>
+    <% unless show_postcode_as_label || (@show_address_detail && !@readonly) %>
+      <%= button_tag "search", { :class => 'ds_button ds_button--fixed', :name => 'search' } do
+              t('.search')
+  end %>
+    <% end %>
   <% end %>
   <%# Need to round trip the default country %>
   <%= fields_for(address) do |builder| %>

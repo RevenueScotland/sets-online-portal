@@ -173,8 +173,9 @@ Feature: LBTT Returns
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Charity" page
+        And The field with id "search_results" should not have focus
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Charity" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -219,7 +220,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Contact details" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Contact details" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -230,8 +231,8 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "Buyer details" page
-        And I should see the text "The buyer and seller are connected if they have an existing personal or business relationship. See guidance on if they are connected (opens in a new window) for further details"
-        And I should see a link with text "they are connected (opens in a new window)"
+        And I should see the text "The buyer and seller are connected if they have an existing personal or business relationship. See guidance on if they are connected (opens in a new tab) for further details"
+        And I should see a link with text "they are connected (opens in a new tab)"
         When I click on the "Continue" button
         Then I should see the text "If they are linked can't be blank"
         When I check the "Yes" radio button in answer to the question "Is the buyer connected to the seller?"
@@ -239,8 +240,8 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "Buyer details" page
-        And I should see the text "See guidance on the meaning of 'representative partner' (opens in a new window) for further details"
-        And I should see a link with text "'representative partner' (opens in a new window)"
+        And I should see the text "See guidance on the meaning of 'representative partner' (opens in a new tab) for further details"
+        And I should see a link with text "'representative partner' (opens in a new tab)"
         When I click on the "Continue" button
         Then I should see the text "If they are acting as a trustee or representative partner for tax purposes can't be blank"
         When I check the "Yes" radio button in answer to the question "Is the buyer acting as a trustee or representative partner for tax purposes?"
@@ -280,7 +281,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Partnership" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Partnership" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -300,7 +301,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Contact details" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Contact details" page
 
         When I click on the "Continue" button
@@ -332,11 +333,11 @@ Feature: LBTT Returns
         And I click on the "Find company" button
 
         Then I should see the text "JOHN LEWIS PLC" in field "company_company_name"
-        And I should see the text "171 Victoria Street" in field "company_address_line1"
-        And I should see the empty field "company_address_line2"
+        And I should see the text "1 Drummond Gate" in field "company_address_line1"
+        And I should see the text "Pimlico" in field "company_address_line2"
         And I should see the text "London" in field "company_locality"
         And I should see the empty field "company_county"
-        And I should see the text "SW1E 5NN" in field "company_postcode"
+        And I should see the text "SW1V 2QQ" in field "company_postcode"
         And field "Company name" should be readonly
         And field "Address line 1 of 2" should be readonly
         And field "Address line 2 of 2" should be readonly
@@ -372,7 +373,7 @@ Feature: LBTT Returns
         Then I should see the "Contact details" page
 
         When I select "9 Rydal Avenue, Tilehurst, READING, RG30 6XT" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Contact details" page
         And I should see the text "9 Rydal Avenue" in field "address_address_line1"
         And I should see the text "Tilehurst" in field "address_address_line2"
@@ -390,7 +391,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Return Summary" page
         And I should see the text "JOHN LEWIS PLC"
-        And I should see the text "171 Victoria Street, London, SW1E 5NN"
+        And I should see the text "1 Drummond Gate, London, SW1V 2QQ"
 
         # Add an other organisation (charity) buyer checking previous address list functionality, use a previous address
         When I click on the "Add a buyer" link
@@ -473,13 +474,13 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Seller address" page
 
-        When I click on the "Continue" button
-        Then I should receive the message "Use the postcode search or enter the address manually"
+        When I click on the "Find address" button
+        Then I should receive the message "Postcode can't be blank"
         When I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Seller address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Seller address" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -499,9 +500,9 @@ Feature: LBTT Returns
         When I click on the "Add a property" link
         Then I should see the "Property address" page
 
-        # validation to select address
-        When I click on the "Continue" button
-        Then I should receive the message "Use the postcode search or enter the address manually"
+        # validation to Use this address
+        When I click on the "Find address" button
+        Then I should receive the message "Postcode can't be blank"
 
         When I click on the "Or type in your full address" button
         And I enter "8 Lavender Lane" in the "address_address_line1" field
@@ -577,7 +578,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -592,7 +593,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "31b/2 Chambers Street, EDINBURGH, EH1 1HU" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         And I should see the text "31b/2 Chambers Street" in field "address_address_line1"
         And I should see the text "EDINBURGH" in field "address_town"
@@ -631,8 +632,8 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "Total consideration liable to ADS"
-        And I should see the text "The amount on which ADS is due - this will usually be the chargeable consideration of your new main residence but may change depending on your specific set of circumstances. See guidance on determining the chargeable consideration for the ADS (opens in a new window)"
-        And I should see a link with text "determining the chargeable consideration for the ADS (opens in a new window)"
+        And I should see the text "The amount on which ADS is due - this will usually be the chargeable consideration of your new main residence but may change depending on your specific set of circumstances. See guidance on determining the chargeable consideration for the ADS (opens in a new tab)"
+        And I should see a link with text "determining the chargeable consideration for the ADS (opens in a new tab)"
         And I should see the text "Total consideration attributable to new main residence"
 
         When I click on the "Continue" button
@@ -680,7 +681,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         When I select "31b/2 Chambers Street, EDINBURGH, EH1 1HU" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "31b/2 Chambers Street" in field "address_address_line1"
         And I should see the text "EDINBURGH" in field "address_town"
@@ -722,8 +723,8 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter "02-08-2023" in the "Effective date of transaction" date field
-        And I enter "03-08-2023" in the "Relevant date" date field
+        When I enter "02-08-2024" in the "Effective date of transaction" date field
+        And I enter "03-08-2024" in the "Relevant date" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
@@ -868,8 +869,8 @@ Feature: LBTT Returns
         When I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
-        And I should see the text "02/08/2023" in field "Effective date of transaction"
-        And I should see the text "03/08/2023" in field "Relevant date"
+        And I should see the text "02/08/2024" in field "Effective date of transaction"
+        And I should see the text "03/08/2024" in field "Relevant date"
 
         When I click on the "Continue" button
         Then I should see the "About the transaction" page
@@ -1371,6 +1372,7 @@ Feature: LBTT Returns
 
         # test case to download Receipt on last return submit return
         When I click on the "Back" link
+        And if available, click the confirmation dialog
         Then I should see the "Your return has been submitted" page
 
         When I click on the "Receipt" link to download a file
@@ -1501,14 +1503,14 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should receive the message "What is the date of sale or disposal of the previous main residence can't be blank"
 
-        When I enter "03-07-2023" in the "What is the date of sale or disposal of the previous main residence?" date field
+        When I enter "03-07-2024" in the "What is the date of sale or disposal of the previous main residence?" date field
         And I click on the "Continue" button
         Then I should see the text "Confirm the address of the previous main residence that has been sold or disposed of"
         When I enter "EH1 1HU" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         When I select "31b/2 Chambers Street, EDINBURGH, EH1 1HU" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Additional Dwelling Supplement (ADS)" page
         And I should see the text "31b/2 Chambers Street" in field "address_address_line1"
         When I click on the "Continue" button
@@ -1644,7 +1646,7 @@ Feature: LBTT Returns
             | Property address           | 31b/2 Chambers Street, EDINBURGH, EH1 1HU |
             | Buyer                      | JOHN LEWIS PLC                            |
             | Description of transaction | Conveyance or transfer                    |
-            | Effective date             | 02/08/2023                                |
+            | Effective date             | 02/08/2024                                |
 
     Scenario: Make a Conveyance return without ADS for an Agent, check that DD is only available when previous return was DD
 
@@ -1745,7 +1747,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Buyer address" page
         When I select "9 Rydal Avenue, Tilehurst, READING, RG30 6XT" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Buyer address" page
         And I should see the text "9 Rydal Avenue" in field "address_address_line1"
         And I should see the text "Tilehurst" in field "address_address_line2"
@@ -1809,14 +1811,14 @@ Feature: LBTT Returns
         When I click on the "Add a property" link
         Then I should see the "Property address" page
 
-        When I click on the "Continue" button
-        Then I should receive the message "Use the postcode search or enter the address manually"
+        When I click on the "Find address" button
+        Then I should receive the message "Postcode can't be blank"
 
         When I enter "EH1 1HU" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "31b/2 Chambers Street, EDINBURGH, EH1 1HU" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         And I should see the text "31b/2 Chambers Street" in field "address_address_line1"
         And I should see the text "EDINBURGH" in field "address_town"
@@ -1864,9 +1866,9 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "About the dates" page
 
-        When I enter "02-08-2023" in the "Effective date of transaction" date field
-        And I enter "03-08-2023" in the "Relevant date" date field
-        And I enter "03-08-2023" in the "Date of contract or conclusion of missives" date field
+        When I enter "02-08-2024" in the "Effective date of transaction" date field
+        And I enter "03-08-2024" in the "Relevant date" date field
+        And I enter "03-08-2024" in the "Date of contract or conclusion of missives" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
         When I check the "No" radio button in answer to the question "Is the transaction linked to a previous option agreement?"
@@ -2540,11 +2542,13 @@ Feature: LBTT Returns
         When I check the "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
         And I check the "Direct Debit" radio button in answer to the question "How are you paying?"
         And I click on the "Submit return" button
-        Then I should see the text "The authority declaration can't be blank"
+        Then I should see the "Payment and submission" page
+        And I should see the text "The authority declaration can't be blank"
         # Must be checked again as cleared on error
         When I check the "I, the agent of the buyer(s), having been authorised to complete this return on behalf of the buyer(s): (a) certify that the buyer(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
         And I check the "Yes" radio button in answer to the question "I, the agent for the buyer(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
-        And I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+        When I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should see the text "Return reference"
         And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
@@ -2765,7 +2769,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Trust" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Trust" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -2784,7 +2788,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Contact details" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Contact details" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -2794,15 +2798,15 @@ Feature: LBTT Returns
 
         When I click on the "Continue" button
         Then I should see the "Tenant details" page
-        And I should see the text "The tenant and landlord are connected if they have an existing personal or business relationship. See guidance on if they are connected (opens in a new window) for further details"
-        And I should see a link with text "they are connected (opens in a new window)"
+        And I should see the text "The tenant and landlord are connected if they have an existing personal or business relationship. See guidance on if they are connected (opens in a new tab) for further details"
+        And I should see a link with text "they are connected (opens in a new tab)"
         When I check the "Yes" radio button in answer to the question "Is the tenant connected to the landlord?"
         And I enter "Test relation" in the "How are they connected?" field
         And I click on the "Continue" button
 
         Then I should see the "Tenant details" page
-        And I should see the text "See guidance on the meaning of 'representative partner' (opens in a new window) for further details"
-        And I should see a link with text "'representative partner' (opens in a new window)"
+        And I should see the text "See guidance on the meaning of 'representative partner' (opens in a new tab) for further details"
+        And I should see a link with text "'representative partner' (opens in a new tab)"
         When I check the "Yes" radio button in answer to the question "Is the tenant acting as a trustee or representative partner for tax purposes?"
         And I click on the "Continue" button
 
@@ -2833,7 +2837,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Company" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Company" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -2850,14 +2854,14 @@ Feature: LBTT Returns
         When I click on the "Add a property" link
         Then I should see the "Property address" page
 
-        When I click on the "Continue" button
-        Then I should receive the message "Use the postcode search or enter the address manually"
+        When I click on the "Find address" button
+        Then I should receive the message "Postcode can't be blank"
 
         When I enter "EH12 6TS" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         And I should see the text "Royal Zoological Society Of Scotland" in field "address_address_line1"
         And I should see the text "134 Corstorphine Road" in field "address_address_line2"
@@ -2897,8 +2901,8 @@ Feature: LBTT Returns
         And I should receive the message "Lease start date must be before lease end date"
         And I should receive the message "Lease end date must be after lease start date"
 
-        When I enter "02-08-2023" in the "Effective date of transaction" date field
-        And I enter "03-08-2023" in the "Relevant date" date field
+        When I enter "02-08-2024" in the "Effective date of transaction" date field
+        And I enter "03-08-2024" in the "Relevant date" date field
         And I enter "10-10-2022" in the "Lease start date" date field
         And I enter "08-10-2026" in the "Lease end date" date field
         And I clear the "Date of contract or conclusion of missives" field
@@ -3152,8 +3156,8 @@ Feature: LBTT Returns
         And the table of data is displayed
             | About the transaction                                  | Edit        |
             | What is the property type for this transaction?        | Residential |
-            | Effective date of transaction                          | 02/08/2023  |
-            | Relevant date                                          | 03/08/2023  |
+            | Effective date of transaction                          | 02/08/2024  |
+            | Relevant date                                          | 03/08/2024  |
             | Lease start date                                       | 10/10/2022  |
             | Lease end date                                         | 08/10/2026  |
             | Are there any linked transactions?                     | Yes         |
@@ -3217,8 +3221,8 @@ Feature: LBTT Returns
         And the table of data is displayed
             | About the transaction                                  | Edit          |
             | What is the property type for this transaction?        | Residential   |
-            | Effective date of transaction                          | 02/08/2023    |
-            | Relevant date                                          | 03/08/2023    |
+            | Effective date of transaction                          | 02/08/2024    |
+            | Relevant date                                          | 03/08/2024    |
             | Lease start date                                       | 10/10/2022    |
             | Lease end date                                         | 08/10/2026    |
             | Are there any linked transactions?                     | Yes           |
@@ -3319,7 +3323,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
 
         When I click on the "Continue" button
@@ -3418,7 +3422,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Landlord address" page
         And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Landlord address" page
 
         When I click on the "Continue" button
@@ -3430,9 +3434,9 @@ Feature: LBTT Returns
         And I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
-        When I enter "02-08-2023" in the "Effective date of transaction" date field
-        And I enter "03-08-2023" in the "Relevant date" date field
-        And I enter "03-08-2023" in the "Date of contract or conclusion of missives" date field
+        When I enter "02-08-2024" in the "Effective date of transaction" date field
+        And I enter "03-08-2024" in the "Relevant date" date field
+        And I enter "03-08-2024" in the "Date of contract or conclusion of missives" date field
         And I enter "10-10-2022" in the "Lease start date" date field
         And I enter "08-10-2026" in the "Lease end date" date field
         And I click on the "Continue" button
@@ -3522,7 +3526,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Return reference number" page
         And I should receive the message "What was the original return effective date is invalid"
-        When I enter "02-08-2023" in the "What was the original return effective date" date field
+        When I enter "02-08-2024" in the "What was the original return effective date" date field
         And I click on the "Continue" button
 
         # Validate the pre population declaration page
@@ -3539,7 +3543,8 @@ Feature: LBTT Returns
         And I should see the text "The authority declaration must be accepted"
         # Agree to the pre population declaration
         When I check the "I, the agent, confirm that I have authority to view the data for the return referred to above" checkbox
-        And I click on the "Continue" button
+        Then I should see the "Declaration" page
+        When I click on the "Continue" button
         Then I should see the "Return Summary" page
 
         # Check no details are defaulted
@@ -3600,7 +3605,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Agent address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Agent address" page
         When I click on the "Continue" button
         Then I should see the "Return Summary" page
@@ -3706,13 +3711,11 @@ Feature: LBTT Returns
         And I click on the "Continue" button
 
         Then I should see the "New tenant address" page
-        When I click on the "Continue" button
-        Then I should receive the message "Use the postcode search or enter the address manually"
-        When I enter "LU1 1AA" in the "address_summary_postcode" field
+        Then I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "New tenant address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "New tenant address" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -3766,7 +3769,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "New tenant address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "New tenant address" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -3803,10 +3806,10 @@ Feature: LBTT Returns
         When I click on the "Edit transaction details" link
         Then I should see the "About the dates" page
         # Please note that readonly dates are shown in DD/MM/YYYY format instead of the entered DD-MM-YYYY format
-        And I should see the text "02/08/2023" in field "Effective date of transaction"
+        And I should see the text "02/08/2024" in field "Effective date of transaction"
         And I should see the empty field "Relevant date"
-        And I enter "03/08/2023" in the "Relevant date" date field
-        And I should see the text "03/08/2023" in field "Date of contract or conclusion of missives"
+        And I enter "03/08/2024" in the "Relevant date" date field
+        And I should see the text "03/08/2024" in field "Date of contract or conclusion of missives"
         And I should see the text "10/10/2022" in field "Lease start date"
         And I should see the text "08/10/2026" in field "Lease end date"
         And I click on the "Continue" button
@@ -3845,8 +3848,8 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the transaction                                  | Edit          |
-            | Effective date of transaction                          | 02/08/2023    |
-            | Relevant date                                          | 03/08/2023    |
+            | Effective date of transaction                          | 02/08/2024    |
+            | Relevant date                                          | 03/08/2024    |
             | Lease start date                                       | 10/10/2022    |
             | Lease end date                                         | 08/10/2026    |
             | Are there any linked transactions?                     | No            |
@@ -3951,7 +3954,7 @@ Feature: LBTT Returns
             | Property address             | Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS |
             | Tenant                       | Mr TenantFirstname TenantSurname                                                 |
             | Description of transaction   | Assignation                                                                      |
-            | Effective date               | 02/08/2023                                                                       |
+            | Effective date               | 02/08/2024                                                                       |
             | Your reference (if provided) | my agent ref                                                                     |
         And I should see a link with text "Download PDF"
 
@@ -3967,7 +3970,7 @@ Feature: LBTT Returns
         Then I should see the "Return reference number" page
 
         When I enter the stored value "notification_banner_reference_orig" in field "What was the original return reference"
-        And I enter "02-08-2023" in the "What was the original return effective date" date field
+        And I enter "02-08-2024" in the "What was the original return effective date" date field
         And I click on the "Continue" button
 
         # Validate the pre population declaration on Declaration page
@@ -3983,7 +3986,7 @@ Feature: LBTT Returns
         Then I should see the "Return Summary" page
         When I click on the "Edit transaction details" link
         Then I should see the "About the dates" page
-        And I enter "02-08-2026" in the "Relevant date" date field
+        And I enter "02-08-2027" in the "Relevant date" date field
         When I click on the "Continue" button
         Then I should see the "Linked transactions" page
         When I click on the "Continue" button
@@ -4078,7 +4081,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Tenant address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
@@ -4099,7 +4102,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         When I click on the "Continue" button
         Then I should see the "About the property" page
@@ -4116,7 +4119,7 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "About the dates" page
         And I enter "01-01-2019" in the "Effective date of transaction" date field
-        And I enter "01-01-2023" in the "Relevant date" date field
+        And I enter "01-01-2024" in the "Relevant date" date field
         And I enter "01-01-2019" in the "Lease start date" date field
         And I enter "01-01-2029" in the "Lease end date" date field
 
@@ -4214,7 +4217,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Tenant address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
@@ -4235,7 +4238,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         When I click on the "Continue" button
         Then I should see the "About the property" page
@@ -4307,11 +4310,13 @@ Feature: LBTT Returns
         When I enter "Test" in the "Why are you editing the calculated values?" field
         And I click on the "Continue" button
         Then I should see the "Payment and submission" page
-        And I check the "BACS" radio button in answer to the question "How are you paying?"
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
         And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
-        And I check the "returns_lbtt_lbtt_return[declaration]" checkbox
+        Then I should see the "Payment and submission" page
+        When I check the "returns_lbtt_lbtt_return[declaration]" checkbox
         And I check the "returns_lbtt_lbtt_return[lease_declaration]" checkbox
-        And I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+        When I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         # Make sure the return reference is the same
         And I should see the text "Return reference"
@@ -4414,7 +4419,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Tenant address" page
         When I select "31b/2 Chambers Street, EDINBURGH, EH1 1HU" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
@@ -4633,7 +4638,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
 
         When I click on the "Continue" button
@@ -4667,7 +4672,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Tenant address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Tenant address" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -4714,7 +4719,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Charity" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Charity" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -4733,7 +4738,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Contact details" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Contact details" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -4780,7 +4785,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Landlord address" page
         And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Landlord address" page
 
         When I click on the "Continue" button
@@ -4792,9 +4797,9 @@ Feature: LBTT Returns
         And I check the "Residential" radio button in answer to the question "What is the property type for this transaction?"
         And I click on the "Continue" button
         Then I should see the "About the dates" page
-        When I enter "02-08-2023" in the "Effective date of transaction" date field
-        And I enter "03-08-2023" in the "Relevant date" date field
-        And I enter "03-08-2023" in the "Date of contract or conclusion of missives" date field
+        When I enter "02-08-2024" in the "Effective date of transaction" date field
+        And I enter "03-08-2024" in the "Relevant date" date field
+        And I enter "03-08-2024" in the "Date of contract or conclusion of missives" date field
         And I enter "10-10-2022" in the "Lease start date" date field
         And I enter "08-10-2026" in the "Lease end date" date field
         And I click on the "Continue" button
@@ -4875,7 +4880,7 @@ Feature: LBTT Returns
         When I click on the "Back" link
         Then I should see the "Return reference number" page
         And I enter the stored value "notification_banner_reference" in field "What was the original return reference"
-        And I enter "02-08-2023" in the "What was the original return effective date" date field
+        And I enter "02-08-2024" in the "What was the original return effective date" date field
         And I click on the "Continue" button
 
         # Validate the pre population declaration page
@@ -4906,7 +4911,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Agent address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Agent address" page
         When I click on the "Continue" button
         Then I should see the "Return Summary" page
@@ -4918,7 +4923,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "W H Smith Ltd, Unit 21, Caledonia Centre, Central Station, GLASGOW, G1 3SQ" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
 
         When I click on the "Continue" button
@@ -5082,7 +5087,7 @@ Feature: LBTT Returns
         # Transaction
         When I click on the "Edit transaction details" link
         Then I should see the "About the dates" page
-        And I should see the text "02/08/2023" in field "Effective date of transaction"
+        And I should see the text "02/08/2024" in field "Effective date of transaction"
         And field "Effective date of transaction" should be readonly
         And I should see the text "This field is read only. Contact Revenue Scotland if the value is not as expected."
         And I enter "08-11-2026" in the "Relevant date" date field
@@ -5151,7 +5156,7 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the transaction                                  | Edit          |
-            | Effective date of transaction                          | 02/08/2023    |
+            | Effective date of transaction                          | 02/08/2024    |
             | Relevant date                                          | 02/08/2026    |
             | Are there any linked transactions?                     | No            |
             | Is a premium being paid?                               | Yes           |
@@ -5219,7 +5224,7 @@ Feature: LBTT Returns
 
         And the table of data is displayed
             | About the transaction                                  | Edit          |
-            | Effective date of transaction                          | 02/08/2023    |
+            | Effective date of transaction                          | 02/08/2024    |
             | Relevant date                                          | 02/08/2026    |
             | Lease start date                                       | 10/10/2022    |
             | Lease end date                                         | 02/08/2026    |
@@ -5273,7 +5278,7 @@ Feature: LBTT Returns
             | Property address             | Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS |
             | Tenant                       | Mr firstname surname                                                             |
             | Description of transaction   | Termination                                                                      |
-            | Effective date               | 02/08/2023                                                                       |
+            | Effective date               | 02/08/2024                                                                       |
             | Your reference (if provided) | my agent ref                                                                     |
         And I should see a link with text "Download PDF"
 
@@ -5333,13 +5338,13 @@ Feature: LBTT Returns
         And I click on the "Continue" button
         Then I should see the "Tenant address" page
 
-        When I click on the "Continue" button
-        Then I should receive the message "Use the postcode search or enter the address manually"
-        When I enter "LU1 1AA" in the "address_summary_postcode" field
+        When I click on the "Find address" button
+        Then I should receive the message "Postcode can't be blank"
+        And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Tenant address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Tenant address" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -5395,14 +5400,14 @@ Feature: LBTT Returns
         When I click on the "Add a property" link
         Then I should see the "Property address" page
 
-        When I click on the "Continue" button
-        Then I should receive the message "Use the postcode search or enter the address manually"
+        When I click on the "Find address" button
+        Then I should receive the message "Postcode can't be blank"
 
         When I enter "EH12 6TS" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         And I should see the text "Royal Zoological Society Of Scotland" in field "address_address_line1"
         And I should see the text "134 Corstorphine Road" in field "address_address_line2"
@@ -5486,11 +5491,13 @@ Feature: LBTT Returns
         When I click on the "Submit return" button
         Then I should see the "Payment and submission" page
 
+        When I check the "BACS" radio button in answer to the question "How are you paying?"
+        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
+        Then I should see the "Payment and submission" page
         When I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
         And I check the "I, the agent of the tenant(s), confirm that I have made my client(s) aware of their obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date" checkbox
-        And I check the "BACS" radio button in answer to the question "How are you paying?"
-        And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
-        And I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+        When I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should see the text "Return reference"
         And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
@@ -5640,7 +5647,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Buyer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Buyer address" page
         When I click on the "Continue" button
         Then I should see the "Buyer's contact address" page
@@ -5674,7 +5681,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Buyer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Buyer address" page
         When I click on the "Or edit the selected address" button
         And I click on the "Continue" button
@@ -5757,7 +5764,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Buyer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Buyer address" page
         When I click on the "Continue" button
         Then I should see the "Buyer's contact address" page
@@ -5790,7 +5797,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Seller address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Seller address" page
 
         When I click on the "Continue" button
@@ -5821,7 +5828,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Boots The Chemists Ltd, Waverley Railway Station, EDINBURGH, EH1 1BB" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
 
         When I click on the "Continue" button
@@ -5864,7 +5871,7 @@ Feature: LBTT Returns
         Then I should see the "About the dates" page
 
         When I enter 94 days ago in the "Effective date of transaction" date field
-        When I enter "22-07-2023" in the "Relevant date" date field
+        When I enter "22-07-2024" in the "Relevant date" date field
         And I click on the "Continue" button
         Then I should see the "About the transaction" page
 
@@ -5903,7 +5910,7 @@ Feature: LBTT Returns
         # Submit the return as non notifiable checking the validation on the non notifiable pages
         Then I should see the "Non-notifiable return" page
         And I should see the text "The total consideration remaining for this conveyance is less than £40,000."
-        And I should see a link with text "notifiable conveyance returns (opens in a new window)"
+        And I should see a link with text "notifiable conveyance returns (opens in a new tab)"
         And I should see a link with text "back to return summary"
         When I click on the "Continue" button
         Then I should see the text "Do you still want to submit the return can't be blank"
@@ -6147,7 +6154,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         When I click on the "Continue" button
         Then I should see the "About the property" page
@@ -6189,7 +6196,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Tenant address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
@@ -6224,7 +6231,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Landlord address" page
         And I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Landlord address" page
 
         When I click on the "Continue" button
@@ -6591,7 +6598,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Tenant address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
@@ -6627,7 +6634,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Company" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Company" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -6647,7 +6654,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         When I click on the "Continue" button
         Then I should see the "About the property" page
@@ -6708,7 +6715,7 @@ Feature: LBTT Returns
         And I click on the "Submit return" button
         Then I should see the "Non-notifiable return" page
         And I should see the text "The lease is for 7 years or more and the rent is less than £1,000 per annum or any chargeable consideration other than rent is less than £40,000."
-        And I should see a link with text "notifiable lease transactions (opens in a new window)"
+        And I should see a link with text "notifiable lease transactions (opens in a new tab)"
         And I should see a link with text "back to return summary"
 
         # Reject the return as non notifiable
@@ -6759,7 +6766,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Tenant address" page
         When I select "Sellars Agriculture Ltd, Steven Road, HUNTLY, AB54 8SX" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
@@ -6796,7 +6803,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Company" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Company" page
         And I should see the text "Royal Mail" in field "address_address_line1"
         And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
@@ -6816,7 +6823,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         When I click on the "Continue" button
         Then I should see the "About the property" page
@@ -6879,7 +6886,7 @@ Feature: LBTT Returns
         # Submit the return as non notifiable checking the validation on the non notifiable pages
         Then I should see the "Non-notifiable return" page
         And I should see the text "The lease is for less than 7 years, and the rent is less than £1,000 per annum with premium less than or equal to the nil rate band £150,000, or the NPV tax calculation is less than or equal to the nil rate band £150,000."
-        And I should see a link with text "notifiable lease transactions (opens in a new window)"
+        And I should see a link with text "notifiable lease transactions (opens in a new tab)"
         And I should see a link with text "back to return summary"
         When I click on the "Continue" button
         Then I should see the text "Do you still want to submit the return can't be blank"
@@ -6943,7 +6950,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Tenant address" page
         When I select "Brogan Fuels, Steven Road, HUNTLY, AB54 8SX" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
@@ -6972,7 +6979,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Landlord address" page
         When I select "Ecosse Lifting Services Ltd, Steven Road, HUNTLY, AB54 8SX" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Landlord address" page
         And I should see the text "Ecosse Lifting Services Ltd" in field "address_address_line1"
         And I should see the text "Steven Road" in field "address_address_line2"
@@ -6989,7 +6996,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         When I click on the "Continue" button
         Then I should see the "About the property" page
@@ -7044,9 +7051,11 @@ Feature: LBTT Returns
 
         When I check the "BACS" radio button in answer to the question "How are you paying?"
         And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
-        And I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        Then I should see the "Payment and submission" page
+        When I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
         And I check the "I, the agent of the tenant(s), confirm that I have made my client(s) aware of their obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date" checkbox
-        And I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+        When I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should see the text "Return reference"
         And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
@@ -7225,7 +7234,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Tenant address" page
         When I select "Brogan Fuels, Steven Road, HUNTLY, AB54 8SX" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Tenant address" page
         When I click on the "Continue" button
         Then I should see the "Tenant's contact address" page
@@ -7254,7 +7263,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Landlord address" page
         When I select "Ecosse Lifting Services Ltd, Steven Road, HUNTLY, AB54 8SX" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Landlord address" page
         And I should see the text "Ecosse Lifting Services Ltd" in field "address_address_line1"
         And I should see the text "Steven Road" in field "address_address_line2"
@@ -7271,7 +7280,7 @@ Feature: LBTT Returns
         And I click on the "Find address" button
         Then I should see the "Property address" page
         When I select "Royal Zoological Society Of Scotland, 134 Corstorphine Road, EDINBURGH, EH12 6TS" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Property address" page
         When I click on the "Continue" button
         Then I should see the "About the property" page
@@ -7338,9 +7347,11 @@ Feature: LBTT Returns
 
         When I check the "BACS" radio button in answer to the question "How are you paying?"
         And I check the "Yes" radio button in answer to the question "I, the agent for the tenant(s), confirm that I have authority to deal with all matters relating to this transaction on behalf of my client(s)"
-        And I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
+        Then I should see the "Payment and submission" page
+        When I check the "I, the agent of the tenant(s), having been authorised to complete this return on behalf of the tenant(s): (a) certify that the tenant(s) has/have declared that the information provided in the return, with the exception of the relevant date, is to the best of their knowledge, correct and complete; and (b) declare that the relevant date provided in the return is, to the best of my knowledge, correct" checkbox
         And I check the "I, the agent of the tenant(s), confirm that I have made my client(s) aware of their obligation to submit a three-yearly lease review return, or an assignation or termination return if such an event occurs before the review date" checkbox
-        And I click on the "Submit return" button
+        Then I should see the "Payment and submission" page
+        When I click on the "Submit return" button
         Then I should see the "Your return has been submitted" page
         And I should see the text "Return reference"
         And I should see the text "%r{RS\d{7}[a-zA-Z]{4}}"
@@ -7478,6 +7489,7 @@ Feature: LBTT Returns
     Scenario: To validate the return and generate the error for transaction section is there is any error in section
 
         Login with authenticated user
+        Test back to top link focus changes when clicked
         Search for the existing return
         Retrieve the draft return
         Check the error for transaction section
@@ -7488,6 +7500,12 @@ Feature: LBTT Returns
         # Login with authenticated user
         Given I have signed in
         Then I should see the "Dashboard" page
+
+        # Test back to top link focus changes when clicked
+        When The item with class name of "ds_site-branding__logo" should not have focus
+        And I click on the "Back to top" link
+        Then I should see the "Dashboard" page
+        And The item with class name of "ds_site-branding__logo" should get focus
 
         # Search for the existing return
         When I click on the 1 st "Find returns" link

@@ -1,0 +1,4 @@
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @bad_debt, method: :post, url: @post_path) do |f| %>
+	<%= f.ds_radio_group(method: :bad_debt_present, options_list: @bad_debt.list_ref_data(:bad_debt_options)) %>  
+<% end %>

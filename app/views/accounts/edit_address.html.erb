@@ -1,6 +1,6 @@
 <% content_for(:page_title, t('.title')) %>
 <% content_for(:navigation_link, :accounts_url) %>
-<%= ds_form_with(model: @account, url: update_address_account_path, autocomplete: true, method: :post, button_action: :confirm) do |f| %>
+<%= ds_form_with(model: @account, url: update_address_account_path, autocomplete: true, method: :post, button_action: (@show_manual_address ? :confirm : :none)) do |f| %>
   <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail, 
       show_address_detail: @show_manual_address, readonly: @address_read_only) %>
 <% end %>

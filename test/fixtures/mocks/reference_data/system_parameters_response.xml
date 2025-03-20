@@ -2056,6 +2056,20 @@ Scotland Tax System</StringValue>
 					<Code>TAC_COND_DATE</Code>
 					<DateValue>01/01/2019</DateValue>
 				</SystemParameter>
+				<SystemParameter>
+					<DomainCode>BANNER MESSAGE</DomainCode>
+					<ServiceCode>SYS</ServiceCode>
+					<WorkplaceCode>RSTU</WorkplaceCode>
+					<Code>TAC_COND_DATE</Code>
+					<DateValue>The description text shown on the environment banner</DateValue>
+				</SystemParameter>
+				<SystemParameter>
+					<DomainCode>BANNER COLOUR</DomainCode>
+					<ServiceCode>SYS</ServiceCode>
+					<WorkplaceCode>RSTU</WorkplaceCode>
+					<Code>TAC_COND_DATE</Code>
+					<DateValue>FF0000</DateValue>
+				</SystemParameter>
 			</SystemParameters>
 		</GetSystemParametersResponse>
 	</soap:Body>

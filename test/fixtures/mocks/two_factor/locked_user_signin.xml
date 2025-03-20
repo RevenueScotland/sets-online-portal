@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<soap:Body>
-		<AuthenticateUserResponse xmlns="http://northgate-is.com/FL/AuthenticateUser" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core">
+		<AuthenticateUserResponse xmlns="http://northgate-is.com/FL/AuthenticateUser"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:core="http://northgate-is.com/FL/Core">
 			<core:Success>true</core:Success>
 			<UserIsAuthenticated>false</UserIsAuthenticated>
+			<UserIsApproved>true</UserIsApproved>
 			<UserIsRegistered>true</UserIsRegistered>
 			<UserIs2FA>true</UserIs2FA>
 			<PasswordChangeRequired>false</PasswordChangeRequired>

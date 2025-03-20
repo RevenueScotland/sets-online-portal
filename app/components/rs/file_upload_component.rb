@@ -38,7 +38,9 @@ module RS
     # @param max_file_size_mb [Integer] the maximum size of file that can be uploaded
     def initialize(resource_items_hash:, resource_items:, builder: nil, fieldset_key: nil, interpolations: {}, # rubocop:disable  Metrics/MethodLength
                    multiple: false, optional: false, description: true,
-                   supported_file_types: nil, max_file_size_mb: nil)
+                   supported_file_types: nil, max_file_size_mb: nil, max_uploads: nil,
+                   button_label: nil, button_type: nil, hide_upload_section: false,
+                   hide_uploaded_files_section: false)
       super()
 
       @builder = builder
@@ -52,6 +54,11 @@ module RS
       @fieldset_key = fieldset_key
       @interpolations = interpolations
       @control_hash = build_control_hash
+      @max_uploads = max_uploads
+      @button_label = button_label
+      @button_type = button_type
+      @hide_upload_section = hide_upload_section
+      @hide_uploaded_files_section = hide_uploaded_files_section
     end
 
     private
@@ -69,6 +76,7 @@ module RS
         control_hash[upload_button_type][:button_label] =
           (upload_count > 1 ? '.add_resources' : '.add_resource')
       end
+      control_hash[:hide_upload_section] = @hide_upload_section
       control_hash
     end
 

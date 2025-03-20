@@ -33,7 +33,8 @@ module Returns
            display_title: false, # Is the title to be displayed
            type: :list,
            list_items: [{ code: :year, key_scope: %i[returns lbtt_transactions rental_years] },
-                        { code: :rent, format: :money, key_scope: %i[returns lbtt_transactions rental_years] }] }]
+                        { code: :rent, format: :money, key_scope: %i[returns lbtt_transactions rental_years],
+                          action_name: :print }] }]
       end
 
       # The display attribute for :year when used in a view.

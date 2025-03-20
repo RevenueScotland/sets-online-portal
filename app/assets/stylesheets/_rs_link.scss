@@ -7,4 +7,13 @@
         text-align: center;
         display: block;
     }
+
+    &--banner_link {
+        color: #ffff;
+    }
+}
+
+.message_link_container {
+    flex-direction: row;
+    display: flex;
 }

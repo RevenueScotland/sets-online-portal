@@ -1,0 +1,8 @@
+<% content_for(:page_title, t('.title', site: @exempt_aggregate.site_name)) %>
+<% content_for(:navigation_link, request.path.chomp('/new')) %>
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_form_with(model: @exempt_aggregate, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_select(method: :aggregate_type, select_options: @exempt_aggregate.aggregate_types_list) %>
+  <%= f.ds_select(method: :exempt_type, select_options: @exempt_aggregate.list_ref_data(:exempt_type)) %>
+  <%= f.ds_text_field(method: :exempt_tonnage, width:20) %>
+<% end %>

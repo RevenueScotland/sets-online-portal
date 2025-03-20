@@ -1,0 +1,10 @@
+<% content_for(:page_title, t('.title', site: @credit_claim.site_name)) %>
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_form_with(model: @credit_claim, url: @post_path, method: :post) do |f| %>
+	<% if @credit_claim.tax_period_ind == 'Y' %>
+		<%= f.ds_text_field(method: :current_return, width: 20, readonly: true) %>
+	<% elsif @credit_claim.tax_period_ind == 'N' %>
+		<%= f.ds_select(method: :related_return, select_options: @credit_claim.list_all_previous_return_periods) %>
+	<% end %>
+  <%= f.ds_text_field(method: :tax_tonnage, width: 20) %>
+<% end %>

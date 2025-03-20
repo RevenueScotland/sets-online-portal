@@ -3,7 +3,7 @@
 require 'fileutils'
 
 # For each of the file testing regarding the upload, they need to be added here.
-if Rails.env.test? && !ENV.key?('UNIT_TEST') && ENV.key?('TEST_FILE_UPLOAD_PATH')
+if ENV.key?('TEST_FILE_UPLOAD_PATH')
   Rails.logger.info('Copying the files to the upload file folder')
 
   copy_from_path = Rails.root.join('test/fixtures/upload/')

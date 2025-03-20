@@ -58,7 +58,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Landfill operator address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Landfill operator address" page
 
         When I click on the "Continue" button
@@ -111,7 +111,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Site address" page
 
         When I click on the "Continue" button
@@ -137,7 +137,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Site address" page
 
         When I click on the "Continue" button
@@ -328,7 +328,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Landfill operator address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Landfill operator address" page
         When I click on the "Continue" button
         Then I should see the "Landfill sites" page
@@ -345,7 +345,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Non-disposal area site details" page
@@ -415,7 +415,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Landfill operator address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Landfill operator address" page
         When I click on the "Continue" button
         Then I should see the "Landfill sites" page
@@ -432,7 +432,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Site restoration details" page
@@ -512,7 +512,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Landfill operator address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Landfill operator address" page
         When I click on the "Continue" button
         Then I should see the "Landfill sites" page
@@ -529,7 +529,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Site waste details" page
@@ -574,7 +574,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Waste producer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Waste producer address" page
         When I click on the "Continue" button
         Then I should see the "Declarations" page
@@ -624,7 +624,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Waste producer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Waste producer address" page
         When I click on the "Continue" button
         Then I should see the "About the waste water" page
@@ -708,7 +708,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Separate mailing address for landfill operator" page
@@ -743,7 +743,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Separate mailing address for landfill operator" page
@@ -773,7 +773,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "9 Rydal Avenue, Tilehurst, READING, RG30 6XT" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Separate mailing address for landfill operator" page
@@ -869,7 +869,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Waste producer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Waste producer address" page
         When I click on the "Continue" button
         Then I should see the "About the waste water" page
@@ -916,7 +916,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Site address" page
 
         When I click on the "Continue" button
@@ -950,7 +950,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
-        And if available, click the "Select" button
+        And I click on the "Use this address" button when available
         Then I should see the "Site address" page
 
         When I click on the "Continue" button

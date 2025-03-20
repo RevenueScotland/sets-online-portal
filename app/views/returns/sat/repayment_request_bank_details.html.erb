@@ -1,0 +1,7 @@
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @sat_return, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_text_field(method: :account_holder_name, width: 20) %>
+  <%= f.ds_text_field(method: :account_number, width: 20) %>
+  <%= f.ds_text_field(method: :branch_code, width: 20) %>
+  <%= f.ds_text_field(method: :bank_name, width: 20) %>
+<% end %>

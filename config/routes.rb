@@ -23,6 +23,9 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     get 'user/update-tcs', to: 'users#update_tcs'
     post 'user/process-update-tcs', to: 'users#process_update_tcs'
 
+    get 'user/select_enrolment', to: 'users#select_enrolment'
+    post 'user/process_enrolment', to: 'users#process_enrolment'
+
     resource 'account', controller: :accounts, only: :show, as: :account do
       collection do
         get 'activate-account'
@@ -52,9 +55,14 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     get '/dashboard', to: 'dashboard/dashboard_home#index'
 
-    namespace :dashboard do
-      get 'messages/download-file',           to: 'messages#download_file'
+    namespace :dashboard do # rubocop:disable Metrics/BlockLength
+      get 'messages/download-file', to: 'messages#download_file'
+
       resources :messages, except: %i[destroy update edit], param: :smsg_refno do
+        collection do
+          match 'upload-documents', to: 'messages#upload_documents', via: %i[get patch]
+          match 'send-message', to: 'messages#send_message', via: %i[get patch]
+        end
         member do
           get 'retrieve-file-attachment'
           get 'download-file', to: 'messages#download_file'
@@ -62,6 +70,12 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
           match 'toggle-read-status', to: 'messages#toggle_read_status', via: %i[get patch]
         end
       end
+      resources :messages, except: %i[destroy update edit], param: :original_smsg_refno do
+        member do
+          get 'download-view-all', to: 'messages#download_view_all'
+        end
+      end
+
       resources :financial_transactions, only: %i[index show]
       resources :dashboard_returns, only: %i[index destroy] do
         member do
@@ -77,6 +91,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     namespace :accounts do
       match 'registration/account_details',    to: 'registration#account_details',    via: %i[get post]
       match 'registration/account_for',        to: 'registration#account_for',        via: %i[get post]
+      match 'registration/account_type',       to: 'registration#account_type',       via: %i[get post]
+      match 'registration/enrol_ref',          to: 'registration#enrol_ref',          via: %i[get post]
       match 'registration/company',            to: 'registration#company',            via: %i[get post]
       match 'registration/company_registered', to: 'registration#company_registered', via: %i[get post]
       match 'registration/org_contact',        to: 'registration#org_contact',        via: %i[get post]
@@ -85,6 +101,66 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'registration/taxes',              to: 'registration#taxes',              via: %i[get post]
       match 'registration/user_details',       to: 'registration#user_details',       via: %i[get post]
       get 'registration/confirmation', to: 'registration#confirmation'
+    end
+
+    # SAT
+    namespace :returns do # rubocop:disable Metrics/BlockLength
+      match 'sat/return_period',                                  to: 'sat#return_period',
+                                                                  via: %i[get post]
+      match 'sat/summary',                                        to: 'sat#summary',
+                                                                  via: %i[get post]
+      get 'sat/save_draft',                                       to: 'sat#save_draft'
+      match 'sat/site_summary(/:site)',                           to: 'sat_sites#site_summary',
+                                                                  as: 'sat_site_summary', via: %i[get post delete]
+      match 'sat/aggregate_details(/:aggregate)',                 to: 'sat_taxable_aggregates#aggregate_details',
+                                                                  as: 'sat_aggregate_details', via: %i[get post]
+      match 'sat/aggregate_tonnage',                              to: 'sat_taxable_aggregates#aggregate_tonnage',
+                                                                  via: %i[get post]
+      resources :taxable_aggregates, only: %i[destroy], controller: :sat_taxable_aggregates, param: :aggregate
+
+      match 'sat/exempt_aggregate_details(/:exempt_aggregate)',   to: 'sat_exempt_aggregates#exempt_aggregate_details',
+                                                                  as: 'sat_exempt_aggregate_details', via: %i[get post]
+      resources :exempt_aggregates, only: %i[destroy], controller: :sat_exempt_aggregates, param: :exempt_aggregate
+
+      match 'sat/tax_credit_details(/:credit_claim)',             to: 'sat_credit_claims#tax_credit_details',
+                                                                  as: 'sat_tax_credit_details', via: %i[get post]
+      match 'sat/tax_credit_tonnage',                             to: 'sat_credit_claims#tax_credit_tonnage',
+                                                                  via: %i[get post]
+
+      match 'sat/declaration_calculation',                        to: 'sat#declaration_calculation',
+                                                                  via: %i[get post]
+
+      match 'sat/declaration_submitted',                          to: 'sat#declaration_submitted',
+                                                                  via: %i[get post]
+
+      match 'sat/calculated_tax_liability',                       to: 'sat#calculated_tax_liability',
+                                                                  via: %i[get post]
+
+      match 'sat/amendment_reason',                               to: 'sat#amendment_reason',
+                                                                  via: %i[get post]
+
+      resources :credit_claims, only: %i[destroy], controller: :sat_credit_claims, param: :credit_claim
+
+      get 'sat/download-receipt', to: 'sat#download_receipt'
+
+      match 'sat/aggregate_activity(/:site)', to: 'sat_sites#aggregate_activity',
+                                              as: 'sat_site_aggregate_activity', via: %i[get post]
+
+      match 'sat/bad_debts', to: 'sat_bad_debt_credit_claims#bad_debts',
+                             as: 'sat_bad_debt_claims', via: %i[get post]
+
+      match 'sat/bad_debts_details', to: 'sat_bad_debt_credit_claims#bad_debts_details',
+                                     as: 'sat_bad_debt_details', via: %i[get post]
+
+      match 'sat/repayment_request', to: 'sat#repayment_request',
+                                     via: %i[get post]
+
+      match 'sat/repayment_request_bank_details', to: 'sat#repayment_request_bank_details',
+                                                  via: %i[get post]
+
+      match 'sat/repayment_declaration', to: 'sat#repayment_declaration',
+                                         via: %i[get post]
+      get 'sat/confirm_data_import', to: 'sat#confirm_data_import', via: %i[get post]
     end
 
     # LBTT
