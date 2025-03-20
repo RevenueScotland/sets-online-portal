@@ -37,9 +37,9 @@ en:
         addresses: "Pick an address"
       address:
         address_line1: "Building and street"
-        address_line2: "Address line 2"
-        address_line3: "Address line 3"
-        address_line4: "Address line 4"
+        address_line2: "Building and street line 2"
+        address_line3: "Building and street line 3"
+        address_line4: "Building and street line 4"
         town: "Town"
         county: "County"
         country: "Country"

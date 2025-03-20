@@ -1,0 +1,4 @@
+<% content_for :page_title, t('.title') %>
+<%= ds_form_with(model: @sat_return, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_text_area(method: :change_reason) %>
+<% end %>

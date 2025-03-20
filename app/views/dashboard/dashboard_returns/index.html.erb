@@ -1,4 +1,4 @@
-<% content_for(:page_title, t('.title')) %>
+<% content_for(:page_title, t('.title', name: current_user.portal_account_name)) %>
 <% content_for(:navigation_link, :clear_stack) %>
 <%= ds_form_with(model: @dashboard_return_filter, url: dashboard_dashboard_returns_path, method: :get,
                  button_action: :find, autofocus: @on_filter_find) do |f| %>

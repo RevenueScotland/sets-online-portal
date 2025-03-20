@@ -1,0 +1,6 @@
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @bad_debt, method: :post, url: @post_path) do |f| %>
+	<%= f.ds_currency(method: :bad_debt_credit_amount) %>
+	<%= f.ds_text_area(method: :bad_debt_details, rows: 5) %>
+	<%= f.ds_checkbox(method: :bad_debt_declaration) %>
+<% end %>

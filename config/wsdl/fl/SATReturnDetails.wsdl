@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 17-Oct-2013   Version 1.0  -->
+<wsdl:definitions xmlns:ns="http://www.necsws.com/RSTS/GetSATReturn"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.necsws.com/RSTS/GetSATReturn.wsdl"
+	xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://www.necsws.com/RSTS/GetSATReturn.wsdl" name="GetSATReturn">
+	<wsdl:types>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference for the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Service" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example service is the name of the requesting system, e.g. RB or the database from which the request is coming from, e.g. RBDEV</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example requestor is the name of the Local Authority from which the request is being sent</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xs:schema xmlns="http://www.necsws.com/RSTS/GetSATReturn"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.necsws.com/RSTS/GetSATReturn" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
+			<xs:element name="GetSATReturnRequest">
+				<xs:annotation>
+					<xs:documentation>Comment describing your root element
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Username" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Username of person submitting the return</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ParRefno" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Party refno of company</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="EnrmRefno" type="xs:integer" />
+						<xs:element name="TareRefno" type="xs:integer">
+							<xs:annotation>
+								<xs:documentation>Tax Return Internal Reference</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Version" type="xs:integer"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/GetSATReturn"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/GetSATReturn" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
+			<xs:element name="GetSATReturnResponse">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="core:StandardResponseStructure">
+							<xs:sequence>
+								<xs:element ref="SATReturn" minOccurs="0"/>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="SATReturn">
+				<xs:annotation>
+					<xs:documentation>Comment describing your root element
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="FormType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Draft, Latest</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="D" />
+									<xs:enumeration value="L" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="TareReference" type="xs:string" minOccurs="0" />
+						<xs:element name="TareRefno" type="xs:integer" minOccurs="0" />
+						<xs:element name="Version" type="xs:integer" minOccurs="0" />
+						<xs:element name="ParRefno" type="xs:integer" minOccurs="0" />
+						<xs:element name="Username" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Username of person submitting the return
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="EnrmRefno" type="xs:integer" />
+						<xs:element name="EnrmRegistrationRef" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>Enrolment reference for registration
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="InitialSubmittedDate" type="xs:date" minOccurs="0" />
+						<xs:element name="SATReturnDetails">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ChangeReason" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Reason that the return changed
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="EffectiveDate" type="xs:date" minOccurs="0" />
+									<xs:element name="SubmittedDate" type="xs:date" minOccurs="0" />
+									<xs:element name="ReleventDate" type="xs:date" minOccurs="0" />
+									<xs:element name="ReturnPeriodStartDate" type="xs:date" minOccurs="0" />
+									<xs:element name="ReturnPeriodEndDate" type="xs:date" minOccurs="0" />
+									<xs:element name="ReturnScheduleRefno" type="xs:integer" />
+									<xs:element name="TaxableLocations">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="TaxableLocation" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="TaxlPartyRef" type="xs:integer" />
+															<xs:element name="TaxlPartyName" type="xs:string" />
+															<xs:element name="TaxlRefno" type="xs:integer" />
+															<xs:element name="TaxlName" type="xs:string" />
+															<xs:element name="PeriodBDownStart" type="xs:date" />
+															<xs:element name="PeriodBDownEnd" type="xs:date" />
+															<xs:element name="TotalTaxableTonnage" type="xs:decimal" />
+															<xs:element name="TotalExemptTonnage" type="xs:decimal" />
+															<xs:element name="TotalTaxDue" type="xs:decimal" />
+															<xs:element name="TotalTaxCredits" type="xs:decimal" />
+															<xs:element name="TotalTaxPayable" type="xs:decimal" />
+															<xs:element name="TaxableAggregates" minOccurs="0">
+																<xs:complexType>
+																	<xs:sequence>
+																		<xs:element name="TaxableAggregate" maxOccurs="unbounded">
+																			<xs:complexType>
+																				<xs:sequence>
+																					<xs:element name="TlbRefno" type="xs:integer" minOccurs="0"/>
+																					<xs:element name="AttributeType" type="xs:string" />
+																					<xs:element name="AggregateType" type="xs:string" />
+																					<xs:element name="CommExploitationType" type="xs:string" />
+																					<xs:element name="ExploitedTonnage" type="xs:decimal" />
+																					<xs:element name="WaterTonnage" type="xs:decimal" />
+																					<xs:element name="MixedInd" type="xs:string" />
+																					<xs:element name="Rate" type="xs:decimal" />
+																					<xs:element name="TaxDue" type="xs:decimal" />
+																				</xs:sequence>
+																			</xs:complexType>
+																		</xs:element>
+																	</xs:sequence>
+																</xs:complexType>
+															</xs:element>
+															<xs:element name="ExemptAggregates" minOccurs="0">
+																<xs:complexType>
+																	<xs:sequence>
+																		<xs:element name="ExemptAggregate" maxOccurs="unbounded">
+																			<xs:complexType>
+																				<xs:sequence>
+																					<xs:element name="TlbRefno" type="xs:integer" minOccurs="0"/>
+																					<xs:element name="AttributeType" type="xs:string" />
+																					<xs:element name="AggregateType" type="xs:string" />
+																					<xs:element name="ExemptType" type="xs:string" />
+																					<xs:element name="ExemptTonnage" type="xs:decimal" />
+																				</xs:sequence>
+																			</xs:complexType>
+																		</xs:element>
+																	</xs:sequence>
+																</xs:complexType>
+															</xs:element>
+															<xs:element name="CreditClaims" minOccurs="0">
+																<xs:complexType>
+																	<xs:sequence>
+																		<xs:element name="CreditClaim" maxOccurs="unbounded">
+																			<xs:complexType>
+																				<xs:sequence>
+																					<xs:element name="TlbRefno" type="xs:integer" minOccurs="0"/>
+																					<xs:element name="AttributeType" type="xs:string" />
+																					<xs:element name="AggregateType" type="xs:string" />
+																					<xs:element name="TaxCreditType" type="xs:string" />
+																					<xs:element name="RelatedTareRefno" type="xs:integer"/>
+																					<xs:element name="SrpbRefno" type="xs:integer"/>
+																					<xs:element name="Tonnage" type="xs:decimal" />
+																					<xs:element name="Rate" type="xs:decimal" />
+																					<xs:element name="CreditAmount" type="xs:decimal" />
+																				</xs:sequence>
+																			</xs:complexType>
+																		</xs:element>
+																	</xs:sequence>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="Repayment" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="RepaymentInd" type="core:YesNoType" minOccurs="0"/>
+												<xs:element name="RepayAccountHolder" type="xs:string" minOccurs="0"/>
+												<xs:element name="RepayBankAccountNo" type="xs:string" minOccurs="0"/>
+												<xs:element name="RepayBankSortCode" type="xs:string" minOccurs="0"/>
+												<xs:element name="RepaymentBankName" type="xs:string" minOccurs="0"/>
+												<xs:element name="RepayAmountClaimed" type="xs:decimal" minOccurs="0"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="BadDebt" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="BadDebtCreditAmount" type="xs:decimal" minOccurs="0" />
+												<xs:element name="BadDebtDetails" type="xs:string" minOccurs="0" />
+												<xs:element name="BadDebtDate" type="xs:date" minOccurs="0" />
+												<xs:element name="BadDebtDeclaration" type="xs:string" minOccurs="0" />
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+				<xs:element name="TaxPayable" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NetExemptTonnage" type="xs:decimal" minOccurs="0" />
+							<xs:element name="TotalTaxDue" type="xs:decimal" minOccurs="0" />
+							<xs:element name="TotalCredit" type="xs:decimal" minOccurs="0" />
+							<xs:element name="NetTaxPayable" type="xs:decimal" minOccurs="0" />
+							<xs:element name="Declaration" type="xs:string" minOccurs="0" />
+							<xs:element name="FPAYMethod" type="xs:string" minOccurs="0" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="AmountAlreadyPaid" type="xs:decimal" minOccurs="0" />
+				<xs:element name="AmountBalance" type="xs:decimal" minOccurs="0" />
+				<xs:element name="PrintData" type="xs:string" minOccurs="0" />
+				<xs:element name="PrintDataReceipt" type="xs:string" minOccurs="0" />
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="GetSATReturnResponse">
+		<wsdl:part name="parameters" element="ns:GetSATReturnResponse"/>
+	</wsdl:message>
+	<wsdl:message name="GetSATReturnRequest">
+		<wsdl:part name="parameters" element="ns:GetSATReturnRequest"/>
+	</wsdl:message>
+	<wsdl:portType name="GetSATReturnWSDLPort">
+		<wsdl:operation name="GetSATReturnWSDL">
+			<wsdl:output message="tns:GetSATReturnResponse"/>
+			<wsdl:input message="tns:GetSATReturnRequest"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetSATReturnWSDLBinding" type="tns:GetSATReturnWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="GetSATReturnWSDL">
+			<soap:operation soapAction="http://www.necsws.com/RSTS/GetSATReturn"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetSATReturnWSDLService">
+		<documentation>northgateps.com Tax Return Service</documentation>
+		<wsdl:port name="GetSATReturnWSDLPort" binding="tns:GetSATReturnWSDLBinding">
+			<soap:address location="https://[server]/[port]/communication/GetSATReturn"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

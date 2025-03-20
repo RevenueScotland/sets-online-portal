@@ -17,7 +17,7 @@ module ServiceClient # rubocop:disable Metrics/ModuleLength
   # @param savon_log [Boolean] see new_client.
   # @return client from internal hash or retrieve it from the file
   def self.get_client(wsdl_file, end_point, service_config, savon_log)
-    savon_log = true if savon_log.nil?
+    savon_log = false if savon_log.nil?
     unless @clients.key?(wsdl_file)
       Rails.logger.debug { "Setting up client to #{end_point} using #{wsdl_file}" }
       @clients[wsdl_file] = new_client(wsdl_file, service_config[:root] + end_point, service_config, savon_log)

@@ -1,32 +1,43 @@
 <% resource_items_hash.each do |type, resource_item| %>
   <% if control_hash[type][:legend].present? %>
-    <fieldset>
-      <div class="ds_field-group">
-        <legend id=<%="#{type}_legend"%> aria_describedby=<%="#{type}_hint"%>><%= control_hash[type][:legend] %></legend>
+    <fieldset>      
+      <div class="ds_field-group"> 
+        <% unless @hide_upload_section %>
+          <legend id=<%="#{type}_legend"%> aria_describedby=<%="#{type}_hint"%>><%= control_hash[type][:legend] %></legend>
           <p id=<%="#{type}_hint"%>><%= control_hash[type][:hint] %></p>
-        <% end %>
+        <% end %>       
+        
+  <% end %>
         <div>
           <%= ds_fields_for(resource_item, index: type) do |ri| %>
-            <% if control_hash[type][:show_upload] %>
-              <%= ri.ds_file_field(method: :file_data, optional: optional, 
-                 interpolations: {supported_file_types: supported_file_types, max_file_size_mb: max_file_size_mb}) %>
-              <% if description %>
-                <%= ri.ds_text_field(method: :description, optional: true) %>
+            <% unless @hide_upload_section %>
+              <% if control_hash[type][:show_upload] %>
+                <%= ri.ds_file_field(method: :file_data, optional: optional, 
+                  interpolations: {supported_file_types: supported_file_types, max_file_size_mb: max_file_size_mb}) %>
+                <% if description %>
+                  <%= ri.ds_text_field(method: :description, optional: true) %>
+                <% end %>
               <% end %>
-            <% end %>
-            <% if control_hash[type][:button_label] %>
-              <%= ri.ds_submit(button_action: :add_resource, type: :secondary, button_label: t(control_hash[type][:button_label]), extra_classes: "ds_!_margin-top--0",
-                         data_options: {"file-upload-target": "upload"}) %>
-            <% end %>
-          </div>
-        <% end %>
-        <%if control_hash[type][:resource_items].present?%>
-          <%= rs_resource_item_table(resource_items:control_hash[type][:resource_items], caption: t('.caption', count:control_hash[type][:resource_items].count ),
-                         description: description, 
-                         id: 'resource_item_file_data', small_screen: 'scrolling')%>
-        <% end %>
-        <% if control_hash[type][:legend].empty? %>
+              <% if control_hash[type][:button_label] && @resource_items&.count != @max_uploads %>
+                <%= ri.ds_submit(button_action: :add_resource, type: (@button_type.present? ? @button_type : :secondary), button_label: (@button_label.present? ? @button_label : t(control_hash[type][:button_label])), extra_classes: "ds_!_margin-top--0",
+                          data_options: {"file-upload-target": "upload"}) %>
+              <% elsif @resource_items&.count == @max_uploads %>
+                <p class="ds_hint-text"><%= t(".upload_limit_reached") %></p> 
+              <% end %>
+            <% end %>            
         </div>
-      </fieldset>
-    <% end %>
+        <% end %>
+      
+        <% unless @hide_uploaded_files_section %>          
+          <%if control_hash[type][:resource_items].present?%>
+            <%= rs_resource_item_table(resource_items:control_hash[type][:resource_items], caption: t('.caption', count:control_hash[type][:resource_items].count ),
+                          description: description, 
+                          id: 'resource_item_file_data', small_screen: 'scrolling')%>
+          <% end %>
+        <% end %>
+        
+        <% if control_hash[type][:legend].empty? %>
+      </div>
+    </fieldset>
   <% end %>
+<% end %>

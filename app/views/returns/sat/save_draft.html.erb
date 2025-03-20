@@ -1,0 +1,6 @@
+<%= ds_notification_panel(title: t('.title'), reference: @sat_return.tare_reference, success: true) do %>
+  <%= ds_paragraph{t('.information')} %>
+<% end %>
+<%= ds_warning{t('.caution')} %>
+<%= ds_paragraph { ds_link(name: t('.back_to_return_summary'),url: returns_sat_summary_path)} %>
+<%= ds_paragraph {ds_link(name: t('.go_to_dashboard'),url: dashboard_path)} %>

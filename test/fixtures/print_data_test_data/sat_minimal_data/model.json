@@ -1,0 +1,104 @@
+{
+    "json_class": "Returns::Sat::SatReturn",
+    "tare_reference": "RS1000073XJTP",
+    "version": "1",
+    "form_type": "L",
+    "tare_refno": "182",
+    "submitted_date": "01/02/2024",
+    "total_tax_due": 1012.97,
+    "total_credit": 200,
+    "tax_payable": 812.97,
+    "enrm_name": "Kevin Peterson Partnership",
+    "selected_return_period": {
+        "json_class": "Returns::Sat::ReturnPeriod",
+        "trs_refno": 33,
+        "period_start": "01/01/2024",
+        "period_end": "01/02/2024",
+        "sites": {
+            "97": {
+                "json_class": "Returns::Sat::Sites",
+                "site_name": "Site 1",
+                "site_party_name": "Burhan Sites Co",
+                "period_bdown_start": "01/01/2024",
+                "period_bdown_end": "01/02/2024",
+                "tld_nil_submit": "Y",
+                "taxable_tonnage": 499,
+                "exempt_tonnage": 10,
+                "tax_due": 1012.97,
+                "tax_payable": 812.97,
+                "taxable_aggregates": {
+                    "10": {
+                        "json_class": "Returns::Sat::TaxableAggregate",
+                        "aggregate_type": "ROCK",
+                        "comm_exploitation_type": "CONSTRUCT",
+                        "exploited_tonnage": 500,
+                        "water_tonnage": 1,
+                        "mixed_ind": "Y",
+                        "rate": 2.03,
+                        "tax_due": 1012.97,
+                        "new_record": true
+                    }
+                },
+                "exempt_aggregates": {
+                    "20": {
+                        "json_class": "Returns::Sat::ExemptAggregate",
+                        "aggregate_type": "ROCK",
+                        "exempt_type": "DREDGING",
+                        "exempt_tonnage": 10,
+                        "new_record": true
+                    }
+                },
+                "credit_claims": {
+                    "30": {
+                        "json_class": "Returns::Sat::CreditClaim",
+                        "aggregate_type": "ROCK",
+                        "tax_credit_type": "EXCEPTED",
+                        "tax_period_ind": "Y",
+                        "tax_tonnage": 100,
+                        "tax_rate": 2.03,
+                        "credit_amount": 203,
+                        "new_record": true
+                    }
+                },
+                "new_record": true
+            }
+        },
+        "new_record": true
+    },
+    "current_user": {
+        "json_class": "User",
+        "username": "PORTAL.SAT.ONE",
+        "portal_objects_access": [
+            {
+                "display_reference": "SAT1000000TVTV",
+                "object_type": "ENRM_REFNO",
+                "object_reference": "106",
+                "display_name": "Kevin Peterson Partnership"
+            }
+        ],
+        "portal_object_index": 0,
+        "portal_object_display_reference": "SAT1000000TVTV",
+        "work_place_refno": "3",
+        "party_refno": "2469",
+        "user_roles": {
+            "user_role": [
+                "ACCADMN",
+                "ACCSECADMN",
+                "COREWS",
+                "PWSAMEND",
+                "PWSCLAIM",
+                "PWSDASH",
+                "PWSDRNEW",
+                "PWSDRSUB",
+                "PWSDRUPD",
+                "PWSMESSAGE"
+            ]
+        },
+        "password_change_required": false,
+        "password_expiry_date": "2024-08-20",
+        "new_record": true
+    },
+    "new_record": true,
+    "declaration": "Y",
+    "fpay_method": "BACS"
+}

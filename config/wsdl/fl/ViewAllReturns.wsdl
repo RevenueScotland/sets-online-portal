@@ -186,6 +186,8 @@
 						</xs:element>
 						<xs:element name="ParRefno" type="xs:string"/>
 						<xs:element name="Username" type="xs:string"/>
+						<xs:element name="PortalObjectType" type="xs:string" minOccurs="0"/>
+            <xs:element name="PortalObjectReference" type="xs:string" minOccurs="0"/>
 						<xs:element name="TAREReference" type="xs:string" minOccurs="0"/>
 						<xs:element name="TARERefno" type="xs:string" minOccurs="0"/>
 						<xs:element name="SortBy">

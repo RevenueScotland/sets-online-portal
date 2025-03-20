@@ -21,8 +21,9 @@ module DS
       # @param interpolations [Hash] Hash of options that are passed down to @see LabellerDelegate,
       #   only used if the header is :label type
       def initialize(model: nil, method: nil, type: :automatic, align: nil, header: false, colspan: nil,
-                     interpolations: {})
+                     cell_as_row: false, interpolations: {})
         super()
+        @cell_as_row = cell_as_row
         header_or_value(header, model, method, interpolations, type)
         @options = {}
         @options[:scope] = 'row' if @header
@@ -84,8 +85,15 @@ module DS
                            else
                              (labeller ? label_text : '')
                            end), content])
+        add_classes(body)
+      end
+
+      # add the classes to the specific component
+      def add_classes(body)
         if @header
           tag.th(body, **@options)
+        elsif @cell_as_row
+          tag.td(body, **@options, class: 'rs_cell_as_row')
         else
           body.empty? ? tag.td(body, **@options, class: 'rs_empty_cell_width') : tag.td(body, **@options)
         end

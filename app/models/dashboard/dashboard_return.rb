@@ -217,7 +217,10 @@ module Dashboard
       # Checks if the filter fields consists of valid data
       return unless filter.valid?
 
-      all_returns, back_office_pagination = back_office_all_returns_data(requested_by, filter, pagination)
+      account = Account.find(requested_by) if requested_by.present?
+
+      all_returns, back_office_pagination = back_office_all_returns_data(requested_by, filter, pagination,
+                                                                         account.taxes)
       all_returns = all_returns.values
       pagination = Pagination.paginate_back_office(pagination, back_office_pagination)
 
@@ -276,9 +279,10 @@ module Dashboard
     # @note new_id is used instead of reference so that data won't get lost as reference can
     #   be not unique, this is used for putting the instances on a hash.
     # @return [Hash] a hash of all returns from the back office
-    private_class_method def self.back_office_all_returns_data(requested_by, filter, pagination)
+    private_class_method def self.back_office_all_returns_data(requested_by, filter, pagination, srv_code)
       all_returns, pagination_return = {}
-      success = call_ok?(:view_all_returns, request_elements(requested_by, filter, pagination)) do |body|
+
+      success = call_ok?(:view_all_returns, request_elements(requested_by, filter, pagination, srv_code)) do |body|
         break if body.blank?
 
         pagination_return = body[:returns][:pagination]
@@ -328,13 +332,20 @@ module Dashboard
     #
     # We need to downcase the filters from Yes/No as that is what the back office expects
     # @return [Hash] elements used to specify what data we want to get from the back office
-    private_class_method def self.request_elements(requested_by, filter, pagination)
-      { SRVCode: nil, ParRefno: requested_by.party_refno, Username: requested_by.username,
-        OutstandingBalance: filter.lookup_ref_data_value(:outstanding_balance)&.downcase,
-        AllVersions: filter.lookup_ref_data_value(:all_versions).downcase,
-        DraftOnly: filter.lookup_ref_data_value(:draft_only).downcase,
-        MyReturnsOnly: filter.lookup_ref_data_value(:my_returns_only).downcase }
-        .merge(request_optional_elements(filter, pagination))
+    private_class_method def self.request_elements(requested_by, filter, pagination, srv_code)
+      request = { SRVCode: srv_code, ParRefno: requested_by.party_refno, Username: requested_by.username,
+                  OutstandingBalance: filter.lookup_ref_data_value(:outstanding_balance)&.downcase,
+                  AllVersions: filter.lookup_ref_data_value(:all_versions).downcase,
+                  DraftOnly: filter.lookup_ref_data_value(:draft_only).downcase,
+                  MyReturnsOnly: filter.lookup_ref_data_value(:my_returns_only).downcase }
+                .merge(request_optional_elements(filter, pagination))
+      srv_code.include?('SAT') ? request.merge(request_portal_objects_elements(requested_by)) : request
+    end
+
+    # @return a hash suitable to get the returns based on portal object
+    private_class_method def self.request_portal_objects_elements(requested_by)
+      { PortalObjectType: requested_by.portal_object_type,
+        PortalObjectReference: requested_by.portal_object_reference }
     end
 
     # The optional request element list to retrieve more specific data.

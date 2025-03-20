@@ -15,7 +15,7 @@ require 'action_controller/railtie'
 require 'action_view/railtie'
 # TODO: RSTP-1398: Using the action cable dependency for eager load issue
 # https://github.com/hotwired/turbo-rails/issues/512
-require 'action_cable/engine'
+# require 'action_cable/engine'
 require 'rails/test_unit/railtie'
 
 # Require the gems listed in Gemfile, including any gems
@@ -130,10 +130,14 @@ module RevScot
 
     # CSV file upload content type limit type (CSV)
     config.x.slft_waste_file_upload_content_type_allowlist = 'text/csv'
+    config.x.sat_site_file_upload_content_type_allowlist = 'text/csv'
+    config.x.sat_file_upload_content_type_allowlist = 'text/csv'
 
     # alias as CSV files are seen as Excel files if excel is installed on the users device
     # not combined with the above so that this is not shown to the users as a valid file type to upload.
     config.x.slft_waste_file_upload_alias_content_type_allowlist = 'application/vnd.ms-excel'
+    config.x.sat_site_file_upload_alias_content_type_allowlist = 'application/vnd.ms-excel'
+    config.x.sat_file_upload_alias_content_type_allowlist = 'application/vnd.ms-excel'
 
     # When a file is uploaded but the client doesn't know it's content/mime type, it sends it with the following
     # content type
@@ -179,6 +183,9 @@ module RevScot
 
     # Constant for allowed Country Code
     config.x.allowed_property_country_code = 'SCO'
+
+    # Set max file name allowed for messages upload feature
+    config.x.file_upload_file_name_limit = 100
 
     config.after_initialize do
       # After initialisation log that we have stared

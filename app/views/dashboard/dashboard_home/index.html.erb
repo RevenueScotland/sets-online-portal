@@ -1,4 +1,4 @@
-<% content_for(:page_title, t('.title')) %>
+<% content_for(:page_title, t('.title', name: current_user.portal_account_name)) %>
 <% content_for(:navigation_link, :clear_stack) %>
 <% if account_has_no_service? %>
   <%= ds_warning{ t('.no_services')} %>

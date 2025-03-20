@@ -25,6 +25,7 @@ module UserValidation
     validates :user_is_current, presence: true, format: /\A(Y|N)\z/i, on: %i[save update]
 
     validates :user_is_signed_ta_cs, acceptance: { accept: ['Y'] }, on: :confirm_tcs
+    validates :portal_object_index, presence: true, on: :select_portal_object
   end
 
   # Check password is expired or not
@@ -41,6 +42,13 @@ module UserValidation
   # Check if the user needs to read the terms and conditions again
   def check_tcs_required?
     user_is_signed_ta_cs != 'Y'
+  end
+
+  # Check if the user needs to select the enrolment objects
+  def check_object_needed?
+    return false if portal_objects_access.nil?
+
+    true
   end
 
   # Return number of days remaining for password to expire

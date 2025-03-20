@@ -1,23 +1,14 @@
 <% content_for(:page_title, t('.title')) %>
 <% content_for(:back_link, dashboard_messages_path('dashboard_message_filter[sort_by]': 'MostRecent') ) %>
+<div class="messages_details_table">
 <%= ds_summary_list(model: @message, show_border: false) do |s|%>
   <% s.with_item_method(method: :full_name) %>
   <% s.with_item_method(method: :created_date ,type: :date) %>
   <% s.with_item_method(method: :subject_description) %>
   <% s.with_item_method(method: :reference) %>
+  <% s.with_item_method(method: :agent_reference) %>
   <% s.with_item_method(method: :title) %>
   <% s.with_item_method(method: :body) %>
-<% end %>
-<%= ds_form_with(model: @message, button_action: :none, url: toggle_read_status_dashboard_message_path) do |f| %>
-  <% if can? RS::AuthorisationHelper::CREATE_MESSAGE %>
-    <%= ds_button(url: new_dashboard_message_path(smsg_refno: @message.smsg_refno),
-                  name: t('.reply')) %>
-  <% end %>
-  <% if @message.direction == 'O' %>
-    <%= f.ds_hidden_field(:read_indicator)%>
-    <%= f.ds_submit(button_action: :submit, type: :secondary, button_label: @message.read_indicator == 'Yes' ? t('.unread') : t('.read'))%>
-    <%# <% @message.status_update %>
-  <% end %>
 <% end %>
 <%if @message.attachments %>
   <%= rs_resource_item_table(resource_items: @message.attachments, caption: t('.caption'),
@@ -26,6 +17,58 @@
         download_extra_keys: {type: nil},
         delete: false,
         id: 'view_attachments', small_screen: 'scrolling')%>
+<% end %>
+</div>
+<div class="message_link_container">
+    <% if @message.next_refno.present? %>
+      <a class="ds_pagination__link  ds_pagination__link--text  ds_pagination__link--icon" href="<%= dashboard_message_path(@message.next_refno,"mark_as_read": "Y", "page": @message.next_page_number) %>">
+        <svg class="ds_icon" aria-hidden="true" role="img">
+          <use href="<%= image_path('assets/images/icons/icons.stack.svg#chevron_left') %>"></use>
+        </svg>
+        <span class="ds_pagination__link-label"><%= t('.previous_link') %></span>
+      </a>
+  <% end %> 
+  <% unless @messages.nil? %>  
+    <% @messages.each.with_index(1)  do |message, index| %>
+      <% if message.smsg_refno == @message.smsg_refno %>
+          <li class="ds_pagination__item" >
+          <a class="ds_pagination__link ds_current" >
+            <span class="ds_pagination__link-label"><%= index %></span>
+          </a>
+        </li>
+      <% else %>
+          <li class="ds_pagination__item" >
+          <a class="ds_pagination__link" href="<%= dashboard_message_path(message.smsg_refno,"mark_as_read": "Y") %>"> 
+            <span class="ds_pagination__link-label"><%= index %></span>
+          </a>
+        </li>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% if @message.prev_refno.present? %> 
+      <a class="ds_pagination__link  ds_pagination__link--text  ds_pagination__link--icon" href="<%= dashboard_message_path(@message.prev_refno,"mark_as_read": "Y", "page": @message.prev_page_number) %>">
+        <span class="ds_pagination__link-label"><%= t('.next_link') %></span>
+        <svg class="ds_icon" aria-hidden="true" role="img">
+          <use href="<%= image_path('assets/images/icons/icons.stack.svg#chevron_right') %>"></use>
+        </svg>
+      </a>
+  <% end %>
+</div>
+<br>
+<%= ds_form_with(model: @message, button_action: :none, url: toggle_read_status_dashboard_message_path) do |f| %>
+  <% if can? RS::AuthorisationHelper::CREATE_MESSAGE %>
+    <%= ds_button(url: new_dashboard_message_path(smsg_refno: @message.smsg_refno),
+                  name: t('.reply')) %>
+  <% end %>
+  <%= ds_link(name: t('.view_all'),
+             url: download_view_all_dashboard_message_path(@message.original_smsg_refno),
+             target: '_blank',
+             show_new_tab: false,
+             subtype: :secondary_button) %>
+  <% if @message.direction == 'O' %>
+    <%= f.ds_hidden_field(:read_indicator)%>
+    <%= f.ds_submit(button_action: :submit, type: :secondary, button_label: @message.read_indicator == 'Yes' ? t('.unread') : t('.read'))%>
+  <% end %>
 <% end %>
 <%= rs_message_table(messages:@messages, caption: t('.heading'), id: 'view_messages', small_screen: 'scrolling',
                      pagination_collection: @pagination_collection ) if @messages %>

@@ -1,0 +1,8 @@
+
+<% content_for(:navigation_link, :clear_stack) %>
+<% content_for(:label_as_title, t('.title')) %>
+
+<%= ds_warning { t('.save_data_confirm') }%>
+
+<%= ds_button(name: t('.proceed'), url: returns_sat_confirm_data_import_path(overwrite_data: :yes)) %>
+<%= ds_button(name: t('.cancel'), url: returns_sat_confirm_data_import_path(overwrite_data: :no), type: :secondary) %>

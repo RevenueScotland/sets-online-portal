@@ -1,0 +1,7 @@
+<% content_for :page_title, t('.title') %>
+<%= ds_form_with(model: @account, url: @post_path, method: :post) do |f| %>
+  <%= f.ds_text_field(method: :enrolment_ref) %>
+  <%= f.ds_text_field(method: :tp_business_name) %>
+  <%= f.ds_text_field(method: :tp_busi_postcode) %>
+  <%= f.ds_email_field(method: :tp_busi_email_addr) %>
+<% end %>

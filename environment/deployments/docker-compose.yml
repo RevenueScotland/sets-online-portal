@@ -1,0 +1,112 @@
+version: "3.4"
+services:
+  ${DOCKERIMAGENAME}-app-${ENVIRONMENT}:
+    image: ${REGISTRY}/${DOCKERIMAGENAME}-app:${TAG}
+    hostname: app
+    networks:
+      - common
+    volumes:
+      - /var/log/${VOLUME_PATH}/app/:/opt/revscot/log/:Z
+    container_name: ${DOCKERIMAGENAME}-app-${ENVIRONMENT}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/opt/revscot/healthcheck.sh"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    extra_hosts:
+      - "db.uk.clamav.net:104.16.219.84"
+      - "database.clamav.net:104.16.219.84"
+      - "clamav.sse:10.102.71.99"
+      - "oprojects1:10.102.214.12"
+    environment:
+      - APPLICATION_DOCROOT=/revscot
+      - RAILS_ENV=${RAILS_ENV}
+      - NODE_ENV=${RAILS_ENV}
+      - ENVIRONMENT=${RAILS_ENV}
+      - ANALYTIC_TRACKING_ID=G-MMPGL11WS3
+      - RAILS_LOG_LEVEL=debug
+      - FL_TIMEOUT=120
+      - RAILS_MAX_THREADS=10
+      - WEB_CONCURRENCY=3
+    env_file:
+      - password.env
+    labels:
+      com.northgateps.nds.application-name: "revscot"
+      com.northgateps.nds.environment: "${ENVIRONMENT}"
+      com.northgateps.nds.version: "${IMAGE_VERSION}"
+      com.northgateps.nds.layer: "app"
+      com.northgateps.nds.service: "app"
+
+  ${DOCKERIMAGENAME}-redis-${ENVIRONMENT}:
+    image: ${REGISTRY}/${DOCKERIMAGENAME}-redis:${TAG}
+    hostname: redis
+    networks:
+      - common
+    volumes:
+      - /var/log/${VOLUME_PATH}/redis/:/var/log/redis/:Z
+    container_name: ${DOCKERIMAGENAME}-redis-${ENVIRONMENT}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/usr/local/redis/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    env_file:
+      - password.env
+    labels:
+      com.northgateps.nds.application-name: "revscot"
+      com.northgateps.nds.environment: "${ENVIRONMENT}"
+      com.northgateps.nds.version: "${IMAGE_VERSION}"
+      com.northgateps.nds.layer: "redis"
+      com.northgateps.nds.service: "redis"
+
+  ${DOCKERIMAGENAME}-proxy-${ENVIRONMENT}:
+    image: ${REGISTRY}/${DOCKERIMAGENAME}-proxy:${TAG}
+    hostname: proxy
+    networks:
+      - common
+    ports:
+      - "${PROXY_HTTP_PORT}:${INT_PROXY_HTTP_PORT}"
+      - "${PROXY_HTTPS_PORT}:${INT_PROXY_HTTPS_PORT}"
+    extra_hosts:
+      - "db.uk.clamav.net:104.16.219.84"
+      - "database.clamav.net:104.16.219.84"
+      - "clamav.sse:10.102.71.99"
+    volumes:
+      - /var/log/${VOLUME_PATH}/proxy/httpd/:/etc/httpd/logs/:Z
+    container_name: ${DOCKERIMAGENAME}-proxy-${ENVIRONMENT}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/usr/local/httpd/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    environment:
+      - APPLICATION_DOCROOT=revscot
+      - SERVER_NAME=${DOCKERHOST}
+      - SERVERS_NAME=${DOCKERHOST}
+      - HTTP_PORT=${INT_PROXY_HTTP_PORT}
+      - HTTPS_PORT=${INT_PROXY_HTTPS_PORT}
+      - EXTERNAL_HOST=${DOCKERHOST}
+      - EXTERNAL_HTTP_PORT=${PROXY_HTTP_PORT}
+      - EXTERNAL_HTTPS_PORT=${PROXY_HTTPS_PORT}
+      - PROXY_HTTP_PORT=${INT_PROXY_HTTP_PORT}
+      - PROXY_HTTPS_PORT=${INT_PROXY_HTTPS_PORT}
+      - UI_HOST=${DOCKERIMAGENAME}-app-${ENVIRONMENT}
+      - UI_SERVER_PORT=3000
+      - ADDITIONAL_SUBJECTS=$HOSTNAME.global.internal,$HOSTNAME,${DOCKERIMAGENAME}-proxy-${ENVIRONMENT}
+      - MOD_EVASIVE_WHITELIST=${MOD_EVASIVE_WHITELIST}
+    labels:
+      com.northgateps.nds.application-name: "revscot"
+      com.northgateps.nds.environment: "${ENVIRONMENT}"
+      com.northgateps.nds.version: "${IMAGE_VERSION}"
+      com.northgateps.nds.layer: "proxy"
+      com.northgateps.nds.service: "proxy"
+
+networks:
+  common:
+    driver: bridge

@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 // This uses the standard revenue scotland storage logic for cookies
-import _storage from '../../../node_modules/@scottish-government/pattern-library/src/base/tools/storage/storage';
+import _storage from '../../../node_modules/@scottish-government/design-system/src/base/tools/storage/storage';
 
 // The banner controller handles closing a banner message, and recording the fact
 export default class extends Controller {

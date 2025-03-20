@@ -201,6 +201,10 @@ en:
         edit_calc_reason:
           default: "%{label}"
           summary: "Reason for editing the calculation"
+      returns/lbtt/yearly_rent:
+        rent:
+          visually_hidden: "Rent for year %{year}"
+          print: "Rent"
     hints:
       returns/lbtt/lbtt_return:
         repayment_amount_claimed:
@@ -231,7 +235,7 @@ en:
         lease_start_date:
           default: ""
           readonly: "This field is read only. Contact Revenue Scotland if the value is not as expected."
-        orig_effective_date: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new window) for further details"
+        orig_effective_date: "This is usually the date the land transaction completed (e.g. the date the lease is granted). See guidance on the effective date (opens in a new tab) for further details"
         relevant_date_CONVEY: "See guidance on %{link} for further details"
         relevant_date_LEASERET: "See guidance on %{link} for further details"
         relevant_date_LEASEREV: 

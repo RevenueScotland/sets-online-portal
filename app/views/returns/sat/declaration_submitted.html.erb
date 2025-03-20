@@ -1,0 +1,29 @@
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_notification_panel(title: t('.return_submitted'), reference: @sat_return.tare_reference, success: true) %>
+
+<% if @sat_return.version == "1" %>
+    <%= ds_paragraph{t('return.submit.common.date_text', system_date: DateFormatting.to_display_date_format(Date.today))} %>
+    <%= ds_paragraph{t('return.submit.sat.payment_due_text').html_safe} %>
+    <%= ds_paragraph{ t('return.submit.sat.payment_method_html',
+                      payment_method: @sat_return.lookup_ref_data_value(:fpay_method)) } %>
+    <%= ds_paragraph{t('return.submit.sat.submit_text').html_safe} %>     
+<% else %>
+    <%= ds_paragraph{t('return.submit.sat.amend_return_reference_text', return_reference: @sat_return.tare_reference)} %>
+    <%= ds_paragraph{t('return.submit.common.date_text', system_date: DateFormatting.to_display_date_format(Date.today))} %>
+    <%= ds_paragraph{t('return.submit.sat.payment_due_text').html_safe} %>
+    <%= ds_paragraph{ t('return.submit.sat.payment_method_html',
+                      payment_method: @sat_return.lookup_ref_data_value(:fpay_method)) } %>
+    <%= ds_paragraph{t('return.submit.sat.submit_text')} %>
+<% end %>
+
+<%= ds_paragraph{t('return.submit.common.queries_contact_text')} %> 
+
+<% if can? RS::AuthorisationHelper::DOWNLOAD_RECEIPT %>    
+    <%= ds_link(name: t('return.submit.common.print_confirmation_text'), url: returns_sat_download_receipt_path, target: "_blank") %><br>
+<% end %>
+<%= ds_link(name: t('return.submit.common.send_secure_message_text'), url: new_dashboard_message_path(reference: @sat_return.tare_reference)) if current_user %> <br>
+<%= ds_link(name: t('go_to_dashboard'), url: dashboard_path) if current_user %> <br>
+<br>
+<%= ds_paragraph { ds_link(name: t('give_feed_back'), url: external_link_url('FDBK_SAT'),
+                             target: '_blank', subtype: :centered)} %>
+

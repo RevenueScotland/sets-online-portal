@@ -1,0 +1,57 @@
+version: "1.1"
+application: "Revenue Scotland"
+appname: revscot
+user: rsuser
+environments:
+  current_live_release:
+    name: "Current Live Release"
+    info: "Connected to RSTSTST3 back office"
+    environment: customerrelease
+    settings:
+      - FL_ENDPOINT_ROOT='http://lg-axway-qa.development.local:22080/communication'
+      - FL_USERNAME='EXTPWSUSER'
+      - FL_PASSWORD='WN1cXnWarb@BIDp'
+      - ADDRESS_SEARCH_ENDPOINT='http://oprojects1:36080/communication'
+      - PROXY_HTTP_PORT=4100
+      - PROXY_HTTPS_PORT=4101
+  customer_test_release:
+    name: "Customer Test Release"
+    info: "Connected to RSTSSCRM back office"
+    environment: currentreleasehotfix
+    settings:
+      - FL_ENDPOINT_ROOT='http://ps-axway-gw.global.internal:33080/communication'
+      - FL_USERNAME='EXTPWSUSER'
+      - FL_PASSWORD='WN1cXnWarb@BIDp'
+      - ADDRESS_SEARCH_ENDPOINT='http://oprojects1:36080/communication'
+      - PROXY_HTTP_PORT=4400
+      - PROXY_HTTPS_PORT=4401
+  backoffice_test_2:
+    name: "Back Office Test 2"
+    info: "Connected to RSTSTST4 back office"
+    environment: backofficetest2
+    settings:
+      - FL_ENDPOINT_ROOT='http://ps-axway-gw.global.internal:28080/communication'
+      - FL_USERNAME='EXTPWSUSER'
+      - FL_PASSWORD='WN1cXnWarb@BIDp'
+      - ADDRESS_SEARCH_ENDPOINT='http://oprojects1:36080/communication'
+      - PROXY_HTTP_PORT=4400
+      - PROXY_HTTPS_PORT=4401
+branch:
+  release:
+    pattern: ".*\\..*"
+  manualtest:
+    pattern: ".*"
+scm:
+  prefix: RSTP
+  branches:
+    release:
+      env_branch: release/revscot/{{release}}
+      code_tag: release/revscot/{{version}}
+    manualtest:
+      env_branch: develop
+      code_tag: rc/revscot/{{version}}
+docker:
+  - DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
+  - DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
+deployment:
+  method: nds-like

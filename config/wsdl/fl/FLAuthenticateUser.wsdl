@@ -161,6 +161,7 @@
 							<xsd:sequence>
 								<xsd:element name="UserIsAuthenticated" type="xsd:boolean"/>
 								<xsd:element name="UserIsRegistered" type="xsd:boolean"/>
+								<xsd:element name="UserIsApproved" type="xsd:boolean"/>
 								<!-- new element for the auth token-->
 								<xsd:element name="UserIs2FA" type="xsd:boolean"/>
 								<!-- new element for the auth token-->
@@ -175,6 +176,20 @@
 								<xsd:element name="MemorableAnswer" type="xsd:string"/>
 								<xsd:element name="UserLocked" type="xsd:boolean"/>
 								<xsd:element name="UserRoles" type="UserRolesType"/>
+								<xsd:element name="PortalObjectsAccess" minOccurs="0">
+									<xsd:complexType>
+										<xsd:sequence>
+											<xsd:complexType name="PortalObject" type="xsd:string">
+												<xsd:sequence>
+													<xsd:element name="DisplayName" type="xsd:string" />
+													<xsd:element name="DisplayReference" type="xsd:string" minOccurs="0"/>
+													<xsd:element name="ObjectType" type="xsd:string" />
+													<xsd:element name="ObjectReference" type="xsd:string" />
+												</xsd:sequence>
+											</xsd:complexType>
+										</xsd:sequence>
+									</xsd:complexType>
+								</xsd:element>
 							</xsd:sequence>
 						</xsd:extension>
 					</xsd:complexContent>

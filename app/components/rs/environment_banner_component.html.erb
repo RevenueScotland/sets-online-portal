@@ -1,0 +1,11 @@
+<% if banner_text.present? && env_colour.present? %>
+  <div class="rs_environment_banner <%= env_colour %>" id="rs_environment_banner">
+    <div class="ds_wrapper">
+      <p class="rs_phase-banner__content">
+        <span class="rs_phase-banner__text" id="rs_phase-banner__text">
+          <%= banner_text %>
+        </span>
+      </p>
+    </div>
+  </div>
+<% end %>

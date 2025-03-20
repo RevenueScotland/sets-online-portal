@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+  ${DOCKERIMAGENAME}-app-${ENVIRONMENT}:
+    environment:
+      - ANALYTIC_TRACKING_ID=G-MMPGL11WS3
+    env_file:
+      - proxy.env
+  ${DOCKERIMAGENAME}-proxy-${ENVIRONMENT}:
+    volumes:
+      - ../images/certs/server/${DOCKERHOST}/:/usr/local/httpd/ssl:Z
+    env_file:
+      - proxy.env
+  ${DOCKERIMAGENAME}-redis-${ENVIRONMENT}:
+    env_file:
+      - proxy.env

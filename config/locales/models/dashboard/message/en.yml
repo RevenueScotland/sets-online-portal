@@ -45,6 +45,7 @@ en:
         submit: "Send message"
         direction_code: "Type"
         reference: "Reference"
+        agent_reference: "Agent / your reference"
         created_by: "Sent by"
         attachment: Attachment
         has_attachment: Attachment
@@ -69,8 +70,9 @@ en:
     hints:
       dashboard/message:
         reference: "If the message relates to a return, this should be the Revenue Scotland return reference"
+        agent_reference: "This can be used for your own reference, such as an internal reference"
       dashboard/message_filter:
-        reference: "Enter part or all of the reference"
+        reference: "Enter all or part of the reference. This could be a Revenue Scotland return reference or your own internal reference."
         sent_by: "Enter part or all of the sender name"
     errors:
       models:

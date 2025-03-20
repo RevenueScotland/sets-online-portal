@@ -3,6 +3,6 @@
 <%= ds_paragraph {t('.description')} %>
 <%= ds_form_with(model: @user, button_action: :confirm, url: user_process_update_tcs_path) do |f| %>
   <%= f.ds_hidden_field(:username) %>
-  <%= f.ds_checkbox(method: :user_is_signed_ta_cs, 
-        interpolations: {link: ds_link(url: website_text_path('REGTSANDCS', clear_stack: true), name: t('activemodel.labels.user.user_is_signed_ta_cs_link'), target: '_blank') }) %>
+  <%= ds_link(url: website_text_path('REGTSANDCS', clear_stack: true), name: t('.user_is_signed_ta_cs_link'), target: '_blank') %>
+  <%= f.ds_checkbox(method: :user_is_signed_ta_cs) %>
 <% end %>

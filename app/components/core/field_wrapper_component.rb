@@ -9,7 +9,7 @@ module Core
   class FieldWrapperComponent < ViewComponent::Base
     include ListValidator
 
-    attr_reader :builder, :method, :one_question, :type, :show_label, :readonly
+    attr_reader :builder, :method, :one_question, :type, :show_label, :readonly, :error_link_suffix
 
     delegate :id, :label_text, :label_visually_hidden, :hint_text, :hint_id, :error_list, :error_id,
              :add_html_options, to: :wrapper
@@ -25,8 +25,9 @@ module Core
     # @param show_label [Boolean] Show the label, set to false for e.g. tables
     # @param interpolations [Hash] Hash of options that are passed down to @see LabellerDelegate
     # @param type [Symbol] Used to record the type of field being wrapped, can be used to change rendered html
+    # @param error_link_suffix [Symbol] used to link the error link to the first radio/checkbox option
     def initialize(builder:, method:, one_question: false, optional: false, show_label: true, interpolations: {},
-                   type: :field, readonly: false)
+                   type: :field, readonly: false, error_link_suffix: nil)
       super()
       @builder = builder
       @one_question = one_question
@@ -36,6 +37,7 @@ module Core
       @interpolations = interpolations
       @type = self.class.fetch_or_fallback(ALLOWED_TYPES, type, :field)
       @readonly = readonly
+      @error_link_suffix = error_link_suffix
     end
 
     # Is the type one of the field group types
@@ -48,7 +50,7 @@ module Core
       # The wrapper needs the view context
       @wrapper = WrapperDelegate.new(builder: @builder, method: @method,
                                      optional: @optional, interpolations: @interpolations, view_context: view_context,
-                                     readonly: @readonly)
+                                     readonly: @readonly, error_link_suffix: @error_link_suffix)
     end
 
     private

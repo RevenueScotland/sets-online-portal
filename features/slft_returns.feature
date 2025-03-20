@@ -245,13 +245,17 @@ Feature: SLfT Returns
         Then I should see the "Details of the waste for Waste Site 1" page
         And I should receive the message "Description of waste is too long (maximum is 255 characters)"
 
+        When I click on the "Back" link
+        Then I should see the "Waste details summary" page
+        When I click on the "Add new waste type" link
+        Then I should see the "Details of the waste for Waste Site 1" page
+
         When I enter "05 01 02 Desalter sludges" in the "EWC code" select or text field
-        Then I wait for 2 seconds
+        Then I enter "icky goo" in the "Description of waste" field
         And I select "Falkirk" from the "Geographical area"
+        And I should see "05 01 02 Desalter sludges" in the "EWC code" select or text field
         And I select "Landfill" from the "Management method"
         And I check the "Yes" radio button in answer to the question "Has this waste been moved out of a non-disposal area (NDA)?"
-        And I enter "icky goo" in the "Description of waste" field
-        And I should see "05 01 02 Desalter sludges" in the "EWC code" select or text field
         And I click on the "Continue" button
         Then I should see the "Details of the 05 01 02 waste for Waste Site 1" page
         And I should see the sub-title "Provide tonnage details for this waste type"
@@ -554,7 +558,8 @@ Feature: SLfT Returns
 
         # Note save draft is used to reload the page again, so when the back link is clicked, the flow of pages should still be correct.
         When I click on the "Save draft" button
-        And I click on the "Back" link
+        Then I should see the "Waste details summary" page
+        When I click on the "Back" link
         Then I should see the "Return summary" page
         And the table of data is displayed
             |              | Lower rate    | Standard rate | Exempt  | Total   |

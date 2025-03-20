@@ -1,11 +1,11 @@
 en:
   accounts:
     activate_account:
-      title: "Complete registration"
+      title: "Complete registration or password reset"
       activate_registration: "Confirm"
     activate_account_confirmation:
-      title: "Completed registration"
-      description: "Your Revenue Scotland account is now active"
+      title: "Completed registration or password reset"
+      description: "If you have completed your registration, once you have received email notification that your account is approved by Revenue Scotland, then you will be able to sign into your account. Else if you have changed your password, your new password is now active"
       continue: "Continue"
     edit_basic:
       title: "Update account"
@@ -24,6 +24,10 @@ en:
       account_for:
         title: "Sign up to file tax returns"
       taxes:
+        title: "Sign up to file tax returns"
+      account_type:
+        title: "Sign up to file tax returns"
+      enrol_ref:
         title: "Sign up to file tax returns"
       account_details:
         title: "Sign up to file tax returns"
@@ -52,6 +56,8 @@ en:
         section_title: "Your individual account details"
         description: "Enter user details here."
         you_will_be_sent_confirmation_email: "After you register you will be sent a confirmation email with instructions on how to complete your registration."
+        terms_and_conditions_link: "Terms & conditions"
+        email_data_link: "Email communication policy"
       confirmation:
         title: "Sign up to file tax returns"
         section_title: "Complete sign up"

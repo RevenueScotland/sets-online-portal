@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 17-Oct-2013   Version 1.0  -->
-<wsdl:definitions xmlns:ns="http://northgate-is.com/FL/MaintainUser" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://northgate-is.com/FL/MaintainUser.wsdl" targetNamespace="http://northgate-is.com/FL/MaintainUser.wsdl" name="MaintainUser">
+<wsdl:definitions xmlns:ns="http://northgate-is.com/FL/MaintainUser"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://northgate-is.com/FL/MaintainUser.wsdl" targetNamespace="http://northgate-is.com/FL/MaintainUser.wsdl" name="MaintainUser">
 	<wsdl:types>
-		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://northgateps.com/FLCommonTypes" targetNamespace="http://northgateps.com/FLCommonTypes" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			xmlns="http://northgateps.com/FLCommonTypes" targetNamespace="http://northgateps.com/FLCommonTypes" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:complexType name="Money">
 				<xsd:sequence>
 					<xsd:element name="Pounds" type="xsd:int"/>
@@ -39,7 +45,8 @@
 				</xsd:restriction>
 			</xsd:simpleType>
 		</xsd:schema>
-		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:complexType name="PersonNameType">
 				<xsd:sequence>
 					<xsd:element name="Title" minOccurs="0">
@@ -165,7 +172,10 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
-		<xsd:schema xmlns="http://northgate-is.com/FL/MaintainUser" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" xmlns:flc="http://northgateps.com/FLCommonTypes" targetNamespace="http://northgate-is.com/FL/MaintainUser" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns="http://northgate-is.com/FL/MaintainUser"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core"
+			xmlns:flc="http://northgateps.com/FLCommonTypes" targetNamespace="http://northgate-is.com/FL/MaintainUser" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:import namespace="http://northgate-is.com/FL/Core"/>
 			<xsd:import namespace="http://northgateps.com/FLCommonTypes"/>
 			<xsd:element name="MaintainUserRequest">
@@ -212,7 +222,7 @@
 							CompanyName provided AND Reg Number then create a Company
 							else if CompanyName provided and NO Reg Number then create an
 							organisation
-						</xsd:documentation>
+								</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element name="RegisteredAddress" type="core:AddressType" minOccurs="0">
@@ -298,14 +308,14 @@
 							<xsd:annotation>
 								<xsd:documentation>NINO of Primary Contact captured for
 							Organisations OR NINO of Individual Party. Not Companies
-						</xsd:documentation>
+								</xsd:documentation>
 							</xsd:annotation>
 							<!--NEW NINO for Party captured for Orgs and Individual -->
 						</xsd:element>
 						<xsd:element name="PartyAccountType" type="xsd:string" minOccurs="0">
 							<xsd:annotation>
-								<xsd:documentation>Is the Registered party an Agent or a Tax
-							Payer?</xsd:documentation>
+								<xsd:documentation>Is the Registered party an Agent, Tax
+							Payer or UK tax representative?</xsd:documentation>
 							</xsd:annotation>
 							<!--NEW Is the Party a TaxPayer or an Agent -->
 						</xsd:element>
@@ -328,6 +338,20 @@
 							</xsd:simpleType>
 						</xsd:element>
 						<xsd:element name="PartyPhoneNumber" type="flc:PhoneNumberType" minOccurs="0"/>
+						<xsd:element name="RegistrationType" type="xsd:string" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation> Enrolment type as SAT
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="RegistrationValue" type="xsd:string" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation> Enrolment reference number for SAT
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="RegistrationNotes" minOccurs="0" type="xsd:string" />
+						<!-- User registration notes  -->
 					</xsd:sequence>
 				</xsd:complexType>
 			</xsd:element>

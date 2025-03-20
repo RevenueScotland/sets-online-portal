@@ -172,7 +172,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     # @return [Array] an array of strings with one entry per object
     def tablerow_array(objects)
       tablerow = []
-      objects.each do |object|
+      objects.each do |object| # rubocop:disable Style/MapIntoArray
         tablerow << RowData.new(object.row_cells)
       end
       tablerow
@@ -462,7 +462,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @return [Array] the array of values
   def row_cell_items(cell_items)
     list = []
-    cell_items.each do |cell|
+    cell_items.each do |cell| # rubocop:disable Style/MapIntoArray
       list << RowCell.new(self, cell[:list_items])
     end
     list
@@ -474,7 +474,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   def table_cell_headers(row_cells)
     list = []
 
-    row_cells.each do |cell|
+    row_cells.each do |cell| # rubocop:disable Style/MapIntoArray,Lint/RedundantCopDisableDirective
       list << if cell[:list_items].count == 1
                 item = cell[:list_items][0]
                 this_label(item[:code], item[:action_name], item[:label]) unless item[:label] == false

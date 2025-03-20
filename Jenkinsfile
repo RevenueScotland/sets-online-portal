@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="3.2.2"
+def RUBY_VERSION="3.3.6"
 
 /*
 	* Back office names
@@ -48,19 +48,20 @@ timestamps {
 		}
 		node ('revscot-docker-build') {
 			milestone(2)
-			envGitCheckout()
+			codeGitCheckout()
 			lock (resource: "revscot-container-image-build", inversePrecedence: true) {
 				dockerImageBuild()
 			}
 		}
 
+
 		lock (resource: "${this.getAppName()}-${env.BRANCH_NAME}-autotest", inversePrecedence: true) {
 			node ('revscot-docker-auto-run') {
 				milestone(3)
-				(deployed, host, port, seleniumPort) = deployDockeredEnvironment("autotest")
+				(deployed, host, port) = deployDockeredEnvironment("autotest")
 				if (deployed) {
 					stage ('Auto Testing') {
-						runAutotest(host, port, seleniumPort)
+						runAutotestPodman(host, port)
 					}
 				}
 			}
@@ -72,7 +73,7 @@ timestamps {
 			node ('revscot-docker-run') {
 				stage ('Manual Testing') {
 					milestone(4)
-					(deployed, host, port, seleniumPort) = deployDockeredEnvironment(manualTestName, manualTestLabel, true, backOfficeLabel)
+					(deployed, host, port) = deployDockeredEnvironment(manualTestName, manualTestLabel, true, backOfficeLabel)
 					if (isDevelopBranch() && deployed) {
 						deployDockeredEnvironment("backofficetest", "Back Office Test", false, BOT_BACKOFFICE)
 					} 
@@ -128,7 +129,7 @@ def getAppUser() {
 }
 
 def getTestDelay() {
-	return 30;
+	return 60;
 }
 
 def sendTimeoutEmail() {
@@ -216,34 +217,13 @@ def emailChangeLog() {
  *
  */
 def codeGitCheckout() {
+	sh '[ -d code ] && sudo chown -R jenkins:jenkins code || echo'
 	checkout([
 		$class: 'GitSCM',
 		branches: scm.branches,
 		extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'code']] + scm.extensions,
 		userRemoteConfigs: scm.userRemoteConfigs
 	])
-}
-
-/*
- * Check out the NdsEnvironment git repo into the folder envionment. It takes the top from the current build branch, and only checks out the
- * NdsEnvironment/environment/apps/* path
- *
- */
-def envGitCheckout () {
-
-	def branch = env.BRANCH_NAME
-	if (!isReleaseBuild() && !isDevelopBranch()) {
-		branch = "develop"
-	}
-	
-	sh '[ -d environment ] && sudo chown -R jenkins:jenkins environment || echo'
-	checkout changelog: false, poll: false, scm: 
-		[$class: 'GitSCM', branches: [[name: branch]], doGenerateSubmoduleConfigurations: false, extensions: 
-			[[$class: 'CheckoutOption', timeout: 60], 
-				[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: true, timeout: 60], 
-				[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'NdsEnvironment/environment/apps/*']]], 
-				[$class: 'RelativeTargetDirectory', relativeTargetDir: 'environment']], 
-		submoduleCfg: [], userRemoteConfigs: [[credentialsId: '8a6c5c05-92cf-43e5-92a5-dfcb11b8f1e2', url: 'jenkins-git@lg-core-git01.development.local:/opt/git/nds-env']]]
 }
 
 /*
@@ -382,15 +362,12 @@ def codeStaticAnalysis() {
  */
 def precompileAssets() {
 	stage ('Precompile Assets') {
-                def master_key = ""
-                dir ('..') {
-                        envGitCheckout()
-                        dir ('environment/NdsEnvironment/environment/apps/revscot/app-servers-config/ui') {
-                                sh 'echo MASTER_KEY=$(grep -oP "RAILS_MASTER_KEY=\\K[^\\\\\\]*" Dockerfile) > master_key.props'
-                                def props = readProperties file: "master_key.props"
-                                master_key=props['MASTER_KEY']
-                        }
-                }
+		def master_key = ""
+		dir ('environment/images/ui') {
+				sh 'echo MASTER_KEY=$(grep -oP "RAILS_MASTER_KEY[[:space:]]*\\K[^\\\\\\]*" Dockerfile) > master_key.props'
+				def props = readProperties file: "master_key.props"
+				master_key=props['MASTER_KEY']
+		}
 		sh "RAILS_MASTER_KEY=${master_key} RAILS_ENV=production NODE_ENV=production bundle exec rake assets:precompile"
 	}
 }
@@ -402,7 +379,7 @@ def precompileAssets() {
 def stashDeployables() {
 	stage ('Stash Deployables') {
 		stash name: "${this.getAppName()}-${this.getFullBuildVersion()}", 
-			excludes: "doc/**,tmp/**,.git/**,.vscode/**,.yardoc/**,.licensed/**,.rubocop.yml,.gitattributes,.gitignore,.licensed.yml,Jenkinsfile,converage/**,tools/**"
+			excludes: "environment/**,doc/**,tmp/**,.git/**,.vscode/**,.yardoc/**,.licensed/**,.rubocop.yml,.gitattributes,.gitignore,.licensed.yml,Jenkinsfile,converage/**,tools/**"
 	}
 }
 
@@ -424,26 +401,25 @@ def unstashDeployables(folder) {
  */
 def dockerImageBuild() {
 	stage ('Docker Image Build') {
-		sh '[ -d environment ] && sudo chown -R jenkins:jenkins environment || echo'
-		unstashDeployables("environment/NdsEnvironment/environment/apps/${this.getAppName()}/app-servers-config/ui/scratch")
-		unstashDeployables("environment/NdsEnvironment/environment/apps/${this.getAppName()}/app-servers-config/proxy/scratch")
-		dir ('environment') {
+		unstashDeployables("code/environment/images/ui/scratch")
+		unstashDeployables("code/environment/images/proxy/scratch")
+		dir ('code/environment/images') {
 			withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APP_NAME=${this.getAppName()}", "RELEASE_VERSION=${this.releaseVersion()}"]) {
 				sh '''
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
 					# export DOCKER_HOST=tcp://$(hostname -f):2376
 					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
 					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
-					export SRC_DOCKER_REG=lg-bld-cont01.development.local:8443/nds-app-servers
+					export SRC_DOCKER_REG=lg-bld-cont01.development.local:8443/base-images
 					export SRC_DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-nds-app-servers
-					cd NdsEnvironment/environment/apps/${APP_NAME}/app-servers-config/redis
-					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-redis redis "${RELEASE_VERSION}" AAA${APP_NAME}
+					cd redis
+					../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-redis redis "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../ui
-					sudo DOCKER_REG=lg-bld-cont01.development.local:8443/revscot DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot SRC_DOCKER_REG=lg-bld-cont01.development.local:8443/nds-app-servers SRC_DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-nds-app-servers ../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-app app "${RELEASE_VERSION}" AAA${APP_NAME}
+					../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-app app "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../proxy
-					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-proxy proxy "${RELEASE_VERSION}" AAA${APP_NAME}
+					../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-proxy proxy "${RELEASE_VERSION}" AAA${APP_NAME}
 					cd ../selenium-firefox
-					../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-firefox firefox "${RELEASE_VERSION}" AAA${APP_NAME}
+					SRC_DOCKER_REG=lg-bld-cont01.development.local:8443/docker-hub-proxy-cache/selenium SRC_DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/docker-hub-proxy-cache/selenium ../build-appserver-base-image.sh ${FULL_BUILD_VERSION} ${APP_NAME}-firefox firefox "${RELEASE_VERSION}" AAA${APP_NAME}
 				'''
 			}
 		}
@@ -466,15 +442,15 @@ def registerReleaseBuild() {
 		}
 
 }
-
+ 
 /*
-	* Deploy a dockered environment
-	* environment 			name/type of environment to build the images for
-	* environmentLabel 	user readable version of the above
-	* askForDeployment	set to true to pause job whilst waiting for user to confirm deployment
-	* backOfficeLabel		name of back off this environment uses 
-	* 
-	*/
+ * Deploy a dockered environment
+ * environment 			name/type of environment to build the images for
+ * environmentLabel 	user readable version of the above
+ * askForDeployment	set to true to pause job whilst waiting for user to confirm deployment
+ * backOfficeLabel		name of back off this environment uses 
+ * 
+ */
 def deployDockeredEnvironment(String environment, String environmentLabel="", askForDeployment=true, String backOfficeLabel="") {
 	def deployed = false
 	def host = 0
@@ -484,9 +460,9 @@ def deployDockeredEnvironment(String environment, String environmentLabel="", as
 	def environmentDetails
 	def deploy = true
 	try {
-		envGitCheckout()
+		codeGitCheckout()
 		if (environment == "autotest") {
-			environmentDetails=deployAutotestEnvironment()
+			environmentDetails=deployAutotestEnvironmentPodman()
 			deployed = true
 		} else {
 			if (askForDeployment) {
@@ -505,36 +481,7 @@ def deployDockeredEnvironment(String environment, String environmentLabel="", as
 		currentBuild.result = "FAILURE"
 		throw err
 	}
-	return [deployed, environmentDetails[host], environmentDetails[port], environmentDetails[seleniumPort]]
-}
-
-/*
- * Deploy an autotest type environment
- *
- */
-def deployAutotestEnvironment(String environment = "autotest") {
-	try {
-		dir('environment') {
-			withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "TEST_DELAY=${this.getTestDelay()}", "APP=${this.getAppName()}", 
-			         "ENVIRONMENT=${environment}", "USER=${this.getAppUser()}", "RELEASE_VERSION=${this.releaseVersion()}"]) {
-				sh '''
-					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
-					#export DOCKER_HOST=tcp://$(hostname -f):2376
-					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
-					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
-					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
-					../../run-app-env.sh $FULL_BUILD_VERSION  ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
-					sleep ${TEST_DELAY}
-				'''
-			}
-			def props = readProperties file: "NdsEnvironment/environment/apps/${this.getAppName()}/app-servers-config/scratch/${this.getFullBuildVersion()}/${environment}/env.properties"
-			currentBuild.result = "SUCCESS"
-			return [props["APP_HOST"], props["PROXY_HTTPS_PORT"], props["SELHUB_PORT"]]
-		}
-	} catch (err) {
-		currentBuild.result = "FAILURE"
-		throw err
-	}
+	return [deployed, environmentDetails[host], environmentDetails[port]]
 }
 
 /*
@@ -543,21 +490,20 @@ def deployAutotestEnvironment(String environment = "autotest") {
  */
 def deployAutotestEnvironmentPodman(String environment = "autotest") {
 	try {
-		dir('environment') {
+		dir('code/environment/deployments') {
 			withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "TEST_DELAY=${this.getTestDelay()}", "APP=${this.getAppName()}", 
 			         "ENVIRONMENT=${environment}", "USER=${this.getAppUser()}", "RELEASE_VERSION=${this.releaseVersion()}"]) {
 				sh '''
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
 					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
 					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
-					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
-					sudo -E ../../run-app-env.sh $FULL_BUILD_VERSION  ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
+					sudo -E ./run-app-env.sh $FULL_BUILD_VERSION  ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
 					sleep ${TEST_DELAY}
 				'''
 			}
-			def props = readProperties file: "NdsEnvironment/environment/apps/${this.getAppName()}/app-servers-config/scratch/${this.getFullBuildVersion()}/${environment}/env.properties"
+			def props = readProperties file: "scratch/${this.getFullBuildVersion()}/${environment}/env.properties"
 			currentBuild.result = "SUCCESS"
-			return [props["APP_HOST"], props["PROXY_HTTPS_PORT"], props["SELHUB_PORT"]]
+			return [props["APP_HOST"], props["PROXY_HTTPS_PORT"]]
 		}
 	} catch (err) {
 		currentBuild.result = "FAILURE"
@@ -575,31 +521,29 @@ def deployAutotestEnvironmentPodman(String environment = "autotest") {
 def deployManualTestEnvironment(String environment, String environmentLabel, String backOffice) {
 	try {
 		releaseNotesFile = generateReleaseNotes(environment)
-		dir('environment') {
+		dir('code/environment/deployments') {
 			withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "TEST_DELAY=${this.getTestDelay()}", "APP=${this.getAppName()}", "BACKOFFICE=${backOffice}",
 			         "ENVIRONMENT=${environment}", "USER=${this.getAppUser()}", "LABEL=${environmentLabel}", "RELEASE_VERSION=${this.releaseVersion()}"]) {
 				sh '''
 					#!/bin/bash
 					if [ "${RELEASE_VERSION}" == "DUMMY" ] ; then export RELEASE_VERSION="" ; fi 
 					
-                    sudo docker network prune -f
-					cd NdsEnvironment/environment/apps/${APP}/app-servers-config
+			                sudo docker network prune -f
 					export DOCKER_REG=lg-bld-cont01.development.local:8443/revscot
 					export DOCKER_RELEASE_REG=lg-bld-cont01.development.local:8443/release-revscot
-					[ ! -z "$(sudo docker ps -qa --filter name=${APP}.*-${ENVIRONMENT})" ] && sudo docker stop $(sudo docker ps -qa --filter "name=${APP}.*-${ENVIRONMENT}") && sudo docker rm -f $(sudo docker ps -qa --filter "name=${APP}.*-${ENVIRONMENT}")
-					sudo -E ../../run-mt-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
+					[ ! -z "$(sudo docker ps -qa --filter name=${APP}.*-${ENVIRONMENT}$)" ] && sudo docker stop $(sudo docker ps -qa --filter "name=${APP}.*-${ENVIRONMENT}$") && sudo docker rm -f $(sudo docker ps -qa --filter "name=${APP}.*-${ENVIRONMENT}$")
+					sudo -E ./run-mt-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APP} "${RELEASE_VERSION}" ${USER}
 					sleep ${TEST_DELAY}
 					export IMAGE_VERSION=${FULL_BUILD_VERSION}
 					containers=$(grep -Po "container_name:\\s*\\K.+" scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/docker-compose.yml | paste -sd " ")
 					sudo chown jenkins:jenkins -R scratch/${FULL_BUILD_VERSION}
 					echo IMAGES_USED=\\"$(sudo docker inspect --format='{{.Config.Image}}' ${containers} | paste -sd ' ')\\" >> scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/env.properties
-    				sed 's/>/\\\\\\>/g;s/</\\\\\\</g' scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/env.properties > scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/escaped-env.properties
-    				source scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/escaped-env.properties
-					cd ../..
+    					sed 's/>/\\\\\\>/g;s/</\\\\\\</g' scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/env.properties > scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/escaped-env.properties
+    					source scratch/${FULL_BUILD_VERSION}/${ENVIRONMENT}/escaped-env.properties
 					./register-new-environment.sh ${APP,,} "${LABEL}" ${FULL_BUILD_VERSION} ${APP_HOST} https://${APP_HOST}:${PROXY_HTTPS_PORT}/${APP}/ ${ENVIRONMENT} "Connected to ${BACKOFFICE} back office"
 				'''
 			}
-			def props = readProperties file: "NdsEnvironment/environment/apps/${this.getAppName()}/app-servers-config/scratch/${this.getFullBuildVersion()}/${environment}/env.properties"
+			def props = readProperties file: "scratch/${this.getFullBuildVersion()}/${environment}/env.properties"
 //			def imagesUsed = props["IMAGES_USED"]
 //			if (environment == "manualtest") {
 //				node ("${this.getAppName()}-docker-build") {
@@ -648,89 +592,50 @@ def randomFile() {
 }
 
 /*
- * Run an autotest test
- * host			the name of the host where the application is running on
- * port			the port the application is listening on
- * seleniumPort	the port that the selenium server is listening on
- */
-def runAutotest(String host, String port, String seleniumPort, String environment = "autotest") {
-	try
-	{
-		dir ('code') {
-			def altVersion = this.getFullBuildVersion().replaceAll('\\.', '-')
-			seleniumUrl = "http://${this.getAppName()}-selenium-hub-${environment}:4444/wd/hub"
-			appHostUrl = "http://${this.getAppName()}-app-${environment}:2099"
-			withEnv(["CAPYBARA_DRIVER=selenium_remote_firefox", "CAPYBARA_REMOTE_URL=${seleniumUrl}", "APP=${this.getAppName()}", 
-			         "FULL_BUILD_VERSION=${altVersion}", "ENVIRONMENT=${environment}", "CAPYBARA_APP_HOST=${appHostUrl}",
-					 "COVERAGE_DIR=log/coverage", "COVERAGE_MERGE=true", "CAPYBARA_SAVE_PATH=log/tmp/screenshots"]) {
-				sh '''
-					#!/bin/bash
-					# export DOCKER_HOST=tcp://$(hostname -f):2376
-                    docker exec -u root ${APP}-app-${ENVIRONMENT} apk add --no-cache --virtual .bundle-deps build-base gmp-dev
-					docker exec -u root ${APP}-app-${ENVIRONMENT} bundle config mirror.https://rubygems.org http://lg-bld-ruby01.development.local:9292
-                    docker exec -u root ${APP}-app-${ENVIRONMENT} bundle install --deployment --with="development test"
-                    docker exec -u root ${APP}-app-${ENVIRONMENT} apk del .bundle-deps
-					docker exec ${APP}-app-${ENVIRONMENT} mkdir -p /var/tmp/share/upload /var/tmp/share/download
-					docker exec ${APP}-app-${ENVIRONMENT} chmod 777 -R /var/tmp/share/
-					docker exec -u root ${APP}-app-${ENVIRONMENT} chmod a+w -R .
-										docker exec ${APP}-app-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
-						CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} CAPYBARA_SAVE_PATH=${CAPYBARA_SAVE_PATH}\
-						TEST_FILE_UPLOAD_PATH=/var/tmp/share/upload TEST_FILE_DOWNLOAD_PATH=/var/tmp/share/download \
-						RAILS_ENV=test NODE_ENV=test cucumber
-					docker exec ${APP}-app-${ENVIRONMENT} chmod -R u+w ${COVERAGE_DIR}
-					docker exec ${APP}-app-${ENVIRONMENT} mv log/test.log log/${ENVIRONMENT}.log
-					docker exec ${APP}-app-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
-				    	UNIT_TEST=1 CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} RAILS_ENV=test test
-					'''
-			}
-		}
-		postAutotestSuccess(environment)
-		currentBuild.result = "SUCCESS"
-	} catch (err) {
-		postAutotestFailure(host, environment)
-		currentBuild.result = "FAILURE"
-        throw err
-	} finally {
-		emailModSecFailures(environment)
-		emailLogErrors(environment, host)
-        emailDepreciatedMessages(environment, host)
-	}
-}
-
-/*
  * Run an autotest test with Podman
  * host			the name of the host where the application is running on
  * port			the port the application is listening on
  * seleniumPort	the port that the selenium server is listening on
  */
-def runAutotestPodman(String host, String port, String seleniumPort, String environment = "autotest") {
+def runAutotestPodman(String host, String port, String environment = "autotest") {
 	try
 	{
 		dir ('code') {
 			def altVersion = this.getFullBuildVersion().replaceAll('\\.', '-')
-			seleniumUrl = "http://${this.getAppName()}-selenium-hub-${environment}:4444/wd/hub"
-			appHostUrl = "http://${this.getAppName()}-app-${environment}:2099"
-			withEnv(["CAPYBARA_DRIVER=selenium_remote_firefox", "CAPYBARA_REMOTE_URL=${seleniumUrl}", "APP=${this.getAppName()}", 
+			def appHostUrl = "http://${this.getAppName()}-app-${environment}:2099"
+			withEnv(["CAPYBARA_DRIVER=selenium_remote_firefox", "APP=${this.getAppName()}", 
 			         "FULL_BUILD_VERSION=${altVersion}", "ENVIRONMENT=${environment}", "CAPYBARA_APP_HOST=${appHostUrl}",
 					 "COVERAGE_DIR=log/coverage", "COVERAGE_MERGE=true", "CAPYBARA_SAVE_PATH=log/tmp/screenshots"]) {
 				sh '''
 					#!/bin/bash
-					# export DOCKER_HOST=tcp://$(hostname -f):2376
-                    sudo -E docker exec -u root ${APP}-app-${ENVIRONMENT} apk add --no-cache --virtual .bundle-deps build-base gmp-dev
-					sudo -E docker exec -u root ${APP}-app-${ENVIRONMENT} bundle config mirror.https://rubygems.org http://lg-bld-ruby01.development.local:9292
-                    sudo -E docker exec -u root ${APP}-app-${ENVIRONMENT} bundle install --deployment --with="development test"
-                    sudo -E docker exec -u root ${APP}-app-${ENVIRONMENT} apk del .bundle-deps
-					sudo -E docker exec ${APP}-app-${ENVIRONMENT} mkdir -p /var/tmp/share/upload /var/tmp/share/download
-					sudo -E docker exec ${APP}-app-${ENVIRONMENT} chmod 777 -R /var/tmp/share/
-					sudo -E docker exec -u root ${APP}-app-${ENVIRONMENT} chmod a+w -R .
-					sudo -E docker exec ${APP}-app-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
-						CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} CAPYBARA_SAVE_PATH=${CAPYBARA_SAVE_PATH}\
+					set -x
+                    			sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} microdnf install -y dnf oracle-epel-release-el9
+                    			sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} dnf config-manager --enable ol9_codeready_builder
+                    			sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} dnf module enable nodejs:20
+                    			sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} dnf -y install gmp-devel git yarnpkg libyaml-devel
+                    			sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} dnf -y group install "Development Tools"
+
+					sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} bundle config mirror.https://rubygems.org http://lg-bld-ruby02.development.local:9292
+					sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} bundle config set --local deployment 'true'
+					sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} bundle config set --local with 'development test'
+					sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} bundle install --verbose
+					sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} mkdir -p /var/tmp/share/upload /var/tmp/share/download
+					sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} chmod 777 -R /var/tmp/share/
+					sudo -E podman exec -u root ${APP}-app-${ENVIRONMENT} chmod a+w -R .
+
+					sel_hub_ip=$(sudo -E podman exec ${APP}-selenium-hub-${ENVIRONMENT} hostname -i)
+					app_no_proxy=$(sudo -E podman exec ${APP}-app-${ENVIRONMENT} env | grep no_proxy),${sel_hub_ip}
+					app_NO_PROXY=$(sudo -E podman exec ${APP}-app-${ENVIRONMENT} env | grep NO_PROXY),${sel_hub_ip}
+
+					sudo -E docker exec ${APP}-app-${ENVIRONMENT} sh -c "${app_no_proxy} ${app_NO_PROXY} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
+						CAPYBARA_REMOTE_URL=http://${sel_hub_ip}:4444/wd/hub CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} CAPYBARA_SAVE_PATH=${CAPYBARA_SAVE_PATH}\
 						TEST_FILE_UPLOAD_PATH=/var/tmp/share/upload TEST_FILE_DOWNLOAD_PATH=/var/tmp/share/download \
-						RAILS_ENV=test NODE_ENV=test cucumber
+						RAILS_ENV=test NODE_ENV=test cucumber"
+
 					sudo -E docker exec ${APP}-app-${ENVIRONMENT} chmod -R u+w ${COVERAGE_DIR}
 					sudo -E docker exec ${APP}-app-${ENVIRONMENT} mv log/test.log log/${ENVIRONMENT}.log
 					sudo -E docker exec ${APP}-app-${ENVIRONMENT} bundle exec rake COVERAGE_DIR=${COVERAGE_DIR} CAPYBARA_DRIVER=${CAPYBARA_DRIVER}\
-				    	UNIT_TEST=1 CAPYBARA_REMOTE_URL=${CAPYBARA_REMOTE_URL} CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} RAILS_ENV=test test
+				    	UNIT_TEST=1 CAPYBARA_REMOTE_URL=http://${sel_hub_ip}:4444/wd/hub CAPYBARA_APP_HOST=${CAPYBARA_APP_HOST} COVERAGE_MERGE=${COVERAGE_MERGE} RAILS_ENV=test test
 					'''
 			}
 		}
@@ -780,6 +685,7 @@ def postAutotestFailure(String host, String environment = "autotest") {
 
 	deleteOldEnvironments(environment)
 	stopEnvironment(environment)
+	sh 'sudo chown -R jenkins:jenkins code'
 	dir ('code') {
 		withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 			sh '''
@@ -826,7 +732,7 @@ The log files from the test target can be found on ${host} in /var/log/${this.ge
 def emailModSecFailures(String environment) {
 	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 		sh '''
-			export wd=$PWD/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
+			export wd=/var/tmp/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
 			mkdir -p ${wd}
 			chmod o+w ${wd}
 			pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
@@ -849,9 +755,9 @@ def emailModSecFailures(String environment) {
 			fi
 			popd
 		'''
-		def props = readProperties file: "./${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/modsec_issues.env"
+		def props = readProperties file: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/modsec_issues.env"
 		if (props["PROXY_ERRORS"] == "1") {
-			emailext attachmentsPattern: "${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/modsec_issues.txt", 
+			emailext attachmentsPattern: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/modsec_issues.txt", 
 				body: "mod_security failures in ${this.appLabel}", 
 				subject: "mod_security failures in ${this.appLabel}", 
 				to: "${REVSCOT_DEVOPS}"
@@ -868,23 +774,24 @@ def emailModSecFailures(String environment) {
 def emailLogErrors(String environment, String host) {
 	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 		sh '''
-			export wd=$PWD/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
+			export wd=/var/tmp/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
 			mkdir -p ${wd}
 			chmod o+w ${wd}
+			current=${PWD}
 			pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
-			if [[ ! -f app/${ENVIRONMENT}.log ]] ; then
-				if [[ -f app/test.log ]]; then
-					sudo mv app/test.log app/${ENVIRONMENT}.log
+			if [[ ! -f ${current}/app/${ENVIRONMENT}.log ]] ; then
+				if [[ -f ${current}/app/test.log ]]; then
+					sudo mv ${current}/app/test.log ${current}/app/${ENVIRONMENT}.log
 				fi
 			fi
 			echo > ${wd}/issues.txt
 			chmod o+w ${wd}/issues.txt
 
-			if [ -d 'app' ] ; then 
-				sudo chmod go+r app/${ENVIRONMENT}.log*
-				if grep -q -e "FATAL" -e " ERROR " app/${ENVIRONMENT}.log*; then 
+			if [ -d '${current}/app' ] ; then 
+				sudo chmod go+r ${current}/app/${ENVIRONMENT}.log*
+				if grep -q -e "FATAL" -e " ERROR " ${current}/app/${ENVIRONMENT}.log*; then 
 					echo "#### APP ERRORS ####" >> ${wd}/issues.txt
-					grep -B 1 -A 6 -e "FATAL" -e " ERROR " app/${ENVIRONMENT}.log* >> ${wd}/issues.txt
+					grep -B 1 -A 6 -e "FATAL" -e " ERROR " ${current}/app/${ENVIRONMENT}.log* >> ${wd}/issues.txt
 					echo UI_ERRORS=1 >> ${wd}/issues.env
 				else
 					echo UI_ERRORS=0 >> ${wd}/issues.env
@@ -894,11 +801,11 @@ def emailLogErrors(String environment, String host) {
 			fi
 			popd
 		'''
-		def props = readProperties file: "./${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.env"
+		def props = readProperties file: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.env"
 
 		if (props["UI_ERRORS"] == "1") {
 			def RELEASE_TEXT = this.isReleaseBuild() ? "Release " : ""
-			emailext attachmentsPattern: "${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.txt", 
+			emailext attachmentsPattern: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.txt", 
 				body: "Application failures in ${this.getAppName()} during ${RELEASE_TEXT}${environment}. A summary is attached.\n\nThe full log files can be found on ${host}, under:\n\nApplication:	   /var/log/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/app/\n", 
 				subject: "Application failures in ${this.getAppName()} during ${RELEASE_TEXT}${environment}", 
 				to: "${REVSCOT_DEVELOPERS}"
@@ -909,7 +816,7 @@ def emailLogErrors(String environment, String host) {
 def emailDepreciatedMessages(String environment, String host) {
 	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 		sh '''
-			export wd=$PWD/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
+			export wd=/var/tmp/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
 			mkdir -p ${wd}
 			chmod o+w ${wd}
 			pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
@@ -931,11 +838,11 @@ def emailDepreciatedMessages(String environment, String host) {
 			fi
 			popd
 		'''
-		def props = readProperties file: "./${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.env"
+		def props = readProperties file: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.env"
 
 		if (props["DEPRECATION"] == "1") {
 			def RELEASE_TEXT = this.isReleaseBuild() ? "Release " : ""
-			emailext attachmentsPattern: "${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.txt", 
+			emailext attachmentsPattern: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.txt", 
 				body: "Deprecation messages in ${this.getAppName()} during ${RELEASE_TEXT}${environment}. A summary is attached.\n\nThe full log files can be found on ${host}, under:\n\nApplication:	   /var/log/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/app/\n", 
 				subject: "Deprecation messages in ${this.getAppName()} during ${RELEASE_TEXT}${environment}", 
 				to: "${REVSCOT_DEVELOPERS}"
@@ -986,7 +893,7 @@ def waitForDeployment(String environment, String environmentLabel) {
 	def startTimeout = false
 	def startAborted = false
 	try {
-		timeout (time: 6, unit: 'HOURS') {
+		timeout (time: 16, unit: 'HOURS') {
 			lock (resource: "${this.getAppName()}-${env.BRANCH_NAME}-${environment}-test-input", inversePrecedence: true) {
 				emailext attachLog: false, 
 					body: "The ${this.getAppName()} ${environmentLabel} environment can be started, click here: ${env.BUILD_URL}input/", 
@@ -1190,9 +1097,9 @@ def doDockerCmdOnEnvironment(String environment, String cmd) {
 		sh '''
 			#export DOCKER_HOST=tcp://$(hostname -f):2376
 			export ENV_NAME=${APPLICATION}-.*-${ENVIRONMENT}
-			[ ! -z "$(docker ps -qa --filter name=${ENV_NAME})" ] && docker ${COMMAND} $(docker ps -qa --filter name=${ENV_NAME}) || true
+			[ ! -z "$(sudo -E docker ps -qa --filter name=${ENV_NAME})" ] && sudo -E docker ${COMMAND} $(sudo -E docker ps -qa --filter name=${ENV_NAME}) || true
 			export ENV_NAME=${APPLICATION}.*${FULL_BUILD_VERSION//\\./-}.*${ENVIRONMENT}
-			[ ! -z "$(docker ps -qa --filter name=${ENV_NAME})" ] && docker ${COMMAND} $(docker ps -qa --filter name=${ENV_NAME}) || true						 
+			[ ! -z "$(sudo -E docker ps -qa --filter name=${ENV_NAME})" ] && sudo -E docker ${COMMAND} $(sudo -E docker ps -qa --filter name=${ENV_NAME}) || true						 
 		'''
 	}
 }
@@ -1206,7 +1113,7 @@ def removeDockerNetwork(String environment) {
 		sh '''
 			# export DOCKER_HOST=tcp://$(hostname -f):2376
 			export NETWORK_NAME=${APPLICATION}${FULL_BUILD_VERSION}${ENVIRONMENT}_common
-			docker network rm ${NETWORK_NAME} || true
+			sudo -E docker network rm ${NETWORK_NAME} || true
 		'''
 	}
 }
@@ -1220,8 +1127,8 @@ def deleteOldEnvironments(String environment) {
 	withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 		sh '''
 			# export DOCKER_HOST=tcp://$(hostname -f):2376
-			cd environment/NdsEnvironment/environment/apps/
-			bash ./remove-all-old-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APPLICATION}
+			cd code/environment/deployments/
+			sudo bash ./remove-all-old-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APPLICATION}
 			'''
 	}
 }

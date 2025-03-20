@@ -17,9 +17,12 @@ module Dashboard
                   :attachment, :document, :smsg_refno,
                   :original_smsg_refno, :direction, :wrk_refno, :created_date,
                   :srv_code, :read_indicator, :subject_domain, :has_attachment,
-                  :read_datetime, :attachments, :forename, :surname, :status_update
+                  :read_datetime, :attachments, :forename, :surname, :status_update,
+                  :subject_desc, :agent_reference, :prev_refno, :next_refno,
+                  :prev_page_number, :next_page_number
 
     validates :reference, presence: true, length: { maximum: 30 }
+    validates :agent_reference, length: { maximum: 30 }
     validates :title, presence: true, length: { maximum: 255 }
     validates :body, presence: true, length: { maximum: 4000 }
     validates :subject_code, presence: true
@@ -42,7 +45,32 @@ module Dashboard
 
     # Uses the subject code to and translates it to the description of the subject
     def subject_description
-      lookup_ref_data_value(:subject_code, @subject_code)
+      subject_desc
+    end
+
+    # Uses to return the message reference along with the agent reference
+    def reference_details
+      return agent_reference if reference.nil?
+
+      [reference, agent_reference].join('<br/><br/>').html_safe # rubocop:disable Rails/OutputSafety
+    end
+
+    # Gets the view all messages pdf ready to be downloaded.
+    # calls wsdl to send data given by client to back-office
+    def self.back_office_pdf_data(original_smsg_refno, current_user)
+      pdf_response = ''
+      call_ok?(:view_all_messages_pdf, request_pdf_elements(current_user, original_smsg_refno)) do |body|
+        break if body.blank?
+
+        pdf_response = body
+      end
+      pdf_response
+    end
+
+    # @return a hash suitable for use in download pdf request to the back office.
+    def self.request_pdf_elements(current_user, original_smsg_refno)
+      { ParRefno: current_user.party_refno, Username: current_user.username,
+        OriginalSmsgRefno: original_smsg_refno }
     end
 
     # @!method self.list_paginated_messages(requested_by, page, filter = nil, num_rows)
@@ -81,11 +109,11 @@ module Dashboard
     #                    If this param value is nil then that means the message initialised is a new message
     # @param reference [String] If creating a new message the reference to be used
     # @return [Object] this returns an instance of Message with the some of the attributes filled in.
-    def self.initialise_message(requested_by, smsg_refno = nil, reference = nil)
+    def self.initialise_message(requested_by, smsg_refno = nil, reference = nil, srv_code = nil)
       if smsg_refno.nil?
         # @note reference is being passed on here, currently being used for the all_returns page
         #   when the "Message" link is clicked - should fill in the reference for New message page
-        message = Message.new(reference: reference)
+        message = Message.find_reference(requested_by, reference, srv_code)
       else
         # Handle reply
         message = Message.find(smsg_refno, requested_by)
@@ -96,6 +124,36 @@ module Dashboard
       message.created_by = requested_by.username
       message.party_refno = requested_by.party_refno
       message
+    end
+
+    # Check if the service is SAT and assign the reference to the selected reference
+    # if the user has clicked on the message link from a return, the reference will be populated and use that
+    # else use the selected enrolment reference
+    private_class_method def self.set_reference(requested_by, reference)
+      if requested_by.portal_object_display_reference.present? && reference.nil?
+        requested_by.portal_object_display_reference
+      else
+        reference
+      end
+    end
+
+    # This method is mainly used to return a agent reference present on searched reference.
+    # @param requested_by [String] The user who made a find request that the messages are linked to
+    # @param reference [String] Search reference used for message
+    # @return [Object] an instance of a Message object with the agent reference if present
+    def self.find_reference(requested_by, reference, srv_code)
+      # when the "Message" link is clicked - should fill in the reference for New message page
+      message = Message.new(reference: set_reference(requested_by, reference))
+      return message unless srv_code == 'LBTT'
+
+      success = call_ok?(:get_secure_message_alt_reference,
+                         request_secure_message_elements(requested_by, reference)) do |response|
+        break if response.blank?
+
+        message.agent_reference = response.delete(:smsg_alt_reference)
+        message.srv_code = srv_code
+      end
+      message if success
     end
 
     # Finds a specific message linked to the party_refno of the user and updates the read to 'Y'
@@ -150,7 +208,9 @@ module Dashboard
     # store individual document to back office
     def add_attachment(requested_by, document, smsg_refno)
       doc_refno = ''
-      success = call_ok?(:add_attachment, request_add_attachment(requested_by, document, smsg_refno)) do |response|
+      account = Account.find(requested_by) if requested_by.present?
+      success = call_ok?(:add_attachment, request_add_attachment(requested_by, document,
+                                                                 smsg_refno, account.taxes)) do |response|
         break if response.blank?
 
         doc_refno = response[:doc_refno]
@@ -199,6 +259,16 @@ module Dashboard
       output
     end
 
+    # @!method self.request_secure_message_elements(requested_by, reference)
+    # request to send backoffice to get agent reference for searched secure message reference
+    # @return [Object] a hash suitable for use in a secure messages default reference request to the back office
+    private_class_method def self.request_secure_message_elements(requested_by, reference)
+      output = request_user(requested_by)
+      output['ins1:SmsgSearchReference'] = reference
+
+      output
+    end
+
     # @!method self.request_list_secure_messages(requested_by, pagination, message_filter, smsg_original_refno)
     # @return a hash suitable for use in a list secure messages request to the back office
     private_class_method def self.request_list_secure_messages(requested_by, pagination, message_filter)
@@ -223,6 +293,7 @@ module Dashboard
       hash[:has_attachment] = boolean_to_yesno(hash[:has_attachment])
       hash[:read_indicator] = set_read_indicator(hash[:direction], hash[:read_indicator])
       hash[:selected] = (hash[:smsg_refno] == filter.selected_message_smsg_refno) unless filter.nil?
+      hash[:agent_reference] = hash.delete(:alt_reference)
       hash[:attachments] = convert_attachments(hash)
       hash
     end
@@ -254,12 +325,26 @@ module Dashboard
     # @return a hash suitable for use in all message request
     # this is create specific for class where Username case is different
     private_class_method def self.request_user(requested_by)
-      { ParRefno: requested_by.party_refno, Username: requested_by.username }
+      if requested_by.portal_object_reference.blank?
+        { ParRefno: requested_by.party_refno, Username: requested_by.username }
+      else
+        { ParRefno: requested_by.party_refno,
+          Username: requested_by.username,
+          PortalObjectReference: requested_by.portal_object_reference,
+          PortalObjectType: requested_by.portal_object_type }
+      end
     end
 
     # @return a hash suitable for use in all message request
     def request_user_instance(requested_by)
-      { ParRefno: requested_by.party_refno, UserName: requested_by.username }
+      if requested_by.portal_object_reference.nil?
+        { ParRefno: requested_by.party_refno, UserName: requested_by.username }
+      else
+        { ParRefno: requested_by.party_refno,
+          UserName: requested_by.username,
+          PortalObjectReference: requested_by.portal_object_reference,
+          PortalObjectType: requested_by.portal_object_type }
+      end
     end
 
     # @return a hash suitable for use in store document request to the back office
@@ -270,25 +355,49 @@ module Dashboard
         'ins1:BinaryData': Base64.encode64(document.file_data) }
     end
 
+    # Adds attachments data
+    # Returns a Array of Hashes containing file(s) data for store document request
+    def request_attachments_data(attachments)
+      # attachments.map { |x| { 'ins1:Document': request_document_create(x) } }
+      { 'ins1:Document': attachments.map { |file| request_document_create(file) } }
+    end
+
     # @return a hash suitable for use in a save request to the back office
     def request_save(requested_by)
       secure_message_create_request = { OriginalRefno: @original_smsg_refno,
                                         MsgSubject: { 'ins1:Subject': @subject_code,
                                                       'ins1:FrdDomain': @subject_domain,
                                                       'ins1:WrkRefno': @wrk_refno, 'ins1:SrvCode': @srv_code },
-                                        Title: @title, Body: @body, Reference: @reference }
+                                        Title: @title, Body: @body, Reference: @reference,
+                                        AltReference: @agent_reference }
       secure_message_create_request = request_user_instance(requested_by).merge!(secure_message_create_request)
-      return secure_message_create_request if @attachment.nil?
+      # byebug
+      secure_message_create_request[:Documents] = request_attachments_data(@attachments) unless @attachments.nil?
+      secure_message_create_request[:Document] = request_document_create(@attachment) unless @attachment.nil?
+      # return secure_message_create_request if @attachment.nil?
 
-      document_para = { Document: request_document_create(@attachment) }
-      secure_message_create_request.merge!(document_para)
+      # document_para = { Document: request_document_create(@attachment) }
+      # secure_message_create_request.merge!(document_para)
+      secure_message_create_request
     end
 
     # @return a hash suitable for use in a add attachment to the back office
-    def request_add_attachment(requested_by, document, smsg_refno)
+    def request_add_attachment(requested_by, document, smsg_refno, srv_code)
       add_attachment_request = { SmsgRefno: smsg_refno }
       add_attachment_request = request_user_instance(requested_by).merge!(add_attachment_request)
       add_attachment_request.merge!(request_document_create(document))
+
+      if srv_code.include?('SAT')
+        add_attachment_request.merge(request_portal_objects_elements(requested_by))
+      else
+        add_attachment_request
+      end
+    end
+
+    # @return a hash suitable to add an attachment for portal object
+    def request_portal_objects_elements(requested_by)
+      { PortalObjectType: requested_by.portal_object_type,
+        PortalObjectReference: requested_by.portal_object_reference }
     end
 
     # @return a hash suitable for use in a delete attachment to the back office
@@ -303,10 +412,17 @@ module Dashboard
 
     # @return a hash suitable for use in updating the read status in the back office
     private_class_method def self.request_update_status(smsg_refno, requested_by)
-      { 'ins1:ParRefno': requested_by.party_refno,
-        'ins1:UserName': requested_by.username,
-        'ins1:SmsgRegno': smsg_refno,
-        'ins1:ToggleReadIndicator': 'Y' }
+      output = if requested_by.portal_object_reference.nil?
+                 { ParRefno: requested_by.party_refno, UserName: requested_by.username }
+               else
+                 { ParRefno: requested_by.party_refno,
+                   UserName: requested_by.username,
+                   PortalObjectReference: requested_by.portal_object_reference,
+                   PortalObjectType: requested_by.portal_object_type }
+               end
+
+      output.merge!('ins1:SmsgRegno': smsg_refno,
+                    'ins1:ToggleReadIndicator': 'Y')
     end
 
     private :request_add_attachment, :request_delete_attachment

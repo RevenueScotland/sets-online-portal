@@ -154,7 +154,7 @@ class FLApplicationRecord
     values&.each do |entry|
       amount = entry.send(method)
       # treat all values as pence
-      total += (amount.to_f * 100).to_i
+      total += (amount.to_f * 100).round.to_i
     end
     total /= 100.0 # convert from pence
     # removes trailing zeros from sum values or truncates as integer
@@ -173,6 +173,24 @@ class FLApplicationRecord
   # @return [Array] The  hash with the object
   def xml_element_if_present(hash, key, value)
     hash[key] = value if value.present?
+  end
+
+  # This method converts a string into decimal or integer value based on the decimal values presence
+  # @example for 100.10 it will return 100.10; for 100.00 or 100.0 it will return 100
+  def format_tonnage_value(str)
+    return nil if str.blank?
+
+    # Check if the string has decimals
+    decimal_values = str.include?('.')
+    if decimal_values
+      split_value = str.split('.')
+      # Verify if the decimal value adds importance to the value
+      # Like 100.25 is greater than 100
+      is_decimal_greater = str.to_f.round(2) > split_value[0].to_f
+      is_decimal_greater ? str.to_f.round(2) : str.to_i
+    else
+      str.to_i
+    end
   end
 
   private

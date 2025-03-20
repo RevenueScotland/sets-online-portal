@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-<soap:Body>
-<AuthenticateUserResponse xmlns="http://northgate-is.com/FL/AuthenticateUser" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://northgate-is.com/FL/Core"><core:Success>true</core:Success><UserIsAuthenticated>true</UserIsAuthenticated><UserIsRegistered>false</UserIsRegistered><PasswordChangeRequired>false</PasswordChangeRequired><PasswordExpiryDate>2018-10-03</PasswordExpiryDate><UserLocked>false</UserLocked><UserRoles/></AuthenticateUserResponse>
-</soap:Body>
+	<soap:Body>
+		<AuthenticateUserResponse xmlns="http://northgate-is.com/FL/AuthenticateUser"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:core="http://northgate-is.com/FL/Core">
+			<core:Success>true</core:Success>
+			<UserIsAuthenticated>true</UserIsAuthenticated>
+			<UserIsApproved>true</UserIsApproved>
+			<UserIsRegistered>false</UserIsRegistered>
+			<PasswordChangeRequired>false</PasswordChangeRequired>
+			<PasswordExpiryDate>2018-10-03</PasswordExpiryDate>
+			<UserLocked>false</UserLocked>
+			<UserRoles/>
+		</AuthenticateUserResponse>
+	</soap:Body>
 </soap:Envelope>

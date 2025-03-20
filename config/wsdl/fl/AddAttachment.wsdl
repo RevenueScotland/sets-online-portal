@@ -146,7 +146,9 @@
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="ParRefno" type="xs:integer"/>
-						<xs:element name="UserName" type="xs:string"/>
+						<xs:element name="PortalObjectType" type="xs:string"  minOccurs="0"/>
+						<xs:element name="PortalObjectReference" type="xs:string" minOccurs="0"/>
+            <xs:element name="UserName" type="xs:string"/>
 						<xs:element name="SmsgRefno" type="xs:integer"/>
 						<xs:element name="FileName" type="xs:string"/>
 						<xs:element name="FileType" type="xs:string"/>

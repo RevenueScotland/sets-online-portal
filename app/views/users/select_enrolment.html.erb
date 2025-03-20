@@ -1,0 +1,5 @@
+<% content_for(:page_title,  t('.title')) %>
+<% content_for(:navigation_link, :clear_stack) %>
+<%= ds_form_with(model: @user, url: user_process_enrolment_path, method: :post) do |f| %>
+  <%= f.ds_radio_group(method: :portal_object_index, options_list: @user.list_portal_objects) %>
+<% end %>

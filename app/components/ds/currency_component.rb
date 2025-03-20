@@ -9,7 +9,7 @@ module DS
     # Override the default width for currency fields
     def initialize(**args)
       args[:width] = args[:width] || 20
-      super(**args)
+      super
     end
   end
 end

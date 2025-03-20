@@ -2,19 +2,19 @@ en:
   dashboard:
     dashboard_home:
       index:
-        title: "Dashboard"
+        title: "Dashboard%{name}"
         no_services: "Your registration has not been approved yet"
         unread_messages: "Unread messages"
         draft_returns: "Draft returns"
         outstanding_balance: "Outstanding balance"
     dashboard_returns:
       index:
-        title: "Returns"
+        title: "Returns%{name}"
         filter_show: "Show more filter options"
         caption: "List of returns"
     financial_transactions:
       index:
-        title: "Transactions"
+        title: "Transactions  %{name}"
         filter_show: "Show more filter options"
         caption: "List of transactions"
       show:
@@ -22,13 +22,16 @@ en:
         caption: "Related financial transactions"
     messages:
       index:
-        title: "Messages"
+        title: "Messages  %{name}"
         filter_show: "Show more filter options"
         caption: "List of messages"
         create_new_message: "Create a new message about %{reference}"
       new:
         title: "New message"
+        reply_message: "Reply to message"
         send: "Send message"
+        upload_supporting_files: "Upload a supporting file (optional)"
+        upload_files_hint: "You will be able to upload documents on the next page"
       confirmation:
         title: Thank you for your secure message
         what_happens_next_html: We aim to respond as quickly as possible. In the meantime, full information and guidance is available on the %{link}.
@@ -40,3 +43,15 @@ en:
         reply: "Reply"
         unread: "Mark as unread"
         read: "Mark as read"
+        previous_link: "Previous message"
+        next_link: "Next message"
+        view_all: "View all"
+      upload_documents:
+        title: "Upload your supporting file"
+      send_message:
+        title: "Send message"
+        send: "Send Message"
+        upload_supporting_files: "Upload supporting files"
+        add_file: "Add a file"
+        add_additional_file: "Add additional file"
+        upload_files_hint: "Once you have added a file it will be listed here. A maximum of ten files can be added to a message."

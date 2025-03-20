@@ -9,7 +9,7 @@ module ReferenceData
   class ReferenceValue < SystemParameter # rubocop:disable Metrics/ClassLength
     include DateFormatting
     # additional fields
-    attr_accessor :default, :sequence, :text
+    attr_accessor :default, :sequence, :text, :usage
 
     # override the sort sequence to be the provided sequence if present
     def sort_key
@@ -28,7 +28,7 @@ module ReferenceData
     private_class_method def self.make_object(data)
       ReferenceValue.new(domain_code: data[:domain_code], service_code: data[:service_code],
                          workplace_code: data[:workplace_code], code: data[:code], value: data[:name],
-                         text: data[:comment], default: data[:default], sequence: data[:sequence])
+                         text: data[:comment], default: data[:default], sequence: data[:sequence], usage: data[:usage])
     end
 
     # Calls the correct service and specifies where the results are in the response body
@@ -71,10 +71,14 @@ module ReferenceData
       output[format_composite_key('ALL RETURN TYPE', 'LBTT', 'RSTU')] = merge_lbtt_return_types(existing_values)
       output[format_composite_key('ALL RETURN TYPE', 'SLFT', 'RSTU')] =
         existing_values[format_composite_key('RETURN TYPE', 'SLFT', 'RSTU')]
+      output[format_composite_key('ALL RETURN TYPE', 'SAT', 'RSTU')] =
+        existing_values[format_composite_key('RETURN TYPE', 'SAT', 'RSTU')]
       output[format_composite_key('TRANSACTION GROUPS TEXT', 'LBTT', 'RSTU')] =
         transaction_group(existing_values, 'LBTT')
       output[format_composite_key('TRANSACTION GROUPS TEXT', 'SLFT', 'RSTU')] =
         transaction_group(existing_values, 'SLFT')
+      output[format_composite_key('TRANSACTION GROUPS TEXT', 'SAT', 'RSTU')] =
+        transaction_group(existing_values, 'SAT')
 
       output
     end
@@ -232,9 +236,10 @@ module ReferenceData
     # @return [hash] sorted EWC reference data codes list
     private_class_method def self.merge_message_subjects(existing_values)
       output = {}
+      # RSTP-1602 : Create composite keys dynamically
+      comp_keys = %w[LBTT SLFT SYS SAT].map { |x| format_composite_key('MESSAGE_SUBJECT', x, 'RSTU') }
 
-      [format_composite_key('MESSAGE_SUBJECT', 'LBTT', 'RSTU'), format_composite_key('MESSAGE_SUBJECT', 'SLFT', 'RSTU'),
-       format_composite_key('MESSAGE_SUBJECT', 'SYS', 'RSTU')].each do |comp_key|
+      comp_keys.each do |comp_key|
         existing_values[comp_key]&.each_value do |value|
           output[value.full_key_code] = value
         end

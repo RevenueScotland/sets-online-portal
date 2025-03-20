@@ -1,12 +1,10 @@
 <% content_for(:navigation_link, :clear_stack) %>
 <%= ds_notification_panel(title: t('.title')) do %>
   <%= ds_paragraph{t('.what_happens_next_html',
-  link: ds_link(url: external_link_url('HOME'), name: t('.what_happens_next_link'), target: '_blank'  ))} %>
+  link: ds_link(url: external_link_url('HOME'), name: t('.what_happens_next_link'), target: '_blank', subtype: :banner_link))} %>
 <% end %>
 <% if can? RS::AuthorisationHelper::CREATE_ATTACHMENT %>
   <%= ds_form_with(model: @message, url: confirmation_dashboard_message_path, file_upload: true, button_action: :finish) do |f| %>
-    <%= f.ds_hidden_field(:smsg_refno) %>
-    <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, multiple: true, optional: true,
-                        supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb) %>
+    <%= f.ds_hidden_field(:smsg_refno) %>    
   <% end %>
 <% end %>

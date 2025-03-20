@@ -54,6 +54,8 @@ en:
         contact_number: "Contact telephone number"
         token: "Token"
         user_roles: "User roles"
+        portal_object_index: "Which of your SAT registrations do you wish to view"
+        account_name: " : %{reference} %{name}"
       user_filter:
         full_name: "Name"
         user_is_current: "Current"
@@ -69,8 +71,7 @@ en:
           update_password: "Confirm new password"
           edit: "Confirm new password"
           default: "%{label}"
-        user_is_signed_ta_cs: "<span>I confirm that I have read and understood the </span>%{link}"
-        user_is_signed_ta_cs_link: "terms & conditions"
+        user_is_signed_ta_cs: "<span>I confirm that I have read and understood the terms and conditions</span>"
     hints:
       user:
         username: 
@@ -85,11 +86,12 @@ en:
     errors:
       models:
         user:
-          login_invalid: "Enter the correct username and password"
+          login_invalid: "Invalid login credentials"
           login_locked: "Your user is locked, use the forgotten password process to unlock it"
           login_not_activated: "Activate your account using the token you were sent"
           invalid_token: "Enter the correct username and token"
           token_expired: "Your token has expired. Please sign in again to generate a new one"
+          unapproved_login: "There is a problem. Your account is awaiting approval."
           attributes:
             user_is_signed_ta_cs:
               accepted: "The terms and conditions must be accepted"

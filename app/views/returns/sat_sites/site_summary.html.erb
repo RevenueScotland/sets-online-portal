@@ -1,0 +1,142 @@
+<% content_for(:page_title, t('.title')) %>
+<% if @site_summary_save_reference.present? %>
+  <%= ds_notification_panel(title: t('.return_saved'), reference:  @site_summary_save_reference, success: true, header: false) do %>
+    <%= ds_paragraph{t('.information')} %>
+  <% end %>
+<% end %>
+<%= ds_section_title(section_title: t('.section_title', site: @site.site_name, period: @site.selected_return_period)) %>
+
+<%= ds_table(caption: tag.h2(t('.taxable_aggregate_title'), class: 'ds_!_margin-bottom--0'), id: 'taxable_aggregate') do |table| %>
+  <% table.with_link(name: t('.add_new_taxable_aggregate'), url: returns_sat_aggregate_details_path(aggregate: 'new')) %>
+  <% table.with_header(klass: Returns::Sat::Sites) do |header| %>
+    <% header.with_cell(method: :aggregate_type_display) %>
+    <% header.with_cell(method: :comm_exploitation_type_display) %>
+    <% header.with_cell(method: :exploited_tonnage, align: :right)%>
+    <% header.with_cell(method: :water_tonnage, align: :right)%>
+    <% header.with_cell(method: :alternate_weighing_method)%>
+    <% header.with_cell(method: :taxable_tonnage, align: :right)%>
+    <% header.with_cell(method: :rate, align: :right)%>
+    <% header.with_cell(method: :tax_due, align: :right)%>
+  <% end %>
+  <% @site.taxable_aggregates&.values&.each do |taxable_aggregate| %>
+    <% table.with_row(model: taxable_aggregate) do |row| %>
+      <% row.with_cell(method: :aggregate_type_display) %>
+      <% row.with_cell(method: :comm_exploitation_type_display)%>
+      <% row.with_cell(method: :exploited_tonnage_display, align: :right)%>
+      <% row.with_cell(method: :water_tonnage_display, align: :right) %>
+      <% row.with_cell(method: :mixed_ind) %>
+      <% row.with_cell(method: :taxable_tonnage, align: :right) %>
+      <% row.with_cell(method: :rate, type: :currency, align: :right)%>
+      <% row.with_cell(method: :tax_due, type: :currency, align: :right)%>
+    <% end %>
+    <% table.with_row do |row| %>
+      <% row.with_cell(colspan: 8) do %>
+        <%= ds_link(name: t('.edit_row'), url: returns_sat_aggregate_details_path(aggregate: taxable_aggregate),
+                    subtype: :padded, visually_hidden_text: t('.hidden_text_aggregate', aggregate: taxable_aggregate.aggregate_type_display)) %>
+        <%= ds_link(name: t('.delete_row'), url: returns_taxable_aggregate_path(aggregate: taxable_aggregate),
+                    delete: true, confirm_message: t('.delete' , value: taxable_aggregate.aggregate_type_display ),
+                    subtype: :padded, visually_hidden_text: t('.hidden_text_aggregate', aggregate: taxable_aggregate.aggregate_type_display)) %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% unless @site.taxable_aggregates.nil? || @site.taxable_aggregates.empty? %>
+    <% table.with_footer(model: @site) do |footer| %>
+      <% footer.with_cell do "Total" end %>
+      <% footer.with_cell %>
+      <% footer.with_cell(method: :net_exploited_tonnage, align: :right) %>
+      <% footer.with_cell %>
+      <% footer.with_cell %>
+      <% footer.with_cell(method: :net_taxable_tonnage, align: :right)%>
+      <% footer.with_cell %>
+      <% footer.with_cell(method: :total_tax_due, type: :currency, align: :right) %>
+    <% end %>
+  <% end %>
+<% end %>
+<%= ds_paragraph {ds_link(name: t('.delete_all'), url: returns_sat_site_summary_path(site: @site, aggregate: true),
+                          delete: true, confirm_message: t('.delete_all_taxable_aggregates'),
+                          visually_hidden_text: t('.hidden_text_all_aggregate'))} %>
+
+<%= ds_table(caption: tag.h2(t('.exempt_aggregate_title'), class: 'ds_!_margin-bottom--0'), id: 'exempt_aggregate') do |table| %>
+  <% table.with_link(name: t('.add_new_exempt_aggregate'), url: returns_sat_exempt_aggregate_details_path(exempt_aggregate: 'new')) %>
+  <% table.with_header(klass: Returns::Sat::Sites) do |header| %>
+    <% header.with_cell(method: :aggregate_type_display) %>
+    <% header.with_cell(method: :exempt_type_display) %>
+    <% header.with_cell(method: :exempt_tonnage, align: :right)%>
+  <% end %>
+  <% @site.exempt_aggregates&.values&.each do |exempt_aggregate| %>
+    <% table.with_row(model: exempt_aggregate) do |row| %>
+      <% row.with_cell(method: :aggregate_type_display) %>
+      <% row.with_cell(method: :exempt_type_display)%>
+      <% row.with_cell(method: :exempt_tonnage_display, align: :right)%>
+    <% end %>
+    <% table.with_row do |row| %>
+      <% row.with_cell(colspan: 3) do %>
+        <%= ds_link(name: t('.edit_row'), url: returns_sat_exempt_aggregate_details_path(exempt_aggregate: exempt_aggregate),
+                    subtype: :padded, visually_hidden_text: t('.hidden_text_exempt', aggregate: exempt_aggregate.aggregate_type_display)) %>
+        <%= ds_link(name: t('.delete_row'), url: returns_exempt_aggregate_path(exempt_aggregate: exempt_aggregate),
+                    delete: true, confirm_message: t('.delete' , value: exempt_aggregate.aggregate_type_display ), subtype: :padded,
+                    visually_hidden_text: t('.hidden_text_exempt', aggregate: exempt_aggregate.aggregate_type_display)) %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% unless @site.exempt_aggregates.nil? || @site.exempt_aggregates.empty? %>
+    <% table.with_footer(model: @site) do |footer| %>
+      <% footer.with_cell do "Total" end %>
+      <% footer.with_cell %>
+      <% footer.with_cell(method: :net_exempt_tonnage, align: :right) %>
+    <% end %>
+  <% end %>
+<% end %>
+<%= ds_paragraph { ds_link(name: t('.delete_all'),
+                           url: returns_sat_site_summary_path(site: @site, exempt_aggregate: true),
+                           delete: true, confirm_message: t('.delete_all_exempt_aggregates'),
+                           visually_hidden_text: t('.hidden_text_all_exempt_aggregates')) } %>
+
+<%= ds_table(caption: tag.h2(t('.credit_claims_title'), class: 'ds_!_margin-bottom--0'), id: 'exempt_aggregate') do |table| %>
+  <% table.with_link(name: t('.add_new_credit_claims'), url: returns_sat_tax_credit_details_path(credit_claim: 'new')) %>
+  <% table.with_header(klass: Returns::Sat::Sites) do |header| %>
+    <% header.with_cell(method: :aggregate_type_display) %>
+    <% header.with_cell(method: :tax_credit_type_display) %>
+    <% header.with_cell(method: :related_return_to)%>
+    <% header.with_cell(method: :period_relates_to)%>
+    <% header.with_cell(method: :tax_tonnage, align: :right)%>
+    <% header.with_cell(method: :tax_rate, align: :right)%>
+    <% header.with_cell(method: :credit_amount, align: :right)%>
+  <% end %>
+  <% @site.credit_claims&.values&.each do |credit_claim| %>
+    <% table.with_row(model: credit_claim) do |row| %>
+      <% row.with_cell(method: :aggregate_type_display) %>
+      <% row.with_cell(method: :tax_credit_type_display) %>
+      <% row.with_cell(method: :return_relates_to_display)%>
+      <% row.with_cell(method: :period_relates_to_display)%>
+      <% row.with_cell(method: :tax_tonnage_display, align: :right)%>
+      <% row.with_cell(method: :tax_rate, type: :currency, align: :right)%>
+      <% row.with_cell(method: :credit_amount, type: :currency, align: :right)%>
+    <% end %>
+    <% table.with_row do |row| %>
+      <% row.with_cell(colspan: 7) do %>
+        <%= ds_link(name: t('.edit_row'), url: returns_sat_tax_credit_details_path(credit_claim: credit_claim), subtype: :padded,
+        visually_hidden_text: t('.hidden_text_credit_claims', credit_claim: credit_claim.aggregate_type_display)) %>
+        <%= ds_link(name: t('.delete_row'), url: returns_credit_claim_path(credit_claim: credit_claim), delete: true, confirm_message: t('.delete' , value: credit_claim.aggregate_type_display ), subtype: :padded,
+        visually_hidden_text: t('.hidden_text_credit_claims', credit_claim: credit_claim.aggregate_type_display)) %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% unless @site.credit_claims.nil? || @site.credit_claims.empty? %>
+    <% table.with_footer(model: @site) do |footer| %>
+      <% footer.with_cell do "Total" end %>
+      <% footer.with_cell %>
+      <% footer.with_cell %>
+      <% footer.with_cell %>
+      <% footer.with_cell %>
+      <% footer.with_cell %>
+      <% footer.with_cell(method: :total_credit_amount, type: :currency, align: :right) %>
+    <% end %>
+  <% end %>
+<% end %>
+<%= ds_paragraph {ds_link(name: t('.delete_all'), url: returns_sat_site_summary_path(site: @site, credit_claim: true),
+                          delete: true, confirm_message: t('.delete_all_credit_claims'),
+                          visually_hidden_text: t('.hidden_text_all_credit_claims'))} %>
+
+  <%= ds_button(name: t('.return_summary'), url: returns_sat_summary_path) %>
+

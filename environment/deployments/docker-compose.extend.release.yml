@@ -1,0 +1,5 @@
+version: '3.4'
+services:
+  ${DOCKERIMAGENAME}-proxy-${ENVIRONMENT}:
+    volumes:
+      - ../images/certs/server/${DOCKERHOST}/:/usr/local/httpd/ssl:Z

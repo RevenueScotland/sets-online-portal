@@ -44,12 +44,26 @@ module ServiceClient
     get_reference_values = { service: fl_endpoint, wsdl: 'GetReferenceValues.wsdl', endpoint: '/getReferenceValues',
                              operation: :get_reference_values_wsdl, response: :get_reference_values_response,
                              savon_log: false }
+    get_return_periods_and_sites = { service: fl_endpoint, wsdl: 'GetReturnPeriodsAndSites.wsdl',
+                                     endpoint: '/GetReturnPeriodsSites', operation: :get_return_periods_and_sites_wsdl,
+                                     response: :get_return_periods_and_sites_response }
+    get_aggregate_type_rates = { service: fl_endpoint, wsdl: 'GetAggregateTypeRates.wsdl',
+                                 endpoint: '/GetAggregateTypeRates', operation: :get_aggregate_type_rates_wsdl,
+                                 response: :get_aggregate_type_rates_response }
+    get_previous_return_breakdown_periods = { service: fl_endpoint, wsdl: 'GetPreviousReturnBreakdownPeriods.wsdl',
+                                              endpoint: '/GetPreviousReturnBreakdownPeriods',
+                                              operation: :get_previous_return_breakdown_periods_wsdl,
+                                              response: :previous_return_breakdown_periods_response }
     get_role_actions = { service: fl_endpoint, wsdl: 'GetRoleActions.wsdl',
                          endpoint: '/getRoleActions', operation: :get_role_action_wsdl,
                          response: :get_role_actions_response }
     get_secure_message_details = { service: fl_endpoint, wsdl: 'GetSecureMessages.wsdl',
                                    endpoint: '/GetSecureMessageDetails', operation: :get_secure_messages_wsdl,
                                    response: :get_secure_message_response }
+    get_secure_message_alt_reference = { service: fl_endpoint, wsdl: 'GetSmsgDefaultAltReference.wsdl',
+                                         endpoint: '/GetSmsgDefaultAltReference',
+                                         operation: :get_smsg_default_alt_reference_wsdl,
+                                         response: :get_smsg_default_alt_reference_response }
     get_sites = { service: fl_endpoint, wsdl: 'SLFTSites.wsdl', endpoint: '/SLFTPartySites',
                   operation: :slft_sites_wsdl, response: :slft_sites_response }
     get_system_parameters = { service: fl_endpoint, wsdl: 'GetSystemParameters.wsdl', endpoint: '/getSystemParameters',
@@ -117,8 +131,17 @@ module ServiceClient
                        operation: :view_claim_pdfwsdl, response: :view_claim_pdf_response }
     view_document =  { service: fl_endpoint, wsdl: 'ViewDocument.wsdl', endpoint: '/ViewDocument',
                        operation: :view_document_wsdl, response: :view_document_response }
+    view_all_messages_pdf = { service: fl_endpoint, wsdl: 'ViewAllMessagesPdf.wsdl', endpoint: '/ViewAllMessagesPdf',
+                              operation: :view_all_messages_pdf_wsdl, response: :view_all_messages_pdf_response }
     view_return_pdf = { service: fl_endpoint, wsdl: 'ViewReturnPDF.wsdl', endpoint: '/getViewReturnPDF',
                         operation: :view_return_pdf, response: :view_return_pdf_response }
+    sat_tax_return = { service: fl_endpoint, wsdl: 'SATReturn.wsdl', endpoint: '/createSATReturn',
+                       operation: :sat_return_wsdl, response: :sat_return_response }
+    sat_return_details = { service: fl_endpoint, wsdl: 'SATReturnDetails.wsdl',
+                           endpoint: '/GetSATReturn', operation: :get_sat_return_wsdl,
+                           response: :get_sat_return_response }
+    sat_calc = { service: fl_endpoint, wsdl: 'SatCalc.wsdl', endpoint: '/getSatCalculation',
+                 operation: :sat_calc_wsdl, response: :sat_calc_response }
 
     # Finally, map of all services used by this application
     @configuration = { add_attachment: add_attachment, add_document: add_document, address_detail: address_detail,
@@ -127,10 +150,13 @@ module ServiceClient
                        delete_attachment: delete_attachment, delete_document: delete_document,
                        delete_draft_tax_return: delete_draft_tax_return,
                        get_attachment: get_attachment, get_party_details: get_party_details, get_pws_text: get_pws_text,
-                       get_reference_values: get_reference_values, get_role_actions: get_role_actions,
-                       get_secure_message_details: get_secure_message_details, get_sites: get_sites,
-                       get_system_parameters: get_system_parameters, get_tax_relief_types: get_tax_relief_types,
-                       get_transactions: get_transactions,
+                       get_reference_values: get_reference_values,
+                       get_return_periods_and_sites: get_return_periods_and_sites,
+                       get_aggregate_type_rates: get_aggregate_type_rates,
+                       get_previous_return_breakdown_periods: get_previous_return_breakdown_periods,
+                       get_role_actions: get_role_actions, get_secure_message_details: get_secure_message_details,
+                       get_sites: get_sites, get_system_parameters: get_system_parameters,
+                       get_tax_relief_types: get_tax_relief_types, get_transactions: get_transactions,
                        lbtt_calc: lbtt_calc, lbtt_tax_return: lbtt_tax_return,
                        lbtt_tax_return_details: lbtt_tax_return_details, lbtt_update: lbtt_update,
                        list_secure_messages: list_secure_messages, list_system_notices: list_system_notices,
@@ -143,7 +169,10 @@ module ServiceClient
                        validate_return_reference: validate_return_reference,
                        view_all_returns: view_all_returns, view_case_pdf: view_case_pdf,
                        view_claim_pdf: view_claim_pdf, view_document: view_document,
-                       view_return_pdf: view_return_pdf }
+                       view_all_messages_pdf: view_all_messages_pdf,
+                       view_return_pdf: view_return_pdf, sat_tax_return: sat_tax_return,
+                       sat_return_details: sat_return_details, sat_calc: sat_calc,
+                       get_secure_message_alt_reference: get_secure_message_alt_reference }
 
     class << self
       attr_reader :configuration

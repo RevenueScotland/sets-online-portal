@@ -6,4 +6,4 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 
-import "@scottish-government/pattern-library/src/all.js"
+import "@scottish-government/design-system/src/all.js"

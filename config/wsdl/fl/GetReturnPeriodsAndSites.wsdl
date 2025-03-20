@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:ns="http://www.necsws.com/RSTS/GetReturnPeriodsAndSites"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.necsws.com/RSTS/GetReturnPeriodsAndSites.wsdl"
+	xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://www.necsws.com/RSTS/GetReturnPeriodsAndSites.wsdl" name="GetReturnPeriodsAndSites">
+		<wsdl:types>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference for the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Service" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example service is the name of the requesting system, e.g. RB or the database from which the request is coming from, e.g. RBDEV</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Requestor" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>An example requestor is the name of the Local Authority from which the request is being sent</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xs:schema xmlns="http://www.necsws.com/RSTS/GetReturnPeriodsAndSites" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:flc="http://northgate-is.com/FL/Core" targetNamespace="http://www.necsws.com/RSTS/GetReturnPeriodsAndSites" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+			<xs:element name="GetReturnPeriodsAndSitesRequest">
+				<xs:annotation>
+					<xs:documentation>This API will return the returns periods and sites for the enrolment</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EnrmRefno" type="xs:integer"/>
+						<xs:element name="Username" type="xs:string"/>
+						<xs:element name="PartyRef" type="xs:integer"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetReturnPeriodsAndSitesResponse">
+				<xs:annotation>
+					<xs:documentation>Response get attachment</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="flc:StandardResponseStructure">
+							<xs:sequence>
+								<xs:element name="SearchReturnDetailedResponse" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="EnrmRefno" type="xs:integer"/>
+											<xs:element name="ReturnPeriods">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="ReturnPeriod" maxOccurs="unbounded">
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:element name="TrsRefno" type="xs:integer"/>
+																	<xs:element name="PeriodStart" type="xs:date"/>
+																	<xs:element name="PeriodEnd" type="xs:date"/>
+																	<xs:element name="PeriodBreakdowns">
+																		<xs:complexType>
+																			<xs:sequence>
+																				<xs:element name="PeriodBreakdown" maxOccurs="unbounded">
+																					<xs:complexType>
+																						<xs:sequence>
+																							<xs:element name="PeriodBdownStart" type="xs:date"/>
+																							<xs:element name="PeriodBdownEnd" type="xs:date"/>
+																							<xs:element name="RateDate" type="xs:date"/>
+																							<xs:element name="Sites">
+																								<xs:complexType>
+																									<xs:sequence>
+																										<xs:element name="Site" maxOccurs="unbounded">
+																											<xs:complexType>
+																												<xs:sequence>
+																													<xs:element name="SiteRef" type="xs:integer"/>
+																													<xs:element name="SitePartyRef" type="xs:integer"/>
+																													<xs:element name="SitePartyName" type="xs:string"/>
+																													<xs:element name="SiteName" type="xs:string"/>
+																												</xs:sequence>
+																											</xs:complexType>
+																										</xs:element>
+																									</xs:sequence>
+																								</xs:complexType>
+																							</xs:element>
+																						</xs:sequence>
+																					</xs:complexType>
+																				</xs:element>
+																			</xs:sequence>
+																		</xs:complexType>
+																	</xs:element>
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="GetReturnPeriodsAndSites">
+		<wsdl:part name="parameters" element="ns:GetReturnPeriodsAndSitesRequest"/>
+	</wsdl:message>
+	<wsdl:message name="ViewReturnsResponse">
+		<wsdl:part name="parameters" element="ns:GetReturnPeriodsAndSitesResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="GetReturnPeriodsAndSitesWSDLPort">
+		<wsdl:operation name="GetReturnPeriodsAndSitesWSDL">
+			<wsdl:input message="tns:GetReturnPeriodsAndSites"/>
+			<wsdl:output message="tns:ViewReturnsResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetReturnPeriodsAndSitesWSDLBinding" type="tns:GetReturnPeriodsAndSitesWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="GetReturnPeriodsAndSitesWSDL">
+			<soap:operation soapAction="http://www.necsws.com/RSTS/GetReturnPeriodsAndSites"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetReturnPeriodsAndSitesWSDLService">
+		<documentation>necsws.com View Returns Service</documentation>
+		<wsdl:port name="GetReturnPeriodsAndSitesWSDLPort" binding="tns:GetReturnPeriodsAndSitesWSDLBinding">
+			<soap:address location="https://[server]/[port]/communication/GetReturnPeriodsAndSites"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

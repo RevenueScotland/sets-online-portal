@@ -21,7 +21,9 @@ module RS
       rs_site_header_navigation: 'RS::SiteHeaderNavigationComponent',
       rs_site_table: 'RS::SiteTableComponent',
       rs_user_table: 'RS::UserTableComponent',
-      rs_lbtt_party_table: 'RS::PartyTableComponent'
+      rs_lbtt_party_table: 'RS::PartyTableComponent',
+      rs_environment_banner: 'RS::EnvironmentBannerComponent'
+
     }.freeze
 
     # Support Revenue Scotland specific components
@@ -47,7 +49,7 @@ module RS
           define_method(name) do |*args, **kwargs, &block|
             capture do
               render(klass.constantize.new(*args, **form_component_defaults(klass)
-                                           .merge({ builder: builder }).merge(kwargs))) do |com|
+                                                  .merge({ builder: builder }).merge(kwargs))) do |com|
                 block.call(com) if block.present?
               end
             end

@@ -33,5 +33,10 @@ module DS
       @data_action = (conditional_visibility ? { 'data-action': 'visibility#toggleRegion' } : {})
       @options_list.delete_if { |a| a.send(@code_method) != builder.object.send(method) } if readonly
     end
+
+    # Gets the code of the first option of a radio list
+    def first_options_code
+      @options_list[0].send(@code_method).to_s.downcase
+    end
   end
 end

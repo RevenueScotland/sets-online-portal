@@ -3,7 +3,7 @@
 # module to organise tax return models
 module Returns
   # Common returns superclass with methods common to returns.
-  class AbstractReturn < FLApplicationRecord
+  class AbstractReturn < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     # Not included in the list allowed from forms so it can't be posted and changed, ie to prevent data injection.
     # tare_reference is the string the user is shown to identify this return eg RS1000847NRSD
     # tare_refno is the number the back office uses to identify this return (probably the primary key)
@@ -61,14 +61,20 @@ module Returns
     # @param id [Hash] The tare_refno, version, srv_code and tare_reference used for finding a return.
     # @param requested_by [User] user requesting the operation
     # @param response_element [Symbol] expected element in the response body eg. :slft_tax_return
-    def self.abstract_find(operation, id, requested_by, response_element)
+    def self.abstract_find(operation, id, requested_by, response_element) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
       ref_no = id[:tare_refno]
       load_request = { 'ins0:TareRefno': ref_no, Version: id[:version], Username: requested_by.username,
                        ParRefno: requested_by.party_refno }
+      load_request.merge!(portal_object_request_params(requested_by)) if requested_by.portal_objects_access.present?
       call_ok?(operation, load_request) do |body|
+        # RSTP-1574 : Setting the usr into current thread for accessing in relevant models other than base model
+        # This ensures we get current_user access in terms of fl instance
+        Thread.current[:usr] = requested_by
         refined_hash = convert_back_office_hash(body[response_element])
         output = yield(refined_hash)
         output.current_user = requested_by
+        # RSTP-1574 : Reset the usr from thread so that no data leakage happens when multiple threads work at once
+        Thread.current[:usr] = nil
         return copy_to_previous(output) if output.present? && output.is_a?(AbstractReturn)
 
         raise Error::AppError.new(' Load', "Loading #{ref_no} failed")
@@ -111,7 +117,7 @@ module Returns
     end
 
     # Helper method for saving slft returns. @see #save
-    def additional_save_parameters(requested_by)
+    def additional_save_parameters(requested_by) # rubocop:disable Metrics/MethodLength
       # NB the order of these is important to conform to the schema
       output = { FormType: @form_type }
 
@@ -124,9 +130,19 @@ module Returns
       unless requested_by.nil?
         output[:Username] = requested_by.username
         output[:ParRefno] = requested_by.party_refno
+        additional_portal_object_access_parameters(requested_by, output)
       end
 
       output
+    end
+
+    # Helper method for saving portal object access parameters if present
+    # Method for saving the SAT return
+    def additional_portal_object_access_parameters(requested_by, output)
+      return if requested_by.portal_objects_access.empty?
+
+      output[:EnrmRefno] = requested_by.portal_object_reference
+      output[:EnrmRegistrationRef] = requested_by.portal_object_display_reference
     end
 
     # returns the payment types list valid for this return removing DD if this account does not have

@@ -78,6 +78,25 @@ class UsersController < ApplicationController
     end
   end
 
+  # Show the select enrolment page
+  def select_enrolment
+    @user = current_user
+  end
+
+  # Set the portal object index which is selected by user, and redirect to the
+  # dashboard if that's successful
+  def process_enrolment
+    @user = current_user
+
+    if @user.confirm_portal_object(user_params)
+      current_user.portal_object_index = (params[:user][:portal_object_index]).to_i
+      request.env['warden'].set_user(@user)
+      redirect_to dashboard_path
+    else
+      render('select_enrolment', status: :unprocessable_entity)
+    end
+  end
+
   # Calls update for an existing user.
   # Ensures the user being changed is in the list of users for the current user's account to prevent
   # misuse (ie changing another account's user!)
@@ -104,10 +123,9 @@ class UsersController < ApplicationController
 
   # controls the permitted parameters to this controller
   def user_params
-    params.require(:user).permit(
-      :new_username, :user_is_current, :forename, :surname, :email_address, :new_password, :new_password_confirmation,
-      :email_address_confirmation, :phone_number, user_roles: []
-    )
+    attributes = %i[new_username user_is_current forename surname email_address new_password new_password_confirmation
+                    email_address_confirmation phone_number portal_object_index]
+    params.require(:user).permit(attributes, user_roles: [], portal_objects_access: [])
   end
 
   # controls the permitted parameters to this controller for password related operations

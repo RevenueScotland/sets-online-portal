@@ -39,7 +39,8 @@ module Dashboard
       return unless can? RS::AuthorisationHelper::VIEW_MESSAGES
 
       @messages, @messages_pagination =
-        Message.list_paginated_messages(current_user, message_page, MessageFilter.new(unread_only: 'yes'), 3)
+        Message.list_paginated_messages(current_user, message_page,
+                                        MessageFilter.new(unread_only: 'yes', direction_code: 'O'), 3)
     end
 
     # get the returns

@@ -1,0 +1,70 @@
+HOME			= .
+RANDFILE      		= .rnd
+
+[ ca ]
+default_ca		= CA_default
+
+[ CA_Default ]
+default_days	= 3650
+default_md		= sha256
+preserve		= no
+email_in_dn		= no
+nameopt			= default_ca
+certopt			= default_ca
+policy			= policy_match
+
+[ policy_match ]
+countryName		= match
+stateOrProvinceName	= match
+organizationName	= match
+organizationalUnitName	= optional
+commonName		= supplied
+emailAddress		= optional
+
+[ req ]
+default_bits		= 4096 
+default_keyfile		= key.pem
+default_md		= sha256
+string_mask		= nombstr
+distinguished_name	= req_distinguished_name
+req_extensions		= v3_req
+
+[ req_distinguished_name ]
+0.organizationName		= Organization Name (company)
+organizationalUnitName		= Organizational Unit Name (department, division)
+emailAddress			= Email Address
+emailAddress_max		= 40
+localityName			= Locality Name (city, district)
+stateOrProvinceName		= State or Province Name (full name)
+countryName			= Country Name (2 letter code)
+countryName_min			= 2
+countryName_max			= 2
+commonName			= Common Name (hostname, IP, or your name)
+commonName_max			= 64
+ 
+0.organizationName_default	= Northgate Public Services (Proxy)
+organizationalUnitName_default	= NDS (Proxy)
+emailAddress_default		= nds-proxy@northgate-is.com
+localityName_default		= Milton Keynes
+stateOrProvinceName_default	= Buckinghamshire
+countryName_default		= UK
+commonName_default		= $ENV::CN
+
+[ v3_ca ]
+basicConstraints		= CA:TRUE
+subjectKeyIdentifier		= hash
+authorityKeyIdentifier		= keyid:always,issuer:always
+nsComment                       = proxy
+ 
+[ v3_req ]
+basicConstraints		= CA:FALSE
+subjectKeyIdentifier		= hash
+
+[ usr_cert ]
+basicConstraints        = CA:FALSE
+nsCertType              = client, email
+nsComment               = "OpenSSL Generated Client Certificate"
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid,issuer
+keyUsage                = critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage        = clientAuth

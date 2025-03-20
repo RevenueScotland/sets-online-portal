@@ -1,0 +1,9 @@
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:navigation_link, request.path) %>
+<% unless @sat_return.user_periods_list.blank?%>
+  <%= ds_form_with(model: @sat_return, url: @post_path) do |f| %>
+    <%= f.ds_select(method: :sat_period, select_options: @sat_return.user_periods_list , width: 20, optional: false) %>
+  <% end %>
+<% else %>
+  <%= ds_paragraph{t('.no_periods')} %>
+<% end %>

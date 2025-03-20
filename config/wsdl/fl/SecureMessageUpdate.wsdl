@@ -153,6 +153,8 @@
         <xs:complexType>
           <xs:sequence>
             <xs:element name="ParRefno" type="xs:integer"/>
+            <xs:element name="PortalObjectType" type="xs:string"  minOccurs="0"/>
+						<xs:element name="PortalObjectReference" type="xs:string" minOccurs="0"/>
             <xs:element name="UserName" type="xs:string"/>
             <xs:element name="SmsgRegno" type="xs:integer"/>
             <xs:element name="Direction" type="xs:string"/>

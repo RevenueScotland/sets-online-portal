@@ -12,6 +12,13 @@ def mock_valid_signin
   mock_dashboard_calls('117', 'VALID.USER', 'get_account_details')
 end
 
+def mock_valid_sat_signin
+  message = { Username: 'VALID.USER', Password: 'valid.password' }
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}normal_login/valid_signin_sat.xml")
+  @savon.expects(:authenticate_user_wsdl).with(message: message).returns(fixture)
+  mock_dashboard_calls('3752', 'VALID.USER', 'get_account_details')
+end
+
 # Mock a locked user sign in
 Before('@mock_locked_user') do
   start_mock

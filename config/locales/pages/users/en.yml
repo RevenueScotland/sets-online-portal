@@ -25,3 +25,6 @@ en:
     update_tcs:
       title: "Terms and conditions"
       description: "In order to proceed you must read and accept the terms and conditions"
+      user_is_signed_ta_cs_link: "Terms & conditions"
+    select_enrolment:
+      title: "Select your SAT registration"

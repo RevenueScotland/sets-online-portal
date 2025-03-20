@@ -43,7 +43,8 @@
     <% row.with_cell(colspan: 7) do %>
       <%= ds_link(name: t('.show'),
               url: dashboard_financial_transaction_path(transaction.transaction_reference),
-              subtype: :padded) if can?(RS::AuthorisationHelper::VIEW_RETURNS) %>
+              subtype: :padded,
+              visually_hidden_text: t('.hidden_text', transaction_reference: transaction.related_reference)) if can?(RS::AuthorisationHelper::VIEW_RETURNS) %>
     <% end %>
   <% end %>
 <% end %>

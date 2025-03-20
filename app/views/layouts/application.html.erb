@@ -22,22 +22,25 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1" >
+    <%# Disabled the instaclick globaly as on most pages it's a heavy operation and causes problems e.g back links and sign out %>
+    <meta name="turbo-prefetch" content="false">
   </head>
   <body data-controller="ds timeout-warning accessibility cancel-warning" 
         data-timeout-warning-message-value="<%= t('.timeout_warning_message') %>" 
         data-timeout-warning-minutes-value="<%= @session_ttl_warning %>"
-        data-cancel-warning-message-value="<%= t('.cancel_warning_message') %>" 
+        data-cancel-warning-message-value="<%= content_for?(:cancel_warning_custom_message) ? content_for(:cancel_warning_custom_message) :  t('.cancel_warning_message') %>"
         >
     <%= ds_skip_link %>
     <div class="ds_page">
-      <div class="ds_page__top">
+      <div class="ds_page__top" id="page-top">
         <%= render "/layouts/header" %>
       </div>
       <div class="ds_page__middle">
         <div class="ds_wrapper">
+          <%= ds_navigation_link %>
           <main id="main-content" class="ds_layout  rs_layout--rs">
             <div class="ds_layout__header">
-              <%= ds_navigation_link %>
               <%= render(DS::ErrorSummaryComponent.new) %>
               <%= ds_page_header(page_title: content_for(:page_title)) %>
             </div>

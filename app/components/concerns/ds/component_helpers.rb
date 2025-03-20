@@ -82,7 +82,7 @@ module DS
           define_method(name) do |*args, **kwargs, &block|
             capture do
               render(klass.constantize.new(*args, **form_component_defaults(klass)
-                                           .merge({ builder: builder }).merge(kwargs))) do |com|
+                                                  .merge({ builder: builder }).merge(kwargs))) do |com|
                 block.call(com) if block.present?
               end
             end

@@ -1,0 +1,8 @@
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @sat_return, url: @post_path, method: :post) do |f| %>
+ <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :repayment_ind, 
+      options_list: @sat_return.list_ref_data(:repayment_ind), alignment: :horizontal ) %>
+    <%= f.ds_currency(method: :claiming_amount) %>
+    <% end %>
+<% end %>

@@ -24,18 +24,30 @@ en:
         main_rep_name: "Organisation main representative name"
         taxes: "Which type of tax return do you want to be able to file"
         party_account_type: "Who is the account for"
-    labels:
-      account:
-        terms_and_conditions: "<span>I confirm that I have read and understood the </span>%{link}"
-        terms_and_conditions_link: "terms & conditions"
-        email_data_ind: "I confirm that I have read and understood Revenue Scotland’s %{link}. I agree to receive email communication from Revenue Scotland and accept the associated risks"
-        email_data_ind_link: "email communication policy"
+        party_account_type_LBTT: "Who is the account for"
+        party_account_type_SLFT: "Who is the account for"
+        party_account_type_SAT: "Who is the account for"
+        enrolment_ref: "Which SAT reference do you want this account to be able to access"
+        terms_and_conditions: "<span>I confirm that I have read and understood the terms & conditions</span>"
+        email_data_ind: "I confirm that I have read and understood Revenue Scotland’s email communication policy. I agree to receive email communication from Revenue Scotland and accept the associated risks"
+        tp_business_name: "Taxpayer's business name"
+        tp_busi_postcode: "Taxpayer's business postcode"
+        tp_busi_email_addr: "Taxpayer's business contact email address"
+        registration_notes: "A portal account has been requested for SAT enrolment reference %{enrolment_ref}. Check the details given for the taxpayer / aggregates operator match those showing on the SAT reference %{enrolment_ref}.\n Type of account holder: %{account_type}, Taxpayer / aggregates operator business name: %{taxpayer_name}, Taxpayer / aggregates operator postcode: %{taxpayer_postcode}, Taxpayer / aggregates operator email %{taxpayer_email}." 
     hints:
       account:
         registration_token: "Enter the token from the registration email or from the password reset email"
         new_password: "This must be a minimum of 9 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character, like, +, $, !"
         company_name: "If you enter a company name we will register the account for the company"
         country: "Start typing your country name and a list of matches will appear"
+        party_account_type_LBTT: "Are you the taxpayer, or an agent acting on behalf of the taxpayer?"
+        party_account_type_SLFT: "Are you the taxpayer, or an agent acting on behalf of the taxpayer?"
+        party_account_type_SAT: "Are you the taxpayer, or an agent acting on behalf of the taxpayer, or the UK tax representative acting on behalf of a non-resident taxpayer?"
+        enrolment_ref: "If you are the taxpayer, enter the SAT reference provided to you by Revenue Scotland.
+        If you are an agent or UK tax representative, enter the SAT reference provided to the taxpayer by Revenue Scotland."
+        tp_business_name: "Provide the name of the aggregates operator"
+        tp_busi_postcode: "Provide the postcode of the aggregates operator"
+        tp_busi_email_addr: "Provide the email address of the aggregates operator"
     errors:
       models:
         account:

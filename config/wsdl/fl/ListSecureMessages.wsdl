@@ -156,8 +156,11 @@
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="ParRefno" type="xs:string"/>
+						<xs:element name="PortalObjectType" type="xs:string" minOccurs="0"/>
+						<xs:element name="PortalObjectReference" type="xs:string" minOccurs="0"/>
 						<xs:element name="Username" type="xs:string"/>
 						<xs:element name="SubjectCode" type="xs:string" minOccurs="0"/>
+						<xs:element name="SubjectDesc" type="xs:string" minOccurs="0"/>
 						<xs:element name="WrkRefno" type="xs:integer" minOccurs="0"/>
 						<xs:element name="SRVCode" type="xs:string" minOccurs="0"/>
 						<xs:element name="FromDate" type="xs:date" minOccurs="0"/>
@@ -240,13 +243,20 @@
 															</xs:simpleType>
 														</xs:element>
 														<xs:element name="SubjectCode" type="xs:string"/>
+														<xs:element name="SubjectDesc" type="xs:string" minOccurs="0"/>
 														<xs:element name="SubjectDomain" type="xs:string"/>
 														<xs:element name="WrkRefno" type="xs:integer"/>
 														<xs:element name="SRVCode" type="xs:string"/>
 														<xs:element name="Title" type="xs:string"/>
+														<xs:element name="Body" type="xs:string"/>
 														<xs:element name="Reference" type="xs:string" minOccurs="0">
 															<xs:annotation>
 																<xs:documentation>It can be either a Return reference or a Case reference or blank or others</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="AltReference" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>Agent reference stored on the secure message</xs:documentation>
 															</xs:annotation>
 														</xs:element>
 														<xs:element name="CreatedDate" type="xs:dateTime"/>

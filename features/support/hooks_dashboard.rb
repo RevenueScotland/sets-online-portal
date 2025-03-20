@@ -45,3 +45,9 @@ def mock_get_account_details(party_ref, requestor, filename)
   message = { PartyRef: party_ref, 'ins1:Requestor': requestor }
   @savon.expects(:get_party_details_wsdl).with(message: message).returns(fixture)
 end
+
+def mock_get_secure_message_reference(party_ref, requestor, reference)
+  fixture = File.read("#{FIXTURES_MOCK_ROOT}dashboard/get_smsg_default_alt_reference.xml")
+  message = { ParRefno: party_ref, Username: requestor, 'ins1:SmsgSearchReference' => reference }
+  @savon.expects(:get_smsg_default_alt_reference_wsdl).with(message: message).returns(fixture)
+end

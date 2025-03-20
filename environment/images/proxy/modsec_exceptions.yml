@@ -1,0 +1,119 @@
+version: "1"
+exceptions:
+  not_field_based:
+    rules:
+      - 960915
+      - 960015
+      - 958291
+      - 973335
+  address_search:
+    fields:
+      - ARGS:search_results
+      - ARGS:/^address_list_\d+$/
+    rules:
+      - 960024
+      - 973338
+  authenticity_token:
+    fields:
+      - ARGS:authenticity_token
+      - ARGS:user[token]
+      - REQUEST_COOKIES:_rev_scot_session
+    rules:
+      - 960024
+      - 973337
+      - 973338
+      - 950006
+      - 950005
+      - 950907
+  odd_chars_in_password_token_fields:
+    fields:
+      - ARGS:forgotten_password[new_password]
+      - ARGS:forgotten_password[new_password_confirmation]
+      - ARGS:user[password]
+      - ARGS:user[old_password]
+      - ARGS:user[new_password]
+      - ARGS:user[new_password_confirmation]
+      - ARGS:user[token]
+      - ARGS:account[registration_token]
+      - ARGS:account[user][new_password]
+      - ARGS:account[user][new_password_confirmation]
+    rules:
+      - 960024
+      - 950109
+      - 973338
+      - 950006
+      - 950010
+  xss_exceptions:
+    fields:
+      - ARGS:returns_lbtt_lbtt_return[orig_return_reference]
+      - ARGS:returns_lbtt_lbtt_return[taxpayer_email_id]
+    rules:
+      - 973338
+  odd_chars_in_data_fields:
+    fields:
+      - ARGS:returns_lbtt_party[org_name]
+      - ARGS:returns_lbtt_party[alrt_reference]
+      - ARGS:returns_lbtt_party[agent_reference]
+      - ARGS:returns_lbtt_party[agent_dx_number]
+      - ARGS:returns_lbtt_party[other_type_description]
+      - ARGS:returns_lbtt_party[email_address]
+      - ARGS:returns_lbtt_party[firstname]
+      - ARGS:returns_lbtt_lbtt_return[account_holder_name]
+      - ARGS:returns_lbtt_lbtt_return[orig_landlord_name]
+      - ARGS:returns_slft_waste[description]
+      - ARGS:applications_slft_sites[type_of_waste_text]
+      - ARGS:/applications_slft_sites\[wastes\]\[.*\]\[type_of_waste\]/
+      - ARGS:/applications_slft_sites\[wastes\]\[.*\]\[final_destination\]/
+      - ARGS:/applications_slft_sites\[wastes\]\[.*\]\[use\]/
+      - ARGS:applications_slft_sites[further_treatment]
+      - ARGS:applications_slft_applications[why_water_present]
+      - ARGS:applications_slft_applications[type_of_waste_text]
+      - ARGS:applications_slft_applications[how_produced]
+      - ARGS:applications_slft_applications[how_added]
+      - ARGS:applications_slft_applications[treatment]
+      - ARGS:applications_slft_applications[reason_for_no_treatment]
+      - ARGS:applications_slft_wastes[type_of_waste]
+      - ARGS:applications_slft_sites[type_of_waste_text]
+      - ARGS:dashboard_message[body]
+      - ARGS:dashboard_message[title]
+      - ARGS:dashboard_dashboard_return_filter[tare_reference]
+      - ARGS:dashboard_financial_transaction_filter[related_reference]
+      - ARGS:reference
+      - ARGS:company[company_name]
+      - ARGS:company[address_line1]
+      - ARGS:company[address_line2]
+      - ARGS:address[address_line1]
+      - ARGS:address[address_line2]
+      - ARGS:address[address_line3]
+      - ARGS:address[address_line4]
+      - ARGS:account[email_address]
+      - ARGS:account[email_address_confirmation]
+      - ARGS:returns_lbtt_party[surname]
+      - ARGS:returns_lbtt_party[firstname]
+      - ARGS:returns_lbtt_party[email_address]
+      - ARGS:returns_lbtt_party[org_name]
+      - ARGS:returns_lbtt_party[contact_surname]
+      - ARGS:returns_lbtt_party[contact_firstname]
+      - ARGS:returns_lbtt_party[contact_email]
+      - ARGS:returns_lbtt_lbtt_return[account_holder_name]
+      - ARGS:user[username]
+      - ARGS:account[current_user][surname]
+      - ARGS:account[current_user][forename]
+      - ARGS:account[current_user][new_username]
+      - ARGS:account[company][org_email_address]
+      - ARGS:account[company][main_rep_name]
+      - ARGS:account[email_address]
+      - ARGS:account[email_address_confirmation]
+      - ARGS:claim_claim_payment[surname]
+      - ARGS:claim_claim_payment[firstname]
+      - ARGS:claim_claim_payment[email_address]
+      - ARGS:claim_claim_payment[s_firstname]
+      - ARGS:claim_claim_payment[s_surname]
+      - ARGS:claim_claim_payment[s_email_address]
+      - ARGS:claim_claim_payment[account_holder_name]
+    rules:
+      - 960024
+      - 950109
+      - 950006
+      - 973338
+      - 950907

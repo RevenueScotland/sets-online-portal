@@ -18,7 +18,8 @@
       <% table.with_row do |row| %>
         <% row.with_cell(colspan: 7) do %>
           <%= ds_link(name: t('.edit'), url: edit_user_path(user),
-           subtype: :padded) if can?(RS::AuthorisationHelper::CREATE_USERS) %>
+           subtype: :padded,
+           visually_hidden_text: t('.hidden_text', user_name: user.username)) if can?(RS::AuthorisationHelper::CREATE_USERS) %>
         <% end %>
       <% end %>
     <% end %>

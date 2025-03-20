@@ -23,6 +23,69 @@ SET prm_value = 'N'
 WHERE prm_code = 'IS_2FA_ENABLED'
 AND prm_domain = 'PWS';
 
+UPDATE parameters
+SET prm_value = 'N'
+WHERE prm_code = 'ENABLE_BO_2FA'
+AND prm_domain = 'SYSTEM';
+
+DECLARE
+ l_db_name VARCHAR2(500);
+BEGIN
+
+SELECT NAME
+INTO l_db_name
+FROM v$database;
+
+DELETE parameters
+WHERE prm_domain IN ('BANNER MESSAGE','BANNER COLOUR');
+
+INSERT INTO parameters( prm_domain
+                     , prm_code
+                     , prm_start_date
+                     , prm_datatype
+                     , prm_value
+                     , prm_description
+                     , prm_act_code)
+SELECT  'BANNER MESSAGE'
+      ,l_db_name
+      , TO_DATE('01-APR-1990', 'DD-MON-RRRR')
+      , 'C'
+      ,'The description text shown on the environment banner'
+      ,'The description text shown on the environment banner'
+      ,'UPBANNER'
+FROM dual
+WHERE NOT EXISTS( SELECT 1
+                 FROM parameters 
+                 WHERE prm_domain = 'BANNER MESSAGE'
+                 AND prm_code = l_db_name
+                 AND prm_start_date = TO_DATE('01-APR-1990', 'DD-MON-RRRR'));
+
+INSERT INTO parameters( prm_domain
+                     , prm_code
+                     , prm_start_date
+                     , prm_datatype
+                     , prm_value
+                     , prm_description
+                     , prm_act_code)
+SELECT  'BANNER COLOUR'
+      , l_db_name
+      , TO_DATE('01-APR-1990', 'DD-MON-RRRR')
+      , 'C'
+      ,'FF0000'
+      ,'The background hex colour of the banner for '||l_db_name
+      ,'UPBANNER'
+FROM dual
+WHERE NOT EXISTS( SELECT 1
+                 FROM parameters 
+                 WHERE prm_domain = 'BANNER COLOUR'
+                 AND prm_code = l_db_name
+                 AND prm_start_date = TO_DATE('01-APR-1990', 'DD-MON-RRRR'));
+EXCEPTION 
+WHEN OTHERS THEN NULL;
+END;
+/
+
+
 UPDATE fl_ref_values
 SET frv_code = 'ACCSECADMN'
 WHERE frv_code IN ('ACCSEC','ACCSECADM')
@@ -40,9 +103,11 @@ WHERE wsp_srv_code = 'LBTT'
 AND wsp_wrk_refno = 1
 AND wsp_sprm_code in ('PWS_WARN_PAST_DAYS');
 
+
 DECLARE
 
   l_par_refno parties.par_refno%TYPE; -- used to hold the current party reference
+  l_par_refno_temp parties.par_refno%TYPE; -- used to hold the current party reference (changing)
   l_par_refno_new parties.par_refno%TYPE; -- used to hold the current party reference
   l_tare_refno tax_returns.tare_refno%TYPE; -- used to hold the current tax reference
   l_last_refno integer := 0; -- used to roll the sequence on for sites
@@ -56,15 +121,27 @@ DECLARE
   l_smsg_refno secure_messages.smsg_refno%TYPE; -- message reference for fiddling date
   l_case_refno cases.case_refno%TYPE; -- case refno (for messages)
   l_adr_refno addresses.adr_refno%TYPE; -- adr refno for ADS main address
+  l_trs_refno tax_return_schedules.trs_refno%TYPE; -- tax return schedule refno
+  l_strp_refno schd_type_return_periods.strp_refno%TYPE; -- strp refno for schedule type return periods
+  l_taxl_refno1 taxable_locations.taxl_refno%TYPE; -- Taxable locations (sites) refno
+  l_taxl_refno2 taxable_locations.taxl_refno%TYPE; -- Taxable locations (sites) refno
+  l_tld_refno trv_location_details.tld_refno%TYPE; -- location details refno
+  l_ep_refno         NUMBER;
+  l_enrm_refno       NUMBER;
+  l_aggr_par_refno   NUMBER;
+  l_enr_par_refno    NUMBER;
+  l_strp_seq         NUMBER;
+  l_srpb_seq         NUMBER;
+  l_taxl_refno_seq   NUMBER;
 
   -- The amendable and non amendable date need to be updated once a year at the beginning of august
   -- Then update the same dates in the dashboard_returns.feature
   -- Also update the dates in the lbtt_returns.feature file
-  AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2023';
-  NON_AMENDABLE_DATE VARCHAR2(12) := '01-JUN-2021';
+  AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2024';
+  NON_AMENDABLE_DATE VARCHAR2(12) := '01-JUN-2022';
   -- This is set to a few days before the amendable date for older versions
-  SLFT_SUBMITTED_DATE VARCHAR2(12) := '19-JUN-2023';
-  SLFT_AMENDABLE_YEAR VARCHAR2(4) := '2023';
+  SLFT_SUBMITTED_DATE VARCHAR2(12) := '19-JUN-2024';
+  SLFT_AMENDABLE_YEAR VARCHAR2(4) := '2024';
   
       PROCEDURE create_or_maintain_cde(p_par_refno parties.par_refno%TYPE,
          p_cde_cme_code contact_details.cde_cme_code%TYPE,
@@ -181,6 +258,9 @@ BEGIN
   DELETE FROM DOCUMENT_ACTIVITY_AUDIT where daa_to_be_received_by in
      (select usr_refno FROM users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%'));
   DELETE FROM FWF_ALLOCATIONS WHERE fal_usr_username IN (select usr_username FROM users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%'));
+  
+  DELETE from PORTAL_OBJECT_ACCESS where POA_PORTAL_PAR_REFNO in (select usr_par_refno FROM users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%'));
+  
   DELETE FROM users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM secure_messages WHERE smsg_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM address_usages WHERE aus_object_reference IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
@@ -198,9 +278,7 @@ BEGIN
   DELETE FROM tax_returns WHERE tare_srv_code = 'SLFT' and NOT EXISTS (SELECT NULL FROM slft_returns WHERE slft_tare_refno = tare_refno);
 
   -- Delete LBTT Data
-  DELETE FROM lbtt_properties WHERE lppr_lbtt_tare_refno IN (
-       SELECT lpli_lbtt_tare_refno FROM lbtt_return_party_links WHERE lpli_flpt_type = 'AGENT' AND lpli_par_refno IN 
-         (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%'));
+  DELETE FROM lbtt_properties;         
   DELETE FROM lbtt_return_party_links WHERE lpli_lbtt_tare_refno IN (
        SELECT lpli_lbtt_tare_refno FROM lbtt_return_party_links WHERE lpli_flpt_type = 'AGENT' AND lpli_par_refno IN 
          (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%'));
@@ -247,12 +325,22 @@ BEGIN
    (SELECT tra_refno FROM transactions WHERE tra_fiac_refno IN
       (SELECT fpli_fiac_refno FROM fiac_party_links WHERE fpli_par_refno IN 
         (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%' )));
+  DELETE FROM transaction_matches WHERE tram_created_by = 'PORTAL.SAT.TAXPAYER';
   DELETE FROM transactions WHERE tra_fiac_refno IN
       (SELECT fpli_fiac_refno FROM fiac_party_links WHERE fpli_par_refno IN 
         (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%' ));
+  DELETE FROM transactions WHERE tra_fiac_refno IN
+      (SELECT fpli_fiac_refno FROM fiac_party_links WHERE fpli_par_refno IN 
+        (SELECT par_refno FROM parties WHERE par_org_name IN('Marks & Spencer Group','Black Sands Group','Kevin Peterson Partnership','Jim and James Group')));
+  DELETE FROM transactions WHERE tra_tty_srv_code = 'SAT';
+   delete from fiac_party_links where fpli_fiac_refno in 
+   ( select fiac_refno from financial_accounts 
+   where not exists (select 1 from tax_returns where tare_reference= fiac_reference) );
   DELETE FROM fiac_party_links WHERE fpli_par_refno IN 
         (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%' );
-  DELETE FROM financial_accounts WHERE fiac_reference LIKE 'PORTAL%';
+  DELETE FROM fiac_party_links WHERE fpli_created_by = 'EXTPWSUSER';
+  DELETE FROM fiac_party_links WHERE fpli_created_by = 'PORTAL.SAT.ONE';
+
 
   -- Delete the rest of the party data
   DELETE FROM landfill_sites WHERE lasi_controller_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
@@ -261,11 +349,13 @@ BEGIN
   DELETE FROM lbtt_return_party_links WHERE lpli_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM secure_messages WHERE smsg_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM dd_instructions WHERE din_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
+  DELETE FROM dd_instructions WHERE din_par_refno IN (SELECT par_refno FROM parties WHERE par_org_name like '%Kevin Peterson Partnership%');
   DELETE FROM return_repayments WHERE rrep_claimant_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM return_repayments WHERE rrep_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM contact_details WHERE cde_object_reference IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
+  DELETE FROM case_return_links WHERE crli_case_refno in (SELECT case_refno FROM cases WHERE case_created_by = 'EXTPWSUSER');
   DELETE FROM case_links WHERE cali_case_refno IN (SELECT case_refno FROM cases WHERE case_reference LIKE 'PORTAL.%');
-  DELETE FROM cases WHERE case_reference LIKE 'PORTAL.%';
+  DELETE FROM cases WHERE case_reference LIKE 'PORTAL.%' OR  case_created_by = 'EXTPWSUSER';
   DELETE FROM alternate_references WHERE alre_alrt_object_type = 'PAR' AND alre_object_reference in (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM parties WHERE par_com_company_name like 'Test Portal Company%';
 
@@ -293,29 +383,23 @@ BEGIN
   DELETE FROM address_usages WHERE aus_object_reference IN (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%');
   DELETE FROM case_party_links WHERE cpli_par_refno IN (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%');
   DELETE FROM lbtt_return_party_links WHERE lpli_par_refno IN (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%');
+   
   DELETE FROM fiac_party_links WHERE fpli_par_refno IN 
         (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%' );
   DELETE FROM return_repayments WHERE rrep_par_refno IN (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%');
-  DELETE FROM financial_accounts WHERE fiac_reference LIKE 'PORTAL%';  
-  DELETE FROM financial_accounts WHERE 
-     fiac_refno NOT IN (SELECT fpli_fiac_refno FROM fiac_party_links
-                        UNION ALL SELECT tra_fiac_refno FROM transactions
-                        UNION ALL SELECT tare_fiac_refno FROM tax_returns);
   DELETE FROM contact_details WHERE cde_object_reference IN (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%');
   DELETE FROM alternate_references WHERE alre_alrt_object_type = 'PAR' AND alre_object_reference in (SELECT par_refno FROM parties WHERE par_per_surname like 'Port%-Test%');
   DELETE FROM parties WHERE par_per_surname like 'Port%-Test%';
  
   -- Tidy up cases and any uploaded documents create by e.g. claims
   DELETE FROM transactions WHERE tra_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
-  DELETE FROM potential_transactions WHERE ptra_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
+  DELETE FROM potential_transactions;
   DELETE FROM secure_messages WHERE smsg_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
   DELETE FROM case_links WHERE cali_to_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
   DELETE FROM case_links WHERE cali_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
   DELETE FROM case_status_histories WHERE cash_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
   DELETE FROM case_return_links WHERE crli_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
-  DELETE FROM case_party_links WHERE cpli_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
-  DELETE FROM cases WHERE case_created_by LIKE 'PORTAL.%';
-
+                        
   DELETE FROM document_pages WHERE dpa_doc_refno IN (SELECT ere_doc_refno FROM external_references WHERE ere_est_code = 'CASE' 
     AND NOT EXISTS (SELECT null FROM cases where case_reference = ere_value));
   DELETE FROM external_references WHERE ere_est_code != 'CASE' AND ere_doc_refno IN (SELECT ere_doc_refno FROM external_references WHERE ere_est_code = 'CASE' 
@@ -327,6 +411,74 @@ BEGIN
   DELETE FROM external_references WHERE ere_est_code = 'CASE' 
     AND NOT EXISTS (SELECT null FROM cases where case_reference = ere_value);
   DELETE FROM documents WHERE NOT EXISTS (SELECT NULL FROM external_references WHERE ere_doc_refno = doc_refno);
+
+  DELETE FROM TAX_RETURN_SCHEDULE_TYPES
+  where TRST_CREATED_BY = 'EXTPWSUSER';
+  
+  DELETE from TAX_RETURN_PARTY_LINKS where TRPL_CREATED_BY in('EXTPWSUSER','PORTAL.SAT.TAXPAYER');
+  
+  DELETE from TRD_LOCATION_BREAKDOWN where TLB_CREATED_BY in ((select usr_username FROM users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%')), 'EXTPWSUSER', 'PORTAL.SAT.ONE','PORTAL.SAT.TAXPAYER');
+  
+  DELETE from TRV_LOCATION_DETAILS where TLD_CREATED_BY in ((select usr_username FROM users WHERE usr_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%')), 'EXTPWSUSER', 'PORTAL.SAT.ONE', 'PORTAL.SAT.TAXPAYER');
+
+  UPDATE tax_return_schedules
+  SET trs_tare_refno = NULL
+  WHERE TRS_CREATED_BY = 'EXTPWSUSER';
+
+  DELETE FROM case_return_links WHERE crli_tare_refno IN (SELECT tare_refno FROM tax_returns WHERE tare_srv_code = 'SAT' and NOT EXISTS 
+      (SELECT NULL FROM tax_return_versions WHERE trv_tare_refno = tare_refno));
+
+  UPDATE tax_return_versions
+  SET TRV_CASE_REFNO = NULL
+  WHERE TRV_CREATED_BY LIKE 'PORTAL.%';
+  
+  DELETE tax_return_versions
+  WHERE trv_created_by IN('EXTPWSUSER','PORTAL.SAT.TAXPAYER');
+  
+  DELETE FROM case_party_links WHERE cpli_case_refno in (SELECT case_refno FROM cases WHERE case_created_by LIKE 'PORTAL.%');
+  DELETE FROM case_party_links WHERE cpli_par_refno IN (SELECT par_refno FROM parties WHERE par_org_name like 'Jim and James Group%');
+  DELETE FROM case_party_links WHERE cpli_par_refno IN (SELECT par_refno FROM parties WHERE par_org_name like 'Marks & Spencer%');
+  DELETE FROM cases WHERE case_created_by LIKE 'PORTAL.%';
+  DELETE FROM cases WHERE case_related_reference = 'RS10000001GLVD';
+
+  UPDATE tax_returns
+  SET tare_fiac_refno = NULL
+  WHERE tare_created_by = 'EXTPWSUSER';
+  
+  DELETE FROM tax_returns WHERE tare_srv_code = 'SAT' and NOT EXISTS (SELECT NULL FROM tax_return_versions WHERE trv_tare_refno = tare_refno);
+  
+  DELETE FROM financial_accounts WHERE fiac_reference LIKE 'PORTAL%' AND FIAC_SRV_CODE  = 'SAT';
+  DELETE FROM financial_accounts WHERE fiac_created_by = 'EXTPWSUSER' AND fiac_srv_code = 'SAT';
+  DELETE FROM financial_accounts WHERE fiac_reference LIKE 'PORTAL%';
+  DELETE FROM financial_accounts WHERE 
+     fiac_refno NOT IN (SELECT fpli_fiac_refno FROM fiac_party_links
+                        UNION ALL SELECT tra_fiac_refno FROM transactions
+                        UNION ALL SELECT tare_fiac_refno FROM tax_returns);
+  
+  DELETE FROM taxable_locations
+  WHERE taxl_created_by = 'EXTPWSUSER';
+  
+  DELETE FROM schd_returns_period_breakdown
+  WHERE srpb_created_by = 'EXTPWSUSER'; 
+  
+  DELETE FROM tax_return_schedules
+  WHERE trs_created_by = 'EXTPWSUSER'; 
+  
+  DELETE FROM schd_type_return_periods
+  WHERE strp_created_by = 'EXTPWSUSER'; 
+  
+  DELETE FROM ENROLMENT_PERIOD_PARTIES
+  WHERE  epp_created_by = 'EXTPWSUSER';
+  
+  DELETE FROM ENROLMENT_PERIODS
+  WHERE  ep_created_by = 'EXTPWSUSER';
+  
+  DELETE FROM enrolment_master
+  WHERE  enrm_created_by = 'EXTPWSUSER';
+
+  DELETE FROM parties WHERE par_org_name like 'Jim and James Group%';
+  DELETE FROM parties WHERE par_org_name like 'Marks & Spencer%';
+
  
   -- Insert the system notices test cases
   INSERT INTO system_notices
@@ -336,7 +488,7 @@ BEGIN
      syno_more_information_url)
   VALUES
    ('Portal- This is a test notice', 'PWS',
-     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', TO_DATE('10-OCT-3021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '00:00',
+     TO_DATE('11-OCT-2021','DD-MON-YYYY HH24:MI:SS'), '06:00', TO_DATE('10-OCT-3021','DD-MON-YYYY HH24:MI:SS'), '00:00',
      'N', 'PORTAL', 1, 'https://www.google.com/');
 										
   INSERT INTO system_notices
@@ -346,7 +498,7 @@ BEGIN
      syno_more_information_url)
   VALUES
    ('LBTT Lease Review - This is a test notice with a full stop and a space. ', 'PWS',
-     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
+     TO_DATE('11-OCT-2021','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
      'N', 'LBTTREVIEW', 1, 'https://www.google.com/');
 
   INSERT INTO system_notices
@@ -356,7 +508,7 @@ BEGIN
      syno_more_information_url)
   VALUES
    ('SLFT application - This is a test notice with a full stop.', 'PWS',
-     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
+     TO_DATE('11-OCT-2021','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
      'N', 'SLFTFORMS', 1, 'https://www.google.com/');
 
   INSERT INTO system_notices
@@ -366,7 +518,7 @@ BEGIN
      syno_more_information_url)
   VALUES
    ('Repayment Request - This is a test notice without a URL', 'PWS',
-     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
+     TO_DATE('11-OCT-2021','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
      'N', 'REPAYMENT', 1, NULL);
 
   INSERT INTO system_notices
@@ -376,7 +528,7 @@ BEGIN
      syno_more_information_url)
   VALUES
    ('All - This is a test notice', 'PWS',
-     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
+     TO_DATE('11-OCT-2021','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
      'N', 'ALL', 1, 'https://www.google.com/');
 
   INSERT INTO system_notices
@@ -386,7 +538,7 @@ BEGIN
      syno_more_information_url)
   VALUES
    ('All - This is a test notice with complete indicator is Y', 'PWS',
-     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
+     TO_DATE('11-OCT-2021','DD-MON-YYYY HH24:MI:SS'), '06:00', NULL, NULL,
      'Y', 'ALL', 1, 'https://www.google.com/');
 
   INSERT INTO system_notices
@@ -396,7 +548,7 @@ BEGIN
      syno_more_information_url)
   VALUES
    ('All - This is a test notice with expired date', 'PWS',
-     TO_DATE('11-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '06:00', TO_DATE('12-OCT-2021 00:00:00','DD-MON-YYYY HH24:MI:SS'), '23:59',
+     TO_DATE('11-OCT-2021','DD-MON-YYYY HH24:MI:SS'), '06:00', TO_DATE('12-OCT-2021','DD-MON-YYYY HH24:MI:SS'), '23:59',
      'Y', 'ALL', 1, 'https://www.google.com/');
      
   -- Create the Main account
@@ -2321,14 +2473,14 @@ BEGIN
     smsg_title,smsg_body,smsg_case_refno,
     smsg_reference,
     smsg_read_ind,smsg_read_date,smsg_read_by, smsg_par_refno,smsg_direction,
-    smsg_created_by,smsg_created_date
+    smsg_created_by,smsg_created_date,smsg_alt_reference
   ) VALUES (
     smsg_seq.nextval,smsg_seq.currval,
     'SMSUBT001','MESSAGE_SUBJECT',1,'SYS',
     'Test Message 1','Body for Test Message 1',l_case_refno,
     'RS2000001AAAA',
     'Y',NULL,NULL,l_par_refno,'I',
-    'PORTAL.ONE',TO_DATE('22-MAR-2019')
+    'PORTAL.ONE',TO_DATE('22-MAR-2019'),'PORTAL.ONE'
   )
   RETURNING smsg_refno INTO l_orig_smsg_refno;
   
@@ -2421,7 +2573,7 @@ BEGIN
     smsg_title,smsg_body,smsg_case_refno,
     smsg_reference,
     smsg_read_ind,smsg_read_date,smsg_read_by, smsg_par_refno,smsg_direction,
-    smsg_created_by,smsg_created_date
+    smsg_created_by,smsg_created_date,smsg_alt_reference
   ) VALUES (
     smsg_seq.nextval,l_orig_smsg_refno,
     'SMSUBT001','MESSAGE_SUBJECT',1,'SYS',
@@ -2429,14 +2581,99 @@ BEGIN
 <p>Reply to Response</p>',l_case_refno,
     'RS2000001AAAA',
     'Y',NULL,NULL,l_par_refno,'I',
-    'PORTAL.ONE',TO_DATE('22-MAR-2019')
+    'PORTAL.ONE',TO_DATE('22-MAR-2019'),'PORTAL.ONE'
   )
   RETURNING smsg_refno INTO l_smsg_refno;
    
   UPDATE secure_messages
   SET smsg_created_by = 'PORTAL.ONE',smsg_created_date = TO_DATE('23-MAR-2019 15:16','DD-MON-YYYY HH24:MI')
   WHERE smsg_refno = l_smsg_refno;
+
+  INSERT INTO secure_messages (
+    smsg_refno,smsg_original_refno,
+    smsg_msgs_subject,smsg_msgs_frd_domain,smsg_msgs_wrk_refno,smsg_msgs_srv_code,
+    smsg_title,smsg_body,smsg_case_refno,
+    smsg_reference,smsg_msgs_subject_desc,
+    smsg_read_ind,smsg_read_date,smsg_read_by, smsg_par_refno,smsg_direction,
+    smsg_created_by,smsg_created_date,smsg_alt_reference
+  ) VALUES (
+    smsg_seq.nextval,l_orig_smsg_refno,
+    'SMSUBT001','MESSAGE_SUBJECT',1,'SYS',
+    'Test Message 2 - Reply to Response','<p>Body for Test Message 2/p>',l_case_refno,
+    'RS2000001AAAT','Portal message subject populated',
+    'N',NULL,NULL,l_par_refno,'O',
+    'PORTAL.ONE',TO_DATE('22-MAR-2019'),NULL
+  )
+  RETURNING smsg_refno INTO l_smsg_refno;
+   
+  UPDATE secure_messages
+  SET smsg_created_by = 'PORTAL.ONE',smsg_created_date = TO_DATE('23-MAR-2019 15:17','DD-MON-YYYY HH24:MI')
+  WHERE smsg_refno = l_smsg_refno;
+
+  INSERT INTO secure_messages (
+    smsg_refno,smsg_original_refno,
+    smsg_msgs_subject,smsg_msgs_frd_domain,smsg_msgs_wrk_refno,smsg_msgs_srv_code,
+    smsg_title,smsg_body,smsg_case_refno,
+    smsg_reference,
+    smsg_read_ind,smsg_read_date,smsg_read_by, smsg_par_refno,smsg_direction,
+    smsg_created_by,smsg_created_date,smsg_alt_reference
+  ) VALUES (
+    smsg_seq.nextval,l_orig_smsg_refno,
+    'SMSUBT001','MESSAGE_SUBJECT',1,'SYS',
+    'Test Message 3 - Reply to Response','<p>Body for Test Message 3/p>',l_case_refno,
+    'RS2000001AAAT',
+    'N',NULL,NULL,l_par_refno,'O',
+    'PORTAL.ONE',TO_DATE('22-MAR-2019'),'Agent Ref 554'
+  )
+  RETURNING smsg_refno INTO l_smsg_refno;
+   
+  UPDATE secure_messages
+  SET smsg_created_by = 'PORTAL.ONE',smsg_created_date = TO_DATE('23-MAR-2019 15:18','DD-MON-YYYY HH24:MI')
+  WHERE smsg_refno = l_smsg_refno; 
   
+  INSERT INTO secure_messages (
+    smsg_refno,smsg_original_refno,
+    smsg_msgs_subject,smsg_msgs_frd_domain,smsg_msgs_wrk_refno,smsg_msgs_srv_code,
+    smsg_title,smsg_body,smsg_case_refno,
+    smsg_reference,
+    smsg_read_ind,smsg_read_date,smsg_read_by, smsg_par_refno,smsg_direction,
+    smsg_created_by,smsg_created_date,smsg_alt_reference,
+    smsg_recalled_ind, smsg_recalled_by, smsg_recalled_date
+  ) VALUES (
+    smsg_seq.nextval,l_orig_smsg_refno,
+    'SMSUBT001','MESSAGE_SUBJECT',1,'SYS',
+    'Recalled message','Recalled message body',l_case_refno,
+    'RS2000001AAAT',
+    'N',NULL,NULL,l_par_refno,'O',
+    'PORTAL.ONE',TO_DATE('22-MAR-2019'),'PORTAL.ONE',
+    'Y','PORTAL.TWO', TO_DATE('30-MAR-2024')
+  )
+  RETURNING smsg_refno INTO l_smsg_refno;
+   
+  UPDATE secure_messages
+  SET smsg_created_by = 'PORTAL.ONE',smsg_created_date = TO_DATE('23-MAR-2019 15:16','DD-MON-YYYY HH24:MI')
+  WHERE smsg_refno = l_smsg_refno;
+
+  INSERT INTO secure_messages (
+    smsg_refno,smsg_original_refno,
+    smsg_msgs_subject,smsg_msgs_frd_domain,smsg_msgs_wrk_refno,smsg_msgs_srv_code,
+    smsg_title,smsg_body,smsg_case_refno,
+    smsg_reference,
+    smsg_read_ind,smsg_read_date,smsg_read_by, smsg_par_refno,smsg_direction,
+    smsg_created_by,smsg_created_date,smsg_alt_reference
+  ) VALUES (
+    smsg_seq.nextval,l_orig_smsg_refno,
+    'SMSUBT001','MESSAGE_SUBJECT',1,'SYS',
+    'Test Message 4','<p>Body for Test Message 4/p>',l_case_refno,
+    NULL,
+    'N',NULL,NULL,l_par_refno,'O',
+    'PORTAL.ONE',TO_DATE('22-MAR-2019'),'Agent Only Ref'
+  )
+  RETURNING smsg_refno INTO l_smsg_refno;
+   
+  UPDATE secure_messages
+  SET smsg_created_by = 'PORTAL.ONE',smsg_created_date = TO_DATE('25-MAR-2019 16:16','DD-MON-YYYY HH24:MI')
+  WHERE smsg_refno = l_smsg_refno;
   -- ********************************
   -- Create the Account for new users
   INSERT INTO parties
@@ -2931,6 +3168,1255 @@ BEGIN
    VALUES
     (98, 1, l_par_refno, '01-APR-2018','SLFT-SITE-00004','Waste Site 2',15000,25000,150,
      'Y','N',l_par_refno, l_adr_refno);
+     
+     
+  ---Creating data for SAT
+  
+  -- Create the Main account
+  INSERT INTO parties
+    (par_refno,par_type,par_com_company_name,par_org_name,par_marketing_ind,par_fact_type,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno,par_org_frv_oty_code)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Test Portal Company SAT Users','Test Portal Company SAT Users','N','AGENT','PARTY_ACT_TYPES','SYS',1,'PARTNER')
+  RETURNING par_refno INTO l_par_refno;
+  
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'2 Park Lane',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+        
+  -- Note password is created by hashing the username and the password
+  INSERT INTO users
+     (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
+      usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
+  VALUES
+     ('PORTAL.SAT.USERS',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.SAT.USERS'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal SAT Users','noreply@necsws.com',3,
+      'N',l_par_Refno,'Portal User','SAT Users','ENG',TRUNC(SYSDATE));
+      
+  INSERT INTO role_users
+    (rus_rol_code,rus_usr_username)
+  (SELECT rus_rol_code,'PORTAL.SAT.USERS'
+    FROM role_users
+   WHERE rus_usr_username = 'TEMPLATE_SELFSRV_USER');
+   
+   INSERT INTO user_services
+    (use_username, use_service)
+   VALUES
+    ('PORTAL.SAT.USERS','SAT');
+    
+   --creating enrolment party 
+   INSERT INTO parties
+    (par_refno,par_type,par_org_name,par_org_frv_oty_code,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Marks & Spencer Group','PARTNER','PARTY_ACT_TYPES','SAT',1)
+  RETURNING par_refno INTO l_enr_par_refno;
+  
+  dbms_output.put_line('l_enr_par_refno : ' || l_enr_par_refno );
+  
+  create_or_maintain_cde(p_par_refno=>l_enr_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_enr_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_enr_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+  
+  history_tables_api.snapshot_party( p_par_refno       => l_enr_par_refno
+                                       , p_snapshot_src_vn => NULL
+                                       , p_parh_version    => l_h_version );
+  
+  --creating aggregate party
+  INSERT INTO parties
+    (par_refno,par_type,par_org_name,par_org_frv_oty_code,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Marks & Spencer Group','PARTNER','PARTY_ACT_TYPES','SAT',1)
+  RETURNING par_refno INTO l_aggr_par_refno;
+  
+  dbms_output.put_line('l_aggr_par_refno : ' || l_aggr_par_refno );
+  
+  create_or_maintain_cde(p_par_refno=>l_aggr_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_aggr_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_aggr_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+    
+  history_tables_api.snapshot_party( p_par_refno       => l_aggr_par_refno
+                                       , p_snapshot_src_vn => NULL
+                                       , p_parh_version    => l_h_version );
+   
+   --inerting into enrolment_master
+   INSERT INTO enrolment_master (enrm_refno,enrm_registration_ref,enrm_par_refno,enrm_srv_code,enrm_effective_date,enrm_received_date,enrm_start_date,enrm_end_date,enrm_group_name) VALUES 
+   (enrm_seq.NEXTVAL,'SAT1000000RPRP',l_enr_par_refno,'SAT',TRUNC(SYSDATE),TRUNC(SYSDATE),TRUNC(SYSDATE),null,NULL)
+   returning enrm_refno INTO l_enrm_refno;
+   
+   dbms_output.put_line('l_enrm_refno : ' || l_enrm_refno );
+   
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS1SAT1000000RPRP','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+   
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );   
+  
+   INSERT INTO portal_object_access(POA_PORTAL_PAR_REFNO, POA_OBJECT_TYPE, POA_OBJECT_REFERENCE)
+   VALUES(l_par_Refno,'TARE_REFNO', l_tare_refno);
+   
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'D','P','25-JUL-2024' ,'01-JUL-2024','31-JUL-2024',l_enrm_refno,SYSDATE,'PAYMENT TYPE',1,'SAT');
+   
+   INSERT INTO ENROLMENT_PERIODS (ep_refno,ep_enrm_refno,ep_start_date,ep_end_date,ep_effective_date,ep_status,ep_registration_type,ep_group_ind,ep_non_resident_ind,ep_using_agent_ind,ep_exploit_start,ep_est_quarry,ep_est_sand,ep_est_importation,ep_est_agg_levy,ep_est_exploited,ep_est_exempt,ep_est_export,ep_est_relief,ep_est_crusher,ep_est_other,ep_est_oth_description,ep_est_ere_ind,ep_est_cross_border,ep_take_over_ind,ep_transfer_date,ep_prv_reg_business_name,ep_prv_reg_org_type,ep_prv_reg_adr_refno,ep_prv_reg_retained,ep_prv_reg_no) 
+   VALUES (ep_seq.NEXTVAL,l_enrm_refno,'01-AUG-2024',null,'01-AUG-2024','APPROVED','SINGLEREG','N','N','N',TRUNC(SYSDATE),100,200,300,400,500,600,700,800,900,1000,'created via Seed data','N',null,'N',null,null,null,null,null,null)
+   RETURNING ep_refno INTO l_ep_refno;
+   
+   dbms_output.put_line('l_ep_refno : ' || l_ep_refno );
+   
+   INSERT INTO ENROLMENT_PERIOD_PARTIES (epp_ep_refno,epp_par_refno,epp_parh_version,epp_lead_ind,epp_group_controller_ind,epp_flink_type,epp_flink_frd_domain,epp_flink_wrk_refno,epp_flink_srv_code,epp_appoint_date,epp_reg_no,epp_same_corr_adr_ind)
+   VALUES (l_ep_refno,l_enr_par_refno,1,null,null,'ENROLMENT','CASEPARTYLINKS',1,'SAT',TRUNC(SYSDATE),null,'Y');
+   
+   INSERT INTO ENROLMENT_PERIOD_PARTIES (epp_ep_refno,epp_par_refno,epp_parh_version,epp_lead_ind,epp_group_controller_ind,epp_flink_type,epp_flink_frd_domain,epp_flink_wrk_refno,epp_flink_srv_code,epp_appoint_date,epp_reg_no,epp_same_corr_adr_ind)   
+   VALUES (l_ep_refno,l_aggr_par_refno,1,'N',null,'OPERATOR','CASEPARTYLINKS',1,'SAT',TRUNC(SYSDATE),'null','Y');
+   
+   INSERT INTO cases (
+    case_refno,case_reference,
+    case_caty_type,case_caty_srv_code,case_caty_wrk_refno,
+    case_cast_status,case_casr_reason,
+    case_automatic_ind,case_fcas_source,case_fcas_frd_domain,case_fcas_wrk_refno,case_fcas_srv_code,
+    case_receipt_date,case_all_information_date,
+    case_fobt_type,case_fobt_frd_domain,case_fobt_wrk_refno,case_fobt_srv_code,case_related_reference
+  ) VALUES (
+    case_seq.nextval,'PORTAL.SAT1000000RPRP',
+    'ENROLMENT','SAT',1,
+    'OPEN','ENROLMENT TO PROCESS',
+    'Y','ONLINEFORM','CASESOURCES',1,'SAT',
+    SYSDATE,NULL,
+    'ENROLMENT','CASEOBJECTTYPES',1,'SAT','SAT1000000RPRP'
+  ) 
+  returning case_refno INTO l_case_refno;
+  
+  dbms_output.put_line('l_case_refno : ' || l_case_refno );
+  
+  INSERT INTO portal_object_access
+  (POA_PORTAL_PAR_REFNO, POA_OBJECT_TYPE, POA_OBJECT_REFERENCE)
+  VALUES
+  (l_par_Refno,'ENRM_REFNO', l_enrm_refno);
+
+   l_taxl_refno_seq := TAXL_SEQ.NEXTVAL;
+   
+   INSERT INTO taxable_locations( TAXL_REFNO, TAXL_EPP_PAR_REFNO, TAXL_ENRM_REFNO, TAXL_FTAXL_CODE, TAXL_FTAXL_FRD_DOMAIN, TAXL_FTAXL_WRK_REFNO, TAXL_FTAXL_SRV_CODE, TAXL_NAME, TAXL_START_DATE, TAXL_WEIGHBRIDGE_IND, TAXL_ADR_REFNO, TAXL_CONTACT_NAME, TAXL_EMAIL, TAXL_PHONE, TAXL_MOBILE, TAXL_COUNTRY_OPERATION, TAXL_CROSS_BORDER_IND, TAXL_FLAU_FRD_DOMAIN, TAXL_FLAU_WRK_REFNO, TAXL_FLAU_SRV_CODE)
+   VALUES (l_taxl_refno_seq, L_AGGR_PAR_REFNO, l_enrm_refno, 'SITE','TAXL_LOCATION_TYPES',1,'SAT','Site1','01-JUL-2024','N', l_adr_refno, 'Site contact name','donotreply@necsws.com','07411222145','01542548965','SCOTLAND','N','UKLOCALAUTHS',1,'SAT')
+   RETURNING TAXL_REFNO INTO l_taxl_refno1;
+
+   l_taxl_refno_seq := TAXL_SEQ.NEXTVAL;
+   
+   INSERT INTO taxable_locations( TAXL_REFNO, TAXL_EPP_PAR_REFNO, TAXL_ENRM_REFNO, TAXL_FTAXL_CODE, TAXL_FTAXL_FRD_DOMAIN, TAXL_FTAXL_WRK_REFNO, TAXL_FTAXL_SRV_CODE, TAXL_NAME, TAXL_START_DATE, TAXL_WEIGHBRIDGE_IND, TAXL_ADR_REFNO, TAXL_CONTACT_NAME, TAXL_EMAIL, TAXL_PHONE, TAXL_MOBILE, TAXL_COUNTRY_OPERATION, TAXL_CROSS_BORDER_IND, TAXL_FLAU_FRD_DOMAIN, TAXL_FLAU_WRK_REFNO, TAXL_FLAU_SRV_CODE)
+   VALUES (l_taxl_refno_seq, L_AGGR_PAR_REFNO, l_enrm_refno, 'SITE','TAXL_LOCATION_TYPES',1,'SAT','Site2','01-JUL-2024','N', l_adr_refno, 'Site contact name','donotreply@necsws.com','07411222145','01542548965','SCOTLAND','N','UKLOCALAUTHS',1,'SAT')
+   RETURNING TAXL_REFNO INTO l_taxl_refno2;
+
+   INSERT INTO tax_return_schedule_types(TRST_REFNO, TRST_ENRM_REFNO, TRST_START_DATE, TRST_END_DATE, TRST_FSCH_CODE, TRST_FSCH_FRD_DOMAIN, TRST_FSCH_WRK_REFNO, TRST_FSCH_SRV_CODE)
+   VALUES (TRST_SEQ.NEXTVAL, l_enrm_refno, '01-APR-2024', NULL, 'ST4', 'SCHEDULETYPES', 1, 'SAT');
+   
+   INSERT INTO schd_type_return_periods(STRP_REFNO, STRP_FPROF_CODE, STRP_FPROF_DOMAIN, STRP_FPROF_SRV_CODE, STRP_FPROF_WRK_REFNO, STRP_START_DATE, STRP_END_DATE, STRP_DESCRIPTION)
+   VALUES(STRP_SEQ.NEXTVAL, 'ST4','SCHEDULETYPES','SAT',1,TO_DATE('01-APR-2024', 'DD-MON-RRRR HH24:MI:SS'),'30-APR-2024','Period 2')
+   RETURNING STRP_REFNO INTO l_strp_refno;
+
+   dbms_output.put_line('l_strp_refno : ' || l_strp_refno );
+
+   INSERT INTO schd_returns_period_breakdown(SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
+   VALUES( srpb_seq.nextval, l_strp_refno, TO_DATE('01-APR-2024', 'DD-MON-RRRR HH24:MI:SS'), '30-APR-2024');
+   
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS10000006AAFC','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );
+
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_method, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'L','P',TO_DATE('21-APR-2024', 'DD-MON-RRRR HH24:MI:SS'),TO_DATE('01-APR-2024', 'DD-MON-RRRR HH24:MI:SS'),TO_DATE('30-APR-2024', 'DD-MON-RRRR HH24:MI:SS'), l_enrm_refno,TRUNC(SYSDATE),'BACS', 'PAYMENT TYPE',1,'SAT');
+
+   INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END, TRS_TARE_REFNO, TRS_RETURN_STATUS)
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_refno,TO_DATE('01-APR-2024', 'DD-MON-RRRR HH24:MI:SS'),TO_DATE('30-APR-2024', 'DD-MON-RRRR HH24:MI:SS'),l_tare_refno,'FILED')
+   RETURNING TRS_REFNO INTO l_trs_refno;
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_aggr_par_refno, 1, 'N', NULL, 'OPERATOR', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_enr_par_refno, 1, NULL, NULL, 'ENROLMENT', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno1, l_tare_refno, 1, '01-APR-2024', '30-APR-2024', 417.00, 20.00, 846.51, 325.00, 521.51) RETURNING TLD_REFNO INTO l_tld_refno;
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TAAG','RETURNATTRIBUTES',1,'SAT',517,2.03,100,'N',846.51,'SAND','AGGREGATE TYPE',1,'SAT','CONSTRUCT','COMMEXPLOITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'EXAG','RETURNATTRIBUTES',1,'SAT',20,null,null,'N',null,'ROCK','AGGREGATE TYPE',1,'SAT','CWOSOCLS','EXEMPTREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TACR','RETURNATTRIBUTES',1,'SAT',65,5,null,'N',325,'SAND','AGGREGATE TYPE',1,'SAT','EXCEPTED','TAXCREDITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno2, l_tare_refno, 1, '01-APR-2024', '30-APR-2024', 500.00, 100.00, 1015.00, 200, 815) RETURNING TLD_REFNO INTO l_tld_refno;
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TAAG','RETURNATTRIBUTES',1,'SAT',800,2.03,300,'N',1015.00,'SAND','AGGREGATE TYPE',1,'SAT','CONSTRUCT','COMMEXPLOITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'EXAG','RETURNATTRIBUTES',1,'SAT',100,null,null,'N',null,'ROCK','AGGREGATE TYPE',1,'SAT','CWOSOCLS','EXEMPTREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TACR','RETURNATTRIBUTES',1,'SAT',50,4,null,'N',200,'SAND','AGGREGATE TYPE',1,'SAT','EXCEPTED','TAXCREDITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO portal_object_access(POA_PORTAL_PAR_REFNO,POA_OBJECT_TYPE,POA_OBJECT_REFERENCE, POA_CURRENT_IND)
+   VALUES(l_par_Refno,'TARE_REFNO',l_tare_refno, 'Y');
+   
+    --*********************************
+    -- Create the Financial accounts for the PORTAL.SAT.USERS account
+    --*********************************
+   INSERT INTO financial_accounts
+     (fiac_refno,fiac_reference,fiac_wrk_refno,fiac_srv_code,fiac_suspense_ind)
+   values
+     (fiac_seq.nextval,'RS10000006AAFC',1,'SAT',NULL)
+   RETURNING fiac_refno INTO l_fiac_refno;
+    
+   INSERT INTO fiac_party_links
+     (fpli_par_refno,fpli_fiac_refno,
+    fpli_ffpl_type,fpli_ffpl_frd_domain,fpli_ffpl_srv_code,fpli_ffpl_wrk_refno,fpli_authority_ind)
+   VALUES (
+    l_enr_par_refno,l_fiac_refno,'LIABLE','FIACPARTYLINKS','SAT',1,'N');
+    
+   INSERT INTO transactions
+    (tra_refno,tra_actual_date,tra_effective_date,tra_fiac_refno,
+    tra_tty_srv_code,tra_tty_code,tra_tty_wrk_refno,tra_amount,
+    tra_related_reference,tra_related_subreference,tra_fobt_frd_domain, tra_fobt_srv_code, tra_fobt_type, tra_fobt_wrk_refno) 
+   VALUES (
+    tra_seq.nextval,'10-APR-2024','10-APR-2024',l_fiac_refno,
+    'SAT','SAT',1,240,
+    'RS10000006AAFC','1','OBJECT TYPES','SAT','RETURN',1)
+   RETURNING tra_refno INTO l_ltra_refno;  
+  
+  -- creating new enrolment
+  INSERT INTO parties
+    (par_refno,par_type,par_org_name,par_org_frv_oty_code,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Black Sands Group','PARTNER','PARTY_ACT_TYPES','SAT',1)
+  RETURNING par_refno INTO l_enr_par_refno;
+  
+  dbms_output.put_line('l_enr_par_refno : ' || l_enr_par_refno );
+  
+  create_or_maintain_cde(p_par_refno=>l_enr_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_enr_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_enr_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+  
+  history_tables_api.snapshot_party( p_par_refno       => l_enr_par_refno
+                                       , p_snapshot_src_vn => NULL
+                                       , p_parh_version    => l_h_version );
+  
+  INSERT INTO parties
+    (par_refno,par_type,par_org_name,par_org_frv_oty_code,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Black Sands Group','PARTNER','PARTY_ACT_TYPES','SAT',1)
+  RETURNING par_refno INTO l_aggr_par_refno;
+  
+  dbms_output.put_line('l_aggr_par_refno : ' || l_aggr_par_refno );
+  
+  create_or_maintain_cde(p_par_refno=>l_aggr_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_aggr_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_aggr_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+    
+  history_tables_api.snapshot_party( p_par_refno       => l_aggr_par_refno
+                                       , p_snapshot_src_vn => NULL
+                                       , p_parh_version    => l_h_version );
+   
+   INSERT INTO enrolment_master (enrm_refno,enrm_registration_ref,enrm_par_refno,enrm_srv_code,enrm_effective_date,enrm_received_date,enrm_start_date,enrm_end_date,enrm_group_name) VALUES 
+   (enrm_seq.NEXTVAL,'SAT1000000VVVV',l_enr_par_refno,'SAT',TRUNC(SYSDATE),TRUNC(SYSDATE),TRUNC(SYSDATE),null,null)
+   returning enrm_refno INTO l_enrm_refno;
+   
+   dbms_output.put_line('l_enrm_refno : ' || l_enrm_refno );
+   
+   INSERT INTO ENROLMENT_PERIODS (ep_refno,ep_enrm_refno,ep_start_date,ep_end_date,ep_effective_date,ep_status,ep_registration_type,ep_group_ind,ep_non_resident_ind,ep_using_agent_ind,ep_exploit_start,ep_est_quarry,ep_est_sand,ep_est_importation,ep_est_agg_levy,ep_est_exploited,ep_est_exempt,ep_est_export,ep_est_relief,ep_est_crusher,ep_est_other,ep_est_oth_description,ep_est_ere_ind,ep_est_cross_border,ep_take_over_ind,ep_transfer_date,ep_prv_reg_business_name,ep_prv_reg_org_type,ep_prv_reg_adr_refno,ep_prv_reg_retained,ep_prv_reg_no) 
+   VALUES (ep_seq.NEXTVAL,l_enrm_refno,'01-AUG-2024',null,'01-AUG-2024','APPROVED','SINGLEREG','N','N','N',TRUNC(SYSDATE),100,200,300,400,500,600,700,800,900,1000,'created via Seed data','N',null,'N',null,null,null,null,null,null)
+   returning ep_refno INTO l_ep_refno;
+   
+   dbms_output.put_line('l_ep_refno : ' || l_ep_refno );
+   
+   INSERT INTO ENROLMENT_PERIOD_PARTIES (epp_ep_refno,epp_par_refno,epp_parh_version,epp_lead_ind,epp_group_controller_ind,epp_flink_type,epp_flink_frd_domain,epp_flink_wrk_refno,epp_flink_srv_code,epp_appoint_date,epp_reg_no,epp_same_corr_adr_ind)
+   VALUES (l_ep_refno,l_enr_par_refno,1,null,null,'ENROLMENT','CASEPARTYLINKS',1,'SAT',TRUNC(SYSDATE),null,'Y');
+   
+   INSERT INTO ENROLMENT_PERIOD_PARTIES (epp_ep_refno,epp_par_refno,epp_parh_version,epp_lead_ind,epp_group_controller_ind,epp_flink_type,epp_flink_frd_domain,epp_flink_wrk_refno,epp_flink_srv_code,epp_appoint_date,epp_reg_no,epp_same_corr_adr_ind)   
+   VALUES (l_ep_refno,l_aggr_par_refno,1,'N',null,'OPERATOR','CASEPARTYLINKS',1,'SAT',TRUNC(SYSDATE),'null','Y');
+   
+   INSERT INTO cases (
+    case_refno,case_reference,
+    case_caty_type,case_caty_srv_code,case_caty_wrk_refno,
+    case_cast_status,case_casr_reason,
+    case_automatic_ind,case_fcas_source,case_fcas_frd_domain,case_fcas_wrk_refno,case_fcas_srv_code,
+    case_receipt_date,case_all_information_date,
+    case_fobt_type,case_fobt_frd_domain,case_fobt_wrk_refno,case_fobt_srv_code,case_related_reference
+  ) VALUES (
+    case_seq.nextval,'PORTAL.SAT1000000VVVV',
+    'ENROLMENT','SAT',1,
+    'OPEN','ENROLMENT TO PROCESS',
+    'Y','ONLINEFORM','CASESOURCES',1,'SAT',
+    SYSDATE,NULL,
+    'ENROLMENT','CASEOBJECTTYPES',1,'SAT','SAT1000000VVVV'
+  ) 
+  returning case_refno INTO l_case_refno;
+  
+  dbms_output.put_line('l_case_refno : ' || l_case_refno );
+  
+  INSERT INTO portal_object_access
+  (POA_PORTAL_PAR_REFNO, POA_OBJECT_TYPE, POA_OBJECT_REFERENCE)
+  VALUES
+  (l_par_Refno,'ENRM_REFNO', l_enrm_refno);
+   
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS10000006BHDH','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );
+
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_method, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'L','P','21-APR-2021','01-APR-2021',TO_DATE('30-APR-2021', 'DD-MON-RRRR HH24:MI:SS'), l_enrm_refno,TRUNC(SYSDATE),'BACS', 'PAYMENT TYPE',1,'SAT');
+
+   INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END, TRS_TARE_REFNO, TRS_RETURN_STATUS)
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_refno,'01-APR-2021',TO_DATE('30-APR-2021', 'DD-MON-RRRR HH24:MI:SS'),l_tare_refno,'FILED')
+   RETURNING TRS_REFNO INTO l_trs_refno;
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_aggr_par_refno, 1, 'N', NULL, 'OPERATOR', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_enr_par_refno, 1, NULL, NULL, 'ENROLMENT', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno1, l_tare_refno, 1, '01-APR-21', '30-APR-21', 417.00, 20.00, 846.51, 325.00, 521.51) RETURNING TLD_REFNO INTO l_tld_refno;
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TAAG','RETURNATTRIBUTES',1,'SAT',517,2.03,100,'N',846.51,'SAND','AGGREGATE TYPE',1,'SAT','CONSTRUCT','COMMEXPLOITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'EXAG','RETURNATTRIBUTES',1,'SAT',20,null,null,'N',null,'ROCK','AGGREGATE TYPE',1,'SAT','CWOSOCLS','EXEMPTREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TACR','RETURNATTRIBUTES',1,'SAT',65,5,null,'N',325,'SAND','AGGREGATE TYPE',1,'SAT','EXCEPTED','TAXCREDITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno2, l_tare_refno, 1, '01-APR-21', '30-APR-21', 500.00, 100.00, 1015.00, 200, 815) RETURNING TLD_REFNO INTO l_tld_refno;
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TAAG','RETURNATTRIBUTES',1,'SAT',800,2.03,300,'N',1015.00,'SAND','AGGREGATE TYPE',1,'SAT','CONSTRUCT','COMMEXPLOITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'EXAG','RETURNATTRIBUTES',1,'SAT',100,null,null,'N',null,'ROCK','AGGREGATE TYPE',1,'SAT','CWOSOCLS','EXEMPTREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TACR','RETURNATTRIBUTES',1,'SAT',50,4,null,'N',200,'SAND','AGGREGATE TYPE',1,'SAT','EXCEPTED','TAXCREDITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO portal_object_access(POA_PORTAL_PAR_REFNO,POA_OBJECT_TYPE,POA_OBJECT_REFERENCE, POA_CURRENT_IND)
+   VALUES(l_par_Refno,'TARE_REFNO',l_tare_refno, 'Y');
+
+    INSERT INTO cases (
+    case_refno,case_reference,
+    case_caty_type,case_caty_srv_code,case_caty_wrk_refno,
+    case_cast_status,case_casr_reason,case_description,
+    case_automatic_ind,case_fcas_source,case_fcas_frd_domain,case_fcas_wrk_refno,case_fcas_srv_code,
+    case_receipt_date,case_all_information_date,
+    case_fobt_type,case_fobt_frd_domain,case_fobt_wrk_refno,case_fobt_srv_code,case_related_reference
+  ) VALUES (
+    case_seq.nextval,'PORTAL.RS10000006BHDH',
+    'MESSAGE','SAT',1,
+    'OPEN','SECURE MESSAGE RECEIVED','Test Data',
+    'Y','DASHBOARD','CASESOURCES',1,'SAT',
+    '01-JAN-2019','01-JAN-2019',
+    'RETURN','OBJECT TYPES',1,'SAT','RS10000006BHDH'
+  )
+  returning case_refno INTO l_case_refno;
+  
+  INSERT INTO secure_messages (
+    smsg_refno,smsg_original_refno,
+    smsg_msgs_subject,smsg_msgs_frd_domain,smsg_msgs_wrk_refno,smsg_msgs_srv_code,
+    smsg_title,smsg_body,smsg_case_refno,
+    smsg_reference,
+    smsg_read_ind,smsg_read_date,smsg_read_by, smsg_par_refno,smsg_direction,
+    smsg_created_by,smsg_created_date,smsg_alt_reference,
+    smsg_poa_object_type, smsg_poa_object_refno
+  ) VALUES (
+    smsg_seq.nextval,smsg_seq.currval,
+    'SMSUBT007','MESSAGE_SUBJECT',1,'SYS',
+    'Claim receipt confirmation','Body for Test Message 1',l_case_refno,
+    'RS10000006BHDH',
+    'N',NULL,NULL,l_par_refno,'O',
+    'ADMIN@RSTU',TO_DATE('22-MAR-2019'),'ADMIN@RSTU',
+    'ENRM_REFNO',l_enrm_refno
+  )
+  RETURNING smsg_refno INTO l_orig_smsg_refno;
+  
+
+  UPDATE secure_messages
+  SET smsg_created_by = 'ADMIN@RSTU',smsg_created_date = TO_DATE('11-FEB-2025 08:48','DD-MON-YYYY HH24:MI')
+  WHERE smsg_refno = l_orig_smsg_refno;
+
+  INSERT INTO secure_messages (
+    smsg_refno,smsg_original_refno,
+    smsg_msgs_subject,smsg_msgs_frd_domain,smsg_msgs_wrk_refno,smsg_msgs_srv_code,
+    smsg_title,smsg_body,smsg_case_refno,
+    smsg_reference,
+    smsg_read_ind,smsg_read_date,smsg_read_by, smsg_par_refno,smsg_direction,
+    smsg_created_by,smsg_created_date,smsg_alt_reference,
+    smsg_poa_object_type, smsg_poa_object_refno
+  ) VALUES (
+    smsg_seq.nextval,smsg_seq.currval,
+    'SMSUBT007','MESSAGE_SUBJECT',1,'SYS',
+    'Claim receipt confirmation','Body for Test Message 1',l_case_refno,
+    'RS10000006BHDH',
+    'N',NULL,NULL,l_par_refno,'O',
+    'ADMIN@RSTU',TO_DATE('22-MAR-2019'),'ADMIN@RSTU',
+    'ENRM_REFNO',l_enrm_refno
+  )
+  RETURNING smsg_refno INTO l_orig_smsg_refno;
+  
+
+  UPDATE secure_messages
+  SET smsg_created_by = 'ADMIN@RSTU',smsg_created_date = TO_DATE('11-FEB-2025 06:18','DD-MON-YYYY HH24:MI')
+  WHERE smsg_refno = l_orig_smsg_refno;
+   
+    --*********************************
+    -- Create the Financial accounts for the PORTAL.SAT.USERS account
+    --*********************************
+   INSERT INTO financial_accounts
+     (fiac_refno,fiac_reference,fiac_wrk_refno,fiac_srv_code,fiac_suspense_ind)
+   values
+     (fiac_seq.nextval,'RS10000006BHDH',1,'SAT',NULL)
+   RETURNING fiac_refno INTO l_fiac_refno;
+    
+   INSERT INTO fiac_party_links
+     (fpli_par_refno,fpli_fiac_refno,
+    fpli_ffpl_type,fpli_ffpl_frd_domain,fpli_ffpl_srv_code,fpli_ffpl_wrk_refno,fpli_authority_ind)
+   VALUES (
+    l_enr_par_refno,l_fiac_refno,'LIABLE','FIACPARTYLINKS','SAT',1,'N');
+    
+   INSERT INTO transactions
+    (tra_refno,tra_actual_date,tra_effective_date,tra_fiac_refno,
+    tra_tty_srv_code,tra_tty_code,tra_tty_wrk_refno,tra_amount,
+    tra_related_reference,tra_related_subreference,tra_fobt_frd_domain, tra_fobt_srv_code, tra_fobt_type, tra_fobt_wrk_refno) 
+   VALUES (
+    tra_seq.nextval,'10-APR-2021','10-APR-2021',l_fiac_refno,
+    'SAT','SAT',1,240,
+    'RS10000006BHDH','1','OBJECT TYPES','SAT','RETURN',1)
+   RETURNING tra_refno INTO l_ltra_refno;
+  
+  INSERT INTO parties
+    (par_refno,par_type,par_com_company_name,par_org_name,par_marketing_ind,par_fact_type,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Test Portal Company SAT Users2','Test Portal Company SAT Users2','N','AGENT','PARTY_ACT_TYPES','SYS',1)
+  RETURNING par_refno INTO l_par_refno;
+
+
+  -- Note password is created by hashing the username and the password
+  INSERT INTO users
+     (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
+      usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
+  VALUES
+     ('PORTAL.SAT.TWO',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.SAT.TWO'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal SAT TWO','noreply@necsws.com',3,
+      'N',l_par_Refno,'Portal User','SAT TWO','ENG',TRUNC(SYSDATE));
+      
+  INSERT INTO role_users
+    (rus_rol_code,rus_usr_username)
+  (SELECT rus_rol_code,'PORTAL.SAT.TWO'
+    FROM role_users
+   WHERE rus_usr_username = 'TEMPLATE_SELFSRV_USER');
+   
+  INSERT INTO user_services
+    (use_username, use_service)
+   VALUES
+    ('PORTAL.SAT.TWO','SAT');
+  
+  -- Create the Main account
+  INSERT INTO parties
+    (par_refno,par_type,par_com_company_name,par_org_name,par_marketing_ind,par_fact_type,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Test Portal Company SAT Users1','Test Portal Company SAT Users1','N','AGENT','PARTY_ACT_TYPES','SYS',1)
+  RETURNING par_refno INTO l_par_refno;
+  
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'2 Park Lane',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+  
+  -- Note password is created by hashing the username and the password
+  INSERT INTO users
+     (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
+      usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
+  VALUES
+     ('PORTAL.SAT.ONE',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.SAT.ONE'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal SAT One','noreply@necsws.com',3,
+      'N',l_par_Refno,'Portal User','SAT one','ENG',TRUNC(SYSDATE));
+      
+  INSERT INTO role_users
+    (rus_rol_code,rus_usr_username)
+  (SELECT rus_rol_code,'PORTAL.SAT.ONE'
+    FROM role_users
+   WHERE rus_usr_username = 'TEMPLATE_SELFSRV_USER');
+   
+  INSERT INTO user_services
+    (use_username, use_service)
+   VALUES
+    ('PORTAL.SAT.ONE','SAT'); 
+       
+  INSERT INTO parties
+    (par_refno,par_type,par_org_name,par_org_frv_oty_code,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Kevin Peterson Partnership','PARTNER','PARTY_ACT_TYPES','SAT',1)
+  RETURNING par_refno INTO l_enr_par_refno;
+  
+  dbms_output.put_line('l_enr_par_refno : ' || l_enr_par_refno );
+  
+  INSERT INTO dd_instructions (
+    din_refno,din_par_refno,din_start_date,
+    din_bank_sort_code,din_bank_account_number,din_bank_bsoc_roll_number,
+    din_first_dd_taken_ind,din_auddis_code,din_auddis_trans_date,din_bank_account_name,
+    din_mandate_reference
+    ) VALUES (
+    din_seq.nextval,l_enr_par_refno,TO_DATE('01-JAN-2019','DD-MON-YYYY'),
+    '00-00-00','12345678','0',
+    'N','NP',TO_DATE('01-JAN-2019','DD-MON-YYYY'),'Portal Test','RS1235');
+  
+  create_or_maintain_cde(p_par_refno=>l_enr_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_enr_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_enr_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+  
+  history_tables_api.snapshot_party( p_par_refno       => l_enr_par_refno
+                                       , p_snapshot_src_vn => NULL
+                                       , p_parh_version    => l_h_version );
+  
+  INSERT INTO parties
+    (par_refno,par_type,par_org_name,par_org_frv_oty_code,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Kevin Peterson Partnership','PARTNER','PARTY_ACT_TYPES','SAT',1)
+  RETURNING par_refno INTO l_aggr_par_refno;
+  
+  dbms_output.put_line('l_aggr_par_refno : ' || l_aggr_par_refno );
+  
+  create_or_maintain_cde(p_par_refno=>l_aggr_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_aggr_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_aggr_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+    
+  history_tables_api.snapshot_party( p_par_refno       => l_aggr_par_refno
+                                       , p_snapshot_src_vn => NULL
+                                       , p_parh_version    => l_h_version );
+   
+   INSERT INTO enrolment_master (enrm_refno,enrm_registration_ref,enrm_par_refno,enrm_srv_code,enrm_effective_date,enrm_received_date,enrm_start_date,enrm_end_date,enrm_group_name) values 
+   (enrm_seq.NEXTVAL,'SAT1000000TVTV',l_enr_par_refno,'SAT','01-AUG-2024','01-AUG-2024','01-AUG-2024',null,'Group 54')
+   RETURNING enrm_refno INTO l_enrm_refno;
+   
+   dbms_output.put_line('l_enrm_refno : ' || l_enrm_refno );
+   
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS11000000TVTV','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+   
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );  
+   
+   INSERT INTO portal_object_access(POA_PORTAL_PAR_REFNO, POA_OBJECT_TYPE, POA_OBJECT_REFERENCE)
+   VALUES(l_par_Refno,'TARE_REFNO', l_tare_refno);
+   
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'D','P','25-JUL-2024' ,'01-JUL-2024','31-JUL-2024',l_enrm_refno,TRUNC(SYSDATE),'PAYMENT TYPE',1,'SAT');
+   
+   
+   INSERT INTO ENROLMENT_PERIODS (ep_refno,ep_enrm_refno,ep_start_date,ep_end_date,ep_effective_date,ep_status,ep_registration_type,ep_group_ind,ep_non_resident_ind,ep_using_agent_ind,ep_exploit_start,ep_est_quarry,ep_est_sand,ep_est_importation,ep_est_agg_levy,ep_est_exploited,ep_est_exempt,ep_est_export,ep_est_relief,ep_est_crusher,ep_est_other,ep_est_oth_description,ep_est_ere_ind,ep_est_cross_border,ep_take_over_ind,ep_transfer_date,ep_prv_reg_business_name,ep_prv_reg_org_type,ep_prv_reg_adr_refno,ep_prv_reg_retained,ep_prv_reg_no) 
+   VALUES (ep_seq.NEXTVAL,l_enrm_refno,'01-AUG-2024',null,'01-AUG-2024','APPROVED','SINGLEREG','N','N','N',TRUNC(SYSDATE),100,200,300,400,500,600,700,800,900,1000,'created via Seed data','N',null,'N',null,null,null,null,null,null)
+   RETURNING ep_refno INTO l_ep_refno;
+   
+   dbms_output.put_line('l_ep_refno : ' || l_ep_refno );
+   
+   INSERT INTO ENROLMENT_PERIOD_PARTIES (epp_ep_refno,epp_par_refno,epp_parh_version,epp_lead_ind,epp_group_controller_ind,epp_flink_type,epp_flink_frd_domain,epp_flink_wrk_refno,epp_flink_srv_code,epp_appoint_date,epp_reg_no,epp_same_corr_adr_ind)
+   VALUES (l_ep_refno,l_enr_par_refno,1,null,null,'ENROLMENT','CASEPARTYLINKS',1,'SAT',TRUNC(SYSDATE),null,'Y');
+   
+   INSERT INTO ENROLMENT_PERIOD_PARTIES (epp_ep_refno,epp_par_refno,epp_parh_version,epp_lead_ind,epp_group_controller_ind,epp_flink_type,epp_flink_frd_domain,epp_flink_wrk_refno,epp_flink_srv_code,epp_appoint_date,epp_reg_no,epp_same_corr_adr_ind)   
+   VALUES (l_ep_refno,l_aggr_par_refno,1,'N',null,'OPERATOR','CASEPARTYLINKS',1,'SAT',TRUNC(SYSDATE),'null','Y');
+   
+   l_strp_seq := STRP_SEQ.NEXTVAL;
+   l_taxl_refno_seq := TAXL_SEQ.NEXTVAL;
+   
+   INSERT INTO schd_type_return_periods(STRP_REFNO, STRP_FPROF_CODE, STRP_FPROF_DOMAIN, STRP_FPROF_SRV_CODE, STRP_FPROF_WRK_REFNO, STRP_START_DATE, STRP_END_DATE, STRP_DESCRIPTION)
+   VALUES(l_strp_seq, 'ST1','SCHEDULETYPES','SAT',1,TO_DATE('01-APR-2024', 'DD-MON-RRRR HH24:MI:SS'),'30-JUN-2024','Period 1');
+
+   INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END)
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_seq,'01-JUL-2024','31-JUL-2024');
+
+
+   INSERT INTO schd_returns_period_breakdown( SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
+   VALUES(SRPB_SEQ.NEXTVAL,l_strp_seq,'01-JUL-2024', '31-JUL-2024');
+   
+   INSERT INTO taxable_locations( TAXL_REFNO, TAXL_EPP_PAR_REFNO, TAXL_ENRM_REFNO, TAXL_FTAXL_CODE, TAXL_FTAXL_FRD_DOMAIN, TAXL_FTAXL_WRK_REFNO, TAXL_FTAXL_SRV_CODE, TAXL_NAME, TAXL_START_DATE, TAXL_WEIGHBRIDGE_IND, TAXL_ADR_REFNO, TAXL_CONTACT_NAME, TAXL_EMAIL, TAXL_PHONE, TAXL_MOBILE, TAXL_COUNTRY_OPERATION, TAXL_CROSS_BORDER_IND, TAXL_FLAU_FRD_DOMAIN, TAXL_FLAU_WRK_REFNO, TAXL_FLAU_SRV_CODE)
+   VALUES (l_taxl_refno_seq, L_AGGR_PAR_REFNO, l_enrm_refno, 'SITE','TAXL_LOCATION_TYPES',1,'SAT','Site1','01-JUL-2024','N', l_adr_refno, 'Site contact name','donotreply@necsws.com','07411222145','01542548965','SCOTLAND','N','UKLOCALAUTHS',1,'SAT')
+   RETURNING TAXL_REFNO INTO l_taxl_refno1;
+
+   l_taxl_refno_seq := TAXL_SEQ.NEXTVAL;
+   
+   INSERT INTO taxable_locations( TAXL_REFNO, TAXL_EPP_PAR_REFNO, TAXL_ENRM_REFNO, TAXL_FTAXL_CODE, TAXL_FTAXL_FRD_DOMAIN, TAXL_FTAXL_WRK_REFNO, TAXL_FTAXL_SRV_CODE, TAXL_NAME, TAXL_START_DATE, TAXL_WEIGHBRIDGE_IND, TAXL_ADR_REFNO, TAXL_CONTACT_NAME, TAXL_EMAIL, TAXL_PHONE, TAXL_MOBILE, TAXL_COUNTRY_OPERATION, TAXL_CROSS_BORDER_IND, TAXL_FLAU_FRD_DOMAIN, TAXL_FLAU_WRK_REFNO, TAXL_FLAU_SRV_CODE)
+   VALUES (l_taxl_refno_seq, L_AGGR_PAR_REFNO, l_enrm_refno, 'SITE','TAXL_LOCATION_TYPES',1,'SAT','Site2','01-JUL-2024','N', l_adr_refno, 'Site contact name','donotreply@necsws.com','07411222145','01542548965','SCOTLAND','N','UKLOCALAUTHS',1,'SAT')
+   RETURNING TAXL_REFNO INTO l_taxl_refno2;
+
+   l_strp_seq := STRP_SEQ.NEXTVAL;
+   
+   INSERT INTO schd_type_return_periods(STRP_REFNO, STRP_FPROF_CODE, STRP_FPROF_DOMAIN, STRP_FPROF_SRV_CODE, STRP_FPROF_WRK_REFNO, STRP_START_DATE, STRP_END_DATE, STRP_DESCRIPTION)
+   VALUES(l_strp_seq, 'ST1','SCHEDULETYPES','SAT',1,'01-JUL-2024','30-SEP-2024','Period 2');
+   
+   INSERT INTO schd_returns_period_breakdown( SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
+   VALUES(SRPB_SEQ.NEXTVAL,l_strp_seq,'01-AUG-2024','31-AUG-2024');
+   
+   INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END)
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_seq,'01-AUG-2024','31-AUG-2024');
+
+
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS11000000BSJA','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+   
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );  
+   
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'D','P','25-JUL-2024' ,'01-JUL-2024','31-JUL-2024',l_enrm_refno,TRUNC(SYSDATE),'PAYMENT TYPE',1,'SAT');
+      
+   INSERT INTO cases (
+    case_refno,case_reference,
+    case_caty_type,case_caty_srv_code,case_caty_wrk_refno,
+    case_cast_status,case_casr_reason,
+    case_automatic_ind,case_fcas_source,case_fcas_frd_domain,case_fcas_wrk_refno,case_fcas_srv_code,
+    case_receipt_date,case_all_information_date,
+    case_fobt_type,case_fobt_frd_domain,case_fobt_wrk_refno,case_fobt_srv_code,case_related_reference
+  ) VALUES (
+    case_seq.nextval,'PORTAL.SAT1000000TVTV',
+    'ENROLMENT','SAT',1,
+    'OPEN','ENROLMENT TO PROCESS',
+    'Y','ONLINEFORM','CASESOURCES',1,'SAT',
+    SYSDATE,NULL,
+    'ENROLMENT','CASEOBJECTTYPES',1,'SAT','SAT1000000TVTV'
+  ) 
+  RETURNING case_refno INTO l_case_refno;
+  
+  dbms_output.put_line('l_case_refno : ' || l_case_refno );
+  
+  INSERT INTO portal_object_access
+  (POA_PORTAL_PAR_REFNO, POA_OBJECT_TYPE, POA_OBJECT_REFERENCE)
+  VALUES
+  (l_par_Refno,'ENRM_REFNO', l_enrm_refno);
+
+   INSERT INTO tax_return_schedule_types(TRST_REFNO, TRST_ENRM_REFNO, TRST_START_DATE, TRST_END_DATE, TRST_FSCH_CODE, TRST_FSCH_FRD_DOMAIN, TRST_FSCH_WRK_REFNO, TRST_FSCH_SRV_CODE)
+   VALUES (TRST_SEQ.NEXTVAL, l_enrm_refno, '01-JUN-24', NULL, 'ST4', 'SCHEDULETYPES', 1, 'SAT');
+   
+   INSERT INTO schd_type_return_periods(STRP_REFNO, STRP_FPROF_CODE, STRP_FPROF_DOMAIN, STRP_FPROF_SRV_CODE, STRP_FPROF_WRK_REFNO, STRP_START_DATE, STRP_END_DATE, STRP_DESCRIPTION)
+   VALUES(STRP_SEQ.NEXTVAL, 'ST4','SCHEDULETYPES','SAT',1,'01-JUN-2024','30-JUN-2024','Period 1')
+   RETURNING STRP_REFNO INTO l_strp_refno;
+
+   dbms_output.put_line('l_strp_refno : ' || l_strp_refno );
+
+   INSERT INTO schd_returns_period_breakdown(SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
+   VALUES( srpb_seq.nextval, l_strp_refno, '01-JUN-2024', '30-JUN-2024');
+   
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS10000001RPTS','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );
+
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_method, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'L','P','25-JUN-2024','01-JUN-2024','30-JUN-2024', l_enrm_refno,TRUNC(SYSDATE),'BACS','PAYMENT TYPE',1,'SAT');
+
+   INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END, TRS_TARE_REFNO, TRS_RETURN_STATUS)
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_refno,'01-JUN-2024','30-JUN-2024',l_tare_refno,'FILED')
+   RETURNING TRS_REFNO INTO l_trs_refno;
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_aggr_par_refno, 1, 'N', NULL, 'OPERATOR', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_enr_par_refno, 1, NULL, NULL, 'ENROLMENT', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno1, l_tare_refno, 1, '01-JUN-24', '30-JUN-24', 431.00, 344.00, 874.93, 759.00, 115.93);
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno2, l_tare_refno, 1, '01-JUN-24', '30-JUN-24', 786.00, 1118.00, 1595.58, 1191, 404.58);
+
+   INSERT INTO portal_object_access(POA_PORTAL_PAR_REFNO,POA_OBJECT_TYPE,POA_OBJECT_REFERENCE, POA_CURRENT_IND)
+   VALUES(l_par_Refno,'TARE_REFNO',l_tare_refno, 'Y');
+   
+   INSERT INTO schd_type_return_periods(STRP_REFNO, STRP_FPROF_CODE, STRP_FPROF_DOMAIN, STRP_FPROF_SRV_CODE, STRP_FPROF_WRK_REFNO, STRP_START_DATE, STRP_END_DATE, STRP_DESCRIPTION)
+   VALUES(STRP_SEQ.NEXTVAL, 'ST4','SCHEDULETYPES','SAT',1,'01-JUL-2024','31-JUL-2024','Period 2')
+   RETURNING STRP_REFNO INTO l_strp_refno;
+
+   dbms_output.put_line('l_strp_refno : ' || l_strp_refno );
+
+   INSERT INTO schd_returns_period_breakdown(SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
+   VALUES( srpb_seq.nextval, l_strp_refno, '01-JUL-2024', '31-JUL-2024');
+
+    --*********************************
+    -- Create the Financial accounts for the PORTAL.SAT.USERS account
+    --*********************************
+   INSERT INTO financial_accounts
+     (fiac_refno,fiac_reference,fiac_wrk_refno,fiac_srv_code,fiac_suspense_ind)
+   values
+     (fiac_seq.nextval,'RS10000001RPTS',1,'SAT',NULL)
+   RETURNING fiac_refno INTO l_fiac_refno;
+    
+   INSERT INTO fiac_party_links
+     (fpli_par_refno,fpli_fiac_refno,
+    fpli_ffpl_type,fpli_ffpl_frd_domain,fpli_ffpl_srv_code,fpli_ffpl_wrk_refno,fpli_authority_ind)
+   VALUES (
+    l_enr_par_refno,l_fiac_refno,'LIABLE','FIACPARTYLINKS','SAT',1,'N');
+    
+   INSERT INTO transactions
+    (tra_refno,tra_actual_date,tra_effective_date,tra_fiac_refno,
+    tra_tty_srv_code,tra_tty_code,tra_tty_wrk_refno,tra_amount,
+    tra_related_reference,tra_related_subreference,tra_fobt_frd_domain, tra_fobt_srv_code, tra_fobt_type, tra_fobt_wrk_refno) 
+   VALUES (
+    tra_seq.nextval,'10-JAN-2024','10-JAN-2024',l_fiac_refno,
+    'SAT','SAT',1,150,
+    'RS10000001RPTS','1','OBJECT TYPES','SAT','RETURN',1)
+   RETURNING tra_refno INTO l_ltra_refno;
+   
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS10000002ZPTS','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );
+
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'D','P','25-JUN-2024','01-JUN-2024','30-JUN-2024', l_enrm_refno,TRUNC(SYSDATE),'PAYMENT TYPE',1,'SAT');
+
+   INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END, TRS_TARE_REFNO, TRS_RETURN_STATUS)
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_refno,'02-JUN-2024','30-JUN-2024',l_tare_refno,'FILED')
+   RETURNING TRS_REFNO INTO l_trs_refno;
+   
+   INSERT INTO financial_accounts
+     (fiac_refno,fiac_reference,fiac_wrk_refno,fiac_srv_code,fiac_suspense_ind)
+   values
+     (fiac_seq.nextval,'RS10000002ZPTS',1,'SAT',NULL)
+   RETURNING fiac_refno INTO l_fiac_refno;
+    
+   INSERT INTO fiac_party_links
+     (fpli_par_refno,fpli_fiac_refno,
+    fpli_ffpl_type,fpli_ffpl_frd_domain,fpli_ffpl_srv_code,fpli_ffpl_wrk_refno,fpli_authority_ind)
+   VALUES (
+    l_enr_par_refno,l_fiac_refno,'LIABLE','FIACPARTYLINKS','SAT',1,'N');
+    
+   INSERT INTO transactions
+    (tra_refno,tra_actual_date,tra_effective_date,tra_fiac_refno,
+    tra_tty_srv_code,tra_tty_code,tra_tty_wrk_refno,tra_amount,
+    tra_related_reference,tra_related_subreference,tra_fobt_frd_domain, tra_fobt_srv_code, tra_fobt_type, tra_fobt_wrk_refno) 
+   VALUES (
+    tra_seq.nextval,'10-JAN-2024','10-JAN-2024',l_fiac_refno,
+    'SAT','SAT',1,150,
+    'RS10000002ZPTS','1','OBJECT TYPES','SAT','RETURN',1)
+   RETURNING tra_refno INTO l_ltra_refno;
+   
+       -- Create the Amendment account
+  INSERT INTO parties
+    (par_refno,par_type,par_com_company_name,par_org_name,par_marketing_ind,par_fact_type,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Test Portal Company SAT Users3','Test Portal Company SAT Users3','N','AGENT','PARTY_ACT_TYPES','SYS',1)
+  RETURNING par_refno INTO l_par_refno;
+  
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'2 Park Lane',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+  
+  -- Note password is created by hashing the username and the password
+  INSERT INTO users
+     (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
+      usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
+  VALUES
+     ('PORTAL.SAT.THREE',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.SAT.THREE'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal SAT THREE','noreply@necsws.com',3,
+      'N',l_par_Refno,'Portal User','SAT Three','ENG',TRUNC(SYSDATE));
+      
+  INSERT INTO role_users
+    (rus_rol_code,rus_usr_username)
+  (SELECT rus_rol_code,'PORTAL.SAT.THREE'
+    FROM role_users
+   WHERE rus_usr_username = 'TEMPLATE_SELFSRV_USER');
+   
+  INSERT INTO user_services
+    (use_username, use_service)
+   VALUES
+    ('PORTAL.SAT.THREE','SAT');    
+    
+  INSERT INTO parties
+    (par_refno,par_type,par_org_name,par_org_frv_oty_code,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Harry Peterson Partnership','PARTNER','PARTY_ACT_TYPES','SAT',1)
+  RETURNING par_refno INTO l_enr_par_refno;
+  
+  dbms_output.put_line('l_enr_par_refno : ' || l_enr_par_refno );
+  
+  create_or_maintain_cde(p_par_refno=>l_enr_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_enr_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_enr_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+  
+  history_tables_api.snapshot_party( p_par_refno       => l_enr_par_refno
+                                       , p_snapshot_src_vn => NULL
+                                       , p_parh_version    => l_h_version );
+  
+  INSERT INTO parties
+    (par_refno,par_type,par_org_name,par_org_frv_oty_code,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Harry Peterson Partnership','PARTNER','PARTY_ACT_TYPES','SAT',1)
+  RETURNING par_refno INTO l_aggr_par_refno;
+  
+  dbms_output.put_line('l_aggr_par_refno : ' || l_aggr_par_refno );
+  
+  create_or_maintain_cde(p_par_refno=>l_aggr_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_aggr_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_aggr_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+    
+  history_tables_api.snapshot_party( p_par_refno       => l_aggr_par_refno
+                                       , p_snapshot_src_vn => NULL
+                                       , p_parh_version    => l_h_version );
+
+   SELECT usr_par_refno
+   INTO l_par_refno_temp
+   FROM users
+   WHERE usr_username = 'PORTAL.SAT.TWO';
+   
+   INSERT INTO portal_object_access(POA_PORTAL_PAR_REFNO,POA_OBJECT_TYPE,POA_OBJECT_REFERENCE, POA_CURRENT_IND)
+   VALUES(l_par_refno_temp,'TARE_REFNO',l_tare_refno, 'Y');
+   
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS10000001RPGT','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );
+
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_method, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'L','P','25-JUL-2024' ,'01-JUL-2024','31-JUL-2024', l_enrm_refno,TRUNC(SYSDATE),'BACS','PAYMENT TYPE',1,'SAT');
+
+   INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END, TRS_TARE_REFNO, TRS_RETURN_STATUS)
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_refno,'01-JUL-2024','31-JUL-2024',l_tare_refno,'FILED')
+   RETURNING TRS_REFNO INTO l_trs_refno;
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_aggr_par_refno, 1, 'N', NULL, 'OPERATOR', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_enr_par_refno, 1, NULL, NULL, 'ENROLMENT', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno1, l_tare_refno, 1, '01-JUL-24', '31-JUL-24', 742, 344, 1506.26, 432, 1074.26);
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno2, l_tare_refno, 1, '01-JUL-24', '31-JUL-24', 1642, 344, 3333.26, 432, 2901.26);
+
+   INSERT INTO portal_object_access(POA_PORTAL_PAR_REFNO,POA_OBJECT_TYPE,POA_OBJECT_REFERENCE, POA_CURRENT_IND)
+   VALUES(l_par_Refno,'TARE_REFNO',l_tare_refno, 'Y');
+   
+   INSERT INTO schd_type_return_periods(STRP_REFNO, STRP_FPROF_CODE, STRP_FPROF_DOMAIN, STRP_FPROF_SRV_CODE, STRP_FPROF_WRK_REFNO, STRP_START_DATE, STRP_END_DATE, STRP_DESCRIPTION)
+   VALUES(STRP_SEQ.NEXTVAL, 'ST4','SCHEDULETYPES','SAT',1,'01-AUG-2024','31-AUG-2024','Period 3')
+   RETURNING STRP_REFNO INTO l_strp_refno;
+
+   dbms_output.put_line('l_strp_refno : ' || l_strp_refno );
+
+   INSERT INTO schd_returns_period_breakdown(SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
+   VALUES( srpb_seq.nextval, l_strp_refno, '01-AUG-2024', '31-AUG-2024');
+   
+   INSERT INTO enrolment_master (enrm_refno,enrm_registration_ref,enrm_par_refno,enrm_srv_code,enrm_effective_date,enrm_received_date,enrm_start_date,enrm_end_date,enrm_group_name) values 
+   (enrm_seq.NEXTVAL,'SAT1000000ZFES',l_enr_par_refno,'SAT','01-AUG-2024','01-AUG-2024','01-AUG-2024',null,'Group 54')
+   RETURNING enrm_refno INTO l_enrm_refno;
+   
+   dbms_output.put_line('l_enrm_refno : ' || l_enrm_refno );
+   
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS11000000ZFEP','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+   
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );  
+   
+   INSERT INTO portal_object_access(POA_PORTAL_PAR_REFNO, POA_OBJECT_TYPE, POA_OBJECT_REFERENCE)
+   VALUES(l_par_Refno,'TARE_REFNO', l_tare_refno);
+   
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'L','P','25-JUL-2024' ,'01-JUL-2024','31-JUL-2024',l_enrm_refno,TRUNC(SYSDATE),'PAYMENT TYPE',1,'SAT');
+   
+   INSERT INTO enrolment_periods (ep_refno,ep_enrm_refno,ep_start_date,ep_end_date,ep_effective_date,ep_status,ep_registration_type,ep_group_ind,ep_non_resident_ind,ep_using_agent_ind,ep_exploit_start,ep_est_quarry,ep_est_sand,ep_est_importation,ep_est_agg_levy,ep_est_exploited,ep_est_exempt,ep_est_export,ep_est_relief,ep_est_crusher,ep_est_other,ep_est_oth_description,ep_est_ere_ind,ep_est_cross_border,ep_take_over_ind,ep_transfer_date,ep_prv_reg_business_name,ep_prv_reg_org_type,ep_prv_reg_adr_refno,ep_prv_reg_retained,ep_prv_reg_no) 
+   VALUES (ep_seq.NEXTVAL,l_enrm_refno,'01-AUG-2024',null,'01-AUG-2024','APPROVED','SINGLEREG','N','N','N',TRUNC(SYSDATE),100,200,300,400,500,600,700,800,900,1000,'created via Seed data','N',null,'N',null,null,null,null,null,null)
+   RETURNING ep_refno INTO l_ep_refno;
+   
+   dbms_output.put_line('l_ep_refno : ' || l_ep_refno );
+   
+   INSERT INTO enrolment_period_parties (epp_ep_refno,epp_par_refno,epp_parh_version,epp_lead_ind,epp_group_controller_ind,epp_flink_type,epp_flink_frd_domain,epp_flink_wrk_refno,epp_flink_srv_code,epp_appoint_date,epp_reg_no,epp_same_corr_adr_ind)
+   VALUES (l_ep_refno,l_enr_par_refno,1,null,null,'ENROLMENT','CASEPARTYLINKS',1,'SAT',TRUNC(SYSDATE),null,'Y');
+   
+   INSERT INTO enrolment_period_parties (epp_ep_refno,epp_par_refno,epp_parh_version,epp_lead_ind,epp_group_controller_ind,epp_flink_type,epp_flink_frd_domain,epp_flink_wrk_refno,epp_flink_srv_code,epp_appoint_date,epp_reg_no,epp_same_corr_adr_ind)   
+   VALUES (l_ep_refno,l_aggr_par_refno,1,'N',null,'OPERATOR','CASEPARTYLINKS',1,'SAT',TRUNC(SYSDATE),'null','Y');
+   
+   l_strp_seq := STRP_SEQ.NEXTVAL;
+   l_taxl_refno_seq := TAXL_SEQ.NEXTVAL;
+
+   SELECT strp_refno
+   INTO l_strp_seq
+   FROM schd_type_return_periods
+   WHERE strp_fprof_code = 'ST1'
+   AND strp_fprof_domain = 'SCHEDULETYPES'
+   AND strp_fprof_srv_code = 'SAT'
+   AND strp_fprof_wrk_refno = 1
+   AND strp_start_date = TO_DATE('01-APR-2024', 'DD-MON-RRRR HH24:MI:SS');
+   
+   INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END, TRS_TARE_REFNO,TRS_RETURN_STATUS)
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_seq,'01-JUL-2024','31-JUL-2024',l_tare_refno, 'FILED');
+
+   
+   INSERT INTO taxable_locations( TAXL_REFNO, TAXL_EPP_PAR_REFNO, TAXL_ENRM_REFNO, TAXL_FTAXL_CODE, TAXL_FTAXL_FRD_DOMAIN, TAXL_FTAXL_WRK_REFNO, TAXL_FTAXL_SRV_CODE, TAXL_NAME, TAXL_START_DATE, TAXL_WEIGHBRIDGE_IND, TAXL_ADR_REFNO, TAXL_CONTACT_NAME, TAXL_EMAIL, TAXL_PHONE, TAXL_MOBILE, TAXL_COUNTRY_OPERATION, TAXL_CROSS_BORDER_IND, TAXL_FLAU_FRD_DOMAIN, TAXL_FLAU_WRK_REFNO, TAXL_FLAU_SRV_CODE)
+   VALUES (l_taxl_refno_seq, L_AGGR_PAR_REFNO, l_enrm_refno, 'SITE','TAXL_LOCATION_TYPES',1,'SAT','Site1','01-JUL-2024','N', l_adr_refno, 'Site contact name','donotreply@necsws.com','07411222145','01542548965','SCOTLAND','N','UKLOCALAUTHS',1,'SAT')
+   RETURNING TAXL_REFNO INTO l_taxl_refno1;
+
+   l_taxl_refno_seq := TAXL_SEQ.NEXTVAL;
+   
+   INSERT INTO taxable_locations( TAXL_REFNO, TAXL_EPP_PAR_REFNO, TAXL_ENRM_REFNO, TAXL_FTAXL_CODE, TAXL_FTAXL_FRD_DOMAIN, TAXL_FTAXL_WRK_REFNO, TAXL_FTAXL_SRV_CODE, TAXL_NAME, TAXL_START_DATE, TAXL_WEIGHBRIDGE_IND, TAXL_ADR_REFNO, TAXL_CONTACT_NAME, TAXL_EMAIL, TAXL_PHONE, TAXL_MOBILE, TAXL_COUNTRY_OPERATION, TAXL_CROSS_BORDER_IND, TAXL_FLAU_FRD_DOMAIN, TAXL_FLAU_WRK_REFNO, TAXL_FLAU_SRV_CODE)
+   VALUES (l_taxl_refno_seq, L_AGGR_PAR_REFNO, l_enrm_refno, 'SITE','TAXL_LOCATION_TYPES',1,'SAT','Site2','01-JUL-2024','N', l_adr_refno, 'Site contact name','donotreply@necsws.com','07411222145','01542548965','SCOTLAND','N','UKLOCALAUTHS',1,'SAT')
+   RETURNING TAXL_REFNO INTO l_taxl_refno2;
+    
+   SELECT strp_refno
+   INTO l_strp_seq
+   FROM schd_type_return_periods
+   WHERE strp_fprof_code = 'ST1'
+   AND strp_fprof_domain = 'SCHEDULETYPES'
+   AND strp_fprof_srv_code = 'SAT'
+   AND strp_fprof_wrk_refno = 1
+   AND strp_start_date = '01-JUL-2024';
+   
+   INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END)
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_seq,'01-AUG-2024','31-AUG-2024');
+
+
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS11000000ZFES','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+   
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );  
+   
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'D','P','25-JUL-2024' ,'01-JUL-2024','31-JUL-2024',l_enrm_refno,TRUNC(SYSDATE),'PAYMENT TYPE',1,'SAT');
+      
+   INSERT INTO cases (
+    case_refno,case_reference,
+    case_caty_type,case_caty_srv_code,case_caty_wrk_refno,
+    case_cast_status,case_casr_reason,
+    case_automatic_ind,case_fcas_source,case_fcas_frd_domain,case_fcas_wrk_refno,case_fcas_srv_code,
+    case_receipt_date,case_all_information_date,
+    case_fobt_type,case_fobt_frd_domain,case_fobt_wrk_refno,case_fobt_srv_code,case_related_reference
+  ) VALUES (
+    case_seq.nextval,'PORTAL.SAT1000000ZFES',
+    'ENROLMENT','SAT',1,
+    'OPEN','ENROLMENT TO PROCESS',
+    'Y','ONLINEFORM','CASESOURCES',1,'SAT',
+    SYSDATE,NULL,
+    'ENROLMENT','CASEOBJECTTYPES',1,'SAT','SAT1000000ZFES'
+  ) 
+  RETURNING case_refno INTO l_case_refno;
+  
+  dbms_output.put_line('l_case_refno : ' || l_case_refno );
+  
+  INSERT INTO portal_object_access
+  (POA_PORTAL_PAR_REFNO, POA_OBJECT_TYPE, POA_OBJECT_REFERENCE)
+  VALUES
+  (l_par_Refno,'ENRM_REFNO', l_enrm_refno);
+
+   INSERT INTO tax_return_schedule_types(TRST_REFNO, TRST_ENRM_REFNO, TRST_START_DATE, TRST_END_DATE, TRST_FSCH_CODE, TRST_FSCH_FRD_DOMAIN, TRST_FSCH_WRK_REFNO, TRST_FSCH_SRV_CODE)
+   VALUES (TRST_SEQ.NEXTVAL, l_enrm_refno, '01-JUN-24', NULL, 'ST4', 'SCHEDULETYPES', 1, 'SAT');
+   
+   SELECT strp_refno
+   INTO l_strp_seq
+   FROM schd_type_return_periods
+   WHERE strp_fprof_code = 'ST4'
+   AND strp_fprof_domain = 'SCHEDULETYPES'
+   AND strp_fprof_srv_code = 'SAT'
+   AND strp_fprof_wrk_refno = 1
+   AND strp_start_date = '01-JUN-2024'; 
+   dbms_output.put_line('l_strp_refno : ' || l_strp_refno );
+
+   INSERT INTO schd_returns_period_breakdown(SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
+   VALUES( srpb_seq.nextval, l_strp_refno, '01-JUN-2024', '30-JUN-2024');
+   
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS10000001RPTQ','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );
+
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_method, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'L','P','25-JUN-2024','01-JUN-2024','30-JUN-2024', l_enrm_refno,TRUNC(SYSDATE),'BACS','PAYMENT TYPE',1,'SAT');
+
+   INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END, TRS_TARE_REFNO, TRS_RETURN_STATUS)
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_refno,'01-JUN-2024','30-JUN-2024',l_tare_refno,'FILED')
+   RETURNING TRS_REFNO INTO l_trs_refno;
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_aggr_par_refno, 1, 'N', NULL, 'OPERATOR', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_enr_par_refno, 1, NULL, NULL, 'ENROLMENT', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno1, l_tare_refno, 1, '01-JUN-24', '30-JUN-24', 431.00, 344.00, 874.93, 759.00, 115.93);
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno2, l_tare_refno, 1, '01-JUN-24', '30-JUN-24', 786.00, 1118.00, 1595.58, 1191, 404.58);
+
+   INSERT INTO portal_object_access(POA_PORTAL_PAR_REFNO,POA_OBJECT_TYPE,POA_OBJECT_REFERENCE, POA_CURRENT_IND)
+   VALUES(l_par_Refno,'TARE_REFNO',l_tare_refno, 'Y');
+
+  ---Creating data for SAT
+  
+  -- Create the Main account
+  INSERT INTO parties
+  (par_refno,par_type,par_com_company_name,par_org_name,par_marketing_ind,par_fact_type,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno,par_org_frv_oty_code)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Test Portal Company SAT Users4','Test Portal Company SAT Users4','N','TAXPAYER','PARTY_ACT_TYPES','SYS',1,'PARTNER')
+  RETURNING par_refno INTO l_par_refno;
+  
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'2 Park Lane',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+        
+  -- Note password is created by hashing the username and the password
+  INSERT INTO users
+     (usr_username,usr_password,usr_password_change_date,usr_force_pw_change,usr_current_ind,usr_name,usr_email_address,usr_wrk_refno,
+      usr_int_user_ind,usr_par_refno,usr_per_forename,usr_per_surname,usr_pref_nld_code,usr_tac_signed_date)
+  VALUES
+     ('PORTAL.SAT.TAXPAYER',UPPER (dbms_obfuscation_toolkit.md5 (input => utl_i18n.string_to_raw('PORTAL.SAT.TAXPAYER'||'Password1!'))),TRUNC(SYSDATE),'N','Y','Portal SAT Taxpayer','noreply@necsws.com',3,
+      'N',l_par_Refno,'Portal User','SAT Taxpayer','ENG',TRUNC(SYSDATE));
+      
+  INSERT INTO role_users
+    (rus_rol_code,rus_usr_username)
+  (SELECT rus_rol_code,'PORTAL.SAT.TAXPAYER'
+    FROM role_users
+   WHERE rus_usr_username = 'TEMPLATE_SELFSRV_USER');
+   
+   INSERT INTO user_services
+    (use_username, use_service)
+   VALUES
+    ('PORTAL.SAT.TAXPAYER','SAT');
+    
+   --creating enrolment party 
+   INSERT INTO parties
+    (par_refno,par_type,par_org_name,par_org_frv_oty_code,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Jim and James Group','PARTNER','PARTY_ACT_TYPES','SAT',1)
+  RETURNING par_refno INTO l_enr_par_refno;
+  
+  dbms_output.put_line('l_enr_par_refno : ' || l_enr_par_refno );
+  
+  create_or_maintain_cde(p_par_refno=>l_enr_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_enr_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_enr_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+  
+  history_tables_api.snapshot_party( p_par_refno       => l_enr_par_refno
+                                       , p_snapshot_src_vn => NULL
+                                       , p_parh_version    => l_h_version );
+  
+  --creating aggregate party
+  INSERT INTO parties
+    (par_refno,par_type,par_org_name,par_org_frv_oty_code,par_fact_frd_domain,par_fact_srv_code,par_fact_wrk_refno)
+  VALUES
+    (par_refno_seq.nextval,'ORG','Jim and James Group','PARTNER','PARTY_ACT_TYPES','SAT',1)
+  RETURNING par_refno INTO l_aggr_par_refno;
+  
+  dbms_output.put_line('l_aggr_par_refno : ' || l_aggr_par_refno );
+  
+  create_or_maintain_cde(p_par_refno=>l_aggr_par_refno,p_cde_cme_code=>'EMAIL',p_value=>'noreply@necsws.com');
+  create_or_maintain_cde(p_par_refno=>l_aggr_par_refno,p_cde_cme_code=>'PHONE',p_value=>'07700900321');
+  create_or_maintain_address(p_refno=>l_aggr_par_refno,p_fao_code=>'PAR',p_adr_address_line_1=>'1 Acacia Avenue',p_adr_address_line_2=>'Garden Village',p_adr_town=>'NORTHTOWN',p_adr_county=>'Northshire',p_adr_postcode=>'RG1 1PB');
+    
+  history_tables_api.snapshot_party( p_par_refno       => l_aggr_par_refno
+                                       , p_snapshot_src_vn => NULL
+                                       , p_parh_version    => l_h_version );
+  
+  
+   
+  --Inerting into enrolment_master
+   INSERT INTO enrolment_master (enrm_refno,enrm_registration_ref,enrm_par_refno,enrm_srv_code,enrm_effective_date,enrm_received_date,enrm_start_date,enrm_end_date,enrm_group_name) VALUES 
+   (enrm_seq.NEXTVAL,'SAT1000000KGLM',l_enr_par_refno,'SAT','01-JUN-2024','01-JUN-2024','01-JUN-2024',null,'Group 54')
+   returning enrm_refno INTO l_enrm_refno;
+   
+   dbms_output.put_line('l_enrm_refno : ' || l_enrm_refno );
+   
+   INSERT INTO ENROLMENT_PERIODS (ep_refno,ep_enrm_refno,ep_start_date,ep_end_date,ep_effective_date,ep_status,ep_registration_type,ep_group_ind,ep_non_resident_ind,ep_using_agent_ind,ep_exploit_start,ep_est_quarry,ep_est_sand,ep_est_importation,ep_est_agg_levy,ep_est_exploited,ep_est_exempt,ep_est_export,ep_est_relief,ep_est_crusher,ep_est_other,ep_est_oth_description,ep_est_ere_ind,ep_est_cross_border,ep_take_over_ind,ep_transfer_date,ep_prv_reg_business_name,ep_prv_reg_org_type,ep_prv_reg_adr_refno,ep_prv_reg_retained,ep_prv_reg_no) 
+   VALUES (ep_seq.NEXTVAL,l_enrm_refno,'01-JUN-2024',null,'01-JUN-2024','APPROVED','SINGLEREG','N','N','N',TRUNC(SYSDATE),100,200,300,400,500,600,700,800,900,1000,'created via Seed data','N',null,'N',null,null,null,null,null,null)
+   RETURNING ep_refno INTO l_ep_refno;
+   
+   dbms_output.put_line('l_ep_refno : ' || l_ep_refno );
+   
+   INSERT INTO ENROLMENT_PERIOD_PARTIES (epp_ep_refno,epp_par_refno,epp_parh_version,epp_lead_ind,epp_group_controller_ind,epp_flink_type,epp_flink_frd_domain,epp_flink_wrk_refno,epp_flink_srv_code,epp_appoint_date,epp_reg_no,epp_same_corr_adr_ind)
+   VALUES (l_ep_refno,l_enr_par_refno,1,null,null,'ENROLMENT','CASEPARTYLINKS',1,'SAT',TRUNC(SYSDATE),null,'Y');
+   
+   INSERT INTO ENROLMENT_PERIOD_PARTIES (epp_ep_refno,epp_par_refno,epp_parh_version,epp_lead_ind,epp_group_controller_ind,epp_flink_type,epp_flink_frd_domain,epp_flink_wrk_refno,epp_flink_srv_code,epp_appoint_date,epp_reg_no,epp_same_corr_adr_ind)   
+   VALUES (l_ep_refno,l_aggr_par_refno,1,'N',null,'OPERATOR','CASEPARTYLINKS',1,'SAT',TRUNC(SYSDATE),'null','Y');
+
+   l_taxl_refno_seq := TAXL_SEQ.NEXTVAL;
+   
+   INSERT INTO taxable_locations( TAXL_REFNO, TAXL_EPP_PAR_REFNO, TAXL_ENRM_REFNO, TAXL_FTAXL_CODE, TAXL_FTAXL_FRD_DOMAIN, TAXL_FTAXL_WRK_REFNO, TAXL_FTAXL_SRV_CODE, TAXL_NAME, TAXL_START_DATE, TAXL_WEIGHBRIDGE_IND, TAXL_ADR_REFNO, TAXL_CONTACT_NAME, TAXL_EMAIL, TAXL_PHONE, TAXL_MOBILE, TAXL_COUNTRY_OPERATION, TAXL_CROSS_BORDER_IND, TAXL_FLAU_FRD_DOMAIN, TAXL_FLAU_WRK_REFNO, TAXL_FLAU_SRV_CODE)
+   VALUES (l_taxl_refno_seq, L_AGGR_PAR_REFNO, l_enrm_refno, 'SITE','TAXL_LOCATION_TYPES',1,'SAT','Site1','01-JUN-2024','N', l_adr_refno, 'Site contact name','donotreply@necsws.com','07411222145','01542548965','SCOTLAND','N','UKLOCALAUTHS',1,'SAT')
+   RETURNING TAXL_REFNO INTO l_taxl_refno1;
+
+   INSERT INTO tax_return_schedule_types(TRST_REFNO, TRST_ENRM_REFNO, TRST_START_DATE, TRST_END_DATE, TRST_FSCH_CODE, TRST_FSCH_FRD_DOMAIN, TRST_FSCH_WRK_REFNO, TRST_FSCH_SRV_CODE)
+   VALUES (TRST_SEQ.NEXTVAL, l_enrm_refno, '01-JUN-24', NULL, 'ST3', 'SCHEDULETYPES', 1, 'SAT');
+   
+   INSERT INTO cases (
+    case_refno,case_reference,
+    case_caty_type,case_caty_srv_code,case_caty_wrk_refno,
+    case_cast_status,case_casr_reason,
+    case_automatic_ind,case_fcas_source,case_fcas_frd_domain,case_fcas_wrk_refno,case_fcas_srv_code,
+    case_receipt_date,case_all_information_date,
+    case_fobt_type,case_fobt_frd_domain,case_fobt_wrk_refno,case_fobt_srv_code,case_related_reference
+  ) VALUES (
+    case_seq.nextval,'PORTAL.SAT1000000KGLM',
+    'ENROLMENT','SAT',1,
+    'OPEN','ENROLMENT TO PROCESS',
+    'Y','ONLINEFORM','CASESOURCES',1,'SAT',
+    SYSDATE,NULL,
+    'ENROLMENT','CASEOBJECTTYPES',1,'SAT','SAT1000000KGLM'
+  ) 
+  returning case_refno INTO l_case_refno;
+  
+  dbms_output.put_line('l_case_refno : ' || l_case_refno );
+  
+  INSERT INTO portal_object_access
+  (POA_PORTAL_PAR_REFNO, POA_OBJECT_TYPE, POA_OBJECT_REFERENCE)
+  VALUES
+  (l_par_Refno,'ENRM_REFNO', l_enrm_refno);
+   
+   INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
+   VALUES(tare_seq.nextval,'RS10000001GLVD','SAT')
+   RETURNING tare_refno INTO l_tare_refno;
+
+   dbms_output.put_line('l_tare_refno : ' || l_tare_refno );
+
+   INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_method, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
+   VALUES (l_tare_refno,1,'L','P','28-FEB-2025','01-DEC-2024','28-FEB-2025', l_enrm_refno,TRUNC(SYSDATE),'BACS','PAYMENT TYPE',1,'SAT');
+    
+   SELECT strp_refno
+   INTO l_strp_seq
+   FROM schd_type_return_periods
+   WHERE strp_fprof_code = 'ST3'
+   AND strp_fprof_domain = 'SCHEDULETYPES'
+   AND strp_fprof_srv_code = 'SAT'
+   AND strp_fprof_wrk_refno = 1
+   AND strp_start_date = '01-DEC-24';
+
+   INSERT INTO schd_returns_period_breakdown(SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
+   VALUES( srpb_seq.nextval, l_strp_seq, '01-DEC-24', '31-DEC-24');
+
+   INSERT INTO schd_returns_period_breakdown(SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
+   VALUES( srpb_seq.nextval, l_strp_seq, '01-JAN-2025', '28-FEB-2025');
+
+   INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END, TRS_TARE_REFNO, TRS_RETURN_STATUS)
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_seq,'01-DEC-2024','28-FEB-2025',l_tare_refno,'FILED')
+   RETURNING TRS_REFNO INTO l_trs_refno;
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_aggr_par_refno, 1, 'N', NULL, 'OPERATOR', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
+   VALUES (l_tare_refno, 1, l_enr_par_refno, 1, NULL, NULL, 'ENROLMENT', 'CASEPARTYLINKS', 1, 'SAT');
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno1, l_tare_refno, 1,'01-DEC-2024','31-DEC-24', 1000.00, 20.00, 2030.00, 0.00, 2030.00) RETURNING TLD_REFNO INTO l_tld_refno;
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TAAG','RETURNATTRIBUTES',1,'SAT',1100,2.03,100,'N',2030,'SAND','AGGREGATE TYPE',1,'SAT','CONSTRUCT','COMMEXPLOITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'EXAG','RETURNATTRIBUTES',1,'SAT',20,null,null,'N',null,'ROCK','AGGREGATE TYPE',1,'SAT','CWOSOCLS','EXEMPTREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TACR','RETURNATTRIBUTES',1,'SAT',null,2.03,null,'N',null,'SAND','AGGREGATE TYPE',1,'SAT','EXCEPTED','TAXCREDITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno1, l_tare_refno, 1,'01-JAN-2025', '28-FEB-2025', 1000.00, 50.00, 2100.00, 0.00, 2100.00) RETURNING TLD_REFNO INTO l_tld_refno;
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TAAG','RETURNATTRIBUTES',1,'SAT',1100,2.10,100,'N',2100,'SAND','AGGREGATE TYPE',1,'SAT','CONSTRUCT','COMMEXPLOITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'EXAG','RETURNATTRIBUTES',1,'SAT',50,null,null,'N',null,'ROCK','AGGREGATE TYPE',1,'SAT','CWOSOCLS','EXEMPTREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO trd_location_breakdown(TLB_TLD_REFNO,TLB_FLBD_CODE,TLB_FLBD_FRD_DOMAIN,TLB_FLBD_WRK_REFNO,TLB_FLBD_SRV_CODE,TLB_TONNAGE,TLB_RATE,TLB_WATER_TONNAGE,TLB_MIXED_IND,TLB_TAX_TOTAL,TLB_FATY_CODE,TLB_FATY_FRD_DOMAIN,TLB_FATY_WRK_REFNO,TLB_FATY_SRV_CODE,TLB_FAAT_CODE,TLB_FAAT_FRD_DOMAIN,TLB_FAAT_WRK_REFNO,TLB_FAAT_SRV_CODE,TLB_REL_TARE_REFNO,TLB_REL_PER_START,TLB_REL_PER_END,TLB_REFNO)
+   values (l_tld_refno,'TACR','RETURNATTRIBUTES',1,'SAT',null,2.10,null,'N',null,'SAND','AGGREGATE TYPE',1,'SAT','EXCEPTED','TAXCREDITREASON',1,'SAT',null,null,null,TLB_SEQ.NEXTVAL);
+
+   INSERT INTO portal_object_access(POA_PORTAL_PAR_REFNO,POA_OBJECT_TYPE,POA_OBJECT_REFERENCE, POA_CURRENT_IND)
+   VALUES(l_par_Refno,'TARE_REFNO',l_tare_refno, 'Y');
+   
+    --*********************************
+    -- Create the Financial accounts for the PORTAL.SAT.TAXPAYER account
+    --*********************************
+   INSERT INTO financial_accounts
+     (fiac_refno,fiac_reference,fiac_wrk_refno,fiac_srv_code,fiac_suspense_ind)
+   values
+     (fiac_seq.nextval,'RS10000001GLVD',1,'SAT',NULL)
+   RETURNING fiac_refno INTO l_fiac_refno;
+
+   UPDATE tax_returns
+   SET tare_fiac_refno = l_fiac_refno
+   WHERE tare_refno = l_tare_refno;
+    
+   INSERT INTO fiac_party_links
+     (fpli_par_refno,fpli_fiac_refno,
+    fpli_ffpl_type,fpli_ffpl_frd_domain,fpli_ffpl_srv_code,fpli_ffpl_wrk_refno,fpli_authority_ind)
+   VALUES (
+    l_enr_par_refno,l_fiac_refno,'LIABLE','FIACPARTYLINKS','SAT',1,'N');
+    
+   INSERT INTO transactions
+    (tra_refno,tra_actual_date,tra_effective_date,tra_fiac_refno,
+    tra_tty_srv_code,tra_tty_code,tra_tty_wrk_refno,tra_amount,
+    tra_related_reference,tra_related_subreference,tra_fobt_frd_domain, tra_fobt_srv_code, tra_fobt_type, tra_fobt_wrk_refno) 
+   VALUES (
+    tra_seq.nextval,'28-FEB-2025','28-FEB-2025',l_fiac_refno,
+    'SAT','SAT',1,4130,
+    'RS10000001GLVD','1','OBJECT TYPES','SAT','RETURN',1)
+   RETURNING tra_refno INTO l_ltra_refno;
+
+   l_case_refno := case_seq.nextval;
+   
+   INSERT INTO cases (
+    case_refno,case_reference,
+    case_caty_type,case_caty_srv_code,case_caty_wrk_refno,
+    case_cast_status,case_casr_reason,
+    case_automatic_ind,case_fcas_source,case_fcas_frd_domain,case_fcas_wrk_refno,case_fcas_srv_code,
+    case_receipt_date,case_all_information_date,
+    case_fobt_type,case_fobt_frd_domain,case_fobt_wrk_refno,case_fobt_srv_code,case_related_reference
+  ) VALUES (
+    l_case_refno,'PORTAL.CMSA000'||l_case_refno,
+    'RETURN','SAT',1,
+    'OPEN','RETURNCHECK',
+    'Y','DASHBOARD','CASESOURCES',1,'SAT',
+    SYSDATE,NULL,
+    'RETURN','CASEOBJECTTYPES',1,'SAT','RS10000001GLVD'
+  );
+
+   dbms_output.put_line('l_case_refno : ' || l_case_refno );
+
+  INSERT INTO case_return_links (
+    crli_tare_refno, crli_case_refno
+  ) VALUES (
+    l_tare_refno,l_case_refno
+  );
+
+   l_case_refno := case_seq.nextval;
+   
+   INSERT INTO cases (
+    case_refno,case_reference,
+    case_caty_type,case_caty_srv_code,case_caty_wrk_refno,
+    case_cast_status,case_casr_reason,
+    case_automatic_ind,case_fcas_source,case_fcas_frd_domain,case_fcas_wrk_refno,case_fcas_srv_code,
+    case_receipt_date,case_all_information_date,
+    case_fobt_type,case_fobt_frd_domain,case_fobt_wrk_refno,case_fobt_srv_code,case_related_reference
+  ) VALUES (
+    l_case_refno,'PORTAL.CMSA000'||l_case_refno,
+    'AMENDMENT','SAT',1,
+    'AWAITING AUTHORISATION','AMENDMENTCHECK',
+    'Y','DASHBOARD','CASESOURCES',1,'SAT',
+    SYSDATE,NULL,
+    'RETURN','CASEOBJECTTYPES',1,'SAT','RS10000001GLVD'
+  );
+
+   dbms_output.put_line('l_case_refno : ' || l_case_refno );
+
+  INSERT INTO case_return_links (
+    crli_tare_refno, crli_case_refno
+  ) VALUES (
+    l_tare_refno,l_case_refno
+  );
     
   COMMIT;
 END;

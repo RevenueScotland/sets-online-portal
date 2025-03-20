@@ -1,0 +1,4 @@
+<% content_for(:page_title, t('.title')) %>
+<%= ds_form_with(model: @site, method: :post, url: request.path) do |f| %>
+	<%= f.ds_radio_group(method: :tld_display_value, options_list: @site.list_ref_data(:nil_submission)) %>  
+<% end %>

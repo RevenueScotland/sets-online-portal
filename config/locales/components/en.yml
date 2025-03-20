@@ -13,7 +13,8 @@ en:
       select_address: "Select %{address}"
       previous_addresses: "Previously used addresses"
       previous_address: "Previous address"
-      select: "Select"
+      select: "Use this address"
+      select_button: "Select"
     base_item_component:
       change: "Change"
     summary_list_component:
@@ -52,6 +53,7 @@ en:
       skip: "Skip to main content"
     submit_component:
       change_password: "Change password"
+      calculate_return: "Continue"
       continue: "Continue"
       confirm: "Confirm"
       find: "Find"
@@ -73,6 +75,7 @@ en:
     file_upload_component:
       add_resource: Upload file
       add_resources: Upload files
+      upload_limit_reached: "File upload limit reached. Kindly remove/delete file(s) to add a file(s)"
       caption:
         one: Uploaded file
         other: Uploaded files
@@ -82,10 +85,13 @@ en:
       file_upload_hint_no_supported_types: The file must be a maximum size of %{supported_max_size_mb} mb per file
     financial_transaction_table_component:
       show: "View related"
+      hidden_text: "for transaction reference %{transaction_reference}"
     message_table_component:
       all_messages: "Find messages"
       selected_message: "Selected message"
       view: "View"
+      hidden_text: "View message number %{reference}"
+      hidden_preview_text: "Message preview for message number %{reference}, %{preview}"
     notification_banner_component:
       information: "Information"
       more_info: "More information"
@@ -110,11 +116,13 @@ en:
       delete_tenant: "Delete a tenant"
       delete_landlord: "Delete a landlord"
       delete_newtenant: "Delete a new tenant"
+      hidden_text: "for %{party_name}"
     site_header_navigation_component:
       account_details: "Account details"
       dashboard: "Dashboard"
       lbtt_return: "Create LBTT return"
       slft_return: "Create SLfT return"
+      sat_return: "Create SAT return"
       cancel: "Cancel"
       login: "Sign in"
       logout: "Sign out"
@@ -124,6 +132,7 @@ en:
         other: "Your password expires in %{count} days"
     resource_item_table_component:
       delete_resource: Delete file
+      hidden_text: "%{file_name}"
     return_table_component:
       all_returns: "Find returns"
       all_transactions: "Find transactions"
@@ -141,9 +150,12 @@ en:
       receipt: "Receipt"
       transactions: "Transactions"
       claim: "Claim"
+      hidden_text: "for return reference %{return_reference}"
     site_table_component:      
       deleted_sites_description: "The sites listed are not owned by you during this period and will not be saved, if this is incorrect change the return period"
       no_sites_description: "No registered sites for this period"
       add_waste_details: "Add waste details"
+      hidden_text: "for %{site}"
     user_table_component:
       edit: "Edit row"
+      hidden_text: "for %{user_name}"

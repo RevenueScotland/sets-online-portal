@@ -1,9 +1,9 @@
-<div class="ds_!_margin-bottom--2">
+<div class="ds_!_margin-bottom--2 table-column-responsive">
   <%= ds_table(caption: caption, id: id, small_screen: small_screen) do |table| %>
     <% table.with_header(klass: ResourceItem) do |header| %>
       <% header.with_cell(method: :file_name) %>
       <% header.with_cell(method: :description) if description %>
-      <% header.with_cell if delete %>
+      <% header.with_cell do t('.delete_resource') end if delete %>
     <% end %>
     <% resource_items.each do |resource_item| %>
       <% table.with_row(model: resource_item) do |row| %>
@@ -20,7 +20,10 @@
           <%= resource_item.description %>
         <% end if description %>
         <% row.with_cell do %>
-          <%= button_tag t('.delete_resource'), { :name => 'delete_resource', :class => 'ds_link', :id => 'DeleteResource', :value => resource_item.doc_refno } %>
+          <%= button_tag t('.delete_resource'), { :name => 'delete_resource', :class => 'ds_link', :id => 'DeleteResource', :value => resource_item.doc_refno } do %>
+            <%= t('.delete_resource') %>
+            <%= tag.span(t('.hidden_text', file_name: resource_item.original_filename || resource_item.file_name), class: 'visually-hidden') %>
+          <% end %>
         <% end if delete %>
       <% end %>
     <% end %>

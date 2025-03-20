@@ -1,0 +1,13 @@
+version: '3.4'
+services:
+  ${DOCKERIMAGENAME}-proxy-${ENVIRONMENT}:
+    volumes:
+      - ../images/certs/server/${DOCKERHOST}/:/usr/local/httpd/ssl:Z
+    env_file:
+      - proxy.env
+  ${DOCKERIMAGENAME}-app-${ENVIRONMENT}:
+    env_file:
+      - proxy.env
+  ${DOCKERIMAGENAME}-redis-${ENVIRONMENT}:
+    env_file:
+      - proxy.env

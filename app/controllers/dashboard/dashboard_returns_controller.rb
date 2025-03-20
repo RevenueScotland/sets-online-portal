@@ -25,17 +25,17 @@ module Dashboard
       @on_filter_find = !params[:dashboard_dashboard_return_filter].nil?
     end
 
-    # Loads a (SLfT or LBTT) return and redirects to the summary page of that return
+    # Loads a (SLfT , SAT or LBTT) return and redirects to the summary page of that return
     def load
       load_setup
-
       return_object, controller = if @srv_code == 'lbtt'
                                     [Returns::Lbtt::LbttReturn.find(@data, current_user), Returns::LbttController]
+                                  elsif @srv_code == 'sat'
+                                    [Returns::Sat::SatReturn.find(@data, current_user), Returns::SatController]
                                   else
                                     [Returns::Slft::SlftReturn.find(@data, current_user), Returns::SlftController]
                                   end
       wizard_save(return_object, controller)
-      Rails.logger.info("Loaded #{@srv_code.capitalize} #{return_object}")
 
       redirect_to controller: "returns/#{@srv_code}", action: :summary
     end

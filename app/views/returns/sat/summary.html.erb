@@ -1,0 +1,80 @@
+<% content_for(:navigation_link, request.path) %>
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:back_link_data_action, "cancel-warning#displayWarning") %> 
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_paragraph{t('.description')} %>
+<% unless @sat_return.sites.blank?%>
+  <%= ds_warning { t('.save_changes_warning') }%>
+<% end %>
+<%= ds_form_with(model: @sat_return, url: returns_sat_summary_path, file_upload: true, method: :post, button_action: (@sat_return.sites.blank? ? :none : :calc_return), button_label: t('.calculate')) do |f| %>
+  <%= ds_table(caption: tag.h2(t('.return_period'), class: 'ds_!_margin-bottom--0'), id: @id, small_screen: 'scrolling') do |table| %>
+      <% table.with_row(model: @sat_return) do |row| %>
+        <% row.with_cell(method: :sat_period, header: :label) %>
+        <% row.with_cell(method: :current_return_period) %>
+      <% end %>
+  <% end %>
+  <%= ds_table(caption: tag.h2(t('.registered_site_list'), class: 'ds_!_margin-bottom--0'), 
+              id: @id, small_screen: 'scrolling') do |table| %>
+    <% table.with_header(klass: Returns::Sat::Sites) do |header| %>      
+      <% header.with_cell(method: :site_party_name) %>
+      <% header.with_cell(method: :site_name) %>
+      <% header.with_cell(method: :period_bdown_start) %>
+      <% header.with_cell(method: :period_bdown_end) %>
+      <% header.with_cell(method: :tld_value) %>
+      <% header.with_cell(method: :taxable_tonnage) %>
+      <% header.with_cell(method: :exempt_tonnage) %>
+      <% header.with_cell(method: :tax_due) %>
+      <% header.with_cell(method: :tax_credits) %>
+      <% header.with_cell(method: :tax_payable) %>
+    <% end %>
+    <% if @sat_return.sites.blank? %> 
+      <% table.with_row do |row| %>
+        <% row.with_cell(colspan: 9) do %>
+            <%= ds_paragraph{t('.no_sites_description')} %>
+        <% end %>
+      <% end %>
+    <% else %>
+      <% @sat_return&.sites&.each  do |key, site| %>
+        <% table.with_row(model: site) do |row| %>                  
+          <% row.with_cell(method: :site_party_name) %>
+          <% row.with_cell(method: :site_name) %>
+          <% row.with_cell(method: :period_bdown_start) %>
+          <% row.with_cell(method: :period_bdown_end) %>
+          <% row.with_cell(method: :tld_value) %>  
+          <% row.with_cell(method: :taxable_tonnage, align: :right) %>
+          <% row.with_cell(method: :exempt_tonnage, align: :right) %>
+          <% row.with_cell(method: :tax_due, type: :currency, align: :right) %>
+          <% row.with_cell(method: :tax_credits, type: :currency, align: :right) %>
+          <% row.with_cell(method: :tax_payable, type: :currency, align: :right) %>
+        <% end %>
+        <% table.with_row do |row| %>
+          <% row.with_cell(colspan: 10) do %>
+            <%= ds_link(name: site.missing_sat_details_data? ? t('.add_sat_details') : t('.edit_sat_details') ,
+                  url: (site.missing_sat_details_data? ? returns_sat_site_aggregate_activity_path(key) : returns_sat_site_summary_path(key)), subtype: :padded,
+                  visually_hidden_text: t('.hidden_text', site: site.site_name)) %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <% table.with_footer(model: @sat_return) do |footer| %>
+        <% footer.with_cell do "Total" end %>
+        <% footer.with_cell %>
+        <% footer.with_cell %>
+        <% footer.with_cell %>
+        <% footer.with_cell %>
+        <% footer.with_cell(method: :net_taxable_tonnage, align: :right) %>
+        <% footer.with_cell(method: :net_exempt_tonnage, align: :right) %>
+        <% footer.with_cell(method: :net_tax_due, type: :currency, align: :right)%>
+        <% footer.with_cell(method: :net_tax_credits, type: :currency, align: :right) %>
+        <% footer.with_cell(method: :net_tax_payable, type: :currency, align: :right) %>
+      <% end %>
+    <% end %>
+  <% end %>
+  
+  <% unless @sat_return.sites.blank? %>      
+        <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, multiple: false, optional: true,
+                     description: false,  supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb) %>       
+    <% if can? RS::AuthorisationHelper::SAT_SAVE %>
+      <%= f.ds_submit(button_action: 'save_draft', button_label: t('.save_draft'), type: :secondary) %>
+    <% end %>
+  <% end %>
+<% end %>

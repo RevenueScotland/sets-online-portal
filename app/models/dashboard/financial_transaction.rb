@@ -104,9 +104,17 @@ module Dashboard
 
     # The request elements to get data from the backoffice
     private_class_method def self.request_elements(requested_by, filter, pagination)
-      { RequestUser: requested_by.username, ParRefno: requested_by.party_refno }
-        .merge(request_pagination_elements(pagination))
-        .merge(filter.request_elements)
+      output = if requested_by.portal_object_reference.nil?
+                 { RequestUser: requested_by.username, ParRefno: requested_by.party_refno }
+               else
+                 { ParRefno: requested_by.party_refno,
+                   RequestUser: requested_by.username,
+                   PortalObjectReference: requested_by.portal_object_reference,
+                   PortalObjectType: requested_by.portal_object_type }
+               end
+
+      output.merge(request_pagination_elements(pagination))
+            .merge(filter.request_elements)
     end
 
     # Pagination request elements which are optional but also used to get back office data

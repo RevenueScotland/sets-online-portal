@@ -47,41 +47,49 @@
   <% row.with_cell(colspan: (format == :draft ? 4 : 7)) do %>
     <%= ds_link(name: t('.continue'),
              url: load_dashboard_dashboard_return_path(dashboard_return),
-             subtype: :padded) if dashboard_return.return_is_continuable? && can?(dashboard_return.continue_action) %>
+             subtype: :padded,
+             visually_hidden_text: t('.hidden_text', return_reference: dashboard_return.tare_reference)) if dashboard_return.return_is_continuable? && can?(dashboard_return.continue_action) %>
     <%= ds_link(name: t('.transactions'),
              url: dashboard_financial_transactions_path("dashboard_financial_transaction_filter[related_reference]": dashboard_return.tare_reference,
-             "dashboard_financial_transaction_filter[srv_code]":dashboard_return.srv_code), subtype: :padded) if dashboard_return.indicator_is_latest? %>
+             "dashboard_financial_transaction_filter[srv_code]":dashboard_return.srv_code), subtype: :padded, visually_hidden_text: t('.hidden_text', return_reference: dashboard_return.tare_reference)) if dashboard_return.indicator_is_latest? %>
     <%= ds_link(name: t('.download_pdf'),
              url: download_pdf_dashboard_dashboard_return_path(dashboard_return),
              target: '_blank',
-             show_new_window: false,
-             subtype: :padded) if can?(RS::AuthorisationHelper::DOWNLOAD_RETURN_PDF) %>
+             show_new_tab: false,
+             subtype: :padded,
+             visually_hidden_text: t('.hidden_text', return_reference: dashboard_return.tare_reference)) if can?(RS::AuthorisationHelper::DOWNLOAD_RETURN_PDF) %>
     <%= ds_link(name: t('.download_waste'),
              url: download_waste_dashboard_dashboard_return_path(dashboard_return),
              target: '_blank',
-             show_new_window: false,
-             subtype: :padded) if dashboard_return.return_has_waste? %>
+             show_new_tab: false,
+             subtype: :padded,
+             visually_hidden_text: t('.hidden_text', return_reference: dashboard_return.tare_reference)) if dashboard_return.return_has_waste? %>
     <%= ds_link(name: t('.receipt'),
              url: download_receipt_dashboard_dashboard_return_path(dashboard_return),
              target: '_blank',
-             show_new_window: false,
-             subtype: :padded) if dashboard_return.receipt_indicator? && can?(RS::AuthorisationHelper::DOWNLOAD_RECEIPT) %>
+             show_new_tab: false,
+             subtype: :padded,
+             visually_hidden_text: t('.hidden_text', return_reference: dashboard_return.tare_reference)) if dashboard_return.receipt_indicator? && can?(RS::AuthorisationHelper::DOWNLOAD_RECEIPT) %>
     <%= ds_link(name: t('.amend'),
              url: load_dashboard_dashboard_return_path(dashboard_return),
-             subtype: :padded) if dashboard_return.return_is_amendable? && can?(dashboard_return.amend_action) %>
+             subtype: :padded,
+             visually_hidden_text: t('.hidden_text', return_reference: dashboard_return.tare_reference)) if dashboard_return.return_is_amendable? && can?(dashboard_return.amend_action) %>
     <%= ds_link(name: t('.claim'),
              url: claim_claim_payments_claim_reason_path(tare_refno: dashboard_return.tare_refno,
              version: dashboard_return.version,srv_code: dashboard_return.srv_code,
-              reference: dashboard_return.tare_reference, new: true ),
-             subtype: :padded) if dashboard_return.return_is_claimable? && can?(RS::AuthorisationHelper::CLAIM_REPAYMENT) %>
+              reference: dashboard_return.tare_reference ),
+             subtype: :padded,
+             visually_hidden_text: t('.hidden_text', return_reference: dashboard_return.tare_reference)) if dashboard_return.return_is_claimable? && can?(RS::AuthorisationHelper::CLAIM_REPAYMENT) %>
     <%= ds_link(name: t('.message'),
              url: dashboard_messages_path("dashboard_message_filter[reference]": dashboard_return.tare_reference),
-             subtype: :padded) if dashboard_return.indicator_is_latest? %>
+             subtype: :padded,
+             visually_hidden_text: t('.hidden_text', return_reference: dashboard_return.tare_reference)) if dashboard_return.indicator_is_latest? %>
     <%= ds_link(name: t('.delete'),
              url: dashboard_dashboard_return_path(dashboard_return),
              delete: true,
              confirm_message: t('.delete_draft'),
-             subtype: :padded) if dashboard_return.indicator_is_draft? &&  can?(dashboard_return.delete_action) %>
+             subtype: :padded,
+             visually_hidden_text: t('.hidden_text', return_reference: dashboard_return.tare_reference)) if dashboard_return.indicator_is_draft? &&  can?(dashboard_return.delete_action) %>
     <%= '&nbsp;'.html_safe + t('.enquiry_open') if dashboard_return.enquiry_indicator? %>
     <%= '&nbsp;'.html_safe + t('.draft_present') if dashboard_return.draft_present? %>
     <%= '&nbsp;'.html_safe + t('.not_amendable') if dashboard_return.not_continuable_indicator? %>

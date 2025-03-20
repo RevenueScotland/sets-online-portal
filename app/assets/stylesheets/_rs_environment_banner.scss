@@ -1,0 +1,48 @@
+/*------------------------------------*\
+  Extensions to the rs_environment_banner styling
+\*------------------------------------*/
+
+#rs_environment_banner {
+  padding-top: calc(1rem + -1px);
+  padding-bottom: 1rem;
+}
+
+.rs_environment_banner_005C00 {
+  background-color: #005C00;
+  color: #FFFFFF;
+}
+
+.rs_environment_banner_700000 {
+  background-color: #700000;
+  color: #FFFFFF;
+}
+
+.rs_environment_banner_C4B454 {
+  background-color: #C4B454;
+  color: #FFFFFF;
+}
+
+.rs_environment_banner_000000 {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+.rs_environment_banner_FF0000 {
+  background-color: #FF0000;
+  color: #FFFFFF;
+}
+
+.rs_phase-banner__text {
+  display: table-cell
+}
+
+.rs_phase-banner__content {
+  display: table;
+  margin-bottom: 0
+}
+
+.rs_wrapper {
+  margin: 0 auto;
+  padding: 0 16px;
+  width: 100%
+}

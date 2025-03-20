@@ -20,7 +20,7 @@ Feature: Login and authentication
         And I enter "x" in the "Username" field
         And I enter "x" in the "Password" field
         And I click on the "Sign in" button
-        Then I should receive the message "Enter the correct username and password"
+        Then I should receive the message "Invalid login credentials"
         And I should see the text "username"
         And I should see the text "password"
         When I go to the "Account" page
@@ -49,7 +49,7 @@ Feature: Login and authentication
         And I enter "locked.user" in the "Username" field
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
-        Then I should receive the message "Your user is locked, use the forgotten password process to unlock it"
+        Then I should receive the message "Invalid login credentials"
 
     @mock_not_actived_user
     Scenario: User provides the correct detail but the user is not activated
@@ -96,11 +96,12 @@ Feature: Login and authentication
 
         Then I should see the "Terms and conditions" page
         And I should see the text "In order to proceed you must read and accept the terms and conditions"
+        And I should see a link with text "Terms & conditions (opens in a new tab)"
         And I click on the "Confirm" button
 
         Then I should see the "Terms and conditions" page
         And I should receive the message "The terms and conditions must be accepted"
-        And I check the "I confirm that I have read and understood the terms & conditions" checkbox
+        And I check the "I confirm that I have read and understood the terms and conditions" checkbox
         And I click on the "Confirm" button
 
     # Then I should see the "Dashboard" page
@@ -169,7 +170,7 @@ Feature: Login and authentication
         And I enter "locked.user" in the "Username" field
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
-        Then I should receive the message "Your user is locked, use the forgotten password process to unlock it"
+        Then I should receive the message "Invalid login credentials"
 
     @mock_two_factor_login_user_not_activated
     Scenario: User provides the correct detail for a 2 factor login but the user is not activated
@@ -244,9 +245,33 @@ Feature: Login and authentication
 
         Then I should see the "Terms and conditions" page
         And I should see the text "In order to proceed you must read and accept the terms and conditions"
+        And I should see a link with text "Terms & conditions (opens in a new tab)"
         And I click on the "Confirm" button
 
         Then I should see the "Terms and conditions" page
         And I should receive the message "The terms and conditions must be accepted"
-        And I check the "I confirm that I have read and understood the terms & conditions" checkbox
+        And I check the "I confirm that I have read and understood the terms and conditions" checkbox
         And I click on the "Confirm" button
+
+    Scenario: User provides correct details and has single portal object (enrolment)
+        When I go to the "Login" page
+        And I enter "portal.sat.one" in the "Username" field
+        And I enter "Password1!" in the "Password" field
+        And I click on the "Sign in" button
+    # Then I should see the "Dashboard : SAT1000000TVTV Kevin Peterson Partnership" page
+
+    Scenario: User provides correct details and has multiple portal object (enrolment)
+        When I go to the "Login" page
+        And I enter "portal.sat.users" in the "Username" field
+        And I enter "Password1!" in the "Password" field
+        And I click on the "Sign in" button
+
+        Then I should see the "Select your SAT registration" page
+        And I should see the text "Which of your SAT registrations do you wish to view?"
+        When I click on the "Continue" button
+        Then I should see the "Select your SAT registration" page
+        And I should not see the text "Create new message"
+        And I should see the text "Which of your SAT registrations do you wish to view can't be blank"
+        When I check the "SAT1000000VVVV Black Sands Group" radio button in answer to the question "Which of your SAT registrations do you wish to view?"
+        And I click on the "Continue" button
+        Then I should see the "Dashboard : SAT1000000VVVV Black Sands Group" page
