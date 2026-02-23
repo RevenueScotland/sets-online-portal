@@ -73,4 +73,8 @@ Rails.application.configure do
   # Stop the authorisation cache refreshing during the test
   # It doesn't follow the job refresh pattern
   config.x.authorisation.cache_expiry = 180.minutes
+
+  # `to_time` will always preserve the full timezone rather than offset of the receiver in Rails 8.1.
+  # To opt in to the new behavior
+  config.active_support.to_time_preserves_timezone = :zone
 end

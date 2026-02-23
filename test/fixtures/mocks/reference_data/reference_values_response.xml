@@ -4403,6 +4403,51 @@
                     <Default>no</Default>
                 </ReferenceValue>
                 <ReferenceValue>
+                    <DomainCode>DOCUMENTS-LO-WD</DomainCode>
+                    <ServiceCode>SLFT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>DOC1</Code>
+                    <Name>Evidence of the water content (naturally and added) of the waste (mandatory)</Name>
+                    <Default>no</Default>
+                    <Sequence>10</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>DOCUMENTS-LO-WD</DomainCode>
+                    <ServiceCode>SLFT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>DOC2</Code>
+                    <Name>Details of how and why water is added to the waste</Name>
+                    <Default>no</Default>
+                    <Sequence>20</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>DOCUMENTS-LO-WD</DomainCode>
+                    <ServiceCode>SLFT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>DOC3</Code>
+                    <Name>Details of water reduction or removal; or why this is not possible</Name>
+                    <Default>no</Default>
+                    <Sequence>30</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>DOCUMENTS-LO-WD</DomainCode>
+                    <ServiceCode>SLFT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>DOC5</Code>
+                    <Name>Results of the analysis referred to in your approval letter (Review/Renew only)</Name>
+                    <Default>no</Default>
+                    <Sequence>50</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
+                    <DomainCode>DOCUMENTS-LO-WD</DomainCode>
+                    <ServiceCode>SLFT</ServiceCode>
+                    <WorkplaceCode>RSTU</WorkplaceCode>
+                    <Code>OTHER</Code>
+                    <Name>Other</Name>
+                    <Default>no</Default>
+                    <Sequence>60</Sequence>
+                </ReferenceValue>
+                <ReferenceValue>
                     <DomainCode>DOCUMENTS-WP-WD</DomainCode>
                     <ServiceCode>SLFT</ServiceCode>
                     <WorkplaceCode>RSTU</WorkplaceCode>
@@ -15801,7 +15846,7 @@
                     <Name>Excepted Process Applied</Name>
                     <Default>yes</Default>
                 </ReferenceValue>
-                 <ReferenceValue>
+                <ReferenceValue>
                     <DomainCode>TAXCREDITREASON</DomainCode>
                     <ServiceCode>SAT</ServiceCode>
                     <WorkplaceCode>RSTU</WorkplaceCode>

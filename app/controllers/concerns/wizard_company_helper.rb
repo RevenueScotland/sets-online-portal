@@ -38,7 +38,7 @@ module WizardCompanyHelper
       wizard_navigation_step(steps, overrides, wizard_page_objects_size(cached_object, overrides))
     else
       # Error on company
-      render(status: :unprocessable_entity)
+      render(status: :unprocessable_content)
     end
   end
 
@@ -58,9 +58,9 @@ module WizardCompanyHelper
   # @param overrides [Hash] an array of overrides see @wizard_company_step
   def wizard_company_search(wizard_cached_object, wizard_page_object, overrides)
     # Special POST and GET - Find Company
-    search_for_companies if wizard_company_pre_search(wizard_cached_object, wizard_page_object, overrides, false)
+    search_for_companies if wizard_company_pre_search?(wizard_cached_object, wizard_page_object, overrides, false)
     # Force a redirect back to the current page
-    render(status: :unprocessable_entity)
+    render(status: :unprocessable_content)
   end
 
   # Standard store company code to handle storing company in the current object
@@ -71,7 +71,7 @@ module WizardCompanyHelper
   def wizard_store_company(wizard_cached_object, wizard_page_object, overrides)
     # we may also have main object parameters so store these and validate them first
     # the standard company search does the save
-    object_valid = wizard_company_pre_search(wizard_cached_object, wizard_page_object, overrides, true)
+    object_valid = wizard_company_pre_search?(wizard_cached_object, wizard_page_object, overrides, true)
 
     company = Company.new(company_detail_params)
 
@@ -94,7 +94,7 @@ module WizardCompanyHelper
   # @param wizard_page_object [Object] the object on the page, a child or the same as the cached object
   # @param overrides [Hash] uses the :sub_object_attribute to deal with things related to the sub-object
   # @param validate [Boolean] do we need to validate the parent object as part of the process
-  def wizard_company_pre_search(wizard_cached_object, wizard_page_object, overrides, validate)
+  def wizard_company_pre_search?(wizard_cached_object, wizard_page_object, overrides, validate)
     wizard_params = resolve_params(overrides)
     unless wizard_params.nil?
       merge_params_with_object(wizard_page_object, wizard_params)
@@ -119,7 +119,7 @@ module WizardCompanyHelper
   # @param wizard_page_object [Object] the object on the page, a child or the same as the cached object
   # @param company [Object] the company being processed
   # @param overrides [Hash] an array of overrides see @wizard_company_step
-  def wizard_save_company(wizard_cached_object, wizard_page_object, company, overrides)
+  def wizard_save_company(wizard_cached_object, wizard_page_object, company, overrides) # rubocop:disable Naming/PredicateMethod
     company_attribute = overrides[:company_attribute] || :company
 
     Rails.logger.debug { "Storing company in object at #{wizard_page_object.class.name}##{company_attribute}" }

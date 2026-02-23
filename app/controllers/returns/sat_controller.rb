@@ -9,12 +9,14 @@ module Returns
     include FileUploadHandler
     include ControllerHelper
     include DownloadHelper
+    include FileUploadHelper
 
     authorise requires: RS::AuthorisationHelper::SAT_SUMMARY
     authorise route: :save_draft, requires: RS::AuthorisationHelper::SAT_SAVE
+    before_action :set_max_uploads_allowed, only: %i[repayment_evidence_upload upload_evidence]
 
     # wizard steps in order
-    STEPS = %w[return_period summary calculated_tax_liability].freeze
+    STEPS = %w[return_period sat_summary calculated_tax_liability].freeze
 
     # wizard steps for the DECLARATION wizard
     DECLARATION_STEPS = %w[amendment_reason declaration_calculation
@@ -25,8 +27,8 @@ module Returns
                          declaration_submitted].freeze
 
     # wizard steps for the repayment bank details wizard
-    REPAYMENT_B_STEPS = %w[repayment_request_bank_details repayment_declaration declaration_calculation
-                           declaration_submitted].freeze
+    REPAYMENT_B_STEPS = %w[repayment_request_bank_details repayment_evidence_upload repayment_declaration
+                           declaration_calculation declaration_submitted].freeze
 
     authorise route: DECLARATION_STEPS, requires: RS::AuthorisationHelper::SAT_SUBMIT
 
@@ -79,9 +81,8 @@ module Returns
     end
 
     # Summary of returns.
-    def summary
+    def sat_summary
       load_step
-
       # methods above could have updated the return so save it to give wizards access to the new data
       wizard_save(@sat_return)
       csv_upload
@@ -89,11 +90,11 @@ module Returns
         redirect_to returns_sat_confirm_data_import_path
       else
         # manage the buttons AFTER wizard_save so we don't save the validation errors
-        manage_draft(@sat_return) || redirect_submit
+        manage_draft?(@sat_return) || redirect_submit
       end
 
       # manage the buttons AFTER wizard_save so we don't save the validation errors
-      # manage_draft(@sat_return) || redirect_submit
+      # manage_draft?(@sat_return) || redirect_submit
     end
 
     # Redirect after a valid submit
@@ -104,7 +105,7 @@ module Returns
         Rails.logger.debug('  validation passed')
         redirect_to returns_sat_bad_debt_claims_path
       else
-        render(status: :unprocessable_entity)
+        render(status: :unprocessable_content)
       end
     end
 
@@ -118,7 +119,7 @@ module Returns
         if @sat_return.tax_payable_raw.negative? || @sat_return.amendment?
           redirect_to returns_sat_repayment_request_path
         else
-          manage_calculate(@sat_return)
+          manage_calculate?(@sat_return)
         end
         return # can't use && guard clause as wizard_step_submitted returns nil
       end
@@ -128,6 +129,61 @@ module Returns
 
       # don't store if back office sent errors
       wizard_save(@sat_return) unless @sat_return.errors.any?
+    end
+
+    # Save the evidence_file in the claim_payment model
+    # calls back-office to send data collected in claim_payment wizard
+    # @return [Boolean] was the after merge process successful
+    def save_evidence_files_in_model # rubocop:disable Naming/PredicateMethod
+      @sat_return.evidence_files = []
+      @sat_return.evidence_files = @resource_items unless @resource_items.nil?
+      wizard_save(@sat_return)
+      true
+    end
+
+    # Handle the removal of documents in repayment_evidence_upload page
+    def process_evidence_documents
+      if params[:delete_resource].present? &&
+         handle_file_upload(parent_param: :returns_sat_sat_return)
+        save_evidence_files_in_model
+        render('repayment_evidence_upload',
+               status: :unprocessable_content) && return
+      else
+        handle_file_upload(parent_param: :returns_sat_sat_return)
+      end
+    end
+
+    # returns/sat/repayment_evidence_upload - step in the repayment claim wizard
+    def repayment_evidence_upload
+      load_step
+      # @sat_return.evidence_needed = true if @sat_return.evidence_upload_required?
+      # @period_span = period_span_for_claim(@sat_return)
+      process_evidence_documents
+      return unless params[:continue]
+
+      if @sat_return.valid?
+        wizard_step(REPAYMENT_B_STEPS)
+      else
+        render(status: :unprocessable_content)
+      end
+    end
+
+    # Step to upload actual evidence files
+    def upload_evidence
+      load_step
+      # clearing previous file upload cache if its new get request
+      # second && condition to avoid clear cache on back
+      file_upload_end if request.get? && @sat_return.evidence_files.nil?
+
+      if handle_file_upload(parent_param: :returns_sat_sat_return)
+        return render(status: :unprocessable_content) if @resource_items_hash[:default].errors.any?
+
+        # files were uploaded so keep on this page
+        save_evidence_files_in_model
+        redirect_to returns_sat_repayment_evidence_upload_path
+      else
+        wizard_step(REPAYMENT_STEPS) { { validates: :evidence_files } }
+      end
     end
 
     # performs the submit return on the declaration page
@@ -149,7 +205,7 @@ module Returns
     # Send the return to the back office (and wizard_save unless there were errors returned.)
     # @return [Boolean] true if successful
     def submit_return
-      return false unless @sat_return.prepare_to_save_latest
+      return false unless @sat_return.prepare_to_save_latest?
 
       # Save the prepared return in the cache in case the user navigates back and re-tries
       wizard_save(@sat_return)
@@ -210,14 +266,15 @@ module Returns
     # @return [SatReturn] the model for wizard saving
     def load_step(_sub_object_attribute = nil)
       @sat_return = wizard_load_or_redirect(returns_sat_return_period_url)
-
+      @sat_return.fpay_method = 'DDEBIT' if action_name == 'declaration_calculation' && dd_applicable?
       @post_path = wizard_post_path
       @sat_return
     end
 
-    # Call back from FileUploadHandler, which returns file types are allowed to be uploaded.
-    def content_type_allowlist
-      Rails.configuration.x.sat_file_upload_content_type_allowlist.split(/\s*,\s*/)
+    # Returns true if Direct Debit is applicable to the current return
+    # and is a fresh return
+    def dd_applicable?
+      !@sat_return.amendment? && @sat_return.enrolment_has_dd_instruction?
     end
 
     # Call back from FileUploadHandler, which returns additional/alias content types are allowed
@@ -227,17 +284,30 @@ module Returns
       Rails.configuration.x.sat_file_upload_alias_content_type_allowlist.split(/\s*,\s*/)
     end
 
+    # max filename length allowed for upload
+    def max_filename_length
+      Rails.configuration.x.file_upload_file_name_limit
+    end
+
+    # uploaded file name list
+    def uploaded_file_list
+      @uploaded_file_list ||= @resource_items.map(&:original_filename)
+
+      @uploaded_file_list
+    end
+
     # Handles where a user has uploaded a CSV file
     def csv_upload
       return unless handle_file_upload(parent_param: :returns_sat_sat_return,
                                        add_processing: :validate_and_import_aggregate_file,
+                                       exclusive_csv_upload: true,
                                        clear_cache: true)
 
       wizard_save(@sat_return, Returns::SatController) if @sat_return.errors.none?
       # specifically clear the resource items as we don't want them shown, force the clear
       clear_resource_items(force: true)
       # Return 422 if there's no taxable_data available
-      render(status: :unprocessable_entity) unless @sat_return.csv_taxable_data.present? # rubocop:disable Rails/Blank
+      render(status: :unprocessable_content) unless @sat_return.csv_taxable_data.present? # rubocop:disable Rails/Blank
     end
 
     # Callback from the file upload component. Validates and imports the site aggregate file. If the file isn't a well
@@ -261,7 +331,9 @@ module Returns
     def filter_params(_sub_object_attribute = nil)
       required = :returns_sat_sat_return
       output = {}
-      output = params.require(required).permit(Sat::SatReturn.attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      output = params.require(required).permit(Sat::SatReturn.attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
 
       output
     end

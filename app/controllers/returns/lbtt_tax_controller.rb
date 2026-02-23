@@ -11,7 +11,7 @@ module Returns
     include LbttTaxHelper
 
     # public users are allowed to access the tax calculations
-    skip_before_action :require_user
+    skip_before_action :require_user?
 
     # the main tax calculation steps list
     STEPS = %w[calc_already_paid calculation].freeze
@@ -62,7 +62,9 @@ module Returns
     def filter_params(_sub_object_attribute = nil)
       required = :returns_lbtt_tax
       attribute_list = Lbtt::Tax.attribute_list
-      params.require(required).permit(attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
 
     # change the page flow depending if reliefs are present or not

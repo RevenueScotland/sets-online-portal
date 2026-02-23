@@ -7,7 +7,7 @@ export default class extends Controller {
         if (document.getElementById("error-summary")) {
             var header = this.element.querySelector('h2');
         } else {
-            var header = document.getElementsByClassName('ds_skip-links');
+            var header = document.getElementById('ds_skip-links_hidden');
         }
         header.style = "outline:none";
         header.focus();

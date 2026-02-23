@@ -23,7 +23,7 @@ module Core
     # @param interpolations [Hash] Hash of options that are passed down to @see LabellerDelegate
     # @param data_options [Hash] A hash of one or more data options to add to the field, used for stimulus
     def initialize(builder:, method:, readonly: false, disabled: false, one_question: false, optional: false, # rubocop:disable Metrics/MethodLength
-                   show_label: true, autocomplete: nil, interpolations: {}, data_options: {})
+                   show_label: true, autocomplete: nil, interpolations: {}, data_options: {}, aria_options: {})
       super()
       @builder = builder
       @method = method
@@ -35,11 +35,13 @@ module Core
       @autocomplete = autocomplete
       @interpolations = interpolations
       @data_options = data_options.transform_keys { |k| "data-#{k}" }
+      @aria_options = aria_options.transform_keys { |k| "aria-#{k}" }
     end
 
     # Utility function to create a hash of the extra option
     def add_html_options(existing_options)
       { readonly: @readonly, disabled: @disabled, autocomplete: @autocomplete }.merge(@data_options)
+                                                                               .merge(@aria_options)
                                                                                .merge(existing_options)
     end
 

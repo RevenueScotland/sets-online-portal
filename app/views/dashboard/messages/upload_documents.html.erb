@@ -4,7 +4,7 @@
 	<% if can? RS::AuthorisationHelper::CREATE_ATTACHMENT %>
 		<%= f.ds_hidden_field(:smsg_refno) %>    
     <input type='hidden' name="dashboard_message[upload_from_wizard]" value="true">
-    <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, optional: true,
+    <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, optional: false,
                        supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb, multiple: true, max_uploads: @max_file_upload_limit,  hide_uploaded_files_section: true, button_label: t("ds.submit_component.continue"), button_type: :primary) %>
   <% end %>
 <% end %>

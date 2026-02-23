@@ -10,60 +10,83 @@ Feature: Secure Communication
         # Uploading a file when creating a new message
         When I click on the "Create new message" menu item
         Then I should see the "New message" page
-        And I should see the text "You will be able to upload documents on the next page"
         And "Subject" should contain the option "General question"
         And "Subject" should contain the option "Application for bad debt relief"
         And "Subject" should not contain the option "ADS repayment submission confirmation"
-        And I should not see the text "Agent / your reference"
+        And I should see the text "Agent / your reference"
 
         # Filling up the rest of the required fields
         When I select "Application for bad debt relief" from the "Subject"
         And I enter "RS1009000TEST" in the "Reference" field
+        And I enter "Portal Agent" in the "Agent / your reference" field
         And I enter "Upload file test" in the "Message title" field
         And I enter "Hello world" in the "Message body" field
+        And I check the "Yes, I have file(s) to upload, before sending the message" radio button in answer to the question "Do you want to upload any supporting file(s)?"
         And I click on the "Continue" button
         Then I should see the "Upload your supporting file" page
 
         When I upload "testdocx.docx" to "dashboard_message_resource_item_default_file_data"
         And I enter "This is a docx file" in the "Description of the uploaded file (optional)" field
         And I click on the "Continue" button
-        Then I should see the "Send message" page
+        Then I should see the "Your uploaded files" page
         And I should see a link to the file "testdocx.docx"
         And I should see the text "This is a docx file"
 
         # Checking the remove file is working
         And I click on the "Delete file" button
-        Then I should see the "Send message" page
+        Then I should see the "Your uploaded files" page
         And I should not see a link with text "This is a docx file"
         And I should not see the text "This is a docx file"
 
         # # Uploading a valid jpg attachment
-        When I click on the "Add a file" link
+        And I check the "Yes, I have more file(s) to upload" radio button in answer to the question "Do you want to upload any supporting file(s)?"
+        When I click on the "Continue" button
         Then I should see the "Upload your supporting file" page
         When I upload "testjpg.jpg" to "dashboard_message_resource_item_default_file_data"
         And I click on the "Continue" button
-        Then I should see the "Send message" page
+        Then I should see the "Your uploaded files" page
         And I should see a link to the file "testjpg.jpg"
         When I click on the "Delete file" button
-        Then I should see the "Send message" page
+        Then I should see the "Your uploaded files" page
         And I should not see a link to the file "testjpg.jpg"
 
-        # # Uploading a valid jpeg attachment
-        When I click on the "Add a file" link
+        # # # Uploading a valid jpeg attachment
+        And I check the "Yes, I have more file(s) to upload" radio button in answer to the question "Do you want to upload any supporting file(s)?"
+        When I click on the "Continue" button
         Then I should see the "Upload your supporting file" page
+        And I upload "testjpg.jpg" to "dashboard_message_resource_item_default_file_data"
+        When I click on the "Continue" button
+        Then I should see the "Your uploaded files" page
+        And I check the "Yes, I have more file(s) to upload" radio button in answer to the question "Do you want to upload any supporting file(s)?"
+        When I click on the "Continue" button
+        Then I should see the "Upload your supporting file" page
+        And I upload "testjpg.jpg" to "dashboard_message_resource_item_default_file_data"
+        When I click on the "Continue" button
+        And I should see the "Upload your supporting file" page
+        Then I should see the text "Unable to upload file named testjpg.jpg as this file has already been uploaded"
         When I upload "testjpeg.jpeg" to "dashboard_message_resource_item_default_file_data"
         And I click on the "Continue" button
-        Then I should see the "Send message" page
+        And I should see the "Your uploaded files" page
         And I should see a link to the file "testjpeg.jpeg"
-        When I click on the "Delete file" button
-        Then I should see the "Send message" page
+        When I click on the 2 nd "Delete file" button
+        Then I should see the "Your uploaded files" page
+        When I click on the 1 st "Delete file" button
+        Then I should see the "Your uploaded files" page
         And I should not see a link to the file "testjpeg.jpeg"
+        And I should not see a link to the file "testjpg.jpg"
+
 
         # # Uploading file with file size that is too big
-        When I click on the "Add a file" link
+        And I check the "Yes, I have more file(s) to upload" radio button in answer to the question "Do you want to upload any supporting file(s)?"
+        When I click on the "Continue" button
         Then I should see the "Upload your supporting file" page
         When I upload "testimage_over_size_limit.jpg" to "dashboard_message_resource_item_default_file_data" and continue via the browser
         Then I should receive the message "File should be less than 15 mb" on the browser
+        And I should see the "Upload your supporting file" page
+        # Uploading file with invalid naming convention
+        When I upload "testpdf.test.pdf" to "dashboard_message_resource_item_default_file_data" and continue via the browser
+        Then I should receive the message "Filename is invalid" on the browser
+        And I should see the "Upload your supporting file" page
 
         # # Uploading invalid file type
         When I upload "testtxt_invalid_file_type.txt" to "dashboard_message_resource_item_default_file_data"
@@ -71,15 +94,19 @@ Feature: Secure Communication
         Then I should see the "Upload your supporting file" page
         And I should receive the message "Invalid file type"
 
-        # # Uploading a valid docx attachment
+        # # # Uploading a valid docx attachment
         When I upload "testdocx.docx" to "dashboard_message_resource_item_default_file_data"
         And I enter "This is a docx file" in the "Description of the uploaded file (optional)" field
         And I click on the "Continue" button
-        Then I should see the "Send message" page
+        Then I should see the "Your uploaded files" page
         And I should see a link to the file "testdocx.docx"
 
+        And I check the "No, I have no further files to upload" radio button in answer to the question "Do you want to upload any supporting file(s)?"
+        When I click on the "Continue" button
+        Then I should see the "Send message" page
+
         # # File uploads on the confirmation page of messages
-        When I click on the "Send Message" button
+        When I click on the "Send message" button
         Then I should see the "Thank you for your secure message" page
 
         When I click on the "Finish" button
@@ -403,34 +430,39 @@ Feature: Secure Communication
         And I should receive the message "Message body can't be blank"
         And I should receive the message "Subject can't be blank"
         And I should receive the message "Reference can't be blank"
+        And I should receive the message "Do you want to upload any supporting file(s) can't be blank"
 
-        # All fields except the drop-down subject select has data
+        # All fields except the drop-down subject select, file upload radio has data
         When I enter "1234567890" in the "Reference" field
         And I enter "This is my title" in the "Message title" field
         And I enter "This is my message" in the "Message body" field
         And I click on the "Continue" button
         Then I should receive the message "Subject can't be blank"
+        And I should receive the message "Do you want to upload any supporting file(s) can't be blank"
 
-        # All fields except the message title field has data
+        # All fields except the message title field, file upload radio has data
         When I select "Query a penalty" from the "Subject"
         And I clear the "Message title" field
         And I click on the "Continue" button
         Then I should receive the message "Message title can't be blank"
+        And I should receive the message "Do you want to upload any supporting file(s) can't be blank"
 
 
-        # All fields except the message body field has data
+        # All fields except the message body field, file upload radio has data
         When I select "Query a penalty" from the "Subject"
         And I enter "This is my title" in the "Message title" field
         And I clear the "Message body" field
         And I click on the "Continue" button
         Then I should receive the message "Message body can't be blank"
+        And I should receive the message "Do you want to upload any supporting file(s) can't be blank"
 
-        # All fields except the reference field has data
+        # All fields except the reference field, file upload radio has data
         When I select "Query a penalty" from the "Subject"
         And I enter "This is my message" in the "Message body" field
         And I clear the "Reference" field
         And I click on the "Continue" button
         Then I should receive the message "Reference can't be blank"
+        And I should receive the message "Do you want to upload any supporting file(s) can't be blank"
 
         Then I should see the "New message" page
 
@@ -439,12 +471,14 @@ Feature: Secure Communication
         And I enter "RANDOM_REFERENCE_NAME,10,UPCASE" in the "Reference" field
         And I enter "My title" in the "Message title" field
         And I enter "Hello this is my text" in the "Message body" field
+        And I check the "No, send the message without uploading any files" radio button in answer to the question "Do you want to upload any supporting file(s)?"
+        Then the radio button "No, send the message without uploading any files" should be selected in answer to the question "Do you want to upload any supporting file(s)?"
         And I click on the "Continue" button
-        Then I should see the "Upload your supporting file" page
-        When I click on the "Continue" button
-        Then I should see the "Send message" page
+        # Then I should see the "Upload your supporting file" page
+        # When I click on the "Continue" button
+        # Then I should see the "Send message" page
 
-        When I click on the "Send Message" button
+        # When I click on the "Send Message" button
         Then I should see the "Thank you for your secure message" page
         And I click on the "Finish" button
         Then I should see the "Messages" page
@@ -467,12 +501,16 @@ Feature: Secure Communication
         # # Now I'm in looking at the New messages page
         When I enter "Here is my test text" in the "Message body" field
         And I enter "My response title" in the "Message title" field
-        And I click on the "Continue" button
-        Then I should see the "Upload your supporting file" page
-        And I click on the "Continue" button
-        Then I should see the "Send message" page
+        Then I check the "No, send the message without uploading any files" radio button in answer to the question "Do you want to upload any supporting file(s)?"
+        And the radio button "No, send the message without uploading any files" should be selected in answer to the question "Do you want to upload any supporting file(s)?"
+        When I click on the "Continue" button
+        # And I click on the "Continue" button
+        # Then I should see the "Upload your supporting file" page
+        # And I click on the "Continue" button
+        # Then I should see the "Send message" page
 
-        When I click on the "Send Message" button
+        # When I click on the "Send Message" button
+        And I wait for 3 seconds
         Then I should see the "Thank you for your secure message" page
         And I click on the "Finish" button
         Then I should see the "Messages" page
@@ -624,13 +662,9 @@ Feature: Secure Communication
         And I enter "This is my message" in the "Message body" field
 
         And I select "General question" from the "Subject"
+        And I check the "No, send the message without uploading any files" radio button in answer to the question "Do you want to upload any supporting file(s)?"
         And I click on the "Continue" button
 
-        Then I should see the "Upload your supporting file" page
-        And I click on the "Continue" button
-        Then I should see the "Send message" page
-
-        When I click on the "Send Message" button
         Then I should see the "Thank you for your secure message" page
 
     Scenario: For SAT the selected enrolment reference I should only see messsges related to that reference
@@ -711,13 +745,9 @@ Feature: Secure Communication
         And I enter "This is my message" in the "Message body" field
         And I select "General question" from the "Subject"
 
+        And I check the "No, send the message without uploading any files" radio button in answer to the question "Do you want to upload any supporting file(s)?"
         And I click on the "Continue" button
 
-        Then I should see the "Upload your supporting file" page
-        And I click on the "Continue" button
-        Then I should see the "Send message" page
-
-        When I click on the "Send Message" button
         Then I should see the "Thank you for your secure message" page
 
         When I click on the "Dashboard" menu item

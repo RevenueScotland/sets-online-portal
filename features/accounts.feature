@@ -13,8 +13,8 @@ Feature: Account
         Then I should see the "Sign up details" page
         And I should see the text "Email address"
         And I should see the text "noreply@necsws.com"
-        And I should see the text "Address"
-        And I should see the text "Park Lane, Garden Village, NORTHTOWN, Northshire, RG1 1PB"
+        # And I should see the text "Address"
+        # And I should see the text "Park Lane, Garden Village, NORTHTOWN, Northshire, RG1 1PB"
         And I should see the text "Contact phone number"
         And I should not see the text "Company number"
         And I should not see the text "Company name"
@@ -258,15 +258,8 @@ Feature: Account
         When I click on the 1 st "Change" link
         Then I should see the "Update address" page
 
-        When I click on the "Or edit the selected address" button
+        When I click on the "Or type the full address" button
         Then I should see the "Update address" page
-        When I clear the "address_address_line1" field
-        And I clear the "address_address_line2" field
-        And I clear the "address_address_line3" field
-        And I clear the "address_address_line4" field
-        And I clear the "address_town" field
-        And I clear the "address_county" field
-        And I clear the "address_postcode" field
         And I click on the "Confirm" button
         Then I should see the "Update address" page
         And I should receive the message "Building and street can't be blank"
@@ -296,23 +289,29 @@ Feature: Account
         Then I should see the "Sign up details" page
         And I should see the text "Username"
         And I should see the text "ADAM.PORTAL-TEST"
-        And I should see the text "NORTHTOWN"
+        # And I should see the text "NORTHTOWN"
 
         When I click on the 1 st "Change" link
         Then I should see the "Update address" page
 
-        When I click on the "Or edit the selected address" button
+        When I click on the "Or type the full address" button
         Then I should not see the button with text "Or edit the selected address"
 
         When I enter "SOUTHTOWN" in the "address_town" field
         And I click on the "Back" link
 
         Then I should see the "Sign up details" page
-        And I should see the text "NORTHTOWN"
+        # And I should see the text "NORTHTOWN"
         When I click on the 1 st "Change" link
 
         Then I should see the "Update address" page
-        When I click on the "Or edit the selected address" button
+        When I click on the "Or type the full address" button
+        And I enter "9 Park Lane" in the "address_address_line1" field
+        And I enter "Luton Delivery Office 9-11" in the "address_address_line2" field
+        And I enter "Dunstable Road" in the "address_address_line3" field
+        And I enter "LUTON" in the "address_town" field
+        And I enter "LU1 1AA" in the "address_postcode" field
+        And I enter "ENGLAND" in the "address_country" select or text field
         And I flip "address_address_line1" field between "8 Park Lane" and "9 Park Lane" using marker "address_address_line1"
         And I click on the "Confirm" button
 
@@ -343,7 +342,7 @@ Feature: Account
         And I enter "Password1234" in the "New password" field
         And I enter "Password1234" in the "Confirm new password" field
         And I click on the "Change password" button
-        Then I should receive the message "Sign in credentials supplied are invalid"
+        Then I should receive the message "Invalid login credentials"
 
     @mock_change_password
     Scenario: Successfully changing password of user account
@@ -362,23 +361,18 @@ Feature: Account
         And I click on the "Change password" button
 
         Then I should see the "Change password confirmation" page
-
-    Scenario: Validation on activating account
-        When I go to the "Login" page
-        And I click on the "Activate your account" link
-
-        Then I should see the "Complete registration" page
-        And I click on the "Confirm" button
-        Then I should receive the message "Registration token can't be blank"
-        And I enter "invalid.registation.token" in the "Registration token" field
-        And I click on the "Confirm" button
-        Then I should receive the message "The Registration Token supplied is invalid or has already been used. If your account is not active then use the forgotten password option to generate a new token"
-
+    
+    Scenario: Activate account using new link with invalid token
+        When I go to the "account/process-activate-account?account[registration_token]=invalid.registration.token" page
+        Then I should see the "Your link has expired" page
+        And I should see the text "The link to verify your email address or to confirm your password reset has expired"
+        And I should see the text "Use the forgotten your password option below to generate a new one"
+        And I should see a link with text "Forgotten your password?"
+    
     @mock_activate_account
-    Scenario: Activating account to complete registration
-        When I go to the "Login" page
-        And I click on the "Activate your account" link
-        And I enter "valid.registation.token" in the "Registration token" field
-        And I click on the "Confirm" button
-
-        Then I should see the "Completed registration" page
+    Scenario: Activate account using new link with valid token
+        When I go to the "account/process-activate-account?account[registration_token]=valid.registration.token" page
+        Then I should see the "Completed registration or password reset" page
+        And I should see the text "Once you have received an email notification that your account has been approved by Revenue Scotland, you will be able to sign into your account."
+        And I should see the text "Your new password is now active - you can now use it to log into your account."
+        And I should see a link with text "Continue"

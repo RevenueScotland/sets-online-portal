@@ -13,20 +13,24 @@ module Applications
     include Wizard
     include WizardAddressHelper
     include FileUploadHandler
+    include FileUploadHelper
 
     # to require authentication so we don't mix the two up
-    skip_before_action :require_user
+    skip_before_action :require_user?
 
     # enforce the user isn't logged in on the initial pages
     before_action :enforce_public, only: %w[public_landing applicant_type]
+    before_action :set_max_uploads_allowed, only: %i[upload_documents your_uploaded_files]
 
     # List of steps for a public slft application of landfill operator- (Restoration notification/ Non-disposal area or
     #    weigh bridge application) variant
     LO_STEPS = %w[applicant_type application_type existing_agreement applicant_details applicant_address
-                  supporting_documents declaration confirmation_and_document_upload].freeze
+                  supporting_documents upload_documents your_uploaded_files declaration
+                  confirmation_and_document_upload].freeze
 
     # List of steps for a public slft application of landfill operator- Water discount variant
-    LO_WD_STEPS = %w[waste_producer_details waste_producer_address declaration].freeze
+    LO_WD_STEPS = %w[waste_producer_details waste_producer_address supporting_documents upload_documents
+                     your_uploaded_files declaration].freeze
 
     # List of steps for a public slft application of waste producer variant
     WP_STEPS = %w[applicant_type existing_agreement waste_producer_details waste_producer_address about_waste_water
@@ -66,7 +70,38 @@ module Applications
 
     # wizard page for public slft application
     def supporting_documents
-      wizard_step(LO_STEPS)
+      load_step
+      wizard_step(@slft_application.application_type == 'LO-WD' ? LO_WD_STEPS : LO_STEPS)
+    end
+
+    # Wizard page to upload documents
+    def upload_documents
+      load_step
+      # @slft_application
+      # evidence_files
+      # clear_resource_items
+      file_upload_end if request.get? && @slft_application.evidence_files.nil?
+
+      if handle_file_upload(parent_param: :applications_slft_applications)
+        return render(status: :unprocessable_content) if @resource_items_hash[:default].errors.any?
+
+        # files were uploaded so keep on this page
+        save_evidence_files_in_model
+        redirect_to your_uploaded_files_applications_slft_path
+      else
+        wizard_step(LO_STEPS) { { validates: :evidence_files } }
+      end
+    end
+
+    # Wizard page to show uploaded documents
+    def your_uploaded_files
+      load_step
+      process_evidence_documents
+
+      # Redirect or validate only if the user has selected the radio and clicked continue
+      return unless params[:applications_slft_applications].present? && params[:delete_resource].nil?
+
+      validate_supporting_files
     end
 
     # wizard page for public slft application
@@ -114,9 +149,9 @@ module Applications
       wizard_step(LO_STEPS) { { validates: :declaration, after_merge: :save_data_in_back_office } }
     end
 
-    # which file types are allowed to be uploaded
-    def content_type_allowlist
-      Rails.configuration.x.file_upload_content_type_allowlist.split(/\s*,\s*/)
+    # max filename length allowed for upload
+    def max_filename_length
+      Rails.configuration.x.file_upload_file_name_limit
     end
 
     # last wizard page for public slft application
@@ -132,33 +167,28 @@ module Applications
       # but prevents files being shown incorrectly
       if handle_file_upload(parent_param: :applications_slft_applications,
                             before_add: :add_supporting_document,
-                            before_delete: :delete_supporting_document,
+                            before_delete: :delete_supporting_document?,
                             clear_cache: request.get?)
         # Always return to this page
-        render(status: :unprocessable_entity)
+        render(status: :unprocessable_content)
       end
     end
 
     # Send document to back office
     # @return [Boolean][String] true if document store successfully back office else false and
     #   document reference id
-    def add_supporting_document(resource_item)
-      @slft_application.add_supporting_document(resource_item)
-    end
+    delegate :add_supporting_document, to: :@slft_application
 
     # Call delete evidence_file method to delete document from back office
-    # @param doc_refno [String] document reference number to be delete from back office
     # @return [Boolean] true if document delete successfully from back office else false
-    def delete_supporting_document(doc_refno)
-      @slft_application.delete_supporting_document(doc_refno)
-    end
+    delegate :delete_supporting_document?, to: :@slft_application
 
     # Overwrites the user method to pass unique id for unauthenticated user to create folder on server
     # folder will hold the file uploaded by user
-    def sub_directory
-      @slft_application ||= load_step
-      @slft_application.case_references[0]
-    end
+    # def sub_directory
+    #   @slft_application ||= load_step
+    #   @slft_application.case_references[0]
+    # end
 
     # The method used to retrieve the pdf summary of the application
     # The "target: '_blank'" page used to download the pdf file of the return according
@@ -173,6 +203,51 @@ module Applications
     end
 
     private
+
+    # This method assigns necessary data for file upload
+    def set_file_upload_vars
+      @slft_application.more_upload_requested = true
+      @slft_application.upload_count = @resource_items.count
+      return unless @slft_application.upload_more_files == 'more_files'
+
+      @slft_application.max_allowed_upload = @max_file_upload_limit
+    end
+
+    # Validate if supporting files are added and
+    # The radio is selected by user
+    def validate_supporting_files
+      @slft_application.upload_more_files = filter_params[:upload_more_files]
+      set_file_upload_vars
+      no_more_upload = (@slft_application.upload_more_files == 'no_more_files')
+      @slft_application.evidence_needed = true if no_more_upload
+      if @slft_application.valid?
+        redirect_to(no_more_upload ? declaration_applications_slft_path : upload_documents_applications_slft_path)
+      else
+        handle_file_upload(parent_param: :applications_slft_applications)
+        render('your_uploaded_files', status: :unprocessable_content) && return
+      end
+    end
+
+    # Handle removal of files on your uploaded files page
+    def process_evidence_documents
+      if params[:delete_resource].present? &&
+         handle_file_upload(parent_param: :applications_slft_applications)
+        save_evidence_files_in_model
+        render('your_uploaded_files',
+               status: :unprocessable_content) && return
+      else
+        handle_file_upload(parent_param: :applications_slft_applications)
+      end
+    end
+
+    # Save evidence_files into model
+    def save_evidence_files_in_model # rubocop:disable Naming/PredicateMethod
+      @slft_application.evidence_files = []
+      @slft_application.evidence_files = @resource_items unless @resource_items.nil?
+      wizard_save(@slft_application) if @slft_application.errors.none?
+
+      true
+    end
 
     # calls back office service to save data on back office
     def save_data_in_back_office
@@ -290,7 +365,9 @@ module Applications
                              else
                                [:applications_slft_applications, Applications::Slft::Applications.attribute_list]
                              end
-      params.require(required).permit(attributes, supporting_document_list: []) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attributes, supporting_document_list: []) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
   end
 end

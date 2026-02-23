@@ -1,0 +1,34 @@
+<% content_for(:navigation_link, :clear_stack) %>
+<% if @document.passcode_verified %>
+	<div data-controller="clean-url">
+		<% content_for(:page_title, t('.title')) %>
+		<%= ds_warning{(@document.warning_text).html_safe}%>
+		<%= ds_form_with(model: @document, url: @post_path, button_action: :none) do |f| %>
+			<%= ds_table(caption: "", id: 'download-lbtt-document', small_screen: 'scrolling') do |table| %>
+				<% table.with_header(klass: Document) do |header| %>      
+					<% header.with_cell(method: :doc_type) %>
+					<% header.with_cell(method: :doc_name) %>
+					<% header.with_cell(method: :action) %>
+				<% end %>
+				<% table.with_row(model: @document) do |row| %>
+					<% row.with_cell(method: :doc_type) %>
+					<% row.with_cell(method: :document_names) %>
+					<% row.with_cell do %>
+						<%= link_to(t('.download'),
+                          "#{download_documents_path(params[:token_hash])}?download_attachment=true",
+													 class: 'ds_!_padding--1',
+                          data: { turbo: false }
+                          ) %>
+					<% end %>
+				<% end %>
+			<% end %>
+		<% end %>
+		
+		<%= link_to(t('.close'),
+							external_link_url('CONTACT_US'),
+							class: 'ds_button ds_button--fixed'
+							) %>
+	</div>
+<% else %>
+	<%= t(".invalid_passcode") %>
+<% end %>

@@ -3,7 +3,7 @@
 # Controller for forgotten password to reset password
 class ForgottenPasswordsController < ApplicationController
   # don't need to be logged in to have forgotten your password
-  skip_before_action :require_user, only: %I[new create confirmation]
+  skip_before_action :require_user?, only: %I[new create confirmation]
 
   # Renders password change form
   def new
@@ -13,10 +13,10 @@ class ForgottenPasswordsController < ApplicationController
   # Calls forgotten-password service
   def create
     @forgotten_password = ForgottenPassword.new(password_params)
-    if @forgotten_password.save
+    if @forgotten_password.save?
       redirect_to forgotten_password_confirmation_url
     else
-      render('new', status: :unprocessable_entity)
+      render('new', status: :unprocessable_content)
     end
   end
 
@@ -27,6 +27,8 @@ class ForgottenPasswordsController < ApplicationController
 
   # controls the permitted parameters to this controller
   def password_params
-    params.require(:forgotten_password).permit(:username, :email_address, :new_password, :new_password_confirmation)
+    # Rubocop disable added as this breaks the functionality
+    # https://github.com/rubocop/rubocop-rails/issues/1418
+    params.require(:forgotten_password).permit(:username, :email_address, :new_password, :new_password_confirmation) # rubocop:disable Rails/StrongParametersExpect
   end
 end

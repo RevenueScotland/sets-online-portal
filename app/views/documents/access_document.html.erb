@@ -1,0 +1,31 @@
+<%= ds_form_with(model: @document, url: @post_path, button_action: @document.token_is_valid ? :continue : :none) do |f| %>
+  <% if @document.token_is_valid %>
+    <% content_for(:page_title, t('.title')) %>
+    <%= ds_paragraph{t('.subtitle')} %>
+    <% content_for(:navigation_link, :clear_stack) %>
+    <%= ds_paragraph{t('.email_text', email: @document.email_addr).html_safe} %>
+    <% if @document.questions_data.present? && !@document.token_verified %>
+      <% @document.questions_data.each_with_index do |(_key, dt), idx| %>
+        <% ans_error = @document.cust_error_text(dt[:question_code]) %>
+        <div class="ds_question <%= 'ds_question--error' if ans_error.present? %>">
+          <label class="ds_label" for="document_question<%= idx %>"><%= dt[:question_text] %></label>
+          <% if ans_error %>
+            <p id="document_question<%= idx %>-error" class="ds_question__error-message" data-form="error-document_question<%= idx %>">
+              <%= ans_error %>
+            </p>
+          <% end %>
+          <% if dt[:question_hint].present? %>
+            <p id="document_question<%= idx %>-hint" class="ds_hint-text">
+              <%= dt[:question_hint] %>
+            </p>
+          <% end %>
+          <input type="hidden" name="document[question_answers][][question_text]" value="<%= dt[:question_text] %>" >
+          <input type="hidden" name="document[question_answers][][question_code]" value="<%= dt[:question_code] %>" >
+          <input class="ds_input <%= 'ds_input--error' if ans_error.present? %> ds_input--fluid-two-thirds" aria-describedby="document_question<%= idx %>-hint" type="text" name="document[question_answers][][passcode]" id="document_question<%= idx %>" data-form="textinput-document_question<%= idx %>" value="<%= @document.cached_answer(dt[:question_code]) %>">
+        </div>
+      <% end %>
+    <% end %>
+  <% else %>
+    <% content_for(:label_as_title, t('.invalid_url')) %>
+  <% end %>
+<% end %>

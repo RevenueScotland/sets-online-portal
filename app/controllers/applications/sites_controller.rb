@@ -15,7 +15,7 @@ module Applications
     include WizardAddressHelper
 
     # to require authentication so we don't mix the two up
-    skip_before_action :require_user
+    skip_before_action :require_user?
 
     # List of steps for the slft application's LO- Non disposal variant
     ND_STEPS = %w[address non_disposal_details summary].freeze
@@ -172,7 +172,9 @@ module Applications
       return {} unless params[:applications_slft_sites]
 
       permit = { applications_slft_wastes: Applications::Slft::Wastes.attribute_list }
-      params.require(:applications_slft_sites)
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(:applications_slft_sites) # rubocop:disable Rails/StrongParametersExpect
             .permit(Applications::Slft::Sites.attribute_list, permit).except(:applications_slft_wastes)
     end
 
@@ -183,7 +185,9 @@ module Applications
 
       permitted_list = Applications::Slft::Wastes.attribute_list
       attributes = %i[full_or_part estimated_timescale further_treatment]
-      params.require(:applications_slft_sites)
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(:applications_slft_sites) # rubocop:disable Rails/StrongParametersExpect
             .permit(attributes, applications_slft_wastes: permitted_list)[:applications_slft_wastes].values
     end
   end

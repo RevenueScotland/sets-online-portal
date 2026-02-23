@@ -17,7 +17,8 @@ en:
       title: "Change password"
       change_password: "Change password"
       title_expired_password: "Password expired"
-      description: "Your password has expired and must be changed to a new value. Once completed you will then need to login using your new password in order to access the system"
+      description_expired_password: "Your password has expired and must be changed."
+      description: "Your password must be changed."
     change_password_confirmation:
       title: "Change password confirmation"
       description: "Your Password has been successfully changed"

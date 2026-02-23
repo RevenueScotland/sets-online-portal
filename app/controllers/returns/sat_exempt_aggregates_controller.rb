@@ -14,7 +14,7 @@ module Returns
 
       wizard_step(nil) do
         { setup_step: :setup_step, clear_cache: clear_cache, next_step: :site_summary_after_adding_aggregate,
-          after_merge: :dump_exempt_aggregate_into_sat_wizard }
+          after_merge: :dump_exempt_aggregate_into_sat_wizard? }
       end
     end
 
@@ -123,7 +123,7 @@ module Returns
     # Puts the SatExemptAggregatesController wizard data (ie @exempt_aggregate @see #setup_step)
     # into the main SAT Wizard cache
     # @return [Boolean] true if successful
-    def dump_exempt_aggregate_into_sat_wizard
+    def dump_exempt_aggregate_into_sat_wizard?
       # make sure we have the site set up
       load_site
       @site.exempt_aggregates = {} if @site.exempt_aggregates.nil?
@@ -151,7 +151,9 @@ module Returns
 
       return unless params[required]
 
-      params.require(required).permit(attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
   end
 end

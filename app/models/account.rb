@@ -17,7 +17,8 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   def self.attribute_list
     %i[current_user forename surname terms_and_conditions registration_token contact_number address email_address
        email_address_confirmation taxes company account_type reg_company_contact_address_yes_no party_account_type
-       nino email_data_ind dd_instruction_available enrolment_ref tp_business_name tp_busi_postcode tp_busi_email_addr]
+       nino email_data_ind dd_instruction_available enrolment_ref tp_business_name tp_busi_postcode tp_busi_email_addr
+       registration_type ]
   end
 
   attribute_list.each { |attr| attr_accessor attr }
@@ -88,6 +89,38 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
 
     account.current_user = User.all(requested_by)[requested_by.username]
     account
+  end
+
+  # @return [String] the full name of the party (used in the lbtt validator)
+  def fullname
+    [forename, surname].join(' ')
+  end
+
+  # @return [String] the full address of the party as a displayable string
+  def full_address
+    address&.full_address
+  end
+
+  # @return [String] the email address of the account
+  def email
+    email_address
+  end
+
+  # @return [String] the phone number in the 0XXXXXXXXXX format
+  def cleaned_telephone
+    return if @contact_number.blank?
+
+    number = @contact_number.gsub(/\D/, '')
+
+    if number.start_with?('440')
+      number = "0#{number[3..]}"
+    elsif number.start_with?('44')
+      number = "0#{number[2..]}"
+    elsif number.start_with?('0044')
+      number = "0#{number[4..]}"
+
+    end
+    number
   end
 
   # Gets account data from the back office for the given user.
@@ -175,7 +208,9 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
       address_line1: address_details[:address_line1], address_line2: address_details[:address_line2],
       address_line3: address_details[:address_line3], address_line4: address_details[:address_line4],
       town: address_details[:address_town_or_city], county: address_details[:address_county_or_region],
-      postcode: address_details[:address_postcode_or_zip], country: address_details[:address_country_code]
+      postcode: address_details[:address_postcode_or_zip], country: address_details[:address_country_code],
+      local_ed_auth_code: address_details[:local_ed_auth_code], local_auth_code: address_details[:local_auth_code],
+      udprn: address_details[:udprn], delivery_point_suffix: address_details[:delivery_point_suffix]
     )
   end
 
@@ -218,6 +253,12 @@ class Account < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   # used by the @see registration_controller
   def org_address
     company&.company_address
+  end
+
+  # Surrogate getter to return the company address at the account level
+  # returns as string
+  def org_address_humanised
+    company&.full_address
   end
 
   # Surrogate setter to return the company address at the account level

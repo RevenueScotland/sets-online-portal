@@ -12,9 +12,9 @@ module Returns
     include LbttControllerDateWarningHelper
     include LbttControllerLoadAgentHelper
 
-    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public?
     # Allow unauthenticated/public access to parties actions
-    skip_before_action :require_user
+    skip_before_action :require_user?
 
     # Navigation page flow for party wizard pages depending on party type like club, company or individual
     # For Individual wizard steps
@@ -22,12 +22,13 @@ module Returns
                       acting_as_trustee summary].freeze
 
     # For Company wizard steps
-    REG_COMPANY_STEPS = %w[about_the_party company_number organisation_contact_details parties_relation
-                           acting_as_trustee summary].freeze
+    REG_COMPANY_STEPS = %w[about_the_party company_number organisation_contact_details
+                           organisation_contact_address_details parties_relation acting_as_trustee summary].freeze
 
     # For other organisation wizard steps
-    OTHER_ORG_STEPS = %w[about_the_party organisation_type_details organisation_details
-                         representative_contact_details parties_relation acting_as_trustee summary].freeze
+    OTHER_ORG_STEPS = %w[about_the_party organisation_type_details organisation_details organisation_address_details
+                         representative_contact_details representative_address_details parties_relation
+                         acting_as_trustee summary].freeze
 
     # @see about_the_party_next_step
     STEP_CHOICES = { 'PRIVATE' => INDVAL_STEPS, 'REG_COM' => REG_COMPANY_STEPS,
@@ -84,6 +85,11 @@ module Returns
 
     # Party wizard - company steps page
     def organisation_contact_details
+      wizard_step(REG_COMPANY_STEPS)
+    end
+
+    # Party wizard - company steps page
+    def organisation_contact_address_details
       wizard_address_step(REG_COMPANY_STEPS, address_attribute: :org_contact_address,
                                              address_list: :used_address_list)
     end
@@ -97,17 +103,27 @@ module Returns
       return if request.get?
 
       set_party_details if @party.org_type.present? && @party.org_type != filter_params[:org_type]
-      render(status: :unprocessable_entity) && return unless wizard_step_submitted(OTHER_ORG_STEPS)
+      render(status: :unprocessable_content) && return unless wizard_step_submitted(OTHER_ORG_STEPS)
     end
 
     # Party wizard - organisation steps page @see #next_page_or_summary
     def organisation_details
+      wizard_step(OTHER_ORG_STEPS)
+    end
+
+    # Party wizard - organisation address details page
+    def organisation_address_details
       wizard_address_step(nil, next_step: :next_page_or_summary, address_list: :used_address_list)
     end
 
     # Party wizard - organisation steps page
     def representative_contact_details
       # @see party_address
+      wizard_step(OTHER_ORG_STEPS)
+    end
+
+    # Party wizard - representative contact address details
+    def representative_address_details
       wizard_address_step(OTHER_ORG_STEPS, address_attribute: :org_contact_address, address_list: :used_address_list)
     end
 
@@ -117,7 +133,7 @@ module Returns
         redirect_to(returns_lbtt_summary_path, status: :see_other)
       else
         load_agent if current_user # not needed for a public return
-        render('returns/lbtt/summary', status: :unprocessable_entity)
+        render('returns/lbtt/summary', status: :unprocessable_content)
       end
     end
 
@@ -230,7 +246,9 @@ module Returns
     def filter_params(_sub_object_attribute = nil)
       required = :returns_lbtt_party
       attribute_list = Lbtt::Party.attribute_list
-      params.require(required).permit(attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
 
     # Parameters used in the about the party page.

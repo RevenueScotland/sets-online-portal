@@ -7,7 +7,7 @@
  
 import org.apache.commons.lang.RandomStringUtils
 
-def RUBY_VERSION="3.3.6"
+def RUBY_VERSION="3.4.7"
 
 /*
 	* Back office names
@@ -38,9 +38,9 @@ timestamps {
 					runUnitTests()
 					generateDocumentation()
 					lintCode()
-                    checkCVEs()
+                    			checkCVEs()
 					codeStaticAnalysis()
-                    checkGemLicenses()
+                    			checkGemLicenses()
 					precompileAssets()
 					stashDeployables()
 				}
@@ -233,7 +233,7 @@ def codeGitCheckout() {
 def prepareBuildEnvironment() {
 	stage ('Prepare Build Environment') {
 		sh 'gem install bundler rake yard rubocop brakeman bundle-audit licensed'
-		sh 'bundle config mirror.https://rubygems.org http://lg-bld-ruby01.development.local:9292'
+		sh 'bundle config mirror.https://rubygems.org http://lg-bld-ruby02.development.local:9292'
 		sh 'bundle install'
         sh 'yarn install --frozen-lockfile'
 		milestone(1)
@@ -282,7 +282,8 @@ def generateDocumentation() {
 	stage ('Generate Documentation') {
 		sh 'bundle exec rake yard'
 		withEnv(["APP=${this.getAppName()}"]) {
-			sh 'scp -r doc/* rsdocs@lg-bld-ruby01.development.local:/var/www/html/${APP}'
+			sh 'scp -r doc/* rsdocs@lg-bld-ruby02.development.local:/var/www/html/${APP}'
+			sh 'ssh rsdocs@lg-bld-ruby02.development.local "sudo chown -R rsdocs:apache /var/www/html/${APP} ; sudo chmod -R g+rX /var/www/html/${APP}"'
 		}
 	}
 }
@@ -328,7 +329,8 @@ def checkGemLicenses() {
         sh '''
             set +e
             licensed cache
-            licensed status > tmp/licensed.txt
+	    licensed list --licenses | tee tmp/licensed.txt
+            licensed status | tee -a tmp/licensed.txt
             echo
         '''
         stash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-licenses", includes: 'tmp/licensed.txt'
@@ -664,14 +666,14 @@ def postAutotestSuccess(String environment = "autotest") {
         unstash name: "${this.getAppName()}-${this.getFullBuildVersion()}-gem-licenses"
 		withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 			sh '''
-				ssh rsdocs@lg-bld-ruby01.development.local "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
+				ssh rsdocs@lg-bld-ruby02.development.local "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
 				pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}/app/
-				scp -r coverage rsdocs@lg-bld-ruby01.development.local:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
-				ssh rsdocs@lg-bld-ruby01.development.local "unlink /var/www/html/${APPLICATION}/coverage ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/coverage /var/www/html/${APPLICATION}/coverage"
+				scp -r coverage rsdocs@lg-bld-ruby02.development.local:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				ssh rsdocs@lg-bld-ruby02.development.local "sudo chown -R rsdocs:apache /var/www/html/${APPLICATION}/coverage ; sudo chmod -R g+rX /var/www/html/${APPLICATION}/coverage; unlink /var/www/html/${APPLICATION}/coverage ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/coverage /var/www/html/${APPLICATION}/coverage"
 				popd
 
-                scp tmp/licensed.txt rsdocs@lg-bld-ruby01.development.local:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
-				ssh rsdocs@lg-bld-ruby01.development.local "[ -L "/var/www/html/${APPLICATION}/licensed.txt" ] && unlink /var/www/html/${APPLICATION}/licensed.txt ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/licensed.txt /var/www/html/${APPLICATION}/licensed.txt"
+                		scp tmp/licensed.txt rsdocs@lg-bld-ruby02.development.local:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				ssh rsdocs@lg-bld-ruby02.development.local "[ -L "/var/www/html/${APPLICATION}/licensed.txt" ] && unlink /var/www/html/${APPLICATION}/licensed.txt ; ln -sf /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/licensed.txt /var/www/html/${APPLICATION}/licensed.txt ; sudo chown rsdocs:apache /var/www/html/${APPLICATION}/licensed.txt ; sudo chmod g+r /var/www/html/${APPLICATION}/licensed.txt"
 			'''
 		}
 	}
@@ -689,7 +691,7 @@ def postAutotestFailure(String host, String environment = "autotest") {
 	dir ('code') {
 		withEnv(["FULL_BUILD_VERSION=${this.getFullBuildVersion()}", "APPLICATION=${this.getAppName()}", "ENVIRONMENT=${environment}"]) {
 			sh '''
-				ssh rsdocs@lg-bld-ruby01.development.local "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
+				ssh rsdocs@lg-bld-ruby02.development.local "mkdir -p /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}"
 				pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}/app/
 				sudo mkdir -p tmp ; sudo chmod a+w -R tmp
 				echo \'<html><head><title>\'Test Results for ${ENVIRONMENT} of ${APPLICATION} version ${FULL_BUILD_VERSION}\'</title></head>\' > tmp/index.html
@@ -697,7 +699,9 @@ def postAutotestFailure(String host, String environment = "autotest") {
 				ls tmp/screenshots/ | sed \'s/\\(.*\\)/\\<p\\>\\<a href="\\1"\\>\\1\\<\\/a\\><\\/p\\>/\' >> tmp/index.html
 				echo \'<p>Test completed at \'$(date)\'</p></body></html>\' >> tmp/index.html
 				mv tmp/index.html tmp/screenshots/index.html
-				scp tmp/screenshots/*.{html,png} rsdocs@lg-bld-ruby01.development.local:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				scp tmp/screenshots/*.{html,png} rsdocs@lg-bld-ruby02.development.local:/var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/
+				ssh rsdocs@lg-bld-ruby02.development.local "sudo chown -R rsdocs:apache /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/ ; sudo chmod -R g+rX /var/www/html/${APPLICATION}/${ENVIRONMENT}/${FULL_BUILD_VERSION}/"
+
 				rm -rf tmp/screenshots/*
                 cd ../video
                 sudo zip record.flv.zip record.flv
@@ -708,7 +712,7 @@ def postAutotestFailure(String host, String environment = "autotest") {
 			emailext attachLog: true, 
 				body: """${RELEASE_TEXT}Auto testing of the ${this.getAppName()} build ${this.getFullBuildVersion()} has failed.
 
-A report can be found here: http://lg-bld-ruby01.development.local/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html
+A report can be found here: http://lg-bld-ruby02.development.local/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html
 (This report will be available for a week)
 
 The full console output can be found here: ${env.BUILD_URL}consoleFull
@@ -719,7 +723,7 @@ The log files from the test target can be found on ${host} in /var/log/${this.ge
 				compressLog: true, 
 				subject: "Auto test of the ${this.getAppName()} application, on the ${env.BRANCH_NAME} branch, has failed",
 				to: "${REVSCOT_DEVELOPERS}"
-			echo "${environment} report can be found at: http://lg-bld-ruby01.development.local/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html"
+			echo "${environment} report can be found at: http://lg-bld-ruby02.development.local/${this.getAppName()}/${environment}/${this.getFullBuildVersion()}/index.html"
 		}
 	}
 }
@@ -735,6 +739,7 @@ def emailModSecFailures(String environment) {
 			export wd=/var/tmp/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
 			mkdir -p ${wd}
 			chmod o+w ${wd}
+			workspace=${PWD}
 			pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
 			set +e
 			echo "# modsec issues" > ${wd}/modsec_issues.env
@@ -753,11 +758,13 @@ def emailModSecFailures(String environment) {
 			else
 				echo PROXY_ERRORS=0 >> ${wd}/modsec_issues.env
 			fi
+			mkdir -p ${workspace}/scratch
+			cp ${wd}/modsec_issues.txt ${workspace}/scratch/modsec_issues.txt
 			popd
 		'''
 		def props = readProperties file: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/modsec_issues.env"
 		if (props["PROXY_ERRORS"] == "1") {
-			emailext attachmentsPattern: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/modsec_issues.txt", 
+			emailext attachmentsPattern: "scratch/modsec_issues.txt", 
 				body: "mod_security failures in ${this.appLabel}", 
 				subject: "mod_security failures in ${this.appLabel}", 
 				to: "${REVSCOT_DEVOPS}"
@@ -777,21 +784,21 @@ def emailLogErrors(String environment, String host) {
 			export wd=/var/tmp/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
 			mkdir -p ${wd}
 			chmod o+w ${wd}
-			current=${PWD}
+			workspace=${PWD}
 			pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
-			if [[ ! -f ${current}/app/${ENVIRONMENT}.log ]] ; then
-				if [[ -f ${current}/app/test.log ]]; then
-					sudo mv ${current}/app/test.log ${current}/app/${ENVIRONMENT}.log
+			if [[ ! -f app/${ENVIRONMENT}.log ]] ; then
+				if [[ -f app/test.log ]]; then
+					sudo mv app/test.log app/${ENVIRONMENT}.log
 				fi
 			fi
 			echo > ${wd}/issues.txt
 			chmod o+w ${wd}/issues.txt
 
-			if [ -d '${current}/app' ] ; then 
-				sudo chmod go+r ${current}/app/${ENVIRONMENT}.log*
-				if grep -q -e "FATAL" -e " ERROR " ${current}/app/${ENVIRONMENT}.log*; then 
+			if [ -d 'app' ] ; then 
+				sudo chmod go+r app/${ENVIRONMENT}.log*
+				if grep -q -e "FATAL" -e " ERROR " app/${ENVIRONMENT}.log*; then 
 					echo "#### APP ERRORS ####" >> ${wd}/issues.txt
-					grep -B 1 -A 6 -e "FATAL" -e " ERROR " ${current}/app/${ENVIRONMENT}.log* >> ${wd}/issues.txt
+					grep -B 1 -A 6 -e "FATAL" -e " ERROR " app/${ENVIRONMENT}.log* >> ${wd}/issues.txt
 					echo UI_ERRORS=1 >> ${wd}/issues.env
 				else
 					echo UI_ERRORS=0 >> ${wd}/issues.env
@@ -799,13 +806,15 @@ def emailLogErrors(String environment, String host) {
 			else
 				echo UI_ERRORS=0 >> ${wd}/issues.env
 			fi
+			mkdir -p ${workspace}/scratch
+			cp ${wd}/issues.txt ${workspace}/scratch/issues.txt
 			popd
 		'''
 		def props = readProperties file: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.env"
 
 		if (props["UI_ERRORS"] == "1") {
 			def RELEASE_TEXT = this.isReleaseBuild() ? "Release " : ""
-			emailext attachmentsPattern: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.txt", 
+			emailext attachmentsPattern: "scratch/issues.txt", 
 				body: "Application failures in ${this.getAppName()} during ${RELEASE_TEXT}${environment}. A summary is attached.\n\nThe full log files can be found on ${host}, under:\n\nApplication:	   /var/log/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/app/\n", 
 				subject: "Application failures in ${this.getAppName()} during ${RELEASE_TEXT}${environment}", 
 				to: "${REVSCOT_DEVELOPERS}"
@@ -819,6 +828,7 @@ def emailDepreciatedMessages(String environment, String host) {
 			export wd=/var/tmp/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
 			mkdir -p ${wd}
 			chmod o+w ${wd}
+			workspace=${PWD}
 			pushd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
 
 			echo > ${wd}/issues.txt
@@ -836,13 +846,15 @@ def emailDepreciatedMessages(String environment, String host) {
 			else
 				echo DEPRECATION=0 >> ${wd}/issues.env
 			fi
+			mkdir -p ${workspace}/scratch
+			cp ${wd}/issues.txt ${workspace}/scratch/issues.txt
 			popd
 		'''
 		def props = readProperties file: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.env"
 
 		if (props["DEPRECATION"] == "1") {
 			def RELEASE_TEXT = this.isReleaseBuild() ? "Release " : ""
-			emailext attachmentsPattern: "/var/tmp/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/issues.txt", 
+			emailext attachmentsPattern: "scratch/issues.txt", 
 				body: "Deprecation messages in ${this.getAppName()} during ${RELEASE_TEXT}${environment}. A summary is attached.\n\nThe full log files can be found on ${host}, under:\n\nApplication:	   /var/log/${this.getAppName()}/${this.getFullBuildVersion()}/${environment}/app/\n", 
 				subject: "Deprecation messages in ${this.getAppName()} during ${RELEASE_TEXT}${environment}", 
 				to: "${REVSCOT_DEVELOPERS}"
@@ -893,7 +905,7 @@ def waitForDeployment(String environment, String environmentLabel) {
 	def startTimeout = false
 	def startAborted = false
 	try {
-		timeout (time: 16, unit: 'HOURS') {
+		timeout (time: 24, unit: 'HOURS') {
 			lock (resource: "${this.getAppName()}-${env.BRANCH_NAME}-${environment}-test-input", inversePrecedence: true) {
 				emailext attachLog: false, 
 					body: "The ${this.getAppName()} ${environmentLabel} environment can be started, click here: ${env.BUILD_URL}input/", 
@@ -907,18 +919,12 @@ def waitForDeployment(String environment, String environmentLabel) {
 		}
 	} catch (org.jenkinsci.plugins.workflow.steps.TimeoutStepExecution.ExceededTimeout | java.util.concurrent.TimeoutException err) {
 		startTimeout = true
-	} catch (Exception err) {
-		def cause = err.metaClass.respondsTo(err, "getCauses") ? err.getCauses()[0] : null
-		if (cause != null && cause.getClass() == org.jenkinsci.plugins.pipeline.milestone.CancelledCause) {
+	} catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException err) {
+		if (err.isActualInterruption()) {
 			startAborted = true
 		} else {
-			def user = cause != null ? cause.getUser() : ""
-			if (user.toString() == 'SYSTEM') {
-				startTimeout = true
-			} else {
-				startAborted = true
+			startTimeout = true
 			}
-		}
 	}
 
 	if (startTimeout) {
@@ -957,7 +963,6 @@ def analyseApplicationImages(String imagesUsed) {
                     reportName=analysis-${repo}-${image//:/-}
                     ssh ${CLAIR_SERVER} "/opt/clair/analyse-image.sh ${repo}/${image} jenkins password"
                     scp "${CLAIR_SERVER}:/opt/clair/reports/${reportName}.html" report-${image//:/-}.html
-                    ssh ${CLAIR_SERVER} "rm -rf /opt/clair/reports/${reportName}.html"
                 done
                 if test -n "$(find . -maxdepth 1 -name '*.html' -print -quit)" ; then
                     echo Summary of Results > summary.txt
@@ -1006,19 +1011,13 @@ def waitForResults(String environment, String environmentLabel) {
 			milestone (8)
 		}
 	} catch (org.jenkinsci.plugins.workflow.steps.TimeoutStepExecution.ExceededTimeout | java.util.concurrent.TimeoutException err) {
-		resultsTimeout = true
-	} catch (Exception err) {
-		def cause = err.metaClass.respondsTo(err, "getCauses") ? err.getCauses()[0] : null
-		if (cause != null && cause.getClass() == org.jenkinsci.plugins.pipeline.milestone.CancelledCause) {
-			resultsFailure = true
+		startTimeout = true
+	} catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException err) {
+		if (err.isActualInterruption()) {
+			startAborted = true
 		} else {
-			def user = cause != null ? cause.getUser() : ""
-			if (user.toString() == 'SYSTEM') {
-				resultsTimeout = true
-			} else {
-				resultsFailure = true
+			startTimeout = true
 			}
-		}
 	}
 
 	if ( resultsFailure == false && resultsTimeout == false ) {

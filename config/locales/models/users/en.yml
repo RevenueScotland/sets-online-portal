@@ -52,7 +52,7 @@ en:
         full_name: "Full name"
         old_password: "Old password"
         contact_number: "Contact telephone number"
-        token: "Token"
+        token: "One time passcode"
         user_roles: "User roles"
         portal_object_index: "Which of your SAT registrations do you wish to view"
         account_name: " : %{reference} %{name}"
@@ -80,17 +80,18 @@ en:
         new_username: "The name to use to sign in to the account. This must be at least 5 characters and may contain A-Z, 1-9 or ._" 
         user_is_current: "This is the current status of the user" 
         new_password: "This must be a minimum of 9 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character, like, +, $, !"
-        token: "This is the token in the email you have been sent"        
+        token: "This is the one time passcode in the email you have been sent"        
       user_filter:
         full_name: "Enter part or all of the user's full name"
     errors:
       models:
         user:
+          user_locked: "Account locked.  Use forgotten password to unlock your account"
           login_invalid: "Invalid login credentials"
           login_locked: "Your user is locked, use the forgotten password process to unlock it"
           login_not_activated: "Activate your account using the token you were sent"
-          invalid_token: "Enter the correct username and token"
-          token_expired: "Your token has expired. Please sign in again to generate a new one"
+          invalid_token: "The one time passcode you have entered has expired or has not been recognised"
+          token_expired: "The one time passcode you have entered has expired or has not been recognised"
           unapproved_login: "There is a problem. Your account is awaiting approval."
           attributes:
             user_is_signed_ta_cs:

@@ -30,6 +30,12 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
+  dashboard/message:
+    sent: Sent
+    yes_upload: "Yes, I have file(s) to upload, before sending the message"
+    no_upload: "No, send the message without uploading any files"
+    more_files: "Yes, I have more file(s) to upload"
+    no_more_files: "No, I have no further files to upload"
   activemodel:
     # model text not associated with attributes or errors
     dashboard/message:
@@ -54,6 +60,8 @@ en:
         subject_description: "Subject"
         full_name: Name
         original_filename: File
+        upload_needed: "Do you want to upload any supporting file(s)"
+        upload_more_files: "Do you want to upload any supporting file(s)"
       dashboard/message_filter:
         from_datetime: "Created date from"
         to_datetime: "Created date to"
@@ -69,7 +77,7 @@ en:
         year: "Year"
     hints:
       dashboard/message:
-        reference: "If the message relates to a return, this should be the Revenue Scotland return reference"
+        reference: "If your message is about a return, please provide the RS reference number. If it’s not linked to a return, enter 'N/A'"
         agent_reference: "This can be used for your own reference, such as an internal reference"
       dashboard/message_filter:
         reference: "Enter all or part of the reference. This could be a Revenue Scotland return reference or your own internal reference."
@@ -82,3 +90,7 @@ en:
               before_date_error: "%{attribute} must be before the created date to"
             to_datetime:
               after_date_error: "%{attribute} must be after the created date from"
+        dashboard/message:
+          attributes:
+            upload_more_files:
+              upload_limit_reached: "Maximum number of files limit of %{upload_limit} reached."

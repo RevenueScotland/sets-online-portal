@@ -13,10 +13,11 @@ module DS
     #   number for absolute widths you can only use values supported by the govuk-front end see
     #   {https://designsystem.gov.scot/components/text-input}
     def initialize(builder:, method:, readonly: false, disabled: false, one_question: false, width: 'two-thirds',
-                   show_label: true, autocomplete: nil, optional: false, interpolations: {}, data_options: {})
+                   show_label: true, autocomplete: nil, optional: false, interpolations: {}, data_options: {},
+                   aria_options: {})
       super(builder: builder, method: method, readonly: readonly, disabled: disabled, one_question: one_question,
             show_label: show_label, autocomplete: autocomplete, optional: optional, interpolations: interpolations,
-            data_options: data_options)
+            data_options: data_options, aria_options: aria_options)
       self.ds_width = width
     end
   end

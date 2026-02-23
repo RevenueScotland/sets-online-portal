@@ -72,25 +72,25 @@
                 {
                     "itemcode": "net_standard_tonnage",
                     "itemformat": null,
-                    "itemlabel": "Standard rate\ntonnage (net)",
+                    "itemlabel": "Standard rate tonnage (net)",
                     "itemdata": "0"
                 },
                 {
                     "itemcode": "net_lower_tonnage",
                     "itemformat": null,
-                    "itemlabel": "Lower rate\ntonnage (net)",
+                    "itemlabel": "Lower rate tonnage (net)",
                     "itemdata": "0"
                 },
                 {
                     "itemcode": "exempt_tonnage",
                     "itemformat": null,
-                    "itemlabel": "Exempt\ntonnage",
+                    "itemlabel": "Exempt tonnage",
                     "itemdata": "0"
                 },
                 {
                     "itemcode": "total_tonnage",
                     "itemformat": null,
-                    "itemlabel": "Total\ntonnage",
+                    "itemlabel": "Total tonnage",
                     "itemdata": "0"
                 }
             ],

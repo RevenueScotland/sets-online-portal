@@ -5,6 +5,7 @@
   <%= f.ds_text_field(method: :org_name, optional: true) if @claim_payment.reason != 'ADS'%>
   <%= f.ds_text_field(method: :firstname) %>
   <%= f.ds_text_field(method: :surname) %>
-  <%= f.ds_text_field(method: :telephone) %>
-  <%= f.ds_text_field(method: :email_address) %>
+  <p class="ds_hint-text" id="email-or-phone-required-hint"><%= t("activemodel.attributes.claim/claim_payment.email_or_phone_text")  %></p>
+  <%= f.ds_text_field(method: :telephone, aria_options: { "describedby": "email-or-phone-required-hint" }) %>
+  <%= f.ds_text_field(method: :email_address, aria_options: { "describedby": "email-or-phone-required-hint" }) %>
 <% end %>

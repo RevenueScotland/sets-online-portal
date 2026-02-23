@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:ns="http://www.northgate-is.com/FL/CodeXrefValues"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+	xmlns:tns="northgate-is.com/CodeXrefValues.wsdl" targetNamespace="northgate-is.com/CodeXrefValues.wsdl">
+	<wsdl:types>
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType name="PersonNameType">
+				<xsd:sequence>
+					<xsd:element name="Title" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="10"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Forename">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Othername" minOccurs="0">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="Surname">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="50"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="YesNoType">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="yes"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="AddressType">
+				<xsd:sequence>
+					<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>QAS unique reference fior the address</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="SeverityType">
+				<xsd:annotation>
+					<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ERR"/>
+					<xsd:enumeration value="VAL"/>
+					<xsd:enumeration value="WAR"/>
+					<xsd:enumeration value="INF"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="MessageStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Text" type="xsd:string"/>
+					<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+					<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="MessagesStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardResponseStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Success" type="xsd:boolean"/>
+					<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardTextTranslationStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="Translation" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Language" type="xsd:string"/>
+								<xsd:element name="Text" type="xsd:string"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="StandardRequestStructure">
+				<xsd:annotation>
+					<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+		<xs:schema xmlns="http://www.northgate-is.com/FL/GetCodeXrefValues"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:flc="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgate-is.com/FL/GetCodeXrefValues" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
+			<xs:element name="GetCodeXrefValuesResponse">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="flc:StandardResponseStructure">
+							<xs:sequence>
+								<xs:element name="CodeXrefValues" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="CodeXrefValue" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="CXD_CXF_CODE">
+															<xs:annotation>
+																<xs:documentation>Code for Xref domain code
+																</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="20" />
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="CXD_DOMAIN">
+															<xs:annotation>
+																<xs:documentation>The domain or type of this code e.g.
+															Titles</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="30" />
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="DESCRIPTION">
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="250" />
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="SYSTEM_VALUE">
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="100" />
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="SITE_VALUE">
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="100" />
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="CXD_SRV_CODE">
+															<xs:annotation>
+																<xs:documentation>Where the system has multiple services
+															the service to which this list belongs. Those for the
+															'SYS' service are valid for all services
+																</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="10" />
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="WorkplaceCode">
+															<xs:annotation>
+																<xs:documentation>Where the system has multiple tenants
+															(workplaces) the workplace to which this list belongs.
+															The details for the system workplace (workplace 1) are
+															valid for all workplaces</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="10" />
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+														<xs:element name="Description_Translations" type="flc:StandardTextTranslationStructure" minOccurs="0" />
+														<xs:element name="DEFAULT_IND" type="flc:YesNoType">
+															<xs:annotation>
+																<xs:documentation>Is this the default value for this
+															domain</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="USAGE">
+															<xs:annotation>
+																<xs:documentation>Usage SYS or USR</xs:documentation>
+															</xs:annotation>
+															<xs:simpleType>
+																<xs:restriction base="xs:string">
+																	<xs:maxLength value="3" />
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+		<xs:schema xmlns="http://www.northgate-is.com/FL/GetCodeXrefValues"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:flc="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgate-is.com/FL/GetCodeXrefValues" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xs:import namespace="http://northgate-is.com/FL/Core"/>
+			<xs:element name="GetCodeXrefValues">
+				<xs:annotation>
+					<xs:documentation>This API allows you to get the lists of values from table CODE_XREF_VALUES.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="CXD_CXF_CODE" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Code for Xref domain code </xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="CXD_DOMAIN" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The domain or type of the xref values e.g. ADDMAP</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="30"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="CXD_SRV_CODE" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Where the system has multiple services the service to which this list belongs</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="WorkplaceCode" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Where the system has multiple tenants (workplaces) the service to which this list belongs.  The details for the system workplace (workplace 1) are always returned</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="GetCodeXrefValuesRequest">
+		<wsdl:part name="parameters" element="ns:GetCodeXrefValues"/>
+	</wsdl:message>
+	<wsdl:message name="GetCodeXrefValuesResponse">
+		<wsdl:part name="parameters" element="ns:GetCodeXrefValuesResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="GetCodeXrefValuesWSDLPort">
+		<wsdl:operation name="GetCodeXrefValuesWSDL">
+			<wsdl:input message="tns:GetCodeXrefValuesRequest"/>
+			<wsdl:output message="tns:GetCodeXrefValuesResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetCodeXrefValuesWSDLBinding" type="tns:GetCodeXrefValuesWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<!-- Define document style -->
+		<!-- define literal -->
+		<wsdl:operation name="GetCodeXrefValuesWSDL">
+			<soap:operation soapAction="https://server/DATABASE/communication/getCodeXrefValues"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetCodeXrefValuesWSDLService">
+		<wsdl:port name="GetCodeXrefValuesWSDLPort" binding="tns:GetCodeXrefValuesWSDLBinding">
+			<soap:address location="https://server/DATABASE/communication/getCodeXrefValues"/>
+			<!-- give the binding an network address -->
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

@@ -17,7 +17,7 @@ module Returns
     # Checks if draft button was pressed & redirects to the save draft action if validation passes and
     # draft save is success
     # @return true if button was pressed, else false.
-    def manage_draft(model)
+    def manage_draft?(model)
       return false unless params[:save_draft]
 
       Rails.logger.debug('save_draft pressed')
@@ -25,7 +25,7 @@ module Returns
         Rails.logger.debug('  validation passed')
         submit_draft(model)
       else
-        render(status: :unprocessable_entity)
+        render(status: :unprocessable_content)
       end
       true
     end
@@ -37,14 +37,14 @@ module Returns
         wizard_save(model)
         redirect_to(action: :save_draft)
       else
-        render(status: :unprocessable_entity)
+        render(status: :unprocessable_content)
       end
     end
 
     # Extracted summary method
     # Checks if calculate button was pressed & redirects to the calculate action if validation passes.
     # @return true if button was pressed, else false.
-    def manage_calculate(model)
+    def manage_calculate?(model)
       return false unless params[:calculate_return]
 
       Rails.logger.debug('calculate_return pressed - checking validation')
@@ -52,7 +52,7 @@ module Returns
         Rails.logger.debug('  validation passed')
         redirect_to(action: :declaration_calculation)
       else
-        render(status: :unprocessable_entity)
+        render(status: :unprocessable_content)
       end
       true
     end

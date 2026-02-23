@@ -9,12 +9,16 @@
   </fieldset>
   <% unless company.company_name.nil? %>
     <fieldset>
-      <%= c.ds_text_field(method: :company_name, readonly: true,  width: 'one-half') %>
-      <%= c.ds_text_field(method: :address_line1, readonly: true,  width: 'one-half') %>
-      <%= c.ds_text_field(method: :address_line2, readonly: true,  width: 'one-half') %>
-      <%= c.ds_text_field(method: :locality, readonly: true,  width: 'one-half') %>
-      <%= c.ds_text_field(method: :county, readonly: true,  width: 'one-half') %>
-      <%= c.ds_text_field(method: :postcode, readonly: true,  width: 'one-quarter') %>
+      <legend><%= t('.company_details') %></legend>
+      <div class="ds_inset-text">
+        <p><%= company.display_selected_company.html_safe %></p>
+      </div>
+      <%= c.ds_hidden_field(:company_name) %>
+      <%= c.ds_hidden_field(:address_line1) %>
+      <%= c.ds_hidden_field(:address_line2) %>
+      <%= c.ds_hidden_field(:locality) %>
+      <%= c.ds_hidden_field(:county) %>
+      <%= c.ds_hidden_field(:postcode) %>
       <%= c.ds_hidden_field(:country) %>
     </fieldset>
   <% end %>

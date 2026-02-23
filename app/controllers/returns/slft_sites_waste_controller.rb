@@ -37,9 +37,9 @@ module Returns
       wizard_step(nil) { { next_step: :waste_exemption_or_summary } }
     end
 
-    # last waste wizard step, on submit, merges waste data into site data @see #dump_waste_into_slft_wizard
+    # last waste wizard step, on submit, merges waste data into site data @see #dump_waste_into_slft_wizard?
     def waste_exemption
-      wizard_step(nil) { { next_step: :waste_summary_after_adding_waste, after_merge: :dump_waste_into_slft_wizard } }
+      wizard_step(nil) { { next_step: :waste_summary_after_adding_waste, after_merge: :dump_waste_into_slft_wizard? } }
     end
 
     # Delete the waste entry specified by ewc_code params[:waste]
@@ -62,13 +62,13 @@ module Returns
 
     private
 
-    # Rather than using ControllerHelper#manage_draft which redirects if need to save draft,
+    # Rather than using ControllerHelper#manage_draft? which redirects if need to save draft,
     # this method duplicates most of that one to validate the model and save the draft in situ on the sites summary.
     def manage_save_draft
       return unless params[:save_draft]
 
       Rails.logger.debug('save_draft pressed')
-      render(status: :unprocessable_entity) && return unless @slft_return.valid?(:draft)
+      render(status: :unprocessable_content) && return unless @slft_return.valid?(:draft)
 
       Rails.logger.debug('  validation passed')
       @slft_return.save_draft(current_user)
@@ -78,7 +78,7 @@ module Returns
 
       # store the reference number in a temporary variable so we can confirm saving worked this time (only)
       @site_summary_save_reference = @slft_return.tare_reference
-      render(status: :unprocessable_entity)
+      render(status: :unprocessable_content)
     end
 
     # This method handles when the user clicks the delete all link to remove all waste types. Also deletes any errors
@@ -90,7 +90,7 @@ module Returns
       @wastes = @site.wastes = {}
       wizard_save(@slft_return, SlftController)
       wizard_end
-      render status: :unprocessable_entity
+      render status: :unprocessable_content
     end
 
     # Remove a waste entry from the current site
@@ -138,7 +138,7 @@ module Returns
     # Puts the SlftSitesWasteController wizard data (ie @waste @see #setup_step)
     # into the main SLfT Wizard cache
     # @return [Boolean] true if successful
-    def dump_waste_into_slft_wizard
+    def dump_waste_into_slft_wizard?
       # make sure we have the site set up
       load_site
       @site.wastes = {} if @site.wastes.nil?
@@ -151,14 +151,14 @@ module Returns
       true
     end
 
-    # Decides what the next step should be and calls @see #dump_waste_into_slft_wizard if going to waste summary page.
+    # Decides what the next step should be and calls @see #dump_waste_into_slft_wizard? if going to waste summary page.
     # @return either :waste_exemption if waste_tonnage > 0 else :site_waste_summary
     def waste_exemption_or_summary
       # exempt tonnage so show next page in wizard @see Waste validation rules
       return returns_slft_waste_exemption_path if @waste.exempt_breakdown_needed?
 
       # must save details before going to the summary page
-      dump_waste_into_slft_wizard
+      dump_waste_into_slft_wizard?
       waste_summary_after_adding_waste
     end
 
@@ -176,7 +176,7 @@ module Returns
       wizard_save(@slft_return, Returns::SlftController) if @site.errors.none?
       # specifically clear the resource items as we don't want them shown, force the clear
       clear_resource_items(force: true)
-      render(status: :unprocessable_entity)
+      render(status: :unprocessable_content)
     end
 
     # Callback from the file upload component. Validates and imports the waste file. If the file isn't a well
@@ -197,6 +197,11 @@ module Returns
     # Call back from FileUploadHandler, which returns file types are allowed to be uploaded.
     def content_type_allowlist
       Rails.configuration.x.slft_waste_file_upload_content_type_allowlist.split(/\s*,\s*/)
+    end
+
+    # filename format allowed for upload
+    def supported_filename_format
+      Rails.configuration.x.file_upload_file_name_format_allowed
     end
 
     # Call back from FileUploadHandler, which returns additional/alias content types are allowed
@@ -260,7 +265,9 @@ module Returns
     def filter_params(_sub_object_attribute = nil)
       required = :returns_slft_waste
       attribute_list = Slft::Waste.attribute_list
-      params.require(required).permit(attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
   end
 end

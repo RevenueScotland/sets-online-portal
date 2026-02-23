@@ -4,6 +4,7 @@
 # (ie Redis, under a certain index that this code manages for you (and saves in the session cookie)).
 module SessionCacheHandler
   extend ActiveSupport::Concern
+
   # Retrieves data from the cache.
   # @param session_key [String] key to access cache key in the user's _session_ [cookie]
   # @param cache_index [String] the identifier for the cache index, defaults to the class name (the controller)

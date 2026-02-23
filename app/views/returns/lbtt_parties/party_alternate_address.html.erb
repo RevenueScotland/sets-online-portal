@@ -1,3 +1,4 @@
+<%= ds_warning{ t("returns.lbtt.common.accurate_tp_info")} %>
 <% content_for(:page_title, t('.'+@party.party_type+ '_title')) %>
 <%= ds_form_with(model: @party, url: @post_path,method: :post) do |f| %>
   <%= rs_conditional_visibility(visible_value: "Y") do |c| %>

@@ -95,6 +95,10 @@
 					<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
 					<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
 					<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LocalEdAuthCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="LocalAuthCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="Udprn" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="DeliveryPointSuffix" type="xsd:string" minOccurs="0"/>
 					<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>QAS unique reference for the address</xsd:documentation>

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Class used to store upload resource details
-class ResourceItem < FLApplicationRecord
+class ResourceItem < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   attr_accessor :original_filename, :file_name, :content_type, :description, :file_data, :uploaded_by, :upload_datetime,
                 :doc_refno, :size, :type, :attachment_type, :file_type
 
@@ -11,6 +11,8 @@ class ResourceItem < FLApplicationRecord
   validate :file_size?
   validate :content_type?
   validate :filename_length_valid?
+  validate :valid_file_name?
+  validate :already_uploaded?
 
   # check if resource_item is valid
   # @param max_file_size [Integer] @see file_upload_expected_max_size_mb to find where this is being set.
@@ -18,11 +20,14 @@ class ResourceItem < FLApplicationRecord
   #   the content_type of the file being validated.
   # @param file_extension_allowlist [Array] contains strings which is the conversion of the content_type_allowlist
   #   to the suffix equivalent, for example ".csv" and ".docx"
-  def valid?(max_file_size, content_type_allowlist, file_extension_allowlist, max_filename_length)
+  def valid?(max_file_size, content_type_allowlist, file_extension_allowlist, max_filename_length, uploaded_file_list,
+             filename_format: nil)
     @max_file_size = max_file_size
     @content_type_allowlist = content_type_allowlist
     @file_extension_allowlist = file_extension_allowlist
     @max_filename_length = max_filename_length
+    @uploaded_file_list = uploaded_file_list
+    @valid_filename_format = filename_format
     super()
   end
 
@@ -76,10 +81,28 @@ class ResourceItem < FLApplicationRecord
   private
 
   def filename_length_valid?
-    return true if !defined?(@max_filename_length) || !@max_filename_length.to_i.positive? || @max_filename_length.nil?
+    if original_filename.nil? || !defined?(@max_filename_length) ||
+       !@max_filename_length.to_i.positive? || @max_filename_length.nil?
+      return true
+    end
 
     length_exceeded = (original_filename.length >= @max_filename_length.to_i)
     errors.add(:file_data, :invalid_filename, count: @max_filename_length) if length_exceeded
+    true
+  end
+
+  def valid_file_name?
+    return true if original_filename.nil? || !defined?(@valid_filename_format) || @valid_filename_format.nil?
+
+    invalid_name = original_filename.match?(@valid_filename_format)
+    errors.add(:file_data, :filename_is_invalid) unless invalid_name
+    true
+  end
+
+  def already_uploaded?
+    if @uploaded_file_list.include? original_filename
+      errors.add(:file_data, :duplicate_uploaded, file_name: original_filename)
+    end
     true
   end
 
@@ -99,11 +122,11 @@ class ResourceItem < FLApplicationRecord
 
     return true if valid_file_extension?
 
-    add_invalid_file_type_error
+    add_invalid_file_type_error?
   end
 
   # Add an invalid file type error, with some additional logging
-  def add_invalid_file_type_error
+  def add_invalid_file_type_error?
     Rails.logger.debug do
       "File upload content type incorrect - actual type was #{@content_type} " \
         "expected one of #{@content_type_allowlist}"

@@ -68,10 +68,13 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   #  :types - an array of file types to upload
   # @return [Boolean] return true if file processing was required, this normally means you want to stay on the current
   #  page but the controller is responsible for that
-  def handle_file_upload(overrides = {})
+  def handle_file_upload(overrides = {}) # rubocop:disable Naming/PredicateMethod
     # Clear the cache if indicated but not for an add or delete
     clear_resource_items if overrides[:clear_cache]
-
+    # The exclusive_csv_upload is used in case a return has
+    # both evidence upload & csv import
+    # Pass the key exclusively only if we want to restrict the current upload to be CSV
+    @exclusive_csv_upload = overrides.key?(:exclusive_csv_upload) && overrides[:exclusive_csv_upload]
     initialise_fileupload_variables
 
     # If adding files then the below will create entries in the resource_items_hash
@@ -131,7 +134,8 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # @param overrides [Hash] check handle_file_upload
   def add_files(resource_params, overrides)
     create_resource_items(resource_params, overrides).each do |resource_item|
-      if resource_item.valid? expected_max_size, valid_content_types, valid_file_extensions, filename_limit
+      if resource_item.valid? expected_max_size, valid_content_types, valid_file_extensions, filename_limit,
+                              uploaded_files, filename_format: valid_file_name
         add_valid_individual_file(overrides, resource_item)
       end
     end
@@ -182,15 +186,24 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # The resource items hash is more complex and is processed separately
   # @return [Array][ResourceItem] array of resource items
   def initialise_fileupload_variables
-    @supported_types = if respond_to?(:content_type_allowlist, true)
-                         # @see locales/defaults/en.yml to learn about where this is getting the translated texts from.
-                         content_type_allowlist.map { |name| (I18n.t "label_#{name}") }.join(', ')
-                       else
-                         ''
-                       end
+    @supported_types = supported_files_list
     @supported_max_size_mb = expected_max_size
     @max_filename_length = filename_limit
     @resource_items = session_cache_data_load(file_upload_session_key) || []
+    @uploaded_file_list = uploaded_files
+    @supported_filename_format = valid_file_name
+  end
+
+  # returns the supported_files list
+  def supported_files_list
+    return csv_content_type.map { |n| (I18n.t "label_#{n}") }.join(', ') if @exclusive_csv_upload
+
+    if respond_to?(:content_type_allowlist, true)
+      # @see locales/defaults/en.yml to learn about where this is getting the translated texts from.
+      content_type_allowlist.map { |name| (I18n.t "label_#{name}") }.join(', ')
+    else
+      ''
+    end
   end
 
   # Returns the filename limit if defined in the class
@@ -200,6 +213,22 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
     else
       0
     end
+  end
+
+  # Returns the uploaded files list from the uploaded_file_list(if defined)
+  def uploaded_files
+    if respond_to?(:uploaded_file_list, true)
+      uploaded_file_list
+    else
+      []
+    end
+  end
+
+  # Returns the filename limit if defined in the class
+  def valid_file_name
+    return nil unless respond_to?(:supported_filename_format, true)
+
+    supported_filename_format
   end
 
   # Make sure we have the correct types in the resource items hash
@@ -318,9 +347,22 @@ module FileUploadHandler # rubocop:disable Metrics/ModuleLength
   # i.e. CSV mime type should be text/csv, but with a machine with Excel on it, the
   # type would be application/vnd.ms-excel
   def valid_content_types
-    content_type = respond_to?(:content_type_allowlist, true) ? content_type_allowlist : []
+    content_type = allowed_content_types
     content_type += alias_content_type if respond_to?(:alias_content_type, true)
     content_type
+  end
+
+  # returns contents_types based on overrides if any
+  def allowed_content_types
+    return csv_content_type if @exclusive_csv_upload
+
+    respond_to?(:content_type_allowlist, true) ? content_type_allowlist : []
+  end
+
+  # returns content_type for csv.
+  # To be when exclusive_csv_upload
+  def csv_content_type
+    ['text/csv']
   end
 
   # Returns a list of valid file extensions. File extensions are only checked if the content type

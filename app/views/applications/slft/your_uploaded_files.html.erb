@@ -1,0 +1,8 @@
+<% content_for(:page_title, t('.title')) %>
+
+<%= ds_form_with(model: @slft_application, url: @post_path, file_upload: true, method: :post ) do |f| %>
+	<%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, optional: true,
+                      supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb, multiple: true, hide_upload_section: true, button_type: :primary) %>
+	
+	<%= f.ds_radio_group(method: :upload_more_files, options_list: Applications::Slft::Applications.file_upload_options ) %>
+<% end %>

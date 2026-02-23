@@ -26,6 +26,9 @@ Rails.application.configure do
 
       # Delete the temporary files job
       DeleteTempFilesJob.schedule_next_run(6 * offset)
+
+      # CodexRefValues refresh job
+      RefreshCodeXrefDataJob.schedule_next_run(1.second)
     end
   end
 end

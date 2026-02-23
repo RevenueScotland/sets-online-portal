@@ -3,7 +3,7 @@
 # Sub-directory to organise the different tax returns.
 module Returns
   # Controller class for SLfT (Scottish Landfill Tax) return
-  class SlftController < ApplicationController
+  class SlftController < ApplicationController # rubocop:disable Metrics/ClassLength
     # Wizard controller - allows fast generation of wizards storing merged parameters which can be converted
     # to FLApplication objects with the appropriate .new call.  Downside is when we load an object graph,
     # only the top level is created as that object (eg SlftReturn.new(wizard_load) makes a SlftReturn object
@@ -13,9 +13,12 @@ module Returns
     include Wizard
     include ControllerHelper
     include DownloadHelper
+    include FileUploadHandler
+    include FileUploadHelper
 
     authorise requires: RS::AuthorisationHelper::SLFT_SUMMARY
     authorise route: :save_draft, requires: RS::AuthorisationHelper::SLFT_SAVE
+    before_action :set_max_uploads_allowed, only: [:repayment_evidence_upload]
 
     # wizard steps for the CREDIT simple wizard in order; to end a wizard go to summary
     CREDIT_STEPS = %w[credit_environmental credit_bad_debt credit_site_specific summary].freeze
@@ -24,7 +27,8 @@ module Returns
     # wizard steps for the DECLARATION wizard
     DECLARATION_STEPS = %w[declaration_calculation declaration declaration_submitted].freeze
     # wizard steps for the REPAYMENT wizard
-    REPAYMENT_STEPS = %w[declaration_repayment repayment_bank_details repayment_declaration declaration].freeze
+    REPAYMENT_STEPS = %w[declaration_repayment repayment_bank_details repayment_evidence_upload repayment_declaration
+                         declaration].freeze
 
     authorise route: DECLARATION_STEPS, requires: RS::AuthorisationHelper::SLFT_SUBMIT
 
@@ -39,7 +43,7 @@ module Returns
     # If params[:new] is set/true then calls wizard_end to ensure any previous SLfT return is cleared.
     # Downloads the list of sites, manages the Save draft and Calculate buttons, cleans summary data and saves the
     # model in the wizard_cache.
-    def summary
+    def summary # rubocop:disable Naming/PredicateMethod
       # do extra setup for new returns to clear wizard cache _before_ setup_step is called
       # so we don't populate @ variables with old data!
       if params[:new]
@@ -53,7 +57,7 @@ module Returns
       wizard_save(@slft_return)
 
       # manage the buttons AFTER wizard_save so we don't save the validation errors
-      manage_draft(@slft_return) || manage_calculate(@slft_return)
+      manage_draft?(@slft_return) || manage_calculate?(@slft_return)
     end
 
     # returns/slft/declaration_calculation
@@ -80,6 +84,73 @@ module Returns
     # returns/slft/declaration-repayment - step in declaration wizard which can switch to repayments wizard
     def declaration_repayment
       wizard_step(nil) { { next_step: :declaration_repayment_next_step } }
+    end
+
+    # Save the evidence_file in the claim_payment model
+    # calls back-office to send data collected in claim_payment wizard
+    # @return [Boolean] was the after merge process successful
+    def save_evidence_files_in_model # rubocop:disable Naming/PredicateMethod
+      @slft_return.evidence_files = []
+      @slft_return.evidence_files = @resource_items unless @resource_items.nil?
+      wizard_save(@slft_return)
+      true
+    end
+
+    # Handle the removal of documents in repayment_evidence_upload page
+    def process_evidence_documents
+      if params[:delete_resource].present? &&
+         handle_file_upload(parent_param: :returns_slft_slft_return)
+        save_evidence_files_in_model
+        render('repayment_evidence_upload',
+               status: :unprocessable_content) && return
+      else
+        handle_file_upload(parent_param: :returns_slft_slft_return)
+      end
+    end
+
+    # max filename length allowed for upload
+    def max_filename_length
+      Rails.configuration.x.file_upload_file_name_limit
+    end
+
+    # uploaded file name list
+    def uploaded_file_list
+      @uploaded_file_list ||= @resource_items.map(&:original_filename)
+
+      @uploaded_file_list
+    end
+
+    # returns/slft/repayment_evidence_upload - step in the repayment claim wizard
+    def repayment_evidence_upload
+      load_step
+      # @slft_return.evidence_needed = true if @slft_return.evidence_upload_required?
+      # @period_span = period_span_for_claim(@slft_return)
+      process_evidence_documents
+      return unless params[:continue]
+
+      if @slft_return.valid?
+        wizard_step(REPAYMENT_STEPS)
+      else
+        render(status: :unprocessable_content)
+      end
+    end
+
+    # Step to upload actual evidence files
+    def upload_evidence
+      load_step
+      # clearing previous file upload cache if its new get request
+      # second && condition to avoid clear cache on back
+      file_upload_end if request.get? && @slft_return.evidence_files.nil?
+
+      if handle_file_upload(parent_param: :returns_slft_slft_return)
+        return render(status: :unprocessable_content) if @resource_items_hash[:default].errors.any?
+
+        # files were uploaded so keep on this page
+        save_evidence_files_in_model
+        redirect_to returns_slft_repayment_evidence_upload_path
+      else
+        wizard_step(REPAYMENT_STEPS) { { validates: :evidence_files } }
+      end
     end
 
     # returns/slft/declaration - step in declaration wizard
@@ -115,7 +186,7 @@ module Returns
     # Send the return to the back office (and wizard_save unless there were errors returned.)
     # @return [Boolean] true if successful
     def submit_return
-      return false unless @slft_return.prepare_to_save_latest
+      return false unless @slft_return.prepare_to_save_latest?
 
       # Save the prepared return in the cache in case the user navigates back and re-tries
       wizard_save(@slft_return)
@@ -162,7 +233,9 @@ module Returns
     def filter_params(_sub_object_attribute = nil)
       required = :returns_slft_slft_return
       output = {}
-      output = params.require(required).permit(Slft::SlftReturn.attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      output = params.require(required).permit(Slft::SlftReturn.attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
 
       output
     end

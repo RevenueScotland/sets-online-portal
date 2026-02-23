@@ -924,13 +924,6 @@ day which is, or precedes, the 44th calendar day after the end of the SLFT quart
 					<DomainCode>PWS</DomainCode>
 					<ServiceCode>SYS</ServiceCode>
 					<WorkplaceCode>RSTU</WorkplaceCode>
-					<Code>IS_2FA_ENABLED</Code>
-					<StringValue>N</StringValue>
-				</SystemParameter>
-				<SystemParameter>
-					<DomainCode>PWS</DomainCode>
-					<ServiceCode>SYS</ServiceCode>
-					<WorkplaceCode>RSTU</WorkplaceCode>
 					<Code>MAIL_EXT_URL</Code>
 					<StringValue>https://&lt;server&gt;:&lt;port&gt;/revscot/en/website_texts/REGTSANDCS</StringValue>
 				</SystemParameter>
@@ -1252,7 +1245,7 @@ day which is, or precedes, the 44th calendar day after the end of the SLFT quart
 					<ServiceCode>SYS</ServiceCode>
 					<WorkplaceCode>RSTU</WorkplaceCode>
 					<Code>SLFT_PAYMENT</Code>
-					<StringValue>https://www.revenue.scot/</StringValue>
+					<StringValue>https://www.revenue.scot/taxes/scottish-landfill-tax/slft-guidance-services/how-pay-slft</StringValue>
 				</SystemParameter>
 				<SystemParameter>
 					<DomainCode>PWS_LINKS</DomainCode>
@@ -2069,6 +2062,13 @@ Scotland Tax System</StringValue>
 					<WorkplaceCode>RSTU</WorkplaceCode>
 					<Code>TAC_COND_DATE</Code>
 					<DateValue>FF0000</DateValue>
+				</SystemParameter>
+				<SystemParameter>
+					<DomainCode>PWS_LINKS</DomainCode>
+					<ServiceCode>SYS</ServiceCode>
+					<WorkplaceCode>RSTU</WorkplaceCode>
+					<Code>SAT_PAYMENT</Code>
+					<StringValue>https://www.revenue.scot/</StringValue>
 				</SystemParameter>
 			</SystemParameters>
 		</GetSystemParametersResponse>

@@ -20,7 +20,9 @@ Feature: Claim payment
         Then I should see the "Claim a repayment of Additional Dwelling Supplement" page
         And I should see the text "If you sold your previous home within the relevant disposal period of buying a new one, you may be eligible to claim a repayment of ADS. Find out more using our eligibility checker on the next page."
 
-        When I click on the "Continue" link
+        When I click on the "Continue" link     
+
+        When I click on the "Continue" button
         Then I should see the "Eligibility checker" page
 
         When I click on the "Continue" button
@@ -28,12 +30,16 @@ Feature: Claim payment
         And I should see the text "Please confirm the following criteria are met in order to proceed with the application must be accepted"
 
         When I check the "ADS was paid on the new property purchase" checkbox
-        And I check the "The previous property was sold within 18 months of buying the new one" checkbox
-        And I check the "The new property is, or has been, the only or main residence of all buyers" checkbox
-        And I check the "The previous property was the only or main residence of all buyers of the new property at some time in the 18 month period before the new property was purchased." checkbox
+        Then the checkbox "ADS was paid on the new property purchase" should be checked
+        When I check the "The previous property was sold within 18 months of buying the new one" checkbox
+        Then the checkbox "The previous property was sold within 18 months of buying the new one" should be checked
+        When I check the "The new property is, or has been, the only or main residence of all buyers" checkbox
+        Then the checkbox "The new property is, or has been, the only or main residence of all buyers" should be checked
+        When I check the "The previous property was the only or main residence of all buyers of the new property at some time in the 18 month period before the new property was purchased." checkbox
+        Then the checkbox "The previous property was the only or main residence of all buyers of the new property at some time in the 18 month period before the new property was purchased." should be checked
         And I click on the "Continue" button
         Then I should see the "Before you start" page
-        And I should see the text "You may also need to provide proof of sale of the previous property and evidence that all buyers occupied it as their only or main residence. We'll let you know if we need this once the first 3 questions have been answered."
+        And I should see the text "To support any claim for an ADS repayment the following evidence must be provided"
 
         When I click on the "Start now" link
         Then I should see the "Return reference" page
@@ -52,6 +58,7 @@ Feature: Claim payment
         Then I should see the "Claim a repayment of Additional Dwelling Supplement" page
         # Now data is lost
         When I click on the "Continue" link
+
         Then I should see the "Eligibility checker" page
 
         When I click on the "Continue" button
@@ -59,12 +66,16 @@ Feature: Claim payment
         And I should see the text "Please confirm the following criteria are met in order to proceed with the application must be accepted"
 
         When I check the "ADS was paid on the new property purchase" checkbox
-        And I check the "The previous property was sold within 18 months of buying the new one" checkbox
-        And I check the "The new property is, or has been, the only or main residence of all buyers" checkbox
-        And I check the "The previous property was the only or main residence of all buyers of the new property at some time in the 18 month period before the new property was purchased" checkbox
+        Then the checkbox "ADS was paid on the new property purchase" should be checked
+        When I check the "The previous property was sold within 18 months of buying the new one" checkbox
+        Then the checkbox "The previous property was sold within 18 months of buying the new one" should be checked
+        When I check the "The new property is, or has been, the only or main residence of all buyers" checkbox
+        Then the checkbox "The new property is, or has been, the only or main residence of all buyers" should be checked
+        When I check the "The previous property was the only or main residence of all buyers of the new property at some time in the 18 month period before the new property was purchased" checkbox
+        Then the checkbox "The previous property was the only or main residence of all buyers of the new property at some time in the 18 month period before the new property was purchased" should be checked
         And I click on the "Continue" button
         Then I should see the "Before you start" page
-        And I should see the text "You may also need to provide proof of sale of the previous property and evidence that all buyers occupied it as their only or main residence. We'll let you know if we need this once the first 3 questions have been answered."
+        And I should see the text "To support any claim for an ADS repayment the following evidence must be provided"
         When I click on the "Start now" link
         Then I should see the "Return reference" page
 
@@ -95,63 +106,19 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Your previous main residence" page
         When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Your previous main residence" page
         When I click on the "Continue" button
         Then I should see the "Your previous main residence" page
 
         When I enter "08-08-2020" in the "What is the date of sale or disposal of the previous main residence" date field
         And I click on the "Continue" button
-
-        Then I should see the "Evidence to support your claim" page
-        And I should see the text "Evidence all relevant buyers occupied the previous property as their only or main residence at any time within the relevant disposal period prior to the return’s effective date July 01, 2017."
-        And I should see the text "See guidance on LBTT Additional Dwelling Supplement (opens in a new tab) for further details."
-
-        When I click on the "Continue" button
-        Then I should see the "Evidence to support your claim" page
-        And I should receive the message "A document must be uploaded for each category in order to make a valid ADS Repayment request"
-
-        When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_occupancy_file_data"
-        And I click on the "Upload file" button
-        Then I should see the "Evidence to support your claim" page
-        And I should see a link to the file "testjpg.jpg"
-        And I should receive the message "File can't be blank"
-        # Check we don't lose the file
-        When I click on the "Upload file" button
-        Then I should see the "Evidence to support your claim" page
-        And I should see a link to the file "testjpg.jpg"
-        And I should receive the message "File can't be blank"
-        # Upload the other file
-        When I upload "testdoc.doc" to "claim_claim_payment_resource_item_sale_file_data"
-        And I click on the "Upload file" button
-        Then I should see the "Evidence to support your claim" page
-        And I should see a link to the file "testjpg.jpg"
-        And I should see a link to the file "testdoc.doc"
-        And I should not receive the message "File can't be blank"
-        # Clear the files and check that they are gone, need to wait for the remove to process
-        When I click on the 1 st "Delete file" button
-        Then I should see the "Evidence to support your claim" page
-        And I should not see a link to the file "testdoc.doc"
-        When I click on the 1 st "Delete file" button
-        Then I should see the "Evidence to support your claim" page
-        And I should not see a link to the file "testjpg.jpg"
-        When I click on the "Continue" button
-        Then I should see the "Evidence to support your claim" page
-        And I should receive the message "A document must be uploaded for each category in order to make a valid ADS Repayment request"
-        # Upload two files and carry on
-        When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_occupancy_file_data"
-        When I upload "testdoc.doc" to "claim_claim_payment_resource_item_sale_file_data"
-        And I click on the "Upload file" button
-        Then I should see the "Evidence to support your claim" page
-        And I should see a link to the file "testjpg.jpg"
-        And I should see a link to the file "testdoc.doc"
-
-        When I click on the "Continue" button
         Then I should see the "Claim amount" page
 
         When I click on the "Continue" button
         Then I should receive the message "claiming for a full repayment of ADS can't be blank"
         When I check the "No" radio button in answer to the question "I am claiming for a full repayment of ADS"
+        Then the radio button "No" should be selected in answer to the question "I am claiming for a full repayment of ADS"
         And I click on the "Continue" button
         Then I should receive the message "Claiming amount can't be blank"
         When I enter "600" in the "I am eligible for partial repayment of ADS and wish to reclaim the following amount" field
@@ -180,7 +147,7 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Your address (buyer 1 of 5)" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Your address (buyer 1 of 5)" page
 
         When I click on the "Continue" button
@@ -192,6 +159,7 @@ Feature: Claim payment
         And I click on the "Continue" button
         Then I should see the "Buyer address (buyer 2 of 5)" page
         When I check the "Yes" radio button in answer to the question "Is this the same as the first buyer's address?"
+        Then the radio button "Yes" should be selected in answer to the question "Is this the same as the first buyer's address?"
         And I click on the "Continue" button
 
         Then I should see the "Buyer details (buyer 3 of 5)" page
@@ -204,11 +172,12 @@ Feature: Claim payment
         Then I should see the "Buyer address (buyer 3 of 5)" page
 
         When I check the "No" radio button in answer to the question "Is this the same as the first buyer's address?"
+        Then the radio button "No" should be selected in answer to the question "Is this the same as the first buyer's address?"
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Buyer address (buyer 3 of 5)" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Buyer address (buyer 3 of 5)" page
 
         When I click on the "Continue" button
@@ -221,11 +190,12 @@ Feature: Claim payment
         Then I should see the "Buyer address (buyer 4 of 5)" page
 
         When I check the "No" radio button in answer to the question "Is this the same as the first buyer's address?"
+        Then the radio button "No" should be selected in answer to the question "Is this the same as the first buyer's address?"
         And I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Buyer address (buyer 4 of 5)" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Buyer address (buyer 4 of 5)" page
 
         When I click on the "Continue" button
@@ -238,12 +208,13 @@ Feature: Claim payment
         And I click on the "Continue" button
         Then I should see the "Buyer address (buyer 5 of 5)" page
         When I check the "No" radio button in answer to the question "Is this the same as the first buyer's address?"
+        Then the radio button "No" should be selected in answer to the question "Is this the same as the first buyer's address?"
 
         When I enter "LU1 1AA" in the "address_summary_postcode" field
         And I click on the "Find address" button
         Then I should see the "Buyer address (buyer 5 of 5)" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Buyer address (buyer 5 of 5)" page
         When I click on the "Continue" button
         Then I should see the "Bank details" page
@@ -272,18 +243,44 @@ Feature: Claim payment
         And I enter "Natwest" in the "Name of bank / building society" field
         And I click on the "Continue" button
 
+        Then I should see the "Upload your supporting files" page
+        And I should see the text "To support any claim for an ADS repayment the following evidence must be provided"
+        And I click on the "Continue" button
+        Then I should see the text "Evidence document(s) required for an ADS repayment request"
+
+        And I click on the "Add file" link
+        Then I should see the "Upload your supporting file" page
+        When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_default_file_data"
+        And I click on the "Continue" button
+        Then I should see the "Upload your supporting files" page
+        And I should see a link to the file "testjpg.jpg"
+
+        When I click on the "Add additional file" link
+        Then I should see the "Upload your supporting file" page
+        When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_default_file_data"
+        And I click on the "Continue" button
+        Then I should see the text "Unable to upload file named testjpg.jpg as this file has already been uploaded"
+
+        When I click on the "Back" link
+        Then I should see the "Upload your supporting files" page
+        And I click on the "Continue" button
+
         Then I should see the "Declarations" page
         When I click on the "Continue" button
         Then I should see the "Declarations" page
         And I should receive the message "The declaration must be accepted"
         When I check the "I, First name Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
-        And I check the "I, Buyer 2 First name Buyer 2 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
+        Then the checkbox "I, First name Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" should be checked
+        When I check the "I, Buyer 2 First name Buyer 2 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
+        Then the checkbox "I, Buyer 2 First name Buyer 2 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" should be checked
         And I click on the "Continue" button
         Then I should see the "Declarations" page
         And I should receive the message "The declaration must be accepted"
 
         When I check the "I, Buyer 3 First name Buyer 3 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
-        And I check the "I, Buyer 4 First name Buyer 4 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
+        Then the checkbox "I, Buyer 3 First name Buyer 3 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" should be checked
+        When I check the "I, Buyer 4 First name Buyer 4 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" checkbox
+        Then the checkbox "I, Buyer 4 First name Buyer 4 Last tname, declare that this claim is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed" should be checked
         And I click on the "Continue" button
         Then I should see the "Declarations" page
         And I should receive the message "The declaration must be accepted"
@@ -343,94 +340,112 @@ Feature: Claim payment
         Then I should see the "Claim repayment" page
         And I click on the "Continue" button
         And I should see the text "What is the reason for the claim for payment from Revenue Scotland can't be blank"
-    # TODO: Following code has been commented out so we can get the patch out, will fix once the patch is out
-    # And I check the "ADS repayment following a sale or disposal of previous main residence" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
-    # And I click on the "Continue" button
-    # Then I should see the "Previous main residence" page
 
-    # When I enter "NP7 8LB" in the "address_summary_postcode" field
-    # And I click on the "Find address" button
-    # Then I should see the "Previous main residence" page
-    # When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
-    # And I click on the "Use this address" button when available
-    # Then I should see the "Previous main residence" page
-    # When I click on the "Continue" button
-    # When I enter "08-08-2020" in the "What was the date of sale or disposal of the previous main residence" date field
-    # And I click on the "Continue" button
+        And I check the "ADS repayment following a sale or disposal of previous main residence" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
+        Then the radio button "ADS repayment following a sale or disposal of previous main residence" should be selected in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
+        And I click on the "Continue" button
+        Then I should see the "Previous main residence" page
 
-    # Then I should see the "Evidence to support the claim" page
-    # And I should see the text "Evidence all relevant buyers occupied the previous property as their only or main residence at any time within the relevant disposal period prior to the return’s effective date July 01, 2017."
-    # And I should see the text "See guidance on LBTT Additional Dwelling Supplement (opens in a new tab) for further details."
+        When I enter "NP7 8LB" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Previous main residence" page
+        When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
+        And I click on the "Use this address" button
+        Then I should see the "Previous main residence" page
+        When I click on the "Continue" button
+        When I enter "08-08-2020" in the "What was the date of sale or disposal of the previous main residence" date field
+        And I click on the "Continue" button
 
-    # When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_portal_sale_file_data"
-    # When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_occupancy_file_data"
-    # And I click on the "Upload file" button
-    # Then I should see a link to the file "testjpg.jpg"
-    # And I click on the "Continue" button
+        #TODO RSTP-1575 removed the following commented out code as this flow is no longer valid.
+        # Then I should see the "Evidence to support the claim" page
+        # And I should see the text "Evidence all relevant buyers occupied the previous property as their only or main residence at any time within the relevant disposal period prior to the return’s effective date July 01, 2017."
+        # And I should see the text "See guidance on LBTT Additional Dwelling Supplement (opens in a new tab) for further details."
 
-    # Then I should see the "Claim amount" page
-    # And I click on the "Continue" button
-    # Then I should receive the message "claiming for a full repayment of ADS can't be blank"
-    # When I check the "Yes" radio button in answer to the question "Are you claiming for a full repayment of ADS?"
-    # And I click on the "Continue" button
+        # When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_portal_sale_file_data"
+        # When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_occupancy_file_data"
+        # And I click on the "Upload file" button
+        # Then I should see a link to the file "testjpg.jpg"
+        # And I click on the "Continue" button
 
-    # # Since RS2000002AAAA has number of buyer is 1
-    # Then I should see the "Taxpayer details" page
-    # And I should not see the text "Organisation name (optional)"
+        Then I should see the "Claim amount" page
+        And I click on the "Continue" button
+        Then I should receive the message "claiming for a full repayment of ADS can't be blank"
+        When I check the "Yes" radio button in answer to the question "Are you claiming for a full repayment of ADS?"
+        Then the radio button "Yes" should be selected in answer to the question "Are you claiming for a full repayment of ADS?"
+        And I click on the "Continue" button
 
-    # When I enter "First name" in the "First name" field
-    # And I enter "Last tname" in the "Last name" field
-    # And I enter "0111456789" in the "Telephone number" field
-    # And I enter "noreply5@necsws.com" in the "Email" field
-    # And I click on the "Continue" button
-    # Then I should see the "Taxpayer address" page
+        # Since RS2000002AAAA has number of buyer is 1
+        Then I should see the "Taxpayer details" page
+        And I should not see the text "Organisation name (optional)"
 
-    # When I enter "LU1 1AA" in the "address_summary_postcode" field
-    # And I click on the "Find address" button
-    # Then I should see the "Taxpayer address" page
-    # When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-    # And I click on the "Use this address" button when available
-    # Then I should see the "Taxpayer address" page
+        When I enter "First name" in the "First name" field
+        And I enter "Last tname" in the "Last name" field
+        And I enter "0111456789" in the "Telephone number" field
+        And I enter "noreply5@necsws.com" in the "Email" field
+        And I click on the "Continue" button
+        Then I should see the "Taxpayer address" page
 
-    # When I click on the "Continue" button
-    # Then I should see the "Bank details" page
+        When I enter "LU1 1AA" in the "address_summary_postcode" field
+        And I click on the "Find address" button
+        Then I should see the "Taxpayer address" page
+        When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
+        And I click on the "Use this address" button
+        Then I should see the "Taxpayer address" page
 
-    # When I click on the "Continue" button
-    # Then I should see the text "Name of the account holder can't be blank"
-    # And I should see the text "Bank / building society account number can't be blank"
-    # And I should see the text "Branch sort code can't be blank"
-    # And I should see the text "Name of bank / building society can't be blank"
+        When I click on the "Continue" button
+        Then I should see the "Bank details" page
 
-    # When I enter "RANDOM_text,153" in the "Name of the account holder" field
-    # And I enter "RANDOM_text,11" in the "Bank / building society account number" field
-    # And I enter "85-96-88-7" in the "Branch sort code" field
-    # And I enter "RANDOM_text,256" in the "Name of bank / building society" field
-    # And I click on the "Continue" button
-    # Then I should see the text "Name of the account holder is too long (maximum is 152 characters)"
-    # And I should see the text "Name of bank / building society is too long (maximum is 255 characters)"
-    # And I should see the text "Bank / building society account number must be 8 digits long"
-    # And I should see the text "Branch sort code must be in the format 99-99-99"
+        When I click on the "Continue" button
+        Then I should see the text "Name of the account holder can't be blank"
+        And I should see the text "Bank / building society account number can't be blank"
+        And I should see the text "Branch sort code can't be blank"
+        And I should see the text "Name of bank / building society can't be blank"
 
-    # When I enter "Fred Flintstone" in the "Name of the account holder" field
-    # And I enter "12345678" in the "Bank / building society account number" field
-    # And I enter "10-11-12" in the "Branch sort code" field
-    # And I enter "Natwest" in the "Name of bank / building society" field
-    # And I click on the "Continue" button
+        When I enter "RANDOM_text,153" in the "Name of the account holder" field
+        And I enter "RANDOM_text,11" in the "Bank / building society account number" field
+        And I enter "85-96-88-7" in the "Branch sort code" field
+        And I enter "RANDOM_text,256" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+        Then I should see the text "Name of the account holder is too long (maximum is 152 characters)"
+        And I should see the text "Name of bank / building society is too long (maximum is 255 characters)"
+        And I should see the text "Bank / building society account number must be 8 digits long"
+        And I should see the text "Branch sort code must be in the format 99-99-99"
 
-    # Then I should see the "Declarations" page
-    # When I click on the "Continue" button
-    # Then I should see the "Declarations" page
-    # And I should receive the message "The declaration must be accepted"
-    # And I check the "claim_claim_payment_authenticated_declaration1" checkbox
-    # And I check the "claim_claim_payment_authenticated_declaration2" checkbox
+        When I enter "Fred Flintstone" in the "Name of the account holder" field
+        And I enter "12345678" in the "Bank / building society account number" field
+        And I enter "10-11-12" in the "Branch sort code" field
+        And I enter "Natwest" in the "Name of bank / building society" field
+        And I click on the "Continue" button
 
-    # When I click on the "Continue" button
-    # Then I should see the "Your request has been sent to Revenue Scotland" page
-    # Then I should not see a link to the file "testjpg.jpg"
+        Then I should see the "Upload your supporting files" page
+        And I should see the text "To support any claim for an ADS repayment the following evidence must be provided"
+        And I click on the "Continue" button
+        Then I should see the text "Evidence document(s) required for an ADS repayment request"
 
-    # # Check finish button works
-    # When I click on the "Finish" button
-    # Then I should see the "Dashboard" page
+        And I click on the "Add file" link
+        Then I should see the "Upload your supporting file" page
+        When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_default_file_data"
+        And I click on the "Continue" button
+        Then I should see the "Upload your supporting files" page
+        And I should see a link to the file "testjpg.jpg"
+        And I click on the "Continue" button
+
+        Then I should see the "Declarations" page
+        When I click on the "Continue" button
+        Then I should see the "Declarations" page
+        And I should receive the message "The declaration must be accepted"
+        And I check the "claim_claim_payment_authenticated_declaration1" checkbox
+        And the checkbox "claim_claim_payment_authenticated_declaration1" should be checked
+        And I check the "claim_claim_payment_authenticated_declaration2" checkbox
+        And the checkbox "claim_claim_payment_authenticated_declaration2" should be checked
+
+        When I click on the "Continue" button
+        Then I should see the "Your request has been sent to Revenue Scotland" page
+        Then I should not see a link to the file "testjpg.jpg"
+
+        # Check finish button works
+        When I click on the "Finish" button
+        Then I should see the "Dashboard" page
 
     Scenario: Checking Claim repayment wizard functionality for LBTT Non ADS returns with one tax payer
         Given I have signed in 'PORTAL.ONE' and password 'Password1!'
@@ -457,14 +472,11 @@ Feature: Claim payment
 
         When I enter "RANDOM_text,255" in the "Claim description" field
         And I click on the "Continue" button
-        Then I should see the "Evidence to support the claim" page
+        Then I should see the "Details about your request for repayment" page
         When I click on the "Back" link
         Then I should see the "Claim repayment" page
 
         When I check the "Impact of legislation change" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
-        And I click on the "Continue" button
-
-        Then I should see the "Evidence to support the claim" page
         And I click on the "Continue" button
 
         Then I should see the "Details about your request for repayment" page
@@ -488,7 +500,7 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Taxpayer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Taxpayer address" page
 
         When I click on the "Continue" button
@@ -498,6 +510,9 @@ Feature: Claim payment
         And I enter "00345678" in the "Bank / building society account number" field
         And I enter "01-11-12" in the "Branch sort code" field
         And I enter "Natwest" in the "Name of bank / building society" field
+        And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting files" page
         And I click on the "Continue" button
 
         Then I should see the "Declarations" page
@@ -529,12 +544,6 @@ Feature: Claim payment
         And I check the "Claim for Repayment" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
         And I click on the "Continue" button
 
-        Then I should see the "Evidence to support the claim" page
-        When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_default_file_data"
-        And I click on the "Upload file" button
-        Then I should see a link to the file "testjpg.jpg"
-        And I click on the "Continue" button
-
         Then I should see the "Details about your request for repayment" page
         And I click on the "Continue" button
         Then I should receive the message "Claiming amount can't be blank"
@@ -555,7 +564,7 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Taxpayer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Taxpayer address" page
 
         When I click on the "Continue" button
@@ -576,8 +585,53 @@ Feature: Claim payment
         And I enter "12345678" in the "Bank / building society account number" field
         And I enter "10-11-12" in the "Branch sort code" field
         And I enter "Natwest" in the "Name of bank / building society" field
+
+        And I click on the "Continue" button
+        Then I should see the "Upload your supporting files" page
+        And I should see the text "You can upload evidence to support a claim for repayment from Revenue Scotland. If evidence is required but not provided, a claim may be refused."
+        And I should see the text "Once you have added a file it will be listed here. A maximum of ten files can be added."
+        And I should see a link with text "Add file"
+        When I click on the "Add file" link
+        Then I should see the "Upload your supporting file" page
+        And I should see the text "The file must be one of xlsx, xls, tiff, pdf, png, gif, jpeg, jpg, rtf, doc, docx with a maximum size of 15 mb per file."
+        And I should see the text "The file name must be no longer than 100 characters (including the file extension)."
+        And I should see the text "You can upload one file at a time."
+        And I should see the text "You will be able to upload more files on the next page"
+        When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_default_file_data"
+        And I enter "This is a docx file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+        Then I should see the "Upload your supporting files" page
+        And I should see a link to the file "testjpg.jpg"
+        And I should see the text "This is a docx file"
+
+        When I click on the "Add additional file" link
+        Then I should see the "Upload your supporting file" page
+        When I upload "testdoc.doc" to "claim_claim_payment_resource_item_default_file_data"
         And I click on the "Continue" button
 
+        Then I should see the "Upload your supporting files" page
+        And I should see the text "testdoc.doc"
+        When I click on the "Add additional file" link
+        Then I should see the "Upload your supporting file" page
+        When I upload "testpng with space.png" to "claim_claim_payment_resource_item_default_file_data"
+        And I click on the "Continue" button
+        Then I should see the "Upload your supporting files" page
+        And I should see the text "testpng with space.png"
+        And the table of data is displayed
+            | File uploaded              |             |
+            | testjpg.jpg                | Delete file |
+            | testdoc.doc                | Delete file |
+            | %r{testpng with space.png} | Delete file |
+
+        When I click on the 1 st "Delete file" button
+        Then I should see the "Upload your supporting files" page
+        And I should not see the text "testjpg.jpg"
+        And the table of data is displayed
+            | File uploaded              |             |
+            | testdoc.doc                | Delete file |
+            | %r{testpng with space.png} | Delete file |
+
+        And I click on the "Continue" button
         Then I should see the "Declarations" page
         When I click on the "Continue" button
         Then I should see the "Declarations" page
@@ -587,41 +641,6 @@ Feature: Claim payment
 
         When I click on the "Continue" button
         Then I should see the "Your request has been sent to Revenue Scotland" page
-        Then I should not see a link to the file "testjpg.jpg"
-
-        When I click on the "Upload file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should receive the message "File can't be blank"
-
-        # Check the file uploads on the final page
-        When I upload "testdoc.doc" to "claim_claim_payment_resource_item_default_file_data"
-        And I click on the "Upload file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should see the text "testdoc.doc"
-        When I click on the "Delete file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should not see the text "testdoc.doc"
-
-        # Upload multiple file types
-        When I upload "testdoc.doc" to "claim_claim_payment_resource_item_default_file_data"
-        And I click on the "Upload file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should see the text "testdoc.doc"
-        When I upload "testpng with space.png" to "claim_claim_payment_resource_item_default_file_data"
-        And I click on the "Upload file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should see the text "testpng with space.png"
-        And the table of data is displayed
-            | File uploaded              |             |
-            | testdoc.doc                | Delete file |
-            | %r{testpng with space.png} | Delete file |
-
-        When I click on the 1 st "Delete file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should not see the text "testdoc.doc"
-        And the table of data is displayed
-            | File uploaded              |             |
-            | %r{testpng with space.png} | Delete file |
 
     Scenario: Checking Claim repayment wizard functionality for SAT returns one tax payer
         When I go to the "Login" page
@@ -651,12 +670,6 @@ Feature: Claim payment
         And I check the "Claim for Repayment" radio button in answer to the question "What is the reason for the claim for payment from Revenue Scotland?"
         And I click on the "Continue" button
 
-        Then I should see the "Evidence to support the claim" page
-        When I upload "testjpg.jpg" to "claim_claim_payment_resource_item_default_file_data"
-        And I click on the "Upload file" button
-        Then I should see a link to the file "testjpg.jpg"
-        And I click on the "Continue" button
-
         Then I should see the "Details about your request for repayment" page
         And I click on the "Continue" button
         Then I should receive the message "Claiming amount can't be blank"
@@ -677,7 +690,7 @@ Feature: Claim payment
         And I click on the "Find address" button
         Then I should see the "Taxpayer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Taxpayer address" page
 
         When I click on the "Continue" button
@@ -699,6 +712,51 @@ Feature: Claim payment
         And I enter "10-11-12" in the "Branch sort code" field
         And I enter "Natwest" in the "Name of bank / building society" field
         And I click on the "Continue" button
+        Then I should see the "Upload your supporting files" page
+        And I should see the text "You can upload evidence to support a claim for repayment from Revenue Scotland. If evidence is required but not provided, a claim may be refused."
+        And I should see the text "Once you have added a file it will be listed here. A maximum of ten files can be added."
+        And I should see a link with text "Add file"
+        When I click on the "Add file" link
+        Then I should see the "Upload your supporting file" page
+        And I should see the text "The file must be one of xlsx, xls, tiff, pdf, png, gif, jpeg, jpg, rtf, doc, docx with a maximum size of 15 mb per file."
+        And I should see the text "The file name must be no longer than 100 characters (including the file extension)."
+        And I should see the text "You can upload one file at a time."
+        And I should see the text "You will be able to upload more files on the next page"
+        When I upload "testdocx.docx" to "claim_claim_payment_resource_item_default_file_data"
+        And I enter "This is a docx file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+        Then I should see the "Upload your supporting files" page
+        And I should see a link to the file "testdocx.docx"
+        And I should see the text "This is a docx file"
+
+        When I click on the "Add additional file" link
+        Then I should see the "Upload your supporting file" page
+        And I upload "testdoc.doc" to "claim_claim_payment_resource_item_default_file_data"
+        And I click on the "Continue" button
+        Then I should see the "Upload your supporting files" page
+        And I should see the text "testdoc.doc"
+        When I click on the "Add additional file" link
+        Then I should see the "Upload your supporting file" page
+        When I upload "testpng with space.png" to "claim_claim_payment_resource_item_default_file_data"
+        And I click on the "Continue" button
+        Then I should see the "Upload your supporting files" page
+        And I should see the text "testpng with space.png"
+        And the table of data is displayed
+            | File uploaded              |             |
+            | testdocx.doc               | Delete file |
+            | testdoc.doc                | Delete file |
+            | %r{testpng with space.png} | Delete file |
+
+        When I click on the 1 st "Delete file" button
+        Then I should see the "Upload your supporting files" page
+        And I should not see the text "testdocx.doc"
+        And the table of data is displayed
+            | File uploaded              |             |
+            | testdoc.doc                | Delete file |
+            | %r{testpng with space.png} | Delete file |
+
+
+        And I click on the "Continue" button
 
         Then I should see the "Declarations" page
         When I click on the "Continue" button
@@ -709,38 +767,3 @@ Feature: Claim payment
 
         When I click on the "Continue" button
         Then I should see the "Your request has been sent to Revenue Scotland" page
-        Then I should not see a link to the file "testjpg.jpg"
-
-        When I click on the "Upload file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should receive the message "File can't be blank"
-
-        # Check the file uploads on the final page
-        When I upload "testdoc.doc" to "claim_claim_payment_resource_item_default_file_data"
-        And I click on the "Upload file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should see the text "testdoc.doc"
-        When I click on the "Delete file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should not see the text "testdoc.doc"
-
-        # Upload multiple file types
-        When I upload "testdoc.doc" to "claim_claim_payment_resource_item_default_file_data"
-        And I click on the "Upload file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should see the text "testdoc.doc"
-        When I upload "testpng with space.png" to "claim_claim_payment_resource_item_default_file_data"
-        And I click on the "Upload file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should see the text "testpng with space.png"
-        And the table of data is displayed
-            | File uploaded              |             |
-            | testdoc.doc                | Delete file |
-            | %r{testpng with space.png} | Delete file |
-
-        When I click on the 1 st "Delete file" button
-        Then I should see the "Your request has been sent to Revenue Scotland" page
-        And I should not see the text "testdoc.doc"
-        And the table of data is displayed
-            | File uploaded              |             |
-            | %r{testpng with space.png} | Delete file |

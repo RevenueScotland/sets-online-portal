@@ -90,7 +90,7 @@ module Core
     # called for each attribute and then for any remaining errors
     # @param errors [String] The list of error messages
     def save_summary_error_list(errors)
-      href = "##{id}#{@error_link_suffix.presence ? "_#{@error_link_suffix}" : ''}"
+      href = "##{id}#{@error_link_suffix.presence ? "_#{@error_link_suffix}" : ''}" # rubocop:disable Style/EmptyStringInsideInterpolation
       errors.each do |e|
         @view_context.content_for(:summary_error_list, error_list_entry(e, href))
       end

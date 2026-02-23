@@ -40,7 +40,7 @@ module ReferenceDataLookup
   # and if it hasn't already been set up.
   # Can be called externally so that code can initialise at a key processing point
   # @see wizard for use
-  def initialize_ref_data
+  def initialize_ref_data # rubocop:disable Naming/PredicateMethod
     # don't do this if @cached_ref_data is already set up
     return true unless @cached_ref_data.nil?
 

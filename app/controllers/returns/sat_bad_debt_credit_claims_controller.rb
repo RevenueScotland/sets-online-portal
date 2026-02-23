@@ -16,7 +16,7 @@ module Returns
       Rails.logger.debug('New Bad debt credit claim entry') if clear_cache
       wizard_step(STEPS) do
         { setup_step: :setup_step, next_step: :redirect_by_selection,
-          after_merge: :dump_bad_debt_in_sat_return, clear_cache: clear_cache }
+          after_merge: :dump_bad_debt_in_sat_return?, clear_cache: clear_cache }
       end
     end
 
@@ -25,7 +25,7 @@ module Returns
       @post_path = wizard_post_path
       wizard_step(nil) do
         { next_step: :redirect_to_calculation,
-          after_merge: :dump_bad_debt_in_sat_return }
+          after_merge: :dump_bad_debt_in_sat_return? }
       end
     end
 
@@ -101,7 +101,7 @@ module Returns
     end
 
     # Update the bad_debt into the sat_return model
-    def dump_bad_debt_in_sat_return
+    def dump_bad_debt_in_sat_return?
       load_sat_return
       @sat_return.bad_debt = @bad_debt
 
@@ -117,7 +117,9 @@ module Returns
 
       return unless params[required]
 
-      params.require(required).permit(attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
 
     # Clear bad debt values and reset bad_debt from cache

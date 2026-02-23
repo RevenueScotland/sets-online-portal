@@ -78,6 +78,11 @@ class Company # rubocop:disable Metrics/ClassLength
     [address_line1, locality, postcode].compact_blank.join(', ')
   end
 
+  # @return [String] company_name, address_line1, address_line2, locality, county, postcode
+  def display_selected_company
+    [company_name, address_line1, address_line2, locality, county, postcode].compact_blank.join('<br />')
+  end
+
   # @return [Boolean] if company_number and company_name are both empty or nil
   def empty?
     !company_number? && !company_name?
@@ -108,10 +113,13 @@ class Company # rubocop:disable Metrics/ClassLength
 
   # @return [Address] returns the company address as an address object
   def company_address
-    return nil if address_line1.nil?
+    addr1 = address_line1
+    addr1 = company_name if addr1.blank? && company_number.present?
+
+    return nil if addr1.nil?
 
     address = Address.new
-    address.assign_attributes(address_line1: address_line1, address_line2: address_line2, town: locality,
+    address.assign_attributes(address_line1: addr1, address_line2: address_line2, town: locality,
                               county: county, country: country, postcode: postcode)
     address
   end
@@ -153,7 +161,7 @@ class Company # rubocop:disable Metrics/ClassLength
   # set the company address to the address object
   # @param address [Address] The address to sets the company address
   def assign_from_address!(address)
-    self.address_line1 = address.address_line1
+    self.address_line1 = (address.address_line1 || company_name)
     self.address_line2 = address.address_line2
     self.locality = address.town
     self.county = address.county
@@ -209,6 +217,7 @@ class Company # rubocop:disable Metrics/ClassLength
     @county = address['region']
     @postcode = address['postal_code']
     @country = 'GB'
+    @address_line1 = @company_name if @address_line1.blank?
   end
 
   # switch address line 2 to locality if we don't have locality in response

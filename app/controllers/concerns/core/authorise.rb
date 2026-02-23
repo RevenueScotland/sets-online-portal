@@ -8,7 +8,7 @@ module Core
 
     included do
       helper_method :authorised?, :can?, :cannot?
-      before_action :authorise_action
+      before_action :authorise_action?
     end
 
     # Classes that the ActiveSupport::Concern automatically adds as class level methods
@@ -25,7 +25,7 @@ module Core
       # @example protect all routes with action1 for HTTP delete
       #   authorise requires: action1, on: :delete
       # @example protect all routes with action1 if there is a current user, otherwise allow access
-      #   authorise requires: action1, allow_if: :public
+      #   authorise requires: action1, allow_if: :public?
       # @example protect all routes with action1 if there is a current user, otherwise allow if the user defined
       #   function my_function returns true
       #   authorise requires: action1, allow_if: :my_function
@@ -100,7 +100,7 @@ module Core
     # Check if the current user is authorised to perform this action
     # @return [Boolean] true if there's no authorise annotation for this action, or if the user is authorised to perform
     # this action, otherwise false
-    def authorise_action
+    def authorise_action?
       return true if action_authorised?
 
       Rails.logger.info { "#{current_user.username} is not authorised for #{controller_name} #{action_name}" }
@@ -114,7 +114,7 @@ module Core
     # @param _route    [String/Symbol] name of the route that's being checked
     # @param _method   [String/Symbol] HTTP action
     # @return [Boolean] returns true if there's no current_user otherwise false
-    def public(_requires = '', _route = '', _method = '')
+    def public?(_requires = '', _route = '', _method = '')
       return true unless defined? current_user
       return true if current_user.nil?
 
@@ -136,7 +136,7 @@ module Core
       return true if Rails.configuration.x.authorisation.disabled || options.nil? || options.empty?
       return true if options.nil? || %i[requires_action requires_all_action].none? { |k| options.key? k }
 
-      check_requires user, options
+      check_requires? user, options
     end
 
     # returns true if the current user has access to one of the action codes. Returns false if the user doesn't
@@ -148,7 +148,7 @@ module Core
       return true if Rails.configuration.x.authorisation.disabled || action_codes.empty?
       return false unless user_roles? current_user
 
-      check_requires_action current_user.user_roles['user_role'], action_codes
+      check_requires_action? current_user.user_roles['user_role'], action_codes
     end
 
     # returns true if the current user hasn't access to one of the action codes
@@ -165,26 +165,26 @@ module Core
     # @param user [User] user to check if they have the action_code
     # @param options [Hash] options to check for authorisation options
     # @return [Boolean] true if the user is authorised (or authorisation is disabled), otherwise false
-    def check_requires(user, options)
+    def check_requires?(user, options)
       return false unless user_roles?(user)
 
       roles = user.user_roles['user_role']
-      return check_requires_all_action(roles, options[:requires_all_action]) if options.key? :requires_all_action
+      return check_requires_all_action?(roles, options[:requires_all_action]) if options.key? :requires_all_action
 
-      check_requires_action(roles, options[:requires_action]) if options.key? :requires_action
+      check_requires_action?(roles, options[:requires_action]) if options.key? :requires_action
     end
 
     # Determine if supplied user roles has access to all of the supplied action_codes.
     # @param roles [Array] Array of roles
     # @param action_codes [String/Array] the action code(s) to check
     # @return [Boolean] true if the user has access to all the action codes, otherwise false
-    def check_requires_all_action(roles, action_codes)
+    def check_requires_all_action?(roles, action_codes)
       return false if roles.empty?
       return true if action_codes.empty?
 
       action_codes = Array(action_codes)
       action_codes.each do |action|
-        return false unless ActionRoles.role_has(roles, action)
+        return false unless ActionRoles.role_has?(roles, action)
       end
       true
     end
@@ -193,13 +193,13 @@ module Core
     # @param roles [Array] Array of roles
     # @param action_codes [String/Array] the action code(s) to check
     # @return [Boolean] true if the user has access to all the action codes, otherwise false
-    def check_requires_action(roles, action_codes)
+    def check_requires_action?(roles, action_codes)
       return false if roles.empty?
       return true if action_codes.empty?
 
       action_codes = Array(action_codes)
       action_codes.each do |action|
-        return true if ActionRoles.role_has(roles, action)
+        return true if ActionRoles.role_has?(roles, action)
       end
       false
     end

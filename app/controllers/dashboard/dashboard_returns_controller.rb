@@ -37,7 +37,7 @@ module Dashboard
                                   end
       wizard_save(return_object, controller)
 
-      redirect_to controller: "returns/#{@srv_code}", action: :summary
+      redirect_to controller: "returns/#{@srv_code}", action: @srv_code == 'sat' ? :sat_summary : :summary
     end
 
     # get the current user account type

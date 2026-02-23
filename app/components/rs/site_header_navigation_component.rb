@@ -4,7 +4,7 @@
 module RS
   # Renders the list of navigation items on the page menu
   # This is normally rendered twice once for mobile and once for the website
-  class SiteHeaderNavigationComponent < ViewComponent::Base
+  class SiteHeaderNavigationComponent < ViewComponent::Base # rubocop:disable Metrics/ClassLength
     include Core::ListValidator
 
     # List of allowed format types
@@ -34,7 +34,7 @@ module RS
     # TODO : make the following more configurable/ generic
     def show_cancel_action_only?(path)
       messages_wizard_pages = ['dashboard/messages/upload-documents', 'dashboard/messages/send-message',
-                               'dashboard/messages/new']
+                               'dashboard/messages/new', 'dashboard/messages/your-uploaded-files']
       (path.include?('returns/') && !path.ends_with?('/save_draft') &&
          !path.ends_with?('/declaration_submitted')) || messages_wizard_pages.any? { |page| path.include? page }
     end
@@ -72,8 +72,22 @@ module RS
       logout_item
     end
 
+    # Returns list of url(page links) where sign-in link wont be shown
+    def non_signin_pages
+      pages = %w[access-document enter-passcode download-document]
+      pages.map { |page| "/returns/lbtt_document_details/#{page}/" }
+    end
+
+    # returns true if signin link is to be skipped
+    def skip_signin_link?
+      path = request.path
+      non_signin_pages.any? { |page| path.include? page }
+    end
+
     # Create the menu for an unauthenticated user
     def create_unauthenticated_menu_items
+      return [] if skip_signin_link?
+
       [{ name: t('.login'), link: login_path, current?: current_page?(login_path) }]
     end
 

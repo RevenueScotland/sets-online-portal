@@ -3,13 +3,13 @@
 # Handles login and log out via the Warden security gem.
 class LoginController < ApplicationController # rubocop:disable Metrics/ClassLength
   # Allow specific pages to be unauthenticated
-  skip_before_action :require_user, only: %I[new create unauthenticated destroy session_expired]
+  skip_before_action :require_user?, only: %I[new create unauthenticated? destroy session_expired]
   # Don't stop these pages running because of session expiry
   skip_before_action :check_session_expiry, only: %I[destroy session_expired]
 
   # Skip verifying the CSRF token for the unauthenticated action as the session is reset
   # so the check doesn't work
-  skip_before_action :verify_authenticity_token, only: [:unauthenticated]
+  skip_before_action :verify_authenticity_token, only: [:unauthenticated?]
 
   # Ensure the session is new, any previous user is logged off, then setup the login page user model.
   def new
@@ -51,16 +51,16 @@ class LoginController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   # Login failure action (eg incorrect credentials).  Takes the user back to the login page
   # populating a User model with the error message.
-  def unauthenticated
+  def unauthenticated?
     failure_message = failure_hash
 
     @user, reason = failure_message.values_at :user, :reason
     if reason == :token_required
-      render('token', status: :unprocessable_entity)
+      render('token', status: :unprocessable_content)
     else
       Rails.logger.debug { "User #{@user.username} was unauthenticated and the message was : #{reason}" }
       @user.errors.add(error_attribute(reason), reason)
-      render((reason == :invalid_token ? 'token' : 'new'), status: :unprocessable_entity)
+      render((reason == :invalid_token ? 'token' : 'new'), status: :unprocessable_content)
     end
     false # make sure we don't do anything else login related
   end
@@ -116,12 +116,12 @@ class LoginController < ApplicationController # rubocop:disable Metrics/ClassLen
   def redirect_on_failure(login_form)
     if two_factor?(login_params)
       @user = login_form
-      render('token', status: :unprocessable_entity)
+      render('token', status: :unprocessable_content)
     else
       # Reset session, use previous user object so they see username and validation errors
       logout_process
       @user = login_form
-      render('new', status: :unprocessable_entity)
+      render('new', status: :unprocessable_content)
     end
   end
 
@@ -140,7 +140,7 @@ class LoginController < ApplicationController # rubocop:disable Metrics/ClassLen
     # note the use of the & safe navigation as current_user may be null
     # If this fails they'll get a try again notice, this scenario must be mitigated by the cookie being limited to the
     # browser session.
-    current_user&.logout_back_office
+    current_user&.logout_back_office?
     logout if current_user # destroys the warden session
     reset_session
   end
@@ -155,7 +155,9 @@ class LoginController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   # @return the parameter object's permitted keys and values relating to :user
   def login_params
-    params.require(:user).permit(:username, :password, :token)
+    # Rubocop disable added as this breaks the functionality
+    # https://github.com/rubocop/rubocop-rails/issues/1418
+    params.require(:user).permit(:username, :password, :token) # rubocop:disable Rails/StrongParametersExpect
   end
 
   # @return true if the user has just entered a two factor token
@@ -167,7 +169,7 @@ class LoginController < ApplicationController # rubocop:disable Metrics/ClassLen
   # @param reason [Symbol] the reason for failure
   # @return [Symbol] the attribute to associate the error with
   def error_attribute(reason)
-    return :password if %i[login_invalid].include?(reason)
+    return :password if %i[login_invalid user_locked].include?(reason)
     return :token if %i[invalid_token token_expired token_required].include?(reason)
 
     :base

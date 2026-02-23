@@ -5,8 +5,14 @@
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   # The failure app is called when the user fails to logon. Warden and rack forward to it
   # note the below forwards including the current rack environment
-  manager.failure_app = ->(env) { LoginController.action(:unauthenticated).call(env) }
+  manager.failure_app = ->(env) { LoginController.action(:unauthenticated?).call(env) }
   manager.default_strategies :fl_users_strategy
+end
+
+# Use to get the user ip address from request on successful login
+Warden::Manager.after_set_user do |user, auth|
+  req = ActionDispatch::Request.new(auth.env)
+  user.client_ip = req.remote_ip
 end
 
 # Override standard warden serializer
@@ -43,7 +49,7 @@ Warden::Strategies.add(:fl_users_strategy) do
     Rails.logger.debug { "Authenticate with : #{params[:user][:username]}" }
     username, password, token = params[:user].values_at :username, :password, :token
 
-    check_authentication User.authenticate(username, password, token)
+    check_authentication User.authenticate(username, password, token, request.remote_ip)
   end
 
   # check the user details returned to make sure that the user is authenticated
@@ -63,7 +69,8 @@ Warden::Strategies.add(:fl_users_strategy) do
   # handle the un-authentication case when logging in.
   def handle_unauthenticated(user)
     # check for the account being locked first, as both locked as 2FA are set to TRUE if 2FA is enabled
-    return :login_invalid if user.nil? || user.user_locked
+    return :user_locked if user.user_locked
+    return :login_invalid if user.nil?
     return :invalid_token if user.token_invalid?
     return :token_expired if user.token_expired?
     return :token_required if user.user_is2_fa

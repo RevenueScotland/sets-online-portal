@@ -6,9 +6,9 @@ module UserLogin
   # Logs this authenticate user out of the back office, NOT the app.
   # Called by @see LoginController#logout.  Call @see LoginController#logout to actually log out.
   # Logs and ignores any StandardError exceptions so we can still log out of the app later.
-  def logout_back_office
+  def logout_back_office?
     # NOTE: the back office is case sensitive but this is from the model which is already upcase
-    call_ok?(:log_off_user, Username: username)
+    call_ok?(:log_off_user, Username: username, RequestParameters: { 'ns1:ClientIP' => client_ip })
   end
 
   # @return true if the token is invalid, otherwise false
@@ -38,8 +38,8 @@ module UserLogin
     # @param password [String] the password to check, set to nil to do 2 factor authentication
     # @param token [String] the token to check, set to nil to do username/password authentication
     # @return an authenticated/un-authenticated user or else nil if the call fails, or the back office fails
-    def authenticate(username, password, token)
-      return username_password_authenticate(username, password) unless password.nil?
+    def authenticate(username, password, token, client_ip)
+      return username_password_authenticate(username, password, client_ip) unless password.nil?
       return two_factor_authenticate(username, token) unless token.nil?
 
       nil
@@ -51,11 +51,12 @@ module UserLogin
     # @param username [String] the username to check
     # @param password [String] the password to check
     # @return an authenticated/un-authenticated user or else nil if the call fails, or the back office fails
-    def username_password_authenticate(username, password)
+    def username_password_authenticate(username, password, client_ip)
       user = nil
 
       # NOTE: We need to uppercase the username as back office is case sensitive
-      call_ok?(:authenticate_user, Username: username.upcase, Password: password) do |body|
+      call_ok?(:authenticate_user, Username: username.upcase, Password: password,
+                                   RequestParameters: { 'ns1:ClientIP' => client_ip }) do |body|
         user = from_backoffice body, username
       end
 

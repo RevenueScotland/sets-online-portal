@@ -6,10 +6,10 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '>= 3.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.0'
+gem 'rails', '~> 8.0'
 # Use Puma as the app server
-gem 'propshaft', '~> 1.1.0'
-gem 'puma', '~> 6.0'
+gem 'propshaft', '~> 1.3.0'
+gem 'puma', '~> 7.0'
 gem 'rack', '~> 3.0'
 
 # Transpile app-like JavaScript. Read more: https://github.com/rails/jsbundling-rails
@@ -19,8 +19,9 @@ gem 'jsbundling-rails'
 gem 'turbo-rails', '~>2.0'
 # Stimulus https://github.com/hotwired/stimulus-rails
 gem 'stimulus-rails'
+# Locked the version to 3.0, refer RSTP-1766
 # Include view component
-gem 'view_component'
+gem 'view_component', '~>3.0'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.9'
@@ -29,6 +30,11 @@ gem 'redis'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '~> 1.4', require: false
+
+# Adding fiddle which will be default gem for future version
+# gem 'fiddle'
+# Adding win32ole which will be default gem for future version
+# gem 'win32ole'
 
 # HTTP user agent parser
 gem 'useragent', '~> 0.16'
@@ -44,10 +50,11 @@ gem 'httparty', '~> 0.17'
 # You may need to install this separately to use the non windows version
 # gem install ruby-prof --platform RUBY
 # bundle update --local
-gem 'ruby-prof', '~> 1.0'
+# RSTP-1621: Commented the ruby-prof as not supporting to ruby upgrade
+# gem 'ruby-prof', '~> 1.0'
 
 # Ruby ZIP utils
-gem 'rubyzip', '~> 2.0'
+gem 'rubyzip', '~> 3.0'
 
 # Ruby/ClamAV wrapper
 gem 'clamby'

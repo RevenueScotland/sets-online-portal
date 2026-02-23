@@ -18,15 +18,8 @@ SET http_target_host_url = REPLACE(REPLACE(http_target_host_url,'<server>','ps-n
 WHERE http_description like 'NDIPS%'
 AND http_target_host_url like '%<server>:<port>%';
 
-UPDATE parameters
-SET prm_value = 'N'
-WHERE prm_code = 'IS_2FA_ENABLED'
-AND prm_domain = 'PWS';
-
-UPDATE parameters
-SET prm_value = 'N'
-WHERE prm_code = 'ENABLE_BO_2FA'
-AND prm_domain = 'SYSTEM';
+UPDATE workplaces 
+SET wrk_mfa_method = 'DISABLED';
 
 DECLARE
  l_db_name VARCHAR2(500);
@@ -103,6 +96,52 @@ WHERE wsp_srv_code = 'LBTT'
 AND wsp_wrk_refno = 1
 AND wsp_sprm_code in ('PWS_WARN_PAST_DAYS');
 
+Update workplace_service_parameters 
+set WSP_VALUE='01-JAN-2099'
+where WSP_SPRM_CODE='ADS_LEG_RELEASE_DATE'
+and WSP_SRV_CODE='LBTT'
+and WSP_WRK_REFNO=1;
+
+DELETE system_activity_audit
+WHERE SAA_CREATED_BY = 'EXTPWSUSER';
+
+DELETE FROM secure_messages;
+DELETE FROM transaction_matches;
+DELETE FROM transactions;
+DELETE FROM case_links;
+DELETE FROM cash_messages;
+DELETE FROM case_status_histories;
+DELETE FROM case_party_links;
+DELETE FROM return_repayments;
+DELETE FROM potential_transactions;
+DELETE FROM document_notes;
+DELETE FROM lbtt_return_party_links;
+DELETE FROM fiac_party_links;
+DELETE FROM tax_return_schedule_types;
+DELETE FROM tax_return_schedules;
+DELETE FROM tax_return_party_links;
+DELETE FROM trd_location_breakdown;
+DELETE FROM trv_location_details;
+DELETE FROM taxable_locations;
+DELETE FROM enrolment_period_parties;
+DELETE FROM enrolment_periods;
+DELETE FROM tax_return_versions;
+DELETE FROM Contact_details where CDE_CREATED_BY like '%PORTAL%' OR CDE_CREATED_BY like 'EXTPWSUSER';
+delete from ADDRESS_USAGES
+where AUS_CREATED_BY like '%PORTAL%';
+DELETE FROM parties where  PAR_CREATED_BY='PORTAL.NEW.USERS';
+DELETE from lbtt_properties 
+where LPPR_PRO_REFNO in (
+select pro_refno from properties 
+wHERE (PRO_CREATED_BY='PORTAL.NEW.USERS'
+OR PRO_CREATED_BY='EXTPWSUSER')
+);
+
+Delete from properties 
+WHERE (PRO_CREATED_BY='PORTAL.NEW.USERS' OR  PRO_CREATED_BY='EXTPWSUSER');
+DELETE  FROM ADDRESSES_HISTORY
+WHERE ADRH_ADR_REFNO NOT IN (SELECT ADR_REFNO FROM ADDRESSES);
+COMMIT;
 
 DECLARE
 
@@ -137,11 +176,11 @@ DECLARE
   -- The amendable and non amendable date need to be updated once a year at the beginning of august
   -- Then update the same dates in the dashboard_returns.feature
   -- Also update the dates in the lbtt_returns.feature file
-  AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2024';
+  AMENDABLE_DATE VARCHAR2(12) := '01-JUL-2025';
   NON_AMENDABLE_DATE VARCHAR2(12) := '01-JUN-2022';
   -- This is set to a few days before the amendable date for older versions
-  SLFT_SUBMITTED_DATE VARCHAR2(12) := '19-JUN-2024';
-  SLFT_AMENDABLE_YEAR VARCHAR2(4) := '2024';
+  SLFT_SUBMITTED_DATE VARCHAR2(12) := '19-JUN-2025';
+  SLFT_AMENDABLE_YEAR VARCHAR2(4) := '2025';
   
       PROCEDURE create_or_maintain_cde(p_par_refno parties.par_refno%TYPE,
          p_cde_cme_code contact_details.cde_cme_code%TYPE,
@@ -345,6 +384,8 @@ BEGIN
   -- Delete the rest of the party data
   DELETE FROM landfill_sites WHERE lasi_controller_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM landfill_sites WHERE lasi_refno IN (99,100);
+  DELETE FROM ADDRESSES WHERE adr_refno in (select  LASI_ADR_REFNO from landfill_sites WHERE lasi_refno IN (99,100));
+  
   DELETE FROM case_party_links WHERE cpli_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM lbtt_return_party_links WHERE lpli_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM secure_messages WHERE smsg_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
@@ -353,9 +394,9 @@ BEGIN
   DELETE FROM return_repayments WHERE rrep_claimant_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM return_repayments WHERE rrep_par_refno IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM contact_details WHERE cde_object_reference IN (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
-  DELETE FROM case_return_links WHERE crli_case_refno in (SELECT case_refno FROM cases WHERE case_created_by = 'EXTPWSUSER');
-  DELETE FROM case_links WHERE cali_case_refno IN (SELECT case_refno FROM cases WHERE case_reference LIKE 'PORTAL.%');
-  DELETE FROM cases WHERE case_reference LIKE 'PORTAL.%' OR  case_created_by = 'EXTPWSUSER';
+  DELETE FROM case_return_links WHERE crli_case_refno in (SELECT case_refno FROM cases WHERE case_reference LIKE 'PORTAL.%' OR  case_created_by = 'EXTPWSUSER' OR case_created_by like  '%PORTAL%');
+  DELETE FROM case_links WHERE cali_case_refno IN (SELECT case_refno FROM cases WHERE case_reference LIKE 'PORTAL.%' OR  case_created_by = 'EXTPWSUSER' OR case_created_by like  '%PORTAL%');
+  DELETE FROM cases WHERE case_reference LIKE 'PORTAL.%' OR  case_created_by = 'EXTPWSUSER' OR case_created_by like  '%PORTAL%';
   DELETE FROM alternate_references WHERE alre_alrt_object_type = 'PAR' AND alre_object_reference in (SELECT par_refno FROM parties WHERE par_com_company_name like 'Test Portal Company%');
   DELETE FROM parties WHERE par_com_company_name like 'Test Portal Company%';
 
@@ -3798,7 +3839,7 @@ BEGIN
    VALUES (TRST_SEQ.NEXTVAL, l_enrm_refno, '01-JUN-24', NULL, 'ST4', 'SCHEDULETYPES', 1, 'SAT');
    
    INSERT INTO schd_type_return_periods(STRP_REFNO, STRP_FPROF_CODE, STRP_FPROF_DOMAIN, STRP_FPROF_SRV_CODE, STRP_FPROF_WRK_REFNO, STRP_START_DATE, STRP_END_DATE, STRP_DESCRIPTION)
-   VALUES(STRP_SEQ.NEXTVAL, 'ST4','SCHEDULETYPES','SAT',1,'01-JUN-2024','30-JUN-2024','Period 1')
+   VALUES(STRP_SEQ.NEXTVAL, 'ST4','SCHEDULETYPES','SAT',1,'01-JUN-2025','30-JUN-2025','Period 1')
    RETURNING STRP_REFNO INTO l_strp_refno;
 
    dbms_output.put_line('l_strp_refno : ' || l_strp_refno );
@@ -3835,7 +3876,7 @@ BEGIN
    VALUES(l_par_Refno,'TARE_REFNO',l_tare_refno, 'Y');
    
    INSERT INTO schd_type_return_periods(STRP_REFNO, STRP_FPROF_CODE, STRP_FPROF_DOMAIN, STRP_FPROF_SRV_CODE, STRP_FPROF_WRK_REFNO, STRP_START_DATE, STRP_END_DATE, STRP_DESCRIPTION)
-   VALUES(STRP_SEQ.NEXTVAL, 'ST4','SCHEDULETYPES','SAT',1,'01-JUL-2024','31-JUL-2024','Period 2')
+   VALUES(STRP_SEQ.NEXTVAL, 'ST4','SCHEDULETYPES','SAT',1,'01-JUL-2025','31-JUL-2025','Period 2')
    RETURNING STRP_REFNO INTO l_strp_refno;
 
    dbms_output.put_line('l_strp_refno : ' || l_strp_refno );
@@ -4113,7 +4154,7 @@ BEGIN
   (l_par_Refno,'ENRM_REFNO', l_enrm_refno);
 
    INSERT INTO tax_return_schedule_types(TRST_REFNO, TRST_ENRM_REFNO, TRST_START_DATE, TRST_END_DATE, TRST_FSCH_CODE, TRST_FSCH_FRD_DOMAIN, TRST_FSCH_WRK_REFNO, TRST_FSCH_SRV_CODE)
-   VALUES (TRST_SEQ.NEXTVAL, l_enrm_refno, '01-JUN-24', NULL, 'ST4', 'SCHEDULETYPES', 1, 'SAT');
+   VALUES (TRST_SEQ.NEXTVAL, l_enrm_refno, '01-JUN-25', NULL, 'ST4', 'SCHEDULETYPES', 1, 'SAT');
    
    SELECT strp_refno
    INTO l_strp_seq
@@ -4122,11 +4163,11 @@ BEGIN
    AND strp_fprof_domain = 'SCHEDULETYPES'
    AND strp_fprof_srv_code = 'SAT'
    AND strp_fprof_wrk_refno = 1
-   AND strp_start_date = '01-JUN-2024'; 
+   AND strp_start_date = '01-JUN-2025'; 
    dbms_output.put_line('l_strp_refno : ' || l_strp_refno );
 
    INSERT INTO schd_returns_period_breakdown(SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
-   VALUES( srpb_seq.nextval, l_strp_refno, '01-JUN-2024', '30-JUN-2024');
+   VALUES( srpb_seq.nextval, l_strp_refno, '01-JUN-2025', '30-JUN-2025');
    
    INSERT INTO tax_returns (tare_refno, tare_reference, tare_srv_code)
    VALUES(tare_seq.nextval,'RS10000001RPTQ','SAT')
@@ -4135,10 +4176,10 @@ BEGIN
    dbms_output.put_line('l_tare_refno : ' || l_tare_refno );
 
    INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_method, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
-   VALUES (l_tare_refno,1,'L','P','25-JUN-2024','01-JUN-2024','30-JUN-2024', l_enrm_refno,TRUNC(SYSDATE),'BACS','PAYMENT TYPE',1,'SAT');
+   VALUES (l_tare_refno,1,'L','P','25-JUN-2025','01-JUN-2025','30-JUN-2025', l_enrm_refno,TRUNC(SYSDATE),'BACS','PAYMENT TYPE',1,'SAT');
 
    INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END, TRS_TARE_REFNO, TRS_RETURN_STATUS)
-   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_refno,'01-JUN-2024','30-JUN-2024',l_tare_refno,'FILED')
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_refno,'01-JUN-2025','30-JUN-2025',l_tare_refno,'FILED')
    RETURNING TRS_REFNO INTO l_trs_refno;
 
    INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)
@@ -4148,10 +4189,10 @@ BEGIN
    VALUES (l_tare_refno, 1, l_enr_par_refno, 1, NULL, NULL, 'ENROLMENT', 'CASEPARTYLINKS', 1, 'SAT');
 
    INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
-   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno1, l_tare_refno, 1, '01-JUN-24', '30-JUN-24', 431.00, 344.00, 874.93, 759.00, 115.93);
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno1, l_tare_refno, 1, '01-JUN-25', '30-JUN-25', 431.00, 344.00, 874.93, 759.00, 115.93);
 
    INSERT INTO trv_location_details(TLD_REFNO, TLD_TAXL_REFNO, TLD_TARE_REFNO, TLD_TARE_VERSION, TLD_START_DATE, TLD_END_DATE, TLD_TAXABLE_TONNAGE, TLD_EXEMPT_TONNAGE, TLD_TAX_DUE, TLD_TAX_CREDITS, TLD_TAX_PAYABLE)
-   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno2, l_tare_refno, 1, '01-JUN-24', '30-JUN-24', 786.00, 1118.00, 1595.58, 1191, 404.58);
+   VALUES(TLD_SEQ.NEXTVAL, l_taxl_refno2, l_tare_refno, 1, '01-JUN-25', '30-JUN-25', 786.00, 1118.00, 1595.58, 1191, 404.58);
 
    INSERT INTO portal_object_access(POA_PORTAL_PAR_REFNO,POA_OBJECT_TYPE,POA_OBJECT_REFERENCE, POA_CURRENT_IND)
    VALUES(l_par_Refno,'TARE_REFNO',l_tare_refno, 'Y');
@@ -4284,24 +4325,21 @@ BEGIN
 
    INSERT INTO tax_return_versions (trv_tare_refno, trv_version, trv_latest_draft_ind, trv_source, trv_submitted_date, trv_start_date, trv_end_date, trv_enrm_refno, trv_declaration_date, trv_fpay_method, trv_fpay_frd_domain, trv_fpay_wrk_refno, trv_fpay_srv_code)
    VALUES (l_tare_refno,1,'L','P','28-FEB-2025','01-DEC-2024','28-FEB-2025', l_enrm_refno,TRUNC(SYSDATE),'BACS','PAYMENT TYPE',1,'SAT');
-    
-   SELECT strp_refno
-   INTO l_strp_seq
-   FROM schd_type_return_periods
-   WHERE strp_fprof_code = 'ST3'
-   AND strp_fprof_domain = 'SCHEDULETYPES'
-   AND strp_fprof_srv_code = 'SAT'
-   AND strp_fprof_wrk_refno = 1
-   AND strp_start_date = '01-DEC-24';
+   
+   INSERT INTO schd_type_return_periods(STRP_REFNO, STRP_FPROF_CODE, STRP_FPROF_DOMAIN, STRP_FPROF_SRV_CODE, STRP_FPROF_WRK_REFNO, STRP_START_DATE, STRP_END_DATE, STRP_DESCRIPTION)
+   VALUES(STRP_SEQ.NEXTVAL, 'ST3','SCHEDULETYPES','SAT',1,TO_DATE('01-DEC-2024', 'DD-MON-RRRR HH24:MI:SS'),TO_DATE('28-FEB-2025', 'DD-MON-RRRR HH24:MI:SS'),'Period 4')
+   RETURNING STRP_REFNO INTO l_strp_refno;
+
+   dbms_output.put_line('l_strp_refno : ' || l_strp_refno );
 
    INSERT INTO schd_returns_period_breakdown(SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
-   VALUES( srpb_seq.nextval, l_strp_seq, '01-DEC-24', '31-DEC-24');
+   VALUES( srpb_seq.nextval, l_strp_refno, '01-DEC-24', '31-DEC-24');
 
    INSERT INTO schd_returns_period_breakdown(SRPB_REFNO, SRPB_STRP_REFNO, SRPB_START_DATE, SRPB_END_DATE)
-   VALUES( srpb_seq.nextval, l_strp_seq, '01-JAN-2025', '28-FEB-2025');
+   VALUES( srpb_seq.nextval, l_strp_refno, '01-JAN-2025', '28-FEB-2025');
 
    INSERT INTO tax_return_schedules( TRS_REFNO, TRS_ENRM_REFNO, TRS_STRP_REFNO, TRS_PERIOD_START, TRS_PERIOD_END, TRS_TARE_REFNO, TRS_RETURN_STATUS)
-   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_seq,'01-DEC-2024','28-FEB-2025',l_tare_refno,'FILED')
+   VALUES(TRS_SEQ.NEXTVAL,l_enrm_refno,l_strp_refno,'01-DEC-2024','28-FEB-2025',l_tare_refno,'FILED')
    RETURNING TRS_REFNO INTO l_trs_refno;
 
    INSERT INTO tax_return_party_links(TRPL_TARE_REFNO, TRPL_TARE_VERSION, TRPL_PARH_PAR_REFNO, TRPL_PARH_VERSION, TRPL_LEAD_IND, TRPL_GROUP_CONTROLLER_IND, TRPL_FLINK_TYPE, TRPL_FLINK_FRD_DOMAIN, TRPL_FLINK_WRK_REFNO, TRPL_FLINK_SRV_CODE)

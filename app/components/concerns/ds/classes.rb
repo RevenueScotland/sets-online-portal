@@ -13,12 +13,14 @@ module DS
     # @return [String] The correct width class
     attr_reader :ds_width_class
 
-    private
-
     # Allowed widths for the Digital Scotland width option if it is numeric
     ALLOWED_NUMERIC_WIDTHS = [2, 3, 4, 5, 10, 20].freeze
     # Allowed widths for the Digital Scotland width option if it is a string
     ALLOWED_STRING_WIDTHS = %w[three-quarters two-thirds one-half one-third one-quarter].freeze
+
+    private_constant :ALLOWED_NUMERIC_WIDTHS, :ALLOWED_STRING_WIDTHS
+
+    private
 
     # Validates that the supplied width is one of the valid widths support by the Digital Scotland styles
     # and stores the correct width class in gds_width_class for later access

@@ -1,8 +1,11 @@
+<% if %w[BUYER TENANT].include? @party.party_type %>
+  <%= ds_warning{ t("returns.lbtt.common.accurate_tp_info")} %>
+<% end %>
 <% content_for(:page_title, t('.'+@party.party_type+ '_title')) %>
 <%= ds_form_with(model: @party, url: @post_path, method: :post) do |f| %>
   <%= f.ds_select(method: :title, select_options: @party.list_ref_data(:title), width: 10, optional: true, readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false) %>
-  <%= f.ds_text_field(method: :firstname, readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false) %>
-  <%= f.ds_text_field(method: :surname, readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false) %>
+  <%= f.ds_text_field(method: :firstname, readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false, data_options: { skip_special_chars: true }) %>
+  <%= f.ds_text_field(method: :surname, readonly: @party.party_type == 'TENANT' && @party.pre_populated? ? true : false, data_options: { skip_special_chars: true }) %>
   <% if !%w[SELLER LANDLORD].include?(@party.party_type) %>
     <% if @party.party_type != 'NEWTENANT'%>
       <%= f.ds_text_field(method: :telephone) %>

@@ -26,7 +26,7 @@ module RevScot
   # Main application class
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.1
+    config.load_defaults 8.0
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -136,7 +136,6 @@ module RevScot
     # alias as CSV files are seen as Excel files if excel is installed on the users device
     # not combined with the above so that this is not shown to the users as a valid file type to upload.
     config.x.slft_waste_file_upload_alias_content_type_allowlist = 'application/vnd.ms-excel'
-    config.x.sat_site_file_upload_alias_content_type_allowlist = 'application/vnd.ms-excel'
     config.x.sat_file_upload_alias_content_type_allowlist = 'application/vnd.ms-excel'
 
     # When a file is uploaded but the client doesn't know it's content/mime type, it sends it with the following
@@ -169,6 +168,7 @@ module RevScot
     config.x.scheduled_jobs.delete_temp_files_job_run_every = 2.hours
 
     config.x.scheduled_jobs.refresh_system_notice_every = 60.minutes
+    config.x.scheduled_jobs.refresh_code_xref_data_every = 15.minutes
 
     # Cache expiry times
     config.x.accounts.cache_expiry = 10.minutes
@@ -186,6 +186,9 @@ module RevScot
 
     # Set max file name allowed for messages upload feature
     config.x.file_upload_file_name_limit = 100
+
+    # File name format allowed for uploaded file
+    config.x.file_upload_file_name_format_allowed = /^[a-zA-Z0-9_-]+[^\\;.]+\.[a-zA-Z0-9_-]+$/
 
     config.after_initialize do
       # After initialisation log that we have stared

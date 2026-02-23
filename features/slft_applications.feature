@@ -58,7 +58,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Landfill operator address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Landfill operator address" page
 
         When I click on the "Continue" button
@@ -111,7 +111,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Site address" page
 
         When I click on the "Continue" button
@@ -137,7 +137,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Site address" page
 
         When I click on the "Continue" button
@@ -198,12 +198,28 @@ Feature: Slft applications
 
         When I enter "A description for the hidden Other text field" in the "applications_slft_applications_supporting_document_other_description" field
         And I click on the "Continue" button
-        Then I should see the "Declaration" page
-        When I click on the "Back" link
-        Then I should see the "Supporting documentation" page
-        And I should see the text "A description for the hidden Other text field" in field "applications_slft_applications_supporting_document_other_description"
+        Then I should see the "Upload your supporting file" page
+        When I upload "testjpg.jpg" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a jpg file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
 
-        When I uncheck the "Other" checkbox
+        Then I should see the "Your uploaded files" page
+        And I should see a link to the file "testjpg.jpg"
+        And I check the "Yes, I have more file(s) to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
+        And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting file" page
+        When I upload "testdocx.docx" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a docx file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Your uploaded files" page
+        When I click on the "testdocx.docx" link to download a file
+        Then I should see the downloaded content "testdocx.docx"
+        Then I should see the "Your uploaded files" page
+        And I click on the "Continue" button
+        Then I should receive the message "Do you want to upload any further supporting file(s) can't be blank"
+        And I check the "No, I have no further files to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
         And I click on the "Continue" button
 
         Then I should see the "Declaration" page
@@ -230,36 +246,6 @@ Feature: Slft applications
         # test case to download Receipt on last application submit page
         When I click on the "Download details of application" link to download a file
         Then I should see the downloaded "CASE" content of "SLFT"
-
-        # test case to check upload, download and remove multiple supporting document functionality
-
-        # Click "Upload document" button without selecting a file
-        When I click on the "Upload file" button
-        Then I should see the "Your application has been sent to Revenue Scotland" page
-        And I should receive the message "File can't be blank"
-
-        # Upload document
-        When I upload "testjpg.jpg" to "applications_slft_applications_resource_item_default_file_data"
-        And I enter "Other - This is a docx file" in the "Description of the uploaded file (optional)" field
-        And I click on the "Upload file" button
-        Then I should see the "Your application has been sent to Revenue Scotland" page
-        And I should see a link to the file "testjpg.jpg"
-
-        # Upload one more document
-        When I upload "testdocx.docx" to "applications_slft_applications_resource_item_default_file_data"
-        And I enter "Other - This is a docx file" in the "Description of the uploaded file (optional)" field
-        And I click on the "Upload file" button
-        Then I should see the "Your application has been sent to Revenue Scotland" page
-        And I should see a link to the file "testdocx.docx"
-
-        # Remove document
-        And I click on the 1 st "Delete file" button
-        Then I should see the "Your application has been sent to Revenue Scotland" page
-        And I should not see a link to the file "testjpg.jpg"
-
-        # Download document
-        When I click on the "testdocx.docx" link to download a file
-        Then I should see the downloaded content "testdocx.docx"
 
     Scenario: Slft application with Landfill Operator - Non disposal area
 
@@ -328,7 +314,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Landfill operator address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Landfill operator address" page
         When I click on the "Continue" button
         Then I should see the "Landfill sites" page
@@ -345,7 +331,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Non-disposal area site details" page
@@ -375,6 +361,34 @@ Feature: Slft applications
         When I check the "Other" checkbox
         And I enter "A description for the hidden Other text field" in the "applications_slft_applications_supporting_document_other_description" field
         And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting file" page
+        When I upload "testjpg.jpg" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a jpg file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Your uploaded files" page
+        And I should see a link to the file "testjpg.jpg"
+        And I check the "Yes, I have more file(s) to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
+        And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting file" page
+        When I upload "testdocx.docx" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a docx file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Your uploaded files" page
+        # Remove document
+        And I click on the 1 st "Delete file" button
+        Then I should see the "Your uploaded files" page
+        And I should not see a link to the file "testjpg.jpg"
+        When I click on the "testdocx.docx" link to download a file
+        Then I should see the downloaded content "testdocx.docx"
+        Then I should see the "Your uploaded files" page
+        And I click on the "Continue" button
+        Then I should receive the message "Do you want to upload any further supporting file(s) can't be blank"
+        And I check the "No, I have no further files to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
+        And I click on the "Continue" button
         Then I should see the "Declaration" page
 
         When I enter "Organisation name" in the "Full name" field
@@ -398,9 +412,11 @@ Feature: Slft applications
         Then I should see the "Choose required application" page
 
         When I check the "Restoration notification" radio button in answer to the question "What application are you completing?"
+        Then the radio button "Restoration notification" should be selected in answer to the question "What application are you completing?"
         And I click on the "Continue" button
         Then I should see the "Review or new application" page
         When I check the "No" radio button in answer to the question "Is this application a review of an existing agreement?"
+        Then the radio button "No" should be selected in answer to the question "Is this application a review of an existing agreement?"
         And I click on the "Continue" button
         Then I should see the "Landfill operator details" page
 
@@ -415,7 +431,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Landfill operator address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Landfill operator address" page
         When I click on the "Continue" button
         Then I should see the "Landfill sites" page
@@ -432,7 +448,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Site restoration details" page
@@ -446,6 +462,7 @@ Feature: Slft applications
         And I should receive the message "Estimated tonnage can't be blank"
 
         When I check the "Full" radio button in answer to the question "Is this a part or full site restoration?"
+        Then the radio button "Full" should be selected in answer to the question "Is this a part or full site restoration?"
         And I enter "12345678" in the "Provide an estimate of the timescale for the restoration exercise" field
         And I click on the "Continue" button
         Then I should receive the message "Type of waste can't be blank"
@@ -474,7 +491,38 @@ Feature: Slft applications
         Then I should see the "Supporting documentation" page
 
         When I check the "Details of how you have calculated the total of site restoration material" checkbox
+        Then the checkbox "Details of how you have calculated the total of site restoration material" should be checked
         And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting file" page
+        When I upload "testjpg.jpg" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a jpg file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Your uploaded files" page
+        And I should see a link to the file "testjpg.jpg"
+        And I check the "Yes, I have more file(s) to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
+        Then the radio button "Yes, I have more file(s) to upload" should be selected in answer to the question "Do you want to upload any further supporting file(s)"
+        And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting file" page
+        When I upload "testdocx.docx" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a docx file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Your uploaded files" page
+        # Remove document
+        And I click on the 1 st "Delete file" button
+        Then I should see the "Your uploaded files" page
+        And I should not see a link to the file "testjpg.jpg"
+        When I click on the "testdocx.docx" link to download a file
+        Then I should see the downloaded content "testdocx.docx"
+        Then I should see the "Your uploaded files" page
+        And I click on the "Continue" button
+        Then I should receive the message "Do you want to upload any further supporting file(s) can't be blank"
+        When I check the "No, I have no further files to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
+        Then the radio button "No, I have no further files to upload" should be selected in answer to the question "Do you want to upload any further supporting file(s)"
+        When I click on the "Continue" button
         Then I should see the "Declaration" page
 
         When I enter "Organisation name" in the "Full name" field
@@ -482,7 +530,9 @@ Feature: Slft applications
         And I enter "0123456789" in the "Telephone" field
         And I enter "test@gmail.com" in the "Email address" field
         And I check the "applications_slft_applications_declaration" checkbox
+        Then the checkbox "applications_slft_applications_declaration" should be checked
         And I check the "applications_slft_applications_change_declaration" checkbox
+        Then the checkbox "applications_slft_applications_change_declaration" should be checked
         And I click on the "Submit" button
         Then I should see the "Your application has been sent to Revenue Scotland" page
 
@@ -512,7 +562,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Landfill operator address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Landfill operator address" page
         When I click on the "Continue" button
         Then I should see the "Landfill sites" page
@@ -529,7 +579,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Site waste details" page
@@ -574,9 +624,43 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Waste producer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Waste producer address" page
         When I click on the "Continue" button
+
+        Then I should see the "Supporting documentation" page
+
+        When I check the "Evidence of the water content (naturally and added) of the waste (mandatory)" checkbox
+        And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting file" page
+        When I upload "testjpg.jpg" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a jpg file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Your uploaded files" page
+        And I should see a link to the file "testjpg.jpg"
+        And I check the "Yes, I have more file(s) to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
+        And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting file" page
+        When I upload "testdocx.docx" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a docx file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Your uploaded files" page
+        # Remove document
+        And I click on the 1 st "Delete file" button
+        Then I should see the "Your uploaded files" page
+        And I should not see a link to the file "testjpg.jpg"
+        When I click on the "testdocx.docx" link to download a file
+        Then I should see the downloaded content "testdocx.docx"
+        Then I should see the "Your uploaded files" page
+        And I click on the "Continue" button
+        Then I should receive the message "Do you want to upload any further supporting file(s) can't be blank"
+        And I check the "No, I have no further files to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
+        And I click on the "Continue" button
+
         Then I should see the "Declarations" page
 
         When I enter "Full Name" in the "Full name" field
@@ -624,7 +708,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Waste producer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Waste producer address" page
         When I click on the "Continue" button
         Then I should see the "About the waste water" page
@@ -708,7 +792,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Separate mailing address for landfill operator" page
@@ -743,7 +827,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Separate mailing address for landfill operator" page
@@ -773,7 +857,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "9 Rydal Avenue, Tilehurst, READING, RG30 6XT" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Site address" page
         When I click on the "Continue" button
         Then I should see the "Separate mailing address for landfill operator" page
@@ -795,8 +879,36 @@ Feature: Slft applications
         Then I should see the "Supporting documentation" page
         When I click on the "Continue" button
         Then I should see the "Supporting documentation" page
-        And I should receive the message "Evidence of the water content (naturally and added) of the waste must be accepted"
+        And I should receive the message "Evidence of the water content (naturally and added) of the waste must be provided"
         When I check the "Evidence of the water content (naturally and added) of the waste (mandatory)" checkbox
+        And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting file" page
+        When I upload "testjpg.jpg" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a jpg file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Your uploaded files" page
+        And I should see a link to the file "testjpg.jpg"
+        And I check the "Yes, I have more file(s) to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
+        And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting file" page
+        When I upload "testdocx.docx" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a docx file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Your uploaded files" page
+        # Remove document
+        And I click on the 1 st "Delete file" button
+        Then I should see the "Your uploaded files" page
+        And I should not see a link to the file "testjpg.jpg"
+        When I click on the "testdocx.docx" link to download a file
+        Then I should see the downloaded content "testdocx.docx"
+        Then I should see the "Your uploaded files" page
+        And I click on the "Continue" button
+        Then I should receive the message "Do you want to upload any further supporting file(s) can't be blank"
+        And I check the "No, I have no further files to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
         And I click on the "Continue" button
         Then I should see the "Declaration" page
 
@@ -816,31 +928,6 @@ Feature: Slft applications
         # test case to download Receipt on last application submit page
         When I click on the "Download details of application" link to download a file
         Then I should see the downloaded "CASE" content of "SLFT"
-
-        # test case to check upload, download and remove multiple supporting document functionality
-
-        # Upload document
-        When I upload "testjpg.jpg" to "applications_slft_applications_resource_item_default_file_data"
-        And I enter "Other - This is a docx file" in the "Description of the uploaded file (optional)" field
-        And I click on the "Upload file" button
-        Then I should see the "Your application has been sent to Revenue Scotland" page
-        And I should see a link to the file "testjpg.jpg"
-
-        # Upload one more document
-        When I upload "testdocx.docx" to "applications_slft_applications_resource_item_default_file_data"
-        And I enter "Other - This is a docx file" in the "Description of the uploaded file (optional)" field
-        And I click on the "Upload file" button
-        Then I should see the "Your application has been sent to Revenue Scotland" page
-        And I should see a link to the file "testdocx.docx"
-
-        # Remove document
-        When I click on the 1 st "Delete file" button
-        Then I should see the "Your application has been sent to Revenue Scotland" page
-        And I should not see a link to the file "testjpg.jpg"
-
-        # Download document
-        When I click on the "testdocx.docx" link to download a file
-        Then I should see the downloaded content "testdocx.docx"
 
     # This scenario is of type Waste producer - Water discounted
     #    Two sites are added with same SLft registration number for both
@@ -869,7 +956,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Waste producer address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Waste producer address" page
         When I click on the "Continue" button
         Then I should see the "About the waste water" page
@@ -916,7 +1003,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Site address" page
 
         When I click on the "Continue" button
@@ -950,7 +1037,7 @@ Feature: Slft applications
         And I click on the "Find address" button
         Then I should see the "Site address" page
         When I select "Grosmont Wood Farm, Grosmont, ABERGAVENNY, NP7 8LB" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Site address" page
 
         When I click on the "Continue" button
@@ -976,8 +1063,36 @@ Feature: Slft applications
         When I check the "Results of the analysis referred to in your approval letter (Review/Renew only)" checkbox
         And I click on the "Continue" button
         Then I should see the "Supporting documentation" page
-        And I should receive the message "Evidence of the water content (naturally and added) of the waste must be accepted"
+        And I should receive the message "Evidence of the water content (naturally and added) of the waste must be provided"
         When I check the "Evidence of the water content (naturally and added) of the waste (mandatory)" checkbox
+        And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting file" page
+        When I upload "testjpg.jpg" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a jpg file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Your uploaded files" page
+        And I should see a link to the file "testjpg.jpg"
+        And I check the "Yes, I have more file(s) to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
+        And I click on the "Continue" button
+
+        Then I should see the "Upload your supporting file" page
+        When I upload "testdocx.docx" to "applications_slft_applications_resource_item_default_file_data"
+        And I enter "Other - This is a docx file" in the "Description of the uploaded file (optional)" field
+        And I click on the "Continue" button
+
+        Then I should see the "Your uploaded files" page
+        # Remove document
+        And I click on the 1 st "Delete file" button
+        Then I should see the "Your uploaded files" page
+        And I should not see a link to the file "testjpg.jpg"
+        When I click on the "testdocx.docx" link to download a file
+        Then I should see the downloaded content "testdocx.docx"
+        Then I should see the "Your uploaded files" page
+        And I click on the "Continue" button
+        Then I should receive the message "Do you want to upload any further supporting file(s) can't be blank"
+        And I check the "No, I have no further files to upload" radio button in answer to the question "Do you want to upload any further supporting file(s)"
         And I click on the "Continue" button
 
         Then I should see the "Declaration" page

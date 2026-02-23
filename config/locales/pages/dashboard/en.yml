@@ -50,8 +50,12 @@ en:
         title: "Upload your supporting file"
       send_message:
         title: "Send message"
-        send: "Send Message"
+        send: "Send message"
         upload_supporting_files: "Upload supporting files"
         add_file: "Add a file"
         add_additional_file: "Add additional file"
         upload_files_hint: "Once you have added a file it will be listed here. A maximum of ten files can be added to a message."
+      your_uploaded_files:
+        title: "Your uploaded files"
+        continue: "Continue"
+        sub_title: "A maximum of %{max_upload_limit} files can be uploaded"

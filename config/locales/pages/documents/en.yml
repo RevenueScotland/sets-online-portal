@@ -1,0 +1,37 @@
+en:
+  document:
+    answer:
+      cannot_be_blank: "%{que} can't be blank"
+  documents:
+    access_document:
+      title: "Send one time passcode"
+      subtitle: "For you to download the document we must send a one time passcode to you."
+      email_text: "<b>Email address</b> <br> A one time passcode will be sent to the email address %{email}."
+      invalid_url: "There is a problem. The entered URL is incorrect."
+    enter_passcode:
+      title: "Provide one time passcode"
+      subtitle: "This is the one time passcode in the email you have just been sent"
+      token_not_verified: "Kindly open the URL sent in the email and verify the details"
+    download_document:
+      title: "Download document"
+      invalid_passcode: "Kindly open the link in the email and follow steps to download the document."
+      download: "Download document"
+      close: "Close"
+  activemodel:
+    attributes:
+      document:
+        download_option: ""
+        doc_type: "Document type"
+        doc_name: "Document name"
+        action: ""
+    errors:
+      models:
+        document:
+          attributes:
+            base:
+              cannot_be_blank: "%{que} can't be blank"
+            passcode:
+              cannot_be_blank: "Passcode can't be blank"
+            download_option:
+              cannot_be_blank: "Download this document can't be blank"
+  

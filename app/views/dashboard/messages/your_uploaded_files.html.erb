@@ -1,0 +1,13 @@
+<% content_for(:page_title, t('.title')) %>
+<% content_for(:cancel_warning_custom_message, t("layouts.application.cancel_message_wizard")) %>
+<%= ds_form_with(model: @message, url: @post_path, method: :patch, file_upload: true, button_action: :submit, button_label: t(".continue")) do |f|%>
+  <%= f.ds_hidden_field(:original_smsg_refno) %>
+	<% if can? RS::AuthorisationHelper::CREATE_ATTACHMENT %>
+		<%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, optional: true,
+                       supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb, multiple: true, hide_upload_section: true, button_type: :primary, hide_table_header_caption: false) %>
+		
+		<%= ds_paragraph{ t('.sub_title', max_upload_limit: @max_file_upload_limit) } %>
+		
+		<%= f.ds_radio_group(method: :upload_more_files, options_list: Dashboard::Message.file_upload_options(true) ) %>
+	<% end %>
+<% end %>

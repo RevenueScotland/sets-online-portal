@@ -6,6 +6,7 @@ module Returns
     class CreditClaim < FLApplicationRecord # rubocop:disable Metrics/ClassLength
       include NumberFormatting
       include PrintData
+
       # Attributes for this class, in list so can re-use
       def self.attribute_list
         %i[tlb_refno attribute_type aggregate_type tax_credit_type tax_period_ind related_tare_refno tax_tonnage

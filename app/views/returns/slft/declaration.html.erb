@@ -1,6 +1,9 @@
 <% content_for(:page_title, t('.title')) %>
 <%= ds_form_with(model: @slft_return, url: @post_path, method: :post, button_label: t('.submit_return')) do |f| %>
-  <%= f.ds_radio_group(method: :fpay_method, options_list: @slft_return.list_payment_types(account_has_dd_instruction: account_has_dd_instruction?)) %>
+  <%= rs_conditional_visibility(visible_value: "BACS") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :fpay_method, options_list: @slft_return.list_payment_types(account_has_dd_instruction: account_has_dd_instruction?)) %>
+    <%= ds_warning{ t('.SLFT_fpay_warning', pay_link: ds_link(name: t('.SLFT_fpay_warning_link'), url: external_link_url('SLFT_PAYMENT'), target: '_blank')).html_safe } %>
+  <% end %>
   <% if @slft_return.dd_not_available(account_has_dd_instruction: account_has_dd_instruction?) %>
     <%= ds_paragraph{ t('.dd_not_available') } %>
   <% end %>

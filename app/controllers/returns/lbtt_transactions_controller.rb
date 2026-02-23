@@ -7,9 +7,9 @@ module Returns
     include WizardListHelper
     include LbttTaxHelper
 
-    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public?
     # Allow unauthenticated/public access to calc actions
-    skip_before_action :require_user
+    skip_before_action :require_user?
 
     # store step flow of lbtt conveyance return transaction page name used for navigation
     CONVEYANCE_STEPS = %w[property_type non_residential_reason transaction_dates about_the_transaction
@@ -104,7 +104,7 @@ module Returns
     # Populate Yearly Rent field with Annual rent amount as default if the Rent field is nil.
     def setup_yearly_rents
       model = load_step
-      (0..@lbtt_return.yearly_rents.size - 1).each do |i|
+      (0..@lbtt_return.yearly_rents.size - 1).each do |i| # rubocop:disable Lint/AmbiguousRange
         @lbtt_return.yearly_rents[i].rent ||= @lbtt_return.annual_rent
       end
       model
@@ -241,7 +241,9 @@ module Returns
       # pass them as array in filter param this method will convert attribute to array
       # ref url :https://www.sitepoint.com/save-multiple-checkbox-values-database-rails/
       attribute_list[attribute_list.index(:sale_include_option)] = { sale_include_option: [] }
-      params.require(required).permit(attribute_list, permit).except(*not_required)
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list, permit).except(*not_required) # rubocop:disable Rails/StrongParametersExpect
     end
 
     # Return the parameter list filtered for the attributes of the link transactions model

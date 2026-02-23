@@ -15,6 +15,14 @@ Feature: Registration Wizard
     And I should receive the message "Which type of tax return do you want to be able to file can't be blank"
 
     When I check the "Land and Building Transaction Tax" radio button in answer to the question "Which type of tax return do you want to be able to file?"
+    Then I should see the text "You cannot register for a SETS account if you are an individual looking to submit a return; only tax professionals or organisations submitting multiple returns may create an account."
+    And I should see a link with text "See what services are available for individual taxpayers instead (opens in a new tab)"
+
+    When I check the "Scottish Aggregate Tax" radio button in answer to the question "Which type of tax return do you want to be able to file?"
+    Then I should not see the conditional text "You cannot register for a SETS account if you are an individual looking to submit a return; only tax professionals or organisations submitting multiple returns may create an account."
+    And I should not see a conditional link with text "See what services are available for individual taxpayers instead (opens in a new tab)"
+    And I check the "Land and Building Transaction Tax" radio button in answer to the question "Which type of tax return do you want to be able to file?"
+
     And I click on the "Continue" button
     Then I should see the text "Sign up to file tax returns"
     And I should see the text "Who is the account for?"
@@ -26,6 +34,14 @@ Feature: Registration Wizard
     When  I click on the "Who is the account for can't be blank" link
     Then The field with id "account_party_account_type_agent" should get focus
     And I check the "A taxpayer" radio button in answer to the question "Who is the account for?"
+    Then I should see the text "You cannot register for a SETS account if you are an individual looking to submit a return; only tax professionals or organisations submitting multiple returns may create an account."
+    And I should see a link with text "See what services are available for individual taxpayers instead (opens in a new tab)"
+    And I check the "An agent" radio button in answer to the question "Who is the account for?"
+    And I should not see a conditional link with text "See what services are available for individual taxpayers instead (opens in a new tab)"
+    And I should not see the conditional text "You cannot register for a SETS account if you are an individual looking to submit a return; only tax professionals or organisations submitting multiple returns may create an account."
+    And I check the "A taxpayer" radio button in answer to the question "Who is the account for?"
+
+
     And I click on the "Continue" button
     And I should see the text "Who are you signing up on behalf of?"
 
@@ -34,6 +50,13 @@ Feature: Registration Wizard
     And I should see the text "Who are you signing up on behalf of?"
 
     When I check the "Individual/Sole trader" radio button in answer to the question "Who are you signing up on behalf of?"
+    Then I should see the text "You cannot register for a SETS account if you are an individual looking to submit a return; only tax professionals or organisations submitting multiple returns may create an account."
+    And I should see a link with text "See what services are available for individual taxpayers instead (opens in a new tab)"
+    And I check the "Non registered body" radio button in answer to the question "Who are you signing up on behalf of?"
+    And I should not see a conditional link with text "See what services are available for individual taxpayers instead (opens in a new tab)"
+    And I should not see the conditional text "You cannot register for a SETS account if you are an individual looking to submit a return; only tax professionals or organisations submitting multiple returns may create an account."
+    And I check the "Individual/Sole trader" radio button in answer to the question "Who are you signing up on behalf of?"
+
     And I click on the "Continue" button
     Then I should see the sub-title "Your individual account details"
 
@@ -126,12 +149,9 @@ Feature: Registration Wizard
     And I click on the "Find address" button
     Then I should see the "Sign up to file tax returns" page
     When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-    And I click on the "Use this address" button when available
+    And I click on the "Use this address" button
     Then I should see the "Sign up to file tax returns" page
-    When I click on the "Or edit the selected address" button
-    And I clear the "address_address_line1" field
-    And I clear the "address_town" field
-    And I clear the "address_postcode" field
+    When I click on the "Or type the full address" button
     And I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
     And I should see the sub-title "Your contact address"
@@ -145,7 +165,7 @@ Feature: Registration Wizard
     And I click on the "Find address" button
     Then I should see the "Sign up to file tax returns" page
     When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-    And I click on the "Use this address" button when available
+    And I click on the "Use this address" button
     Then I should see the "Sign up to file tax returns" page
     When I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
@@ -253,18 +273,15 @@ Feature: Registration Wizard
     And I click on the "Find address" button
     Then I should see the "Sign up to file tax returns" page
     When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-    And I click on the "Use this address" button when available
+    And I click on the "Use this address" button
     Then I should see the "Sign up to file tax returns" page
-    When I click on the "Or edit the selected address" button
-    And I clear the "address_address_line1" field
-    And I clear the "address_town" field
-    And I clear the "address_postcode" field
+    When I click on the "Or type the full address" button
     And I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
     And I should see the sub-title "Organisation address"
     And I should receive the message "Building and street can't be blank"
     And I should receive the message "Town can't be blank"
-    # postcode is optional on mannual address
+    # postcode is optional on manual address
     And I should not receive the message "Postcode can't be blank"
 
     When I click on the "Return to postcode lookup" button
@@ -272,7 +289,7 @@ Feature: Registration Wizard
     And I click on the "Find address" button
     Then I should see the "Sign up to file tax returns" page
     When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-    And I click on the "Use this address" button when available
+    And I click on the "Use this address" button
     Then I should see the "Sign up to file tax returns" page
 
     When I click on the "Continue" button
@@ -345,19 +362,16 @@ Feature: Registration Wizard
     Then I should see the "Sign up to file tax returns" page
 
     When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-    And I click on the "Use this address" button when available
+    And I click on the "Use this address" button
     Then I should see the "Sign up to file tax returns" page
 
-    When I click on the "Or edit the selected address" button
-    And I clear the "address_address_line1" field
-    And I clear the "address_town" field
-    And I clear the "address_postcode" field
+    When I click on the "Or type the full address" button
     And I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
     And I should see the sub-title "Representatives address"
     And I should receive the message "Building and street can't be blank"
     And I should receive the message "Town can't be blank"
-    # postcode is optional on mannual address
+    # postcode is optional on manual address
     And I should not receive the message "Postcode can't be blank"
 
     When I click on the "Return to postcode lookup" button
@@ -366,7 +380,7 @@ Feature: Registration Wizard
     Then I should see the "Sign up to file tax returns" page
 
     When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-    And I click on the "Use this address" button when available
+    And I click on the "Use this address" button
     Then I should see the "Sign up to file tax returns" page
 
     When I click on the "Continue" button
@@ -442,15 +456,9 @@ Feature: Registration Wizard
 
     When I enter "00928555" in the "Company number" field
     And I click on the "Find company" button
-    Then I should see the text "BOOTS UK LIMITED" in the 1 st field "Address"
-    And I should see the text "Nottingham" in field "Town"
-    And I should see the text "NG2 3AA" in field "Postcode"
-    And field "Company name" should be readonly
-    And the 1 st field "Address" should be readonly
-    And field "Address line 2" should be readonly
-    And field "Town" should be readonly
-    And field "County" should be readonly
-    And field "Postcode" should be readonly
+    Then I should see the text "BOOTS UK LIMITED"
+    And I should see the text "Nottingham"
+    And I should see the text "NG2 3AA"
 
     When I click on the "Continue" button
     Then I should see the sub-title "Contact address"
@@ -515,13 +523,13 @@ Feature: Registration Wizard
     And I click on the "Find address" button
     Then I should see the "Sign up to file tax returns" page
     When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-    And I click on the "Use this address" button when available
+    And I click on the "Use this address" button
     Then I should see the "Sign up to file tax returns" page
-    And I should see the text "Royal Mail" in field "address_address_line1"
-    And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
-    And I should see the text "Dunstable Road" in field "address_address_line3"
-    And I should see the text "LUTON" in field "address_town"
-    And I should see the text "LU1 1AA" in field "address_postcode"
+    And I should see the text "Royal Mail"
+    And I should see the text "Luton Delivery Office 9-11"
+    And I should see the text "Dunstable Road"
+    And I should see the text "LUTON"
+    And I should see the text "LU1 1AA"
 
     When I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
@@ -562,13 +570,13 @@ Feature: Registration Wizard
     And I click on the "Find address" button
     Then I should see the "Sign up to file tax returns" page
     When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-    And I click on the "Use this address" button when available
+    And I click on the "Use this address" button
     Then I should see the "Sign up to file tax returns" page
-    And I should see the text "Royal Mail" in field "address_address_line1"
-    And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
-    And I should see the text "Dunstable Road" in field "address_address_line3"
-    And I should see the text "LUTON" in field "address_town"
-    And I should see the text "LU1 1AA" in field "address_postcode"
+    And I should see the text "Royal Mail"
+    And I should see the text "Luton Delivery Office 9-11"
+    And I should see the text "Dunstable Road"
+    And I should see the text "LUTON"
+    And I should see the text "LU1 1AA"
     When I click on the "Continue" button
 
     Then I should see the sub-title "Organisation contact details"
@@ -583,12 +591,12 @@ Feature: Registration Wizard
     And I click on the "Find address" button
     Then I should see the "Sign up to file tax returns" page
     When I select "10 Rydal Avenue, Tilehurst, READING, RG30 6XT" from the "search_results"
-    And I click on the "Use this address" button when available
+    And I click on the "Use this address" button
     Then I should see the "Sign up to file tax returns" page
-    And I should see the text "10 Rydal Avenue" in field "address_address_line1"
-    And I should see the text "Tilehurst" in field "address_address_line2"
-    And I should see the text "READING" in field "address_town"
-    And I should see the text "RG30 6XT" in field "address_postcode"
+    And I should see the text "10 Rydal Avenue"
+    And I should see the text "Tilehurst"
+    And I should see the text "READING"
+    And I should see the text "RG30 6XT"
 
     When I click on the "Continue" button
     Then I should see the sub-title "Your individual account details"
@@ -629,12 +637,12 @@ Feature: Registration Wizard
     Then I should see the sub-title "Company"
     When I enter "09338960" in the "Company number" field
     And I click on the "Find company" button
-    Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED" in field "company_company_name"
-    And I should see the text "1st Floor, Imex Centre" in field "company_address_line1"
-    And I should see the text "575-599 Maxted Road" in field "company_address_line2"
-    And I should see the text "Hemel Hempstead" in field "company_locality"
-    And I should see the text "Hertfordshire" in field "company_county"
-    And I should see the text "HP2 7DX" in field "company_postcode"
+    Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED"
+    And I should see the text "1st Floor, Imex Centre"
+    And I should see the text "575-599 Maxted Road"
+    And I should see the text "Hemel Hempstead"
+    And I should see the text "Hertfordshire"
+    And I should see the text "HP2 7DX"
     And I click on the "Continue" button
 
     Then I should see the sub-title "Contact address"
@@ -643,13 +651,13 @@ Feature: Registration Wizard
     And I click on the "Find address" button
     Then I should see the "Sign up to file tax returns" page
     When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-    And I click on the "Use this address" button when available
+    And I click on the "Use this address" button
     Then I should see the "Sign up to file tax returns" page
-    And I should see the text "Royal Mail" in field "address_address_line1"
-    And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
-    And I should see the text "Dunstable Road" in field "address_address_line3"
-    And I should see the text "LUTON" in field "address_town"
-    And I should see the text "LU1 1AA" in field "address_postcode"
+    And I should see the text "Royal Mail"
+    And I should see the text "Luton Delivery Office 9-11"
+    And I should see the text "Dunstable Road"
+    And I should see the text "LUTON"
+    And I should see the text "LU1 1AA"
 
     When I click on the "Continue" button
     Then I should see the sub-title "Organisation contact details"
@@ -698,12 +706,12 @@ Feature: Registration Wizard
 
     When I enter "09338960" in the "Company number" field
     And I click on the "Find company" button
-    Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED" in field "company_company_name"
-    And I should see the text "1st Floor, Imex Centre" in field "company_address_line1"
-    And I should see the text "575-599 Maxted Road" in field "company_address_line2"
-    And I should see the text "Hemel Hempstead" in field "company_locality"
-    And I should see the text "Hertfordshire" in field "company_county"
-    And I should see the text "HP2 7DX" in field "company_postcode"
+    Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED"
+    And I should see the text "1st Floor, Imex Centre"
+    And I should see the text "575-599 Maxted Road"
+    And I should see the text "Hemel Hempstead"
+    And I should see the text "Hertfordshire"
+    And I should see the text "HP2 7DX"
 
     When I click on the "Continue" button
     Then I should see the "Sign up to file tax returns" page
@@ -767,12 +775,12 @@ Feature: Registration Wizard
     Then I should see the sub-title "Company"
     When I enter "09338960" in the "Company number" field
     And I click on the "Find company" button
-    Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED" in field "company_company_name"
-    And I should see the text "1st Floor, Imex Centre" in field "company_address_line1"
-    And I should see the text "575-599 Maxted Road" in field "company_address_line2"
-    And I should see the text "Hemel Hempstead" in field "company_locality"
-    And I should see the text "Hertfordshire" in field "company_county"
-    And I should see the text "HP2 7DX" in field "company_postcode"
+    Then I should see the text "NORTHGATE PUBLIC SERVICES LIMITED"
+    And I should see the text "1st Floor, Imex Centre"
+    And I should see the text "575-599 Maxted Road"
+    And I should see the text "Hemel Hempstead"
+    And I should see the text "Hertfordshire"
+    And I should see the text "HP2 7DX"
     And I click on the "Continue" button
 
     Then I should see the sub-title "Contact address"
@@ -781,13 +789,13 @@ Feature: Registration Wizard
     And I click on the "Find address" button
     Then I should see the "Sign up to file tax returns" page
     When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-    And I click on the "Use this address" button when available
+    And I click on the "Use this address" button
     Then I should see the "Sign up to file tax returns" page
-    And I should see the text "Royal Mail" in field "address_address_line1"
-    And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
-    And I should see the text "Dunstable Road" in field "address_address_line3"
-    And I should see the text "LUTON" in field "address_town"
-    And I should see the text "LU1 1AA" in field "address_postcode"
+    And I should see the text "Royal Mail"
+    And I should see the text "Luton Delivery Office 9-11"
+    And I should see the text "Dunstable Road"
+    And I should see the text "LUTON"
+    And I should see the text "LU1 1AA"
 
     When I click on the "Continue" button
     Then I should see the sub-title "Organisation contact details"

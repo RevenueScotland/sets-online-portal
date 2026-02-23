@@ -4,6 +4,9 @@
 module Returns
   # module to organise SAT return models
   module Sat
+    # RSTP-1571 : Need to require csv explicitly
+    # Rails 8 raises uninitialized constant error for CSV if not added
+    require 'csv'
     # Model for the SAT return
     class SatReturn < AbstractReturn # rubocop:disable Metrics/ClassLength
       include NumberFormatting
@@ -19,7 +22,7 @@ module Returns
         %i[trs_refno period_start period_end sat_period sites fpay_method total_tax_due total_credit tax_payable
            tax_payable_raw declaration submitted_date effective_date enrm_name change_reason net_tax_payable
            enrm_par_ref bad_debt repayment_ind claiming_amount account_holder_name account_number branch_code
-           bank_name claim_declaration csv_taxable_data]
+           bank_name claim_declaration csv_taxable_data evidence_files]
       end
 
       attribute_list.each { |attr| attr_accessor attr }
@@ -161,13 +164,11 @@ module Returns
         start_date = DateFormatting.to_display_date_format(@selected_return_period.period_start)
         end_date = DateFormatting.to_display_date_format(@selected_return_period.period_end)
 
-        "#{start_date} #{I18n.t('.returns.sat.summary.to')} #{end_date}"
+        "#{start_date} #{I18n.t('.returns.sat.sat_summary.to')} #{end_date}"
       end
 
       # formats the sites with the period breakdown to use on the summary page
-      def sites
-        @selected_return_period.sites
-      end
+      delegate :sites, to: :@selected_return_period
 
       # performs the validation when the user presses save draft
       def draft_validation
@@ -181,7 +182,7 @@ module Returns
         @user_periods.each_value do |obj|
           start_date = DateFormatting.to_display_date_format(obj.period_start)
           end_date = DateFormatting.to_display_date_format(obj.period_end)
-          formatted_date = "#{start_date} #{I18n.t('.returns.sat.summary.to')} #{end_date}"
+          formatted_date = "#{start_date} #{I18n.t('.returns.sat.sat_summary.to')} #{end_date}"
 
           periods_lov.push(ReferenceData::ReferenceValue.new(code: obj.trs_refno,
                                                              value: formatted_date))
@@ -478,9 +479,23 @@ module Returns
 
       # Print data for the receipt
       def print_layout_receipt
-        [{ code: :about_transaction, key: :transaction_subtitle, key_scope: %i[returns sat summary],
+        [{ code: :about_transaction, key: :transaction_subtitle, key_scope: %i[returns sat sat_summary],
            divider: true, display_title: true, type: :list,
            list_items: [{ code: :tare_reference, placeholder: '<%TARE_REFERENCE%>' }] }]
+      end
+
+      # @return [Hash] elements used to specify what data we want to send to the back office
+      def save_evidence_files_elements
+        { 'ins0:Documents': { 'ins0:Document':
+          evidence_files.map { |evidence_file| request_document_create(evidence_file) } } }
+      end
+
+      # @return a hash suitable for use in store document request to the back office
+      def request_document_create(document)
+        { 'ins0:FileName': document.original_filename,
+          'ins0:FileType': document.content_type,
+          'ins0:Description': document.description,
+          'ins0:BinaryData': Base64.encode64(document.file_data) }
       end
 
       # Called by @see Returns::AbstractReturn#save
@@ -517,6 +532,9 @@ module Returns
 
         # add print data receipt
         output[:'ins0:PrintDataReceipt'] = print_data(:print_layout_receipt)
+
+        # add uploaded documents
+        output.merge!(save_evidence_files_elements) unless evidence_files.nil?
 
         output
       end

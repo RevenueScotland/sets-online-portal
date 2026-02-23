@@ -6,7 +6,7 @@
 # eg http://localhost:3000/en/website_texts/REGTSANDCS, http://localhost:3000/en/website_texts/termsandconditions
 class WebsiteTextsController < ApplicationController
   # Allow pages to be unauthenticated
-  skip_before_action :require_user, only: :show
+  skip_before_action :require_user?, only: :show
 
   # Renders pws_text
   def show

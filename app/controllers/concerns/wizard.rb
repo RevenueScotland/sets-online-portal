@@ -180,7 +180,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
     # Second half - when step is submitted
     return if wizard_step_submitted(steps, overrides)
 
-    render(status: :unprocessable_entity)
+    render(status: :unprocessable_content)
   end
 
   # Clears the cache and ends the wizard as per the overrides
@@ -577,7 +577,7 @@ module Wizard # rubocop:disable Metrics/ModuleLength
   # Navigates the wizard to redirect to a page by looking at the array of steps and figuring out which would the
   # next step be. This may also add an index according to the loop_instruction.
   # @return [Boolean] true if the navigation is redirected
-  def wizard_navigation_from_list_next_step(steps, loop_instruction, current_index, total_objects)
+  def wizard_navigation_from_list_next_step(steps, loop_instruction, current_index, total_objects) # rubocop:disable Naming/PredicateMethod
     calculated_next_step = next_step_in_list(steps)
     action, index = build_action_and_index(calculated_next_step, loop_instruction, current_index, total_objects)
     # Next step with index, or the normal next step

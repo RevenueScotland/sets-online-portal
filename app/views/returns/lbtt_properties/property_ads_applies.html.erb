@@ -1,6 +1,7 @@
 <% content_for(:page_title, t('.title')) %>
 <%= ds_form_with(model: @property, url: @post_path, method: :post) do |f| %>
-  <%= f.ds_radio_group(method: :ads_due_ind, options_list: @property.list_ref_data(:ads_due_ind),
-                                        interpolations: { link:
-                                                    ds_link(name: t('.ads_due_ind_link'), url: external_link_url('LBTT_ADS'), target: '_blank') }, alignment: :horizontal) %>
+  <%= rs_conditional_visibility(visible_value: "Y") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :ads_due_ind, options_list: @property.list_ref_data(:ads_due_ind), interpolations: { link: ds_link(name: t('.ads_due_ind_link'), url: external_link_url('LBTT_ADS'), target: '_blank') }, alignment: :horizontal) %>
+    <%= ds_warning{ t(".ads_label_text") } %>
+  <% end %>
 <% end %>

@@ -3,7 +3,7 @@
 # Controller for the main home page
 class HomeController < ApplicationController
   # No authentication for these pages
-  skip_before_action :require_user
+  skip_before_action :require_user?
 
   # Index page
   def index; end

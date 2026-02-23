@@ -13,6 +13,7 @@ module Dashboard
   class DashboardReturn < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     include NumberFormatting
     include Pagination
+
     attr_accessor :srv_code, :tare_refno, :tare_reference, :agent_reference,
                   :version, :return_status, :return_balance, :balance_status,
                   :return_date, :description, :latest_draft_dis_ind,
@@ -169,7 +170,7 @@ module Dashboard
     #   from the back office. It must include the version, srv_code, tare_refno within the string that's joined
     #   with '-'s.
     # @return [Boolean] true if document delete successfully from back office else false
-    def self.delete_return(requested_by, id)
+    def self.delete_return(requested_by, id) # rubocop:disable Naming/PredicateMethod
       call_ok?(:delete_draft_tax_return, request_delete_return(requested_by, id))
     end
 
@@ -267,7 +268,7 @@ module Dashboard
     # @param dir [String] directory containing all of the files to be zipped
     # @param zip_file [String] the output file name
     private_class_method def self.zip_folder(dir, zip_file)
-      Zip::File.open(zip_file, Zip::File::CREATE) do |archive|
+      Zip::File.open(zip_file, create: true) do |archive|
         entries = Dir.entries(dir) - %w[. ..]
         entries.each do |file|
           archive.add(file, File.join(dir, file))

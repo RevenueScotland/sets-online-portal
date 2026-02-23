@@ -3,7 +3,7 @@
 # Controller for users management
 # note that most actions should be done in the context of the
 # current user
-class UsersController < ApplicationController
+class UsersController < ApplicationController # rubocop:disable Metrics/ClassLength
   authorise route: %i[new create show index edit update], requires: RS::AuthorisationHelper::CREATE_USERS
 
   # Renders a list of all users for the current user's account, optionally filtered by UserFilter.
@@ -37,7 +37,7 @@ class UsersController < ApplicationController
     if @user.save(current_user)
       redirect_to users_path
     else
-      render('new', status: :unprocessable_entity)
+      render('new', status: :unprocessable_content)
     end
   end
 
@@ -51,11 +51,23 @@ class UsersController < ApplicationController
     @user = current_user
 
     # update_password assigns params to user object
-    if @user.update_password(password_params)
+    if @user.update_password?(password_params)
+      request.env['warden'].set_user(update_current_user)
       redirect_after_successful_password_update
     else
-      render('change_password', status: :unprocessable_entity)
+      render('change_password', status: :unprocessable_content)
     end
+  end
+
+  # Update the current user password details in warden
+  def update_current_user
+    @pws_expiry_prd ||= ReferenceData::SystemParameter.lookup(
+      'SYSTEM', 'SYS', 'RSTU', safe_lookup: true
+    )['PWD_EXPIRY_PRD']&.value
+
+    current_user.password_change_required = false
+    current_user.password_expiry_date = Time.zone.today + @pws_expiry_prd.to_i.days
+    current_user
   end
 
   # Show the confirm the terms and conditions page
@@ -68,13 +80,13 @@ class UsersController < ApplicationController
   def process_update_tcs
     @user = current_user
 
-    if @user.confirm_tcs(tcs_params)
+    if @user.confirm_tcs?(tcs_params)
       # Store the fact Ts and Cs are signed in the warden session
       current_user.user_is_signed_ta_cs = 'Y'
       request.env['warden'].set_user(current_user)
       redirect_to dashboard_path
     else
-      render('update_tcs', status: :unprocessable_entity)
+      render('update_tcs', status: :unprocessable_content)
     end
   end
 
@@ -88,12 +100,12 @@ class UsersController < ApplicationController
   def process_enrolment
     @user = current_user
 
-    if @user.confirm_portal_object(user_params)
-      current_user.portal_object_index = (params[:user][:portal_object_index]).to_i
+    if @user.confirm_portal_object?(user_params)
+      current_user.portal_object_index = params[:user][:portal_object_index].to_i
       request.env['warden'].set_user(@user)
       redirect_to dashboard_path
     else
-      render('select_enrolment', status: :unprocessable_entity)
+      render('select_enrolment', status: :unprocessable_content)
     end
   end
 
@@ -106,7 +118,7 @@ class UsersController < ApplicationController
     if @user.update(user_params, current_user)
       redirect_to users_path
     else
-      render('edit', status: :unprocessable_entity)
+      render('edit', status: :unprocessable_content)
     end
   end
 
@@ -115,6 +127,9 @@ class UsersController < ApplicationController
   # Lookup a user in the account of the current_user.
   # @param [String] username of the user to find
   def find_user(username)
+    if username.is_a?(String) && Base64.strict_encode64(Base64.decode64(username)) == username
+      username =  Base64.urlsafe_decode64(username)
+    end
     user = User.find(username, current_user)
     raise Error::AppError.new('UsersController.find_user', "Username #{username} not found") if user.nil?
 
@@ -125,17 +140,23 @@ class UsersController < ApplicationController
   def user_params
     attributes = %i[new_username user_is_current forename surname email_address new_password new_password_confirmation
                     email_address_confirmation phone_number portal_object_index]
-    params.require(:user).permit(attributes, user_roles: [], portal_objects_access: [])
+    # Rubocop disable added as this breaks the functionality
+    # https://github.com/rubocop/rubocop-rails/issues/1418
+    params.require(:user).permit(attributes, user_roles: [], portal_objects_access: []) # rubocop:disable Rails/StrongParametersExpect
   end
 
   # controls the permitted parameters to this controller for password related operations
   def password_params
-    params.require(:user).permit(:username, :old_password, :new_password, :new_password_confirmation)
+    # Rubocop disable added as this breaks the functionality
+    # https://github.com/rubocop/rubocop-rails/issues/1418
+    params.require(:user).permit(:username, :old_password, :new_password, :new_password_confirmation) # rubocop:disable Rails/StrongParametersExpect
   end
 
   # controls the permitted parameters to this controller for confirming tcs related operations
   def tcs_params
-    params.require(:user).permit(:username, :user_is_signed_ta_cs)
+    # Rubocop disable added as this breaks the functionality
+    # https://github.com/rubocop/rubocop-rails/issues/1418
+    params.require(:user).permit(:username, :user_is_signed_ta_cs) # rubocop:disable Rails/StrongParametersExpect
   end
 
   # Redirect to logout if a password change is required on the current user else show the change_password_confirmation.

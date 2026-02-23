@@ -44,7 +44,7 @@ module Returns
 
         return unless no_sites_data.positive?
 
-        add_error(errors, (I18n.t '.returns.sat.summary.missing_sat_details'), sat)
+        add_error(errors, (I18n.t '.returns.sat.sat_summary.missing_sat_details'), sat)
       end
     end
   end

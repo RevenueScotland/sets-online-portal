@@ -22,7 +22,8 @@ class WizardTest < ActionDispatch::IntegrationTest
   # Test version of the controller, includes Wizard.
   class WizardTestController < ApplicationController
     include Wizard
-    skip_before_action :require_user # cleared globally for testing
+
+    skip_before_action :require_user? # cleared globally for testing
 
     # Simulate the request session which isn't available in tests
     attr_accessor :session

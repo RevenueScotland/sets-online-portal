@@ -23,7 +23,7 @@ module LbttPartiesHelper
   # Searches the LBTT wizard model for a party and deletes it
   # @param party_id [String] the party_id to look for
   # @return [Boolean] true if party is deleted
-  def delete_party(party_id)
+  def delete_party(party_id) # rubocop:disable Naming/PredicateMethod
     @lbtt_return = wizard_load(Returns::LbttController)
 
     return false if deleting_last_prepop_tenant?(@lbtt_return, party_id)
@@ -74,7 +74,7 @@ module LbttPartiesHelper
 
   # Puts the new party data into the right place in LbttReturn
   # @return [Boolean] true if successful
-  def dump_party_into_lbtt_wizard
+  def dump_party_into_lbtt_wizard # rubocop:disable Naming/PredicateMethod
     @lbtt = wizard_load(Returns::LbttController)
 
     party_list = @lbtt.send(@party.lbtt_return_attribute)

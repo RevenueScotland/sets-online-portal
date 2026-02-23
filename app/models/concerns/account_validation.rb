@@ -39,24 +39,24 @@ module AccountValidation
   # @return [Boolean] false if any child objects have validation messages
   def check_for_child_validation_errors
     result = true
-    result &= check_for_child_validation_error(:current_user)
-    result &= check_for_child_validation_error(:company)
-    result &= check_for_child_validation_error(:account_type)
-    result &= check_for_child_validation_error(:address)
+    result &= check_for_child_validation_error?(:current_user)
+    result &= check_for_child_validation_error?(:company)
+    result &= check_for_child_validation_error?(:account_type)
+    result &= check_for_child_validation_error?(:address)
     result
   end
 
   # Checks if the child object have validation errors, and returns false if that do
   # @param attribute [symbol] the name of the class variable to check for errors
   # @return [Boolean] false if any child objects have validation messages
-  def check_for_child_validation_error(attribute)
+  def check_for_child_validation_error?(attribute)
     return true if send(attribute).nil? || send(attribute).errors.nil?
 
     send(attribute).errors.empty?
   end
 
   # perform validation on current_user, the main account object, and the address
-  def validate_all
+  def validate_all?
     current_user.valid?(:save) && valid?(:create) && address_valid?(:save)
   end
 

@@ -8,6 +8,7 @@ module Returns
     class SlftReturn < AbstractReturn # rubocop:disable Metrics/ClassLength
       include NumberFormatting
       include PrintData
+
       validates_with SlftReturnValidator, on: :submit
 
       # Attributes for this class, in list so can re-use as permitted params list in the controller.
@@ -20,7 +21,7 @@ module Returns
           non_disposal_delete_ind non_disposal_delete_text sites
           declaration total_tax_due total_credit tax_payable fpay_method
           repayment_yes_no amount_claimed account_holder bank_account_no bank_sort_code bank_name
-          rrep_bank_auth_ind payment_date filing_date
+          rrep_bank_auth_ind payment_date filing_date evidence_files
         ]
       end
 
@@ -237,7 +238,7 @@ module Returns
         # Need to convert back to a float for comparison in validation
         percentage = SlftReturn.slcf_credit_claimed_limits[:env_contrib_cut_off].to_f / 100.0
 
-        from_pence((to_pence(slcf_contribution) * percentage)).to_f
+        from_pence(to_pence(slcf_contribution) * percentage).to_f
       end
 
       # performs the validation when the user presses save draft
@@ -486,6 +487,8 @@ module Returns
 
         output[:PrintDataReceipt] = print_data(:print_layout_receipt)
 
+        output.merge!(save_evidence_files_elements) unless evidence_files.nil?
+
         output
       end
 
@@ -555,6 +558,20 @@ module Returns
           'ins0:BankSortCode': bank_sort_code,
           'ins0:BankName': bank_name
         }
+      end
+
+      # @return [Hash] elements used to specify what data we want to send to the back office
+      def save_evidence_files_elements
+        { Documents: { 'ins0:Document':
+          evidence_files.map { |evidence_file| request_document_create(evidence_file) } } }
+      end
+
+      # @return a hash suitable for use in store document request to the back office
+      def request_document_create(document)
+        { 'ins0:FileName': document.original_filename,
+          'ins0:FileType': document.content_type,
+          'ins0:Description': document.description,
+          'ins0:BinaryData': Base64.encode64(document.file_data) }
       end
 
       # Print data for the transaction

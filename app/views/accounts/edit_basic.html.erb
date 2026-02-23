@@ -8,8 +8,8 @@
       <%= c.ds_text_field(method: :company_name) %>
     <% end %>
   <% elsif !AccountType.registered_organisation?(@account.account_type) %>
-    <%= f.ds_text_field(method: :forename) %>
-    <%= f.ds_text_field(method: :surname) %>
+    <%= f.ds_text_field(method: :forename, data_options: { skip_special_chars: true }) %>
+    <%= f.ds_text_field(method: :surname, data_options: { skip_special_chars: true }) %>
   <% end %>
   <%= f.ds_text_field(method: :email_address) %>
   <%= f.ds_text_field(method: :email_address_confirmation) %>

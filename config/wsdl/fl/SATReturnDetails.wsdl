@@ -368,6 +368,24 @@
 				<xs:element name="AmountBalance" type="xs:decimal" minOccurs="0" />
 				<xs:element name="PrintData" type="xs:string" minOccurs="0" />
 				<xs:element name="PrintDataReceipt" type="xs:string" minOccurs="0" />
+				<xs:element name="Documents" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Attached documents list.</xsd:documentation>
+						</xsd:annotation>
+						<xs:element name="Document" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Attached documents</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="FileName" type="xs:string"/>
+									<xs:element name="FileType" type="xs:string"/>
+									<xs:element name="Description" type="xs:string" minOccurs="0"/>
+									<xs:element name="BinaryData" type="xs:base64Binary"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						</xs:element>
 			</xs:element>
 		</xs:schema>
 	</wsdl:types>

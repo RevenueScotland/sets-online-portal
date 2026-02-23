@@ -1,6 +1,14 @@
 <% content_for(:page_title,  t('.title')) %>
 <%= ds_form_with(model: @account, url: @post_path) do |f| %>
-  <%= f.ds_fields_for(@account.account_type) do |at| %>
-    <%= at.ds_radio_group(method: :registration_type, options_list: AccountType.list ) %>
+  <% if @account.taxes.include?('LBTT') && @account.party_account_type.include?('TAXPAYER')%>
+    <%= rs_conditional_visibility(visible_value: "individual") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :registration_type,
+      options_list:AccountType.list) %>
+    <%= ds_warning { t('.lbtt_warning', link: ds_link(url: external_link_url('TAXPAY_SERVS'), name: t('.service_link'),target: '_blank')).html_safe } %>
+    <% end %>
+  <% else %>
+    <%= f.ds_fields_for(@account.account_type) do |at| %>
+      <%= at.ds_radio_group(method: :registration_type, options_list: AccountType.list ) %>
+    <% end %>
   <% end %>
 <% end %>

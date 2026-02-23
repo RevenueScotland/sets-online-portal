@@ -23,6 +23,6 @@ class AccountsController < ApplicationController
   # Perform an address search
   def perform_address_search
     address_search
-    render('edit_address', status: :unprocessable_entity)
+    render('edit_address', status: :unprocessable_content)
   end
 end

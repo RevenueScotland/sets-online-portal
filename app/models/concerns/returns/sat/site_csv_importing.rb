@@ -38,7 +38,8 @@ module Returns
       # Valid/ Expected column headers
       def valid_csv_headers
         %i[record_type company_name site_name period_start period_end aggregate_type_code
-           comm_exploitation_type exploited_tonnage water_tonnage mixed_ind exemption_reason_code exempt_tonnage
+           comm_exploitation_type exploited_tonnage water_tonnage alternative_weighing_method
+           exemption_reason_code exempt_tonnage
            tax_credit_type tax_credit_period_start tax_credit_period_end tax_credit_tonnage]
       end
 
@@ -127,10 +128,10 @@ module Returns
         unless site.site_party_name&.downcase == data[:company_name]&.downcase
           @any_errors.push(error_message('invalid_company_name'))
         end
-        @any_errors.push(error_message('invalid_period_start')) unless compare_dates(site.period_bdown_start,
-                                                                                     convert_date(data[:period_start]))
-        @any_errors.push(error_message('invalid_period_end')) unless compare_dates(site.period_bdown_end,
-                                                                                   convert_date(data[:period_end]))
+        @any_errors.push(error_message('invalid_period_start')) unless compare_dates?(site.period_bdown_start,
+                                                                                      convert_date(data[:period_start]))
+        @any_errors.push(error_message('invalid_period_end')) unless compare_dates?(site.period_bdown_end,
+                                                                                    convert_date(data[:period_end]))
         parse_data_by_type(site, data[:record_type], data)
         return if @any_errors.empty?
 
@@ -174,10 +175,11 @@ module Returns
       # Validate and save taxable data
       def validate_taxable_data(site, data)
         taxable_params = data.to_h.slice(:comm_exploitation_type, :exploited_tonnage,
-                                         :water_tonnage, :mixed_ind)
+                                         :water_tonnage)
         taxable_params[:aggregate_type] = data[:aggregate_type_code]&.strip
         taxable_params[:rate_date] = site.period_bdown_start
         taxable_params[:site_name] = site.site_name
+        taxable_params[:mixed_ind] = data[:alternative_weighing_method]&.strip
         taxable_aggr = TaxableAggregate.new_from_fl(taxable_params)
         validate_taxable_ref_values(site, taxable_aggr)
       end
@@ -227,12 +229,12 @@ module Returns
 
       # Validate aggregate value for tx record
       def valid_tx_aggr_type_value(record)
-        valid_aggregate_type_values(record) ? [] : [error_message('invalid_aggr_type_code')]
+        valid_aggregate_type_values?(record) ? [] : [error_message('invalid_aggr_type_code')]
       end
 
       # Validate exploitation type value for tx record
       def valid_tx_expl_type_value(record)
-        valid_exploitation_code_values(record) ? [] : [error_message('invalid_expl_type_code')]
+        valid_exploitation_code_values?(record) ? [] : [error_message('invalid_expl_type_code')]
       end
 
       # Validate weighing method for tx record
@@ -251,13 +253,13 @@ module Returns
       end
 
       # Validate exploitation code value
-      def valid_exploitation_code_values(record)
+      def valid_exploitation_code_values?(record)
         record.list_ref_data(:comm_exploitation_type).map(&:code).include?(record.comm_exploitation_type)
       end
 
       # Validate aggregate_type value
-      def valid_aggregate_type_values(record)
-        record.send(:aggregate_type_rates)&.map do |x| # rubocop:disable Rails/Pluck. Pluck isn't valid for the method
+      def valid_aggregate_type_values?(record)
+        record.send(:aggregate_type_rates)&.map do |x| # rubocop:disable Rails/Pluck -- Pluck isn't valid for the method
           x[:code]
         end&.include?(record.aggregate_type)
       end
@@ -286,8 +288,8 @@ module Returns
       # Validate exempt aggregate values
       def validate_exempt_data_values(site, record) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
         value_errors = []
-        value_errors.push(error_message('invalid_aggr_type_code')) unless valid_aggregate_type_values(record)
-        value_errors.push(error_message('invalid_exempt_type_code')) unless valid_exempt_type_code(record)
+        value_errors.push(error_message('invalid_aggr_type_code')) unless valid_aggregate_type_values?(record)
+        value_errors.push(error_message('invalid_exempt_type_code')) unless valid_exempt_type_code?(record)
         value_errors.push(error_message('invalid_exempt_tonnage')) unless valid_decimal_string? record.exempt_tonnage
         value_errors.push(error_message('exe_tonnage_value_exceeded')) if tonnage_limit_reached?(record.exempt_tonnage)
         @any_errors.push(record.errors.full_messages.join(', ')) unless record.valid?
@@ -296,7 +298,7 @@ module Returns
       end
 
       # Validate exempt type code
-      def valid_exempt_type_code(record)
+      def valid_exempt_type_code?(record)
         record.list_ref_data(:exempt_type).map(&:code).include?(record.exempt_type)
       end
 
@@ -323,8 +325,8 @@ module Returns
       def assign_tax_rel_values(cr_params, data, site)
         credit_period_start = convert_date(data[:tax_credit_period_start])
         credit_period_end = convert_date(data[:tax_credit_period_end])
-        cr_params[:tax_period_ind] = if compare_dates(site.period_bdown_start, credit_period_start) &&
-                                        compare_dates(site.period_bdown_end, credit_period_end)
+        cr_params[:tax_period_ind] = if compare_dates?(site.period_bdown_start, credit_period_start) &&
+                                        compare_dates?(site.period_bdown_end, credit_period_end)
                                        'Y'
                                      else
                                        'N'
@@ -334,12 +336,12 @@ module Returns
       end
 
       # Validate cl credit type code value
-      def valid_credit_type_values(record)
+      def valid_credit_type_values?(record)
         record.list_ref_data(:tax_credit_type).map(&:code).include?(record.tax_credit_type)
       end
 
       # Validate aggregate_type value
-      def valid_cl_aggregate_list_values(record)
+      def valid_cl_aggregate_list_values?(record)
         record.aggregate_types_list.map(&:code).include?(record.aggregate_type)
       end
 
@@ -376,12 +378,12 @@ module Returns
 
       # Validate CL credit type code
       def valid_cl_crd_code(record)
-        valid_credit_type_values(record) ? [] : [error_message('invalid_credit_type_code')]
+        valid_credit_type_values?(record) ? [] : [error_message('invalid_credit_type_code')]
       end
 
       # Validate CL aggr type code
       def valid_cl_aggr_code(record)
-        valid_cl_aggregate_list_values(record) ? [] : [error_message('invalid_aggr_type_code')]
+        valid_cl_aggregate_list_values?(record) ? [] : [error_message('invalid_aggr_type_code')]
       end
 
       # Validate CL credit rate
@@ -441,7 +443,7 @@ module Returns
       end
 
       # Compare dates and return true/false. Assumption date1 will always be present
-      def compare_dates(date1, date2)
+      def compare_dates?(date1, date2)
         date1 == date2
       end
 

@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
+require 'socket'
 # Provides common code for account persistence
-module AccountPersistence
+module AccountPersistence # rubocop:disable Metrics/ModuleLength
   extend ActiveSupport::Concern
 
   # Activate this account
-  def activate
+  def activate?
     return false unless valid?(:process_activate_account)
 
     call_ok?(:maintain_user_registration, save_activate_account_request)
@@ -13,13 +14,13 @@ module AccountPersistence
 
   # Save a new account.
   # Validates this account and then the new user (in field current_user) then creates them in the back office.
-  def save
+  def save?
     # populates account validation errors
     valid?(:create)
     # NOTE: that we return false straight away if the current_user
     # or address details validation fails, hence needing the line above
     # for account validation error messages
-    return false unless validate_all
+    return false unless validate_all?
 
     updated_address = contact_address(company, address, reg_company_contact_address_yes_no)
     # current_user is the field eg self.current_user, not the logged in/controller accessible/warden security user
@@ -91,7 +92,9 @@ module AccountPersistence
     { Address: { 'ins1:AddressLine1': address.address_line1, 'ins1:AddressLine2': address.address_line2,
                  'ins1:AddressLine3': address.address_line3, 'ins1:AddressLine4': address.address_line4,
                  'ins1:AddressTownOrCity': address.town, 'ins1:AddressCountyOrRegion': address.county,
-                 'ins1:AddressPostcodeOrZip': address.postcode, 'ins1:AddressCountryCode': country_code } }
+                 'ins1:AddressPostcodeOrZip': address.postcode, 'ins1:AddressCountryCode': country_code,
+                 'ins1:LocalEdAuthCode': address.local_ed_auth_code, 'ins1:LocalAuthCode': address.local_ed_auth_code,
+                 'ins1:Udprn': address.udprn, 'ins1:DeliveryPointSuffix': address.delivery_point_suffix } }
   end
 
   # Creates back office request to register a new account
@@ -121,8 +124,9 @@ module AccountPersistence
       Username: user.new_username, Password: user.new_password, ForcePasswordChange: 'N', UserIsCurrent: 'N',
       UserPhoneNumber: contact_number, Forename: user.forename, Surname: user.surname, EmailAddress: email_address,
       ConfirmEmailAddress: email_address_confirmation, PartyAccountType: party_account_type, PartyNINO: nino,
-      EmailDataIndicator: email_data_ind, 'ins2:RegistrationType' => enrolment_type,
-      'ins2:RegistrationValue' => enrolment_ref, 'ins2:RegistrationNotes' => registration_notes }
+      EmailDataIndicator: email_data_ind, 'ins1:RegistrationType' => enrolment_type,
+      'ins1:RegistrationValue' => enrolment_ref, 'ins1:RegistrationNotes' => registration_notes,
+      RequestParameters: { 'ns1:ClientIP' => client_ip } }
   end
 
   # Create a partial back office request for an address
@@ -133,7 +137,9 @@ module AccountPersistence
     { AddressLine1: address.address_line1, AddressLine2: address.address_line2,
       AddressLine3: address.address_line3, AddressLine4: address.address_line4,
       AddressTownOrCity: address.town, AddressCountyOrRegion: address.county, AddressCountryCode: country_code,
-      AddressPostcodeOrZip: address.postcode }
+      AddressPostcodeOrZip: address.postcode, LocalEdAuthCode: address.local_ed_auth_code,
+      LocalAuthCode: address.local_auth_code, Udprn: address.udprn,
+      DeliveryPointSuffix: address.delivery_point_suffix, 'ins1:QASMoniker': address.udprn }
   end
 
   # Create a partial back office request for a company
@@ -172,7 +178,7 @@ module AccountPersistence
   # @param taxes [hash of strings] the taxes to map onto the request to the back office
   # @return hash map
   def register_account_request_other(taxes)
-    { UserServices: { 'ins2:UserService' => taxes } }
+    { UserServices: { 'ins1:UserService' => taxes } }
   end
 
   # Return the contact address. If it's a registered company without a specific contact address
@@ -182,5 +188,11 @@ module AccountPersistence
 
     Address.new(address_line1: company.address_line1, address_line2: company.address_line2, town: company.locality,
                 county: company.county, country: company.country, postcode: company.postcode)
+  end
+
+  # Returns the clients ip address for logging purpose
+  def client_ip
+    @ip = Socket.ip_address_list.detect(&:ipv4_private?)
+    @ip.ip_address
   end
 end

@@ -9,22 +9,24 @@ module Claim
     include Wizard
     include WizardAddressHelper
     include FileUploadHandler
+    include FileUploadHelper
 
     # all public pages, wizard steps for the public part of Claim repayment
     PUBLIC_PAGES = %I[before_you_start return_reference_number claim_reason date_of_sale
                       main_residence_address claiming_amount taxpayer_details taxpayer_address
                       claim_payment_bank_details upload_evidence public_claim_landing
                       final_declaration confirmation_of_payment download_claim download_file
-                      view_claim_pdf effective_date eligibility].freeze
+                      view_claim_pdf effective_date eligibility claim_evidence_upload].freeze
 
     authorise requires: RS::AuthorisationHelper::CLAIM_REPAYMENT + RS::AuthorisationHelper::CLAIM_REPAYMENT_ATTACHMENT,
-              allow_if: :public
+              allow_if: :public?
 
     # to require authentication so we don't mix the two up
-    skip_before_action :require_user, only: PUBLIC_PAGES
+    skip_before_action :require_user?, only: PUBLIC_PAGES
 
     # enforce the user isn't logged in on the public pages
     before_action :enforce_public, only: %w[public_claim_landing effective_date eligibility before_you_start]
+    before_action :set_max_uploads_allowed, only: %i[claim_evidence_upload upload_evidence]
 
     # List of steps for a claim. For public claim the entry point will be return_reference number
     # for authenticated claim it is claim reason. The following steps are skipped as you step through
@@ -34,11 +36,8 @@ module Claim
     # see specific steps below
     NEW_STEPS = %w[effective_date eligibility before_you_start return_reference_number claim_reason
                    main_residence_address date_of_sale upload_evidence claiming_amount taxpayer_details
-                   taxpayer_address claim_payment_bank_details final_declaration
+                   taxpayer_address claim_payment_bank_details claim_evidence_upload final_declaration
                    confirmation_of_payment].freeze
-
-    # Create the standard wizard step actions
-    standard_wizard_step_actions(NEW_STEPS, %i[claim_payment_bank_details])
 
     # Home page for unauthenticated wizard
     def public_claim_landing; end
@@ -72,7 +71,7 @@ module Claim
     # in claim link on dashboard page (@see save_params method)
     def claim_reason
       # Call clear_cache whenever params[:new] is there
-      clear_cache = params[:new].present?
+      clear_cache = params[:new].present? || params[:reference].present?
       Rails.logger.debug('New Claim Repayment') if clear_cache
 
       wizard_step(NEW_STEPS) do
@@ -118,10 +117,12 @@ module Claim
       # second && condition to avoid clear cache on back
       file_upload_end if request.get? && @claim_payment.evidence_files.nil?
 
-      if handle_file_upload(parent_param: :claim_claim_payment, types: evidence_files_file_types)
+      if handle_file_upload(parent_param: :claim_claim_payment)
+        return render(status: :unprocessable_content) if @resource_items_hash[:default].errors.any?
+
         # files were uploaded so keep on this page
         save_evidence_files_in_model
-        render(status: :unprocessable_entity)
+        redirect_to claim_claim_payments_claim_evidence_upload_path
       else
         wizard_step(NEW_STEPS) { { validates: :evidence_files } }
       end
@@ -160,17 +161,7 @@ module Claim
       # As the last page not a standard page, but need to load the model
       @claim_payment ||= load_step
 
-      # Clear the cache to remove previously upload resource files
-      # This means if the user refreshes the page they lose the list of files uploaded
-      # but prevents files being shown incorrectly
-      if handle_file_upload(parent_param: :claim_claim_payment,
-                            before_add: :add_additional_document,
-                            before_delete: :delete_additional_document,
-                            clear_cache: request.get?)
-        render(status: :unprocessable_entity)
-      else
-        end_claim_flow
-      end
+      end_claim_flow
     end
 
     # For all types do the declaration, this also triggers the submit
@@ -178,6 +169,57 @@ module Claim
     def final_declaration
       wizard_step(NEW_STEPS) do
         { cache_index: true, validates: :declaration, after_merge: :save_data_in_back_office }
+      end
+      end_claim_flow
+    end
+
+    # Wizard step : bank details
+    def claim_payment_bank_details
+      wizard_step(NEW_STEPS)
+    end
+
+    # Returns period span for claim repayment i.e., 18 months or 36 months
+    # First consideration is if User has selected through the effective_date page
+    # i.e., effective_date_checker is set
+    # OR it checks through the actual effective_date field in the claim_payment
+    def period_for_claim
+      return period_span_by_effective_dt_checker if @claim_payment.effective_date_checker.present?
+
+      period_span_for_claim(@claim_payment)
+    end
+
+    # Returns the period span if effective_date_checker is set for the claim
+    def period_span_by_effective_dt_checker
+      return nil if @claim_payment.effective_date_checker.nil? || @claim_payment.effective_date_checker.blank?
+
+      @claim_payment.effective_date_checker == 'BEFORE_DATE' ? 18 : 36
+    end
+
+    # This method is used to upload claim evidence
+    def claim_evidence_upload
+      load_step
+      @claim_payment.ads_evidence_needed = true if @claim_payment.reason == 'ADS'
+      @period_span = period_for_claim if @claim_payment.reason == 'ADS'
+      process_evidence_documents
+      return unless params[:continue]
+
+      if @claim_payment.valid?
+        wizard_step(NEW_STEPS)
+      else
+        render(status: :unprocessable_content)
+      end
+    end
+
+    # Process documents removal OR load @resource_items
+    def process_evidence_documents
+      if params[:delete_resource].present? &&
+         handle_file_upload(parent_param: :claim_claim_payment)
+        save_evidence_files_in_model
+        render('claim_evidence_upload',
+               status: :unprocessable_content) && return
+      else
+        uploaded_file_list if @resource_items.present?
+        handle_file_upload(parent_param: :claim_claim_payment)
       end
     end
 
@@ -203,7 +245,7 @@ module Claim
     # Save the evidence_file in the claim_payment model
     # calls back-office to send data collected in claim_payment wizard
     # @return [Boolean] was the after merge process successful
-    def save_evidence_files_in_model
+    def save_evidence_files_in_model # rubocop:disable Naming/PredicateMethod
       @claim_payment.evidence_files = []
       @claim_payment.evidence_files = @resource_items unless @resource_items.nil?
       wizard_save(@claim_payment)
@@ -220,23 +262,16 @@ module Claim
       wizard_save(@claim_payment)
     end
 
-    # which file types are allowed to be uploaded.cl
-    def content_type_allowlist
-      Rails.configuration.x.file_upload_content_type_allowlist.split(/\s*,\s*/)
+    # max filename length allowed for upload
+    def max_filename_length
+      Rails.configuration.x.file_upload_file_name_limit
     end
 
-    # Send document to back office
-    # @return [Boolean][String] true if document store successfully back office else false and
-    #   document reference id
-    def add_additional_document(resource_item)
-      @claim_payment.add_additional_document(resource_item)
-    end
+    # uploaded file name list
+    def uploaded_file_list
+      @uploaded_file_list ||= @resource_items.map(&:original_filename)
 
-    # Call delete evidence_file method of message to delete document from back office
-    # @param doc_refno [String] document reference number to be delete from back office
-    # @return [Boolean] true if document delete successfully from back office else false
-    def delete_additional_document(doc_refno)
-      @claim_payment.delete_additional_document(doc_refno)
+      @uploaded_file_list
     end
 
     # Overwrites the user method to pass unique id for unauthenticated user to create folder on server
@@ -255,14 +290,14 @@ module Claim
 
     # Calculates which wizard steps to be followed
     def show_ads_steps
-      return claim_claim_payments_upload_evidence_path if @claim_payment.reason != 'ADS'
+      return claim_claim_payments_claiming_amount_path if @claim_payment.reason != 'ADS'
 
       NEW_STEPS
     end
 
     # Calculates which wizard steps to be followed after date_of_sale
     def calculate_date_of_sale_next_step
-      return claim_claim_payments_upload_evidence_path if @claim_payment.post_date_of_sale?
+      # return claim_claim_payments_upload_evidence_path if @claim_payment.post_date_of_sale?
 
       claim_claim_payments_claiming_amount_path
     end
@@ -335,7 +370,9 @@ module Claim
 
       return unless params[required]
 
-      params.require(required).permit(attributes, unauthenticated_declarations_ids: [], eligibility_checkers: [],
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attributes, unauthenticated_declarations_ids: [], eligibility_checkers: [], # rubocop:disable Rails/StrongParametersExpect
                                                   eligibility_checkers_after: [])
     end
 

@@ -11,7 +11,7 @@ class ActionRoles < FLApplicationRecord
   # @param user_roles [Array/String] The user role(s) to check
   # @param role_action [String] The action to search for in that role
   # @return [Boolean] true if the role has the supplied action, otherwise false
-  def self.role_has(user_roles, role_action)
+  def self.role_has?(user_roles, role_action)
     raise Error::AppError.new('NONE', 'user_roles must be supplied to this method') if user_roles.to_s.empty?
     raise Error::AppError.new('NONE', 'role_action must be supplied to this method') if role_action.to_s.empty?
 

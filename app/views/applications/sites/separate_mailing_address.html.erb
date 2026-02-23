@@ -4,6 +4,6 @@
     <% c.with_visibility_control_radio_group(builder: f.builder, method: :operator_separate_mailing_address,
                                 options_list: @site.list_ref_data(:operator_separate_mailing_address), alignment: :horizontal) %>
     <%= ds_address_search(address_summary: @address_summary, search_results: @search_results , address: @address_detail, 
-      show_address_detail: @show_manual_address, readonly: @address_read_only) %>
+      show_address_detail: @show_manual_address, readonly: @address_read_only, nested: true) %>
   <% end %>
 <% end %>

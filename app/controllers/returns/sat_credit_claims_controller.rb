@@ -22,7 +22,7 @@ module Returns
     def tax_credit_tonnage
       wizard_step(nil) do
         { setup_step: :setup_tax_credit_tonnage, next_step: :site_summary_after_adding_tax_credit,
-          after_merge: :dump_credit_claim_into_sat_wizard }
+          after_merge: :dump_credit_claim_into_sat_wizard? }
       end
     end
 
@@ -148,7 +148,7 @@ module Returns
     # Puts the SatCreditClaimsController wizard data (ie @credit_claim @see #setup_step)
     # into the main Sat Wizard cache
     # @return [Boolean] true if successful
-    def dump_credit_claim_into_sat_wizard
+    def dump_credit_claim_into_sat_wizard?
       # make sure we have the site set up
       load_site
       @site.credit_claims = {} if @site.credit_claims.nil?
@@ -176,7 +176,9 @@ module Returns
 
       return unless params[required]
 
-      params.require(required).permit(attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
   end
 end

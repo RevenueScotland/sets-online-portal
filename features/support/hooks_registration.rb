@@ -44,7 +44,7 @@ end
 # Mock a activating account to complete registration
 Before('@mock_activate_account') do
   start_mock
-  message = { Action: 'CompleteRegistration', RegistrationToken: 'valid.registation.token' }
+  message = { Action: 'CompleteRegistration', RegistrationToken: 'valid.registration.token', ServiceCode: 'SYS' }
   fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/activate_account.xml")
   @savon.expects(:maintain_user_wsdl).with(message: message).returns(fixture)
   Rails.logger.debug { "Mocking configured :  #{@savon.inspect}" }
@@ -74,9 +74,9 @@ Before('@mock_new_user_registration') do
               PartyNINO: 'AB123456D', EmailDataIndicator: 'Y', AddressLine1: 'Royal Mail',
               AddressLine2: 'Luton Delivery Office 9-11', AddressLine3: 'Dunstable Road', AddressLine4: '',
               AddressTownOrCity: 'LUTON', AddressCountyOrRegion: '', AddressCountryCode: 'EN',
-              AddressPostcodeOrZip: 'LU1 1AA', UserServices: { 'ins2:UserService' => 'LBTT' },
-              PartyEmailAddress: 'test@example.com', PartyPhoneNumber: '07700 900123', 'ins2:RegistrationType' => nil,
-              'ins2:RegistrationValue' => nil }
+              AddressPostcodeOrZip: 'LU1 1AA', UserServices: { 'ins1:UserService' => 'LBTT' },
+              PartyEmailAddress: 'test@example.com', PartyPhoneNumber: '07700 900123', 'ins1:RegistrationType' => nil,
+              'ins1:RegistrationValue' => nil }
 
   fixture = File.read("#{FIXTURES_MOCK_ROOT}registration/register_user.xml")
 
@@ -94,10 +94,10 @@ Before('@mock_new_other_company_registration') do
               Username: 'NEW.USER.REGISTRATION', Password: 'Password001', ForcePasswordChange: 'N', UserIsCurrent: 'N',
               UserPhoneNumber: '01234567890', Forename: 'forename', Surname: 'surname', PartyNINO: 'AB123456D',
               EmailAddress: 'test@example.com', ConfirmEmailAddress: 'test@example.com', PartyAccountType: 'TAXPAYER',
-              EmailDataIndicator: 'Y', 'ins2:RegistrationType' => nil, 'ins2:RegistrationValue' => nil,
+              EmailDataIndicator: 'Y', 'ins1:RegistrationType' => nil, 'ins1:RegistrationValue' => nil,
               AddressLine1: '10 Rydal Avenue', AddressLine2: 'Tilehurst', AddressLine3: '',
               AddressLine4: '', AddressTownOrCity: 'READING', AddressCountyOrRegion: '', AddressCountryCode: 'EN',
-              AddressPostcodeOrZip: 'RG30 6XT', UserServices: { 'ins2:UserService' => 'LBTT' },
+              AddressPostcodeOrZip: 'RG30 6XT', UserServices: { 'ins1:UserService' => 'LBTT' },
               CompanyName: 'Other Company', RegistrationNumber: nil,
               RegisteredAddress: { 'ins1:AddressLine1' => 'Royal Mail',
                                    'ins1:AddressLine2' => 'Luton Delivery Office 9-11',
@@ -120,11 +120,11 @@ Before('@mock_new_company_no_address_registration') do
               Username: 'NEW.USER.REGISTRATION', Password: 'Password001', ForcePasswordChange: 'N', UserIsCurrent: 'N',
               UserPhoneNumber: '01234567890', Forename: 'forename', Surname: 'surname',
               EmailAddress: 'test@example.com', ConfirmEmailAddress: 'test@example.com', PartyAccountType: 'TAXPAYER',
-              PartyNINO: nil, EmailDataIndicator: 'Y', 'ins2:RegistrationType' => nil, 'ins2:RegistrationValue' => nil,
+              PartyNINO: nil, EmailDataIndicator: 'Y', 'ins1:RegistrationType' => nil, 'ins1:RegistrationValue' => nil,
               AddressLine1: '1st Floor, Imex Centre', AddressLine2: '575-599 Maxted Road',
               AddressLine3: nil, AddressLine4: nil, AddressTownOrCity: 'Hemel Hempstead',
               AddressCountyOrRegion: 'Hertfordshire', AddressCountryCode: 'GB', AddressPostcodeOrZip: 'HP2 7DX',
-              UserServices: { 'ins2:UserService' => 'LBTT' },
+              UserServices: { 'ins1:UserService' => 'LBTT' },
               CompanyName: 'NORTHGATE PUBLIC SERVICES LIMITED', RegistrationNumber: '09338960',
               RegisteredAddress: { 'ins1:AddressLine1' => '1st Floor, Imex Centre',
                                    'ins1:AddressLine2' => '575-599 Maxted Road',
@@ -150,12 +150,12 @@ Before('@mock_new_company_registration') do
               Username: 'NEW.USER.REGISTRATION', Password: 'Password001', ForcePasswordChange: 'N', UserIsCurrent: 'N',
               UserPhoneNumber: '01234567890', Forename: 'forename', Surname: 'surname',
               EmailAddress: 'test@example.com', ConfirmEmailAddress: 'test@example.com',
-              PartyAccountType: 'TAXPAYER', PartyNINO: nil, 'ins2:RegistrationType' => nil,
-              'ins2:RegistrationValue' => nil, EmailDataIndicator: 'Y',
+              PartyAccountType: 'TAXPAYER', PartyNINO: nil, 'ins1:RegistrationType' => nil,
+              'ins1:RegistrationValue' => nil, EmailDataIndicator: 'Y',
               AddressLine1: 'Royal Mail', AddressLine2: 'Luton Delivery Office 9-11',
               AddressLine3: 'Dunstable Road', AddressLine4: '', AddressTownOrCity: 'LUTON', AddressCountyOrRegion: '',
               AddressCountryCode: 'EN', AddressPostcodeOrZip: 'LU1 1AA',
-              UserServices: { 'ins2:UserService' => 'LBTT' },
+              UserServices: { 'ins1:UserService' => 'LBTT' },
               CompanyName: 'NORTHGATE PUBLIC SERVICES LIMITED', RegistrationNumber: '09338960',
               RegisteredAddress: { 'ins1:AddressLine1' => '1st Floor, Imex Centre',
                                    'ins1:AddressLine2' => '575-599 Maxted Road',
@@ -181,12 +181,12 @@ Before('@mock_new_company_registration_for_SAT') do
               Username: 'NEW.USER.REGISTRATION', Password: 'Password001', ForcePasswordChange: 'N', UserIsCurrent: 'N',
               UserPhoneNumber: '01234567890', Forename: 'forename', Surname: 'surname',
               EmailAddress: 'test@example.com', ConfirmEmailAddress: 'test@example.com',
-              PartyAccountType: 'UKTAXREP', PartyNINO: nil, 'ins2:RegistrationType' => 'SAT registration',
-              'ins2:RegistrationValue' => 'SAT1234777AABB', EmailDataIndicator: 'Y',
+              PartyAccountType: 'UKTAXREP', PartyNINO: nil, 'ins1:RegistrationType' => 'SAT registration',
+              'ins1:RegistrationValue' => 'SAT1234777AABB', EmailDataIndicator: 'Y',
               AddressLine1: 'Royal Mail', AddressLine2: 'Luton Delivery Office 9-11',
               AddressLine3: 'Dunstable Road', AddressLine4: '', AddressTownOrCity: 'LUTON', AddressCountyOrRegion: '',
               AddressCountryCode: 'EN', AddressPostcodeOrZip: 'LU1 1AA',
-              UserServices: { 'ins2:UserService' => 'SAT' },
+              UserServices: { 'ins1:UserService' => 'SAT' },
               CompanyName: 'NORTHGATE PUBLIC SERVICES LIMITED', RegistrationNumber: '09338960',
               RegisteredAddress: { 'ins1:AddressLine1' => '1st Floor, Imex Centre',
                                    'ins1:AddressLine2' => '575-599 Maxted Road',

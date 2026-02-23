@@ -3,6 +3,9 @@ en:
     submit:
       applications_slft_applications:
         create: "Submit"
+  applications/slft/applications:
+    more_files: "Yes, I have more file(s) to upload"
+    no_more_files: "No, I have no further files to upload"
   activemodel:
     attributes:
       applications/slft/applications:
@@ -38,7 +41,9 @@ en:
         declaration_name: Full name
         declaration_position: Job title or position
         declaration_telephone_number: Telephone
-        declaration_email_address: Email address        
+        declaration_email_address: Email address
+        upload_more_files: "Do you want to upload any further supporting file(s)"
+        uploaded_evidences: "Your uploaded files"
     hints:
       applications/slft/applications: 
         waste_percentage: Include natural water content
@@ -49,9 +54,13 @@ en:
           attributes:
             change_declaration:
               accepted: "The requirement to notify declaration must be accepted"
+            upload_more_files:
+              upload_limit_reached: "Maximum number of files limit of %{upload_limit} reached."
             base:
               missing_sites_entries: "Please fill in at least one site"
-              required_for_WP_WD: "Evidence of the water content (naturally and added) of the waste must be accepted"
+              required_for_WP_WD: "Evidence of the water content (naturally and added) of the waste must be provided"
+              evidence_file_required: "Please add a Supporting Document(s)"
+              supporting_doc_required: "At least one option must be chosen from the supporting document list"
     hidden_label:
       applications/slft/applications:
         supporting_document_other_description: "Other description"

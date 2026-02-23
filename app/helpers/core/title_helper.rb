@@ -16,6 +16,7 @@ module Core
     # Otherwise it shows the page title (from the page) followed by the service name
     def head_page_title
       prefix = "#{t('errors.error')}:" if content_for?(:error_summary)
+      prefix = "#{t('activemodel.attributes.resource_item.file_name')} - " if page_title == 'Your uploaded files'
       "#{prefix}#{page_title} - #{t('service_name')}".html_safe
     end
   end

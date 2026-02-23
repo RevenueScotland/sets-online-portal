@@ -316,7 +316,7 @@
             "pagebreak": null,
             "displaytitle": false,
             "sectionfooter": null,
-            "sectiontitle": "Buyer details",
+            "sectiontitle": "Buyer and seller",
             "listitem": [
                 {
                     "itemcode": "buyer_seller_linked_ind",
@@ -522,7 +522,7 @@
             "pagebreak": null,
             "displaytitle": false,
             "sectionfooter": null,
-            "sectiontitle": "Buyer details",
+            "sectiontitle": "Buyer and seller",
             "listitem": [
                 {
                     "itemcode": "buyer_seller_linked_ind",
@@ -1298,7 +1298,7 @@
             "pagebreak": null,
             "displaytitle": true,
             "sectionfooter": null,
-            "sectiontitle": "Reliefs on this transaction",
+            "sectiontitle": "Review reliefs on this transaction",
             "listitem": [
                 {
                     "itemcode": "relief_type_description",

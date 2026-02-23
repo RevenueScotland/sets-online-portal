@@ -51,7 +51,7 @@ module WizardAddressHelper # rubocop:disable Metrics/ModuleLength
       wizard_navigation_step(steps, overrides, wizard_page_objects_size(cached_object, overrides))
     else
       # Error on address
-      render(status: :unprocessable_entity)
+      render(status: :unprocessable_content)
     end
   end
 
@@ -71,11 +71,11 @@ module WizardAddressHelper # rubocop:disable Metrics/ModuleLength
   # @param overrides [Hash] an array of overrides see @wizard_address_step
   def wizard_address_search(wizard_cached_object, wizard_page_object, overrides)
     # Special POST and GET - Address search
-    search_for_addresses if wizard_address_pre_search(wizard_cached_object, wizard_page_object, overrides, false)
+    search_for_addresses if wizard_address_pre_search?(wizard_cached_object, wizard_page_object, overrides, false)
     # Force back to current page
     # I did try and use a status of see_other if there were no errors on the address search, but this breaks
     # rack_test as it expects a redirect with see other
-    render(status: :unprocessable_entity)
+    render(status: :unprocessable_content)
   end
 
   # Standard store address code to handle storing address in the current mode
@@ -86,7 +86,7 @@ module WizardAddressHelper # rubocop:disable Metrics/ModuleLength
   def wizard_store_address(wizard_cached_object, wizard_page_object, overrides)
     # we may also have page object parameters so store these and validate them first
     # the standard address search does the save
-    valid = wizard_address_pre_search(wizard_cached_object, wizard_page_object, overrides, true)
+    valid = wizard_address_pre_search?(wizard_cached_object, wizard_page_object, overrides, true)
 
     # check the address required flags
     required = wizard_address_required?(wizard_cached_object, wizard_page_object, overrides)
@@ -139,7 +139,7 @@ module WizardAddressHelper # rubocop:disable Metrics/ModuleLength
   # @param wizard_cached_object [Object] the object being cached
   # @param wizard_page_object [Object] the object on the page, a child or the same as the cached object
   # @param validate [Boolean] do we need to validate the parent object as part of the process
-  def wizard_address_pre_search(wizard_cached_object, wizard_page_object, overrides, validate)
+  def wizard_address_pre_search?(wizard_cached_object, wizard_page_object, overrides, validate)
     wizard_params = resolve_params(overrides)
     unless wizard_params.nil?
       merge_params_with_object(wizard_page_object, wizard_params)
@@ -157,7 +157,7 @@ module WizardAddressHelper # rubocop:disable Metrics/ModuleLength
   # @example LBTT Party requires an additional contact address if the user says that Yes their address will change
   # @example A company has a flag that asks if the registered address is also the contact address so if the user says
   #   No they need another address
-  # If an address isn't required then save the object (see @save_address_if_not_required)
+  # If an address isn't required then save the object (see @save_address_if_not_required?)
   # @param wizard_cached_object [Object] the object being cached
   # @param wizard_page_object [Object] the object on the page, a child or the same as the cached object
   # @param overrides [Hash] an array of overrides see @wizard_address_step
@@ -172,7 +172,7 @@ module WizardAddressHelper # rubocop:disable Metrics/ModuleLength
     value = wizard_page_object.send(address_required || address_not_required)
     check = (address_required.nil? ? 'Y' : 'N')
 
-    required = save_address_if_not_required(wizard_cached_object, value, check, overrides)
+    required = save_address_if_not_required?(wizard_cached_object, value, check, overrides)
     Rails.logger.debug { "Address required: #{required}" }
     required
   end
@@ -186,7 +186,7 @@ module WizardAddressHelper # rubocop:disable Metrics/ModuleLength
   # @param required_value [Object] the value the flag is checked against (Y or N)
   # @param overrides [Hash] an array of overrides see @wizard_address_step
   # @return [Boolean] true if an address is required, false otherwise
-  def save_address_if_not_required(wizard_cached_object, flag_value, required_value, overrides)
+  def save_address_if_not_required?(wizard_cached_object, flag_value, required_value, overrides)
     if flag_value.blank? || (flag_value == required_value)
       wizard_save(wizard_cached_object, overrides[:cache_index])
       return false
@@ -227,7 +227,7 @@ module WizardAddressHelper # rubocop:disable Metrics/ModuleLength
   # @param address [Object] the address being processed
   # @param overrides [Hash] an array of overrides see @wizard_address_step
   # @return [Boolean] always returns true
-  def wizard_save_address_in_object(wizard_cached_object, wizard_page_object, address, overrides)
+  def wizard_save_address_in_object(wizard_cached_object, wizard_page_object, address, overrides) # rubocop:disable Naming/PredicateMethod
     address_attribute = overrides[:address_attribute] || :address
 
     Rails.logger.debug { "Storing address in object #{wizard_page_object.class.name}##{address_attribute}" }

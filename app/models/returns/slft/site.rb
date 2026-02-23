@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module Returns
+  # module to organize Slft models
   module Slft
+    # RSTP-1571 : Need to require csv explicitly
+    # Rails 8 raises uninitialized constant error for CSV if not added
+    require 'csv'
     # SLfT returns contain site specific information.  There can be multiple sites per return
     # (the largest operator currently has 7 sites).
     class Site < FLApplicationRecord
@@ -41,10 +45,10 @@ module Returns
            divider: false, # should we have a section divider
            display_title: true, # Is the title to be displayed
            type: :list,
-           list_items: [{ code: :net_standard_tonnage },
-                        { code: :net_lower_tonnage },
-                        { code: :exempt_tonnage },
-                        { code: :total_tonnage }] }]
+           list_items: [{ code: :net_standard_tonnage, label: 'Standard rate tonnage (net)' },
+                        { code: :net_lower_tonnage, label: 'Lower rate tonnage (net)' },
+                        { code: :exempt_tonnage, label: 'Exempt tonnage' },
+                        { code: :total_tonnage, label: 'Total tonnage' }] }]
       end
 
       # Work out the lower_tonnage based on the waste entries

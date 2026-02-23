@@ -11,7 +11,9 @@ module Returns
       required = :returns_lbtt_lbtt_return
       attribute_list = Lbtt::LbttReturn.attribute_list
 
-      params.require(required).permit(attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
   end
 end

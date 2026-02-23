@@ -5,12 +5,20 @@ en:
       activate_registration: "Confirm"
     activate_account_confirmation:
       title: "Completed registration or password reset"
-      description: "If you have completed your registration, once you have received email notification that your account is approved by Revenue Scotland, then you will be able to sign into your account. Else if you have changed your password, your new password is now active"
+      subtitle_registration: "If you have completed your registration"
+      registration_description: "Once you have received an email notification that your account has been approved by Revenue Scotland, you will be able to sign into your account."
+      subtitle_password: "If you have reactivated your account after resetting your password"
+      password_description: "Your new password is now active - you can now use it to log into your account."
       continue: "Continue"
     edit_basic:
       title: "Update account"
     edit_address:
       title: "Update address"
+    token_link_expired:
+      title: "Your link has expired"
+      subtitle: "The link to verify your email address or to confirm your password reset has expired"
+      para_text: "Use the forgotten your password option below to generate a new one"
+      link_text: "Forgotten your password?"
     show:
       title: "Sign up details"
       description: "This is where you update your account information and manage the access that you give other people to your account."
@@ -23,10 +31,17 @@ en:
     registration:
       account_for:
         title: "Sign up to file tax returns"
+        lbtt_warning: "You cannot register for a SETS account if you are an individual looking to submit a return; only tax professionals or organisations submitting multiple returns may create an account. %{link}"
+        service_link: "See what services are available for individual taxpayers instead"
+        registration_type: "Who are you signing up on behalf of"
       taxes:
         title: "Sign up to file tax returns"
+        lbtt_warning: "You cannot register for a SETS account if you are an individual looking to submit a return; only tax professionals or organisations submitting multiple returns may create an account. %{link}"
+        service_link: "See what services are available for individual taxpayers instead"
       account_type:
         title: "Sign up to file tax returns"
+        lbtt_warning: "You cannot register for a SETS account if you are an individual looking to submit a return; only tax professionals or organisations submitting multiple returns may create an account. %{link}"
+        service_link: "See what services are available for individual taxpayers instead"
       enrol_ref:
         title: "Sign up to file tax returns"
       account_details:

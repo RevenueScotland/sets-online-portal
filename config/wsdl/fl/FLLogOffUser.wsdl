@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 17-Oct-2013   Version 1.0  -->
-<wsdl:definitions xmlns:ns="http://northgate-is.com/FL/LogOffUser" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://northgate-is.com/FL/LogOffUser.wsdl" targetNamespace="http://northgate-is.com/FL/LogOffUser.wsdl" name="LogOffUser">
+<wsdl:definitions xmlns:ns="http://northgate-is.com/FL/LogOffUser"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://northgate-is.com/FL/LogOffUser.wsdl"
+	xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://northgate-is.com/FL/LogOffUser.wsdl" name="LogOffUser">
 	<wsdl:types>
-		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:complexType name="PersonNameType">
 				<xsd:sequence>
 					<xsd:element name="Title" minOccurs="0">
@@ -125,10 +132,13 @@
 				</xsd:annotation>
 				<xsd:sequence>
 					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="ClientIP" type="xsd:string" minOccurs="0"/>
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
-		<xsd:schema xmlns="http://northgate-is.com/FL/LogOffUser" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://northgate-is.com/FL/LogOffUser" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns="http://northgate-is.com/FL/LogOffUser"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://northgate-is.com/FL/LogOffUser" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:import namespace="http://northgate-is.com/FL/Core"/>
 			<xsd:element name="LogOffUserRequest">
 				<xsd:complexType>
@@ -138,7 +148,16 @@
 					</xsd:sequence>
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element name="LogOffUserResponse" type="core:StandardResponseStructure"/>
+		</xsd:schema>
+		<xsd:schema xmlns="http://northgate-is.com/FL/LogOffUser"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://northgate-is.com/FL/LogOffUser" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:import namespace="http://northgate-is.com/FL/Core"/>
+					<xsd:element name="LogOffUserResponse" type="core:StandardResponseStructure"/>
+				</xsd:sequence>
+			</xsd:complexType>
 		</xsd:schema>
 	</wsdl:types>
 	<wsdl:message name="LogOffUserRequest">

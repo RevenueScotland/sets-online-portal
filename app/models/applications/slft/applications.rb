@@ -19,8 +19,11 @@ module Applications
             renewal_or_review why_water_present not_banned_waste
             type_of_waste_text how_produced how_added waste_percentage added_water_percentage
             naturally_occurring naturally_occurring_percentage treatment reason_for_no_treatment start_date
-            case_references case_ref_nos]
+            case_references case_ref_nos evidence_files upload_more_files more_upload_requested
+            max_allowed_upload upload_count]
       end
+
+      attr_accessor :evidence_needed
 
       attribute_list.each { |attr| attr_accessor attr }
 
@@ -92,7 +95,16 @@ module Applications
       validates :start_date, presence: true, on: :start_date, if: :start_date_required?
 
       validate :mandatory_supporting_document_option_selected, on: :supporting_document_list,
-                                                               if: :waste_producer_water_discount?
+                                                               if: :supporting_doc_required?
+
+      validate :validate_supporting_documents_selection, on: :supporting_document_list,
+                                                         if: :at_least_one_doc_required?
+
+      # Validate upload_more_files only if the user lands on the Your uploaded files page
+      # else the validation isn't necessary, we use the more_upload_requested flag for this purpose
+      validates :upload_more_files, presence: true, if: :more_upload_requested
+      validate :validate_if_evidence_required
+      validate :upload_limit_reached
 
       # Define the ref data codes associated with the attributes to be cached in this model
       # @return [Hash] <attribute> => <ref data composite key>
@@ -154,6 +166,19 @@ module Applications
         (application_type == 'WP-WD')
       end
 
+      # Returns true if supporting document is required
+      # for the current application type
+      def supporting_doc_required?
+        %w[WP-WD LO-WD].include?(application_type)
+      end
+
+      # Returns true if at least one supporting doc is required
+      # This is for application types where documents list is different
+      # and no mandatory item is present
+      def at_least_one_doc_required?
+        %w[LO-RA LO-ND LO-WB].include?(application_type)
+      end
+
       # is this not the water producer water discount application
       def not_waste_producer_water_discount?
         (application_type != 'WP-WD')
@@ -186,6 +211,17 @@ module Applications
         errors.add(:base, :required_for_WP_WD) unless supporting_document_list.include?('DOC1')
       end
 
+      # Validate if supporting doc is selected in case of LO flow for
+      # - Restoration notification
+      # - Application for a non-disposal area
+      # - Application for an alternative weighing method
+      def validate_supporting_documents_selection
+        return unless @supporting_document_list.nil? || @supporting_document_list.compact_blank.blank?
+
+        errors.add(:base,
+                   :supporting_doc_required)
+      end
+
       # Does the treatment need to be validated.
       # @return [Boolean] true if reason_for_no_treatment or treatment is filled
       def treatment_required?
@@ -206,8 +242,6 @@ module Applications
       # Builds and returns the selected supporting_document_list to show on last page
       # @return [Array] the list of selected supporting_documents to upload
       def display_supporting_document_list
-        return if application_type == 'LO-WD'
-
         @display_supporting_document_list = []
         documents_ref_hash = ReferenceData::ReferenceValue.lookup("DOCUMENTS-#{application_type}", 'SLFT', 'RSTU')
         @supporting_document_list.each_with_index do |checked_code, index|
@@ -236,7 +270,7 @@ module Applications
       # delete support document from back-office
       # @param doc_refno [String] support document reference number to be delete from back-office
       # @return [Boolean] true if support document delete successfully from back-office else false
-      def delete_supporting_document(doc_refno)
+      def delete_supporting_document?(doc_refno)
         call_ok?(:delete_document, request_delete_supporting_document_elements(doc_refno))
       end
 
@@ -285,10 +319,35 @@ module Applications
         attribute
       end
 
+      # Returns the upload options available on the your_uploaded_files page
+      def self.file_upload_options
+        options = %i[more_files no_more_files]
+        options.map do |x|
+          ReferenceData::ReferenceValue.new(code: x,
+                                            value: I18n.t(
+                                              x.to_s, scope: model_name.i18n_key
+                                            ))
+        end
+      end
+
+      # Validates if evidence files are required
+      def validate_if_evidence_required
+        errors.add(:base, :evidence_file_required) if evidence_needed && evidence_files.blank?
+      end
+
+      # This method validates if the file upload limit has been reached
+      def upload_limit_reached
+        return true if @max_allowed_upload.nil? || @upload_count.nil?
+
+        return true unless @max_allowed_upload == @upload_count
+
+        errors.add(:upload_more_files, :upload_limit_reached, upload_limit: @max_allowed_upload)
+      end
+
       private
 
       # @return [Hash] elements used to specify what data we want to send to the back office
-      def request_save
+      def request_save # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
         output = { Role: @applicant_type,
                    Form: @application_type }
 
@@ -304,6 +363,7 @@ module Applications
 
         output[:Declaration] = request_declaration
         output[:Application] = { 'ins1:PrintData': print_data(:print_layout) }
+        output.merge!(save_evidence_files_elements) unless evidence_files.nil?
 
         output
       end
@@ -320,6 +380,20 @@ module Applications
 
         # Return the renewal or review flag for the waste producer water discount
         lookup_ref_data_value(:renewal_or_review)
+      end
+
+      # @return [Hash] elements used to specify what data we want to send to the back office
+      def save_evidence_files_elements
+        { 'ins1:Documents': { 'ins1:Document':
+            evidence_files.map { |evidence_file| request_document_create(evidence_file) } } }
+      end
+
+      # @return a hash suitable for use in store document request to the back office
+      def request_document_create(document)
+        { 'ins1:FileName': document.original_filename,
+          'ins1:FileType': document.content_type,
+          'ins1:Description': document.description,
+          'ins1:BinaryData': Base64.encode64(document.file_data) }
       end
 
       # @return a hash suitable for use in a add supporting_document to the back office
@@ -433,15 +507,29 @@ module Applications
 
       # layout for the supporting document
       def print_layout_supporting_document
-        return if application_type == 'LO-WD'
-
         { code: :supporting_documents, # section code
           key: :title, # key for the title translation
           key_scope: %i[applications slft supporting_documents], # scope for the title translation
           divider: true, # should we have a section divider
           display_title: true, # Is the title to be displayed
           type: :list, # type list = the list of attributes to follow
-          list_items: [{ code: :supporting_document_list, lookup: true, format: :list }] }
+          list_items: supporting_files_list_items }
+      end
+
+      # Returns the list items for supporting documents
+      def supporting_files_list_items
+        lst_itms = [{ code: :supporting_document_list, lookup: true, format: :list }]
+        lst_itms << { code: :uploaded_evidences, lookup: false, format: :list } if @evidence_files.present?
+        lst_itms
+      end
+
+      # Returns the uploaded_evidences(uploaded documents) data required for application pdf
+      def uploaded_evidences
+        return if @evidence_files.blank?
+
+        @evidence_files.map do |x|
+          "#{x.original_filename} #{"(#{x.description})" if x.description.present?}"
+        end.join("\n")
       end
 
       # layout about waste water details

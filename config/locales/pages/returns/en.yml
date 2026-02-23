@@ -1,6 +1,14 @@
 en:
   returns:
     sat:
+      repayment_evidence_upload:
+        title: "Upload your supporting files"
+        file_upload_hint: "Once you have added a file it will be listed here. A maximum of ten files can be added."
+        add_file: "Add file"
+        add_additional_file: "Add additional file"
+        other_upload_description: "You can upload evidence to support a claim for repayment from Revenue Scotland. If evidence is required but not provided, a claim may be refused."
+      upload_evidence:
+        title: "Upload your supporting file"
       repayment_request: 
         title: "Repayment details"
       repayment_request_bank_details:
@@ -29,7 +37,7 @@ en:
         title: "Gross taxable aggregate"  
       tax_liability:
         title: "Tax liability"  
-      summary:
+      sat_summary:
           title: "Return Summary"
           subtitle: "Your return summary"
           transaction_subtitle: "Return period"
@@ -50,6 +58,8 @@ en:
         warning: "If you give false information, you may face penalties and/or prosecution"
       declaration_calculation:
         title: "Payment and submission"
+        SAT_fpay_warning: "To ensure your payment is processed correctly and without delay, it is essential that you use only the unique 13-character reference number of the return as your payment reference.<br/><br/>Failure to use the correct reference may result in delays, misallocation of funds, and could potentially lead to penalties.<br/><br/>Please ensure this message is passed on to whoever is responsible for making the payment. It is critical for the timely and accurate completion of the transaction.<br/><br/>%{pay_link}"
+        SAT_fpay_warning_link: "Guidance on how to pay SAT"
         warning: "If you give false information, you may face penalties and/or prosecution"
         dd_warning: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debt"
         sumbit: "Submit return"
@@ -209,7 +219,7 @@ en:
         title: "About the return"
         flbt_type: "Description of transaction"
       return_reference_number:
-        title: "Return reference number"
+        title: "Previous return details"
         orig_effective_date: "the effective date"
       return_pre_population_declaration:
         title: "Declaration"
@@ -217,7 +227,7 @@ en:
         declaration_text: "We have found the most recent return for %{orig_return_reference}"
         pre_population_text: "We will fill in the details for the new return from the return we found."
         read_only_warning: "Some of the information will be read only. Contact Revenue Scotland if any of the read only information is not as expected."
-        check_data_warning: "It is the responsibilty of the individual completing this return to check the data is correct and to update as needed (including any relief). Incorrect information can result in penalties and/or prosecution."
+        check_data_warning: "It is the responsibility of the individual completing this return to check the data is correct and to update as needed (including any relief). Incorrect information can result in penalties and/or prosecution."
         go_to_dashboard: "Go to dashboard"
       save_draft:
         title: "Your return has been saved"
@@ -225,6 +235,8 @@ en:
         caution: "Your return has not been submitted to Revenue Scotland."
         back_to_return_summary: "Back to return summary"
         go_to_dashboard: "Go to dashboard"
+      common:
+        accurate_tp_info: "Please ensure that the taxpayer information entered is accurate. Revenue Scotland will use these contact details to communicate important tax-related information directly to the taxpayer."
     load:
       title: "Error loading return"
     lbtt_agent:
@@ -242,11 +254,11 @@ en:
         description_html: "See guidance on %{link} for further details. <br>The following fields are for information only and will not calculate the relief"
         description_link: "multiple dwellings relief"
       reliefs_on_transaction:
-        title: "Reliefs on this transaction"
+        title: "Provide reliefs on this transaction"
         description_1_html: "See guidance on %{link} for further details"
         description_1_link: "Tax Reliefs"
       reliefs_calculation:
-        title: "Reliefs on this transaction"
+        title: "Review reliefs on this transaction"
     lbtt_tax:
       calc_already_paid:
         title: "Calculated tax"
@@ -267,14 +279,14 @@ en:
         description: "The ADS consideration is usually the same as the purchase price"
         ads_amount_liable_link: "determining the chargeable consideration for the ADS"
       ads_repay_reason:
-        title: "Additional Dwelling Supplement (ADS)"
+        title: "Additional Dwelling Supplement (ADS) and previous main residence"
       ads_repay_date:
-        title: "Additional Dwelling Supplement (ADS)"
+        title: "ADS and sale or disposal of previous main residence"
       ads_repay_address:
-        title: "Additional Dwelling Supplement (ADS)"
+        title: "ADS and address of previous main residence"
         rrep_ads_sold_address: "Confirm the address of the previous main residence that has been sold or disposed of"
       ads_repay_details:
-        title: "Additional Dwelling Supplement (ADS)"
+        title: "ADS and amount to reclaim"
         section_title: "When you submit the return you will be asked for the bank details for the repayment."
     lbtt_submit:
       edit_calculation_reason:
@@ -304,11 +316,61 @@ en:
         title: Claim repayment
       repayment_claim_bank_details:
         title: Enter bank details
+      upload_evidence:
+        title: "Upload your supporting file"
+      repayment_evidence_upload:
+        title: "Upload your supporting files"
+        file_upload_hint: "Once you have added a file it will be listed here. A maximum of ten files can be added."
+        add_file: "Add file"
+        add_additional_file: "Add additional file"
+        other_upload_description: "You can upload evidence to support a claim for repayment from Revenue Scotland. If evidence is required but not provided, a claim may be refused."
+        ads_18_month_upload_description: 
+          "<p>To support any claim for an ADS repayment the following evidence must be provided:</p>
+          <ol>
+            <li> One item of evidence for proof of sale. <br /> 
+              Examples expected are listed below. This list is not exhaustive.
+             <ul>
+              <li>Copy of disposition of sale</li>
+              <li>Copy of land registration documents</li>
+              <li>Letter from your solicitor that clearly states the date of sale</li>
+             </ul>
+            </li>
+            <li> Two items of evidence that the previous property was occupied by all buyers as their main residence at some time in the 18 month period before the new property was purchased. <br />
+              Examples expected are listed below. This list is not exhaustive.
+              <ul>
+                <li>Copy of a council tax bill</li>
+                <li>Copy of a utilities bill</li>
+                <li>Copy of a bank statement</li>
+              </ul>
+            </li>
+          </ol> <p> Without this evidence, any claim for an ADS repayment may be refused. </p>"
+        ads_36_month_upload_description: 
+          "<p>To support any claim for an ADS repayment the following evidence must be provided:</p>
+          <ol>
+            <li> One item of evidence for proof of sale. <br /> 
+              Examples expected are listed below. This list is not exhaustive.
+             <ul>
+              <li>Copy of disposition of sale</li>
+              <li>Copy of land registration documents</li>
+              <li>Letter from your solicitor that clearly states the date of sale</li>
+             </ul>
+            </li>
+            <li> Two items of evidence that the previous property was occupied by all relevant buyers as their main residence at some time in the 36 month period before the new property was purchased. <br />
+              Examples expected are listed below. This list is not exhaustive.
+              <ul>
+                <li>Copy of a council tax bill</li>
+                <li>Copy of a utilities bill</li>
+                <li>Copy of a bank statement</li>
+              </ul>
+            </li>
+          </ol> <p> Without this evidence, any claim for an ADS repayment may be refused. </p>"
       repayment_claim_declaration:
         title: Declaration
         repayment_declaration_NOTE: "Note: LBTT is a self-assessed tax and Revenue Scotland does not verify all repayment claims before repayments are issued. Checks may take place after the issue of a repayment. This is to ensure claims meet the repayment conditions in full. If all the repayment conditions are not met, you may be due to pay tax back to Revenue Scotland. Steps will be taken to recover any repayment which should not have been paid, including interest."
       declaration:
         title: "Payment and submission"
+        LBTT_fpay_warning: "To ensure your payment is processed correctly and without delay, it is essential that you use only the unique 13-character reference number of the return as your payment reference.<br/><br/>Failure to use the correct reference may result in delays, misallocation of funds, and could potentially lead to penalties.<br/><br/>Please ensure this message is passed on to whoever is responsible for making the payment. It is critical for the timely and accurate completion of the transaction.<br/><br/>%{pay_link}"
+        LBTT_fpay_warning_link: "Guidance on how to pay LBTT"
         dd_not_available: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
         warning: "If you give false information, you may face penalties and/or prosecution"
         submit_return: "Submit return"
@@ -330,8 +392,9 @@ en:
         title: "Property address"
         section_title: "Provide property address"
       property_ads_applies:
-        title: "About the property"
+        title: "Property and ADS"
         ads_due_ind_link: "LBTT Additional Dwelling Supplement"
+        ads_label_text: "Returns that are subject to ADS are not entitled to First Time Buyers relief"
     lbtt_transactions:
       property_type:
         title: "About the transaction"
@@ -372,13 +435,13 @@ en:
       tenant_landlord_relation:
         title: Landlord details
       lease_values:
-        title: About the lease values
+        title: Rent for the first year
       rental_years:
-        title: About the lease values
+        title: Value for all rental years
         rent: Rent
         year: Year
       premium_paid:
-        title: About the lease values
+        title: Premium payable
         lease_premium_link: "consideration other than rent"
       relevant_rent:
         title: About the lease values
@@ -420,18 +483,18 @@ en:
         TENANT_title: "Tenant's contact address"
         NEWTENANT_title: "New tenant's contact address"
       parties_relation:
-        BUYER_title: "Buyer details"
+        BUYER_title: "Buyer and seller"
         BUYER_buyer_seller_linked_ind: "the buyer and seller are connected (opens in a new tab)"
         TENANT_buyer_seller_linked_ind: "the tenant and landlord are connected (opens in a new tab)"
         SELLER_title: "Seller details"
         LANDLORD_title: "Landlord details"
-        TENANT_title: "Tenant details"
+        TENANT_title: "Tenant and landlord"
         NEWTENANT_title: "New tenant details"
         buyer_seller_linked_ind: "they are connected"
       acting_as_trustee:
-        BUYER_title: "Buyer details"
+        BUYER_title: "Buyer as trustee or representative partner"
         is_acting_as_trustee_partnership: "'representative partner'"  
-        TENANT_title: "Tenant details"
+        TENANT_title: "Tenant as trustee or representative partner"
         NEWTENANT_title: "New tenant details"
       company_number:
         title: "Registered company"
@@ -465,6 +528,12 @@ en:
         OTHER_description: ""
         address: "Address"
         registered_address: "Registered address"
+      representative_address_details:
+        title: "Contact address"
+      organisation_address_details:
+        title: "Organisation address"
+      organisation_contact_address_details:
+        title: "Contact address"
     slft:
       summary:
         title: "Return summary"
@@ -502,6 +571,14 @@ en:
         go_to_dashboard: "Go to dashboard"
       repayment_bank_details:
         title: "Enter bank details"
+      repayment_evidence_upload:
+        title: "Upload your supporting files"
+        file_upload_hint: "Once you have added a file it will be listed here. A maximum of ten files can be added."
+        add_file: "Add file"
+        add_additional_file: "Add additional file"
+        other_upload_description: "You can upload evidence to support a claim for repayment from Revenue Scotland. If evidence is required but not provided, a claim may be refused."
+      upload_evidence:
+        title: "Upload your supporting file"
       repayment_declaration:
         title: "Declaration"
         warning: "If you give false information, you may face penalties and/or prosecution"
@@ -512,6 +589,8 @@ en:
         title: "Repayment details"
       declaration:
         title: "Payment and submission"
+        SLFT_fpay_warning: "To ensure your payment is processed correctly and without delay, it is essential that you use only the unique 13-character reference number of the return as your payment reference.<br/><br/>Failure to use the correct reference may result in delays, misallocation of funds, and could potentially lead to penalties.<br/><br/>Please ensure this message is passed on to whoever is responsible for making the payment. It is critical for the timely and accurate completion of the transaction.<br/><br/>%{pay_link}"
+        SLFT_fpay_warning_link: "Guidance on how to pay SLFT"
         SLFT_additional_Warning: "Your credit claimed cannot be more than 90% of your qualifying contribution for the accounting period and must not exceed 5.6% of your SLFT liability in the contribution year"
         dd_not_available: "Direct Debit is unavailable on this return as the previous submission did not use Direct Debit"
         warning: "If you give false information, you may face penalties and/or prosecution"

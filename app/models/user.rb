@@ -31,7 +31,7 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
        email_address_confirmation old_password new_password new_password_confirmation password password_change_required
        password_expiry_date user_is_authenticated user_is_registered user_locked user_is_current username new_username
        token user_is2_fa token_valid2_fa user_is_signed_ta_cs portal_objects_access portal_object_index
-       portal_object_display_name portal_object_display_reference user_is_approved]
+       portal_object_display_name portal_object_display_reference user_is_approved client_ip]
   end
 
   # Fields that can be set on a user
@@ -69,7 +69,7 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   # Update the user's password
-  def update_password(password_params)
+  def update_password?(password_params)
     assign_attributes(password_params)
     return false unless valid?(:update_password)
 
@@ -77,7 +77,7 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   # Validation for portal object access
-  def confirm_portal_object(user_params)
+  def confirm_portal_object?(user_params)
     assign_attributes(user_params)
 
     return false unless valid?(:select_portal_object)
@@ -86,7 +86,7 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   # Update the back office that the user has read the T&Cs
-  def confirm_tcs(update_tcs_params)
+  def confirm_tcs?(update_tcs_params)
     assign_attributes(update_tcs_params)
 
     return false unless valid?(:confirm_tcs)
@@ -103,7 +103,7 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   # the id function needs to return the primary key and is used to build the links
   # @return [String] the username
   def to_param
-    username
+    Base64.urlsafe_encode64(username)
   end
 
   # sets the attributes that will be serialised in the session
@@ -242,7 +242,7 @@ class User < FLApplicationRecord # rubocop:disable Metrics/ClassLength
     { Requestor: requested_by.username, Username: username, Action: action, Forename: forename, Surname: surname,
       EmailAddress: email_address, UserIsCurrent: user_is_current, WorkplaceCode: requested_by.work_place_refno,
       PartyReference: requested_by.party_refno, Password: new_password, ServiceCode: 'SYS',
-      UserPhoneNumber: phone_number, UserRolesType: { 'ins2:UserRole' => user_roles.compact_blank } }
+      UserPhoneNumber: phone_number, UserRolesType: { 'ins1:UserRole' => user_roles.compact_blank } }
   end
 
   # @return [Hash] request to update the password of this user using the authority of this user

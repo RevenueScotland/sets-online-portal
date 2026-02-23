@@ -6,6 +6,7 @@ module Returns
     class Sites < FLApplicationRecord # rubocop:disable Metrics/ClassLength
       include NumberFormatting
       include PrintData
+
       # Attributes for this class, in list so can re-use
       def self.attribute_list
         %i[period_bdown_start period_bdown_end rate_date site_ref site_party_ref site_party_name site_name

@@ -131,6 +131,7 @@ Feature: User Maintenance
         And I click on the "Edit row" link
         Then I should see the "Update user" page
         # select update user without entering remaining details
+        And I should not see the text "PORTAL.CHANGE@DETAILS" in the page url
         When I enter " " in the "Confirm email address" field
         And I click on the "Update user" button
         Then I should receive the message "Email address does not match"
@@ -146,7 +147,7 @@ Feature: User Maintenance
             | Username              | Current | Name                         | Email address      | Phone number |
             | PORTAL.CHANGE@DETAILS | N       | Portal User1 Change Details1 | noreply@necsws.com |              |
 
-        #update details back to orginal
+        #update details back to original
         And I filter on "Portal User1 Change Details1"
         When I click on the "Edit row" link
         Then I should see the "Update user" page
@@ -225,10 +226,37 @@ Feature: User Maintenance
         Then I should see the "Account users" page
         And I should receive the message "Name is too long"
 
-    # RSTP-1550 Commenting the scenario as it is no longer valid
-    # Scenario: User should not be able to create any subordinate users if they have no services
-    #     Given I have signed in 'portal.no.services' and password 'Password1!'
-    #     When I go to the "Account" page
-    #     And I click on the "Create or update users for this account" link
-    #     Then I should see the "Account users" page
-    #     And I should not see a link with text "Create a new user for your account"
+    Scenario: Invalid users should be shown the account locked error message after 3 failed attemps
+        Given I go to the "Login" page
+        When I should store the randomly generated username with the length of "5"
+        And I enter the stored username in field "user_username"
+        And I enter the stored username in field "user_password"
+        And I click on the "Sign in" button
+        Then I should see the "Sign in" page
+        And I should see the text "Invalid login credentials"
+
+        When I go to the "Login" page
+        Then I should not see the text "Invalid login credentials"
+        And I enter the stored username in field "user_username"
+        And I enter the stored username in field "user_password"
+        And I click on the "Sign in" button
+        Then I should see the "Sign in" page
+        And I should see the text "Invalid login credentials"
+
+        When I go to the "Login" page
+        Then I should not see the text "Invalid login credentials"
+        And I enter the stored username in field "user_username"
+        And I enter the stored username in field "user_password"
+        And I click on the "Sign in" button
+        Then I should see the "Sign in" page
+        And I should see the text "Account locked. Use forgotten password to unlock your account"
+
+        When I go to the "Login" page
+        Then I should not see the text "Invalid login credentials"
+        And I enter the stored username in field "user_username"
+        And I enter the stored username in field "user_password"
+        And I click on the "Sign in" button
+        Then I should see the "Sign in" page
+        And I should not see the text "Invalid login credentials"
+        And I should see the text "Account locked. Use forgotten password to unlock your account"
+

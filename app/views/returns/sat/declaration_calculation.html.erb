@@ -1,7 +1,10 @@
 <% content_for(:page_title, t('.title')) %>
-  <%= ds_form_with(model: @sat_return, url: @post_path, method: :post, button_action: :submit, button_label: t('.sumbit')) do |f| %>
-      <%= ds_warning { t('.dd_warning') } if @sat_return.show_amend_dd_warning?%> 
-      <%= f.ds_radio_group(method: :fpay_method, options_list: @sat_return.list_payment_types(account_has_dd_instruction: @sat_return.enrolment_has_dd_instruction?)) %>
-      <%= ds_warning{t('.warning')} %>
-      <%= f.ds_checkbox(method: :declaration) %>
+<%= ds_form_with(model: @sat_return, url: @post_path, method: :post, button_action: :submit, button_label: t('.sumbit')) do |f| %>
+  <%= ds_warning { t('.dd_warning') } if @sat_return.show_amend_dd_warning?%>
+  <%= rs_conditional_visibility(visible_value: "BACS") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :fpay_method, options_list: @sat_return.list_payment_types(account_has_dd_instruction: @sat_return.enrolment_has_dd_instruction?)) %>
+    <%= ds_warning{ t('.SAT_fpay_warning', pay_link: ds_link(name: t('.SAT_fpay_warning_link'), url: external_link_url('SAT_PAYMENT'), target: '_blank')).html_safe } %>
   <% end %>
+  <%= ds_warning{t('.warning')} %>
+  <%= f.ds_checkbox(method: :declaration) %>
+<% end %>

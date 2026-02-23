@@ -15,7 +15,7 @@ module Accounts
 
     # Allow all wizard pages to be unauthenticated
     # rubocop exception as &:to_sym isn't supported here
-    skip_before_action :require_user, only: STEPS.map { |s| s.to_sym } # rubocop:disable Style/SymbolProc
+    skip_before_action :require_user?, only: STEPS.map { |s| s.to_sym } # rubocop:disable Style/SymbolProc
 
     # renders form for obtaining which taxes the registration applies for. First step, sets up the wizard model.
     def taxes
@@ -82,7 +82,7 @@ module Accounts
 
     # renders form for obtaining user(name) and password details
     def user_details
-      wizard_step(STEPS) { { after_merge: :save_account } }
+      wizard_step(STEPS) { { after_merge: :save_account? } }
     end
 
     # renders confirmation/complete registration form
@@ -96,10 +96,10 @@ module Accounts
     # Save the account to the back office
     # This must signal back if the save to the back office succeeded in order to prevent navigation to the next page
     # @return [Boolean] if the save was successful
-    def save_account
+    def save_account?
       @account = copy_account_to_user(@account)
       wizard_save(@account)
-      @account.save
+      @account.save?
     end
 
     # Determines which is the next step after the account_type page

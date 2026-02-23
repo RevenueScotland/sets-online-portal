@@ -31,7 +31,7 @@ module Core
       update_ttl(:MAX_SESSION_EXPIRE_TIME_INDEX, default_ttl_value(sys_params['MAX_SESS_MINS'], 600), false)
 
       # check if it's expired and show session ended page
-      redirect_to logout_session_expired_path if session_has_expired
+      redirect_to logout_session_expired_path if session_has_expired?
 
       session_ttl_warning(max_idle_mins, sys_params['IDLE_WARN_MINS'])
 
@@ -77,7 +77,7 @@ module Core
     end
 
     # @return true if either of the session expiry times are up, else false if the user may continue.
-    def session_has_expired
+    def session_has_expired?
       return true if Time.zone.now >= session[:MAX_SESSION_EXPIRE_TIME_INDEX]
 
       return true if Time.zone.now >= session[:SESSION_TTL_INDEX]

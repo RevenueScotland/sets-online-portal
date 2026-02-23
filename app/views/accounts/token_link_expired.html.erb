@@ -1,0 +1,4 @@
+<% content_for :page_title, t('.title') %>
+<%= ds_section_title(section_title: t('.subtitle')) %>
+<%= ds_paragraph { t('.para_text') } %>
+<%= ds_paragraph { ds_link(url: forgotten_password_path, name: t('.link_text'))} %>

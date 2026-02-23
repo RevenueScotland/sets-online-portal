@@ -42,7 +42,7 @@ module Core
 
     # Is the type one of the field group types
     def field_group_type?
-      type == :field_group || type == :field_group_inline
+      %i[field_group field_group_inline].include?(type)
     end
 
     # Set up the wrapper using the view context

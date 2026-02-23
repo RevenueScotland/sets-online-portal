@@ -322,7 +322,7 @@
             "pagebreak": null,
             "displaytitle": false,
             "sectionfooter": null,
-            "sectiontitle": "Tenant details",
+            "sectiontitle": "Tenant and landlord",
             "listitem": [
                 {
                     "itemcode": "buyer_seller_linked_ind",
@@ -663,7 +663,7 @@
             "pagebreak": null,
             "displaytitle": true,
             "sectionfooter": null,
-            "sectiontitle": "About the lease values",
+            "sectiontitle": "Rent for the first year",
             "listitem": [
                 {
                     "itemcode": "annual_rent",
@@ -687,7 +687,7 @@
             "pagebreak": null,
             "displaytitle": false,
             "sectionfooter": null,
-            "sectiontitle": "About the lease values",
+            "sectiontitle": "Premium payable",
             "listitem": [
                 {
                     "itemcode": "premium_paid",
@@ -723,7 +723,7 @@
             "pagebreak": null,
             "displaytitle": true,
             "sectionfooter": null,
-            "sectiontitle": "Reliefs on this transaction",
+            "sectiontitle": "Review reliefs on this transaction",
             "listitem": [
                 {
                     "itemcode": "relief_type_description",

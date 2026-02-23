@@ -12,7 +12,7 @@ module Core
     included do
       # => CSRF don't raise a new exception
       protect_from_forgery with: :null_session
-      skip_before_action :require_user # no login required
+      skip_before_action :require_user? # no login required
     end
 
     # PORO Class to hold the details of the error that can be displayed on the exception page

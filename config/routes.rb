@@ -2,6 +2,7 @@
 
 Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   root to: 'home#index'
+  draw :test_routes if Rails.env.local?
   scope '(:locale)', Locale: /en|cy/ do # rubocop:disable Metrics/BlockLength
     get 'index', to: 'home#index'
     get 'cookies', to: 'home#cookies_page'
@@ -15,6 +16,22 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     # use username as the key param and override constraint to allow non alpha characters.
     resources :users, param: :username, except: %i[destroy], constraints: { username: %r{[^/]+} }
+    resources :documents, only: [] do
+      collection do
+        match 'access-document/:token_hash',
+              to: 'documents#access_document',
+              via: %i[get post],
+              as: :access
+        match 'enter-passcode/:token_hash',
+              to: 'documents#enter_passcode',
+              via: %i[get post],
+              as: :enter_passcode
+        match 'download-document/:token_hash',
+              to: 'documents#download_document',
+              via: %i[get post],
+              as: :download
+      end
+    end
 
     get 'user/change-password', to: 'users#change_password'
     get 'user/change-password/confirmation', to: 'users#change_password_confirmation'
@@ -28,7 +45,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resource 'account', controller: :accounts, only: :show, as: :account do
       collection do
-        get 'activate-account'
+        # get 'activate-account'
         get 'activate-account/confirmation', to: 'accounts#activate_account_confirmation'
         post 'process-activate-account'
         # We allow get as well in order to support link in e-mail
@@ -37,6 +54,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
         post 'update-basic'
         get  'edit-address'
         post 'update-address'
+        get 'link-expired', to: 'accounts#token_link_expired'
       end
     end
 
@@ -62,6 +80,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
         collection do
           match 'upload-documents', to: 'messages#upload_documents', via: %i[get patch]
           match 'send-message', to: 'messages#send_message', via: %i[get patch]
+          match 'your-uploaded-files', to: 'messages#your_uploaded_files', via: %i[get patch]
         end
         member do
           get 'retrieve-file-attachment'
@@ -107,7 +126,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     namespace :returns do # rubocop:disable Metrics/BlockLength
       match 'sat/return_period',                                  to: 'sat#return_period',
                                                                   via: %i[get post]
-      match 'sat/summary',                                        to: 'sat#summary',
+      match 'sat/summary',                                        to: 'sat#sat_summary',
                                                                   via: %i[get post]
       get 'sat/save_draft',                                       to: 'sat#save_draft'
       match 'sat/site_summary(/:site)',                           to: 'sat_sites#site_summary',
@@ -157,7 +176,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
       match 'sat/repayment_request_bank_details', to: 'sat#repayment_request_bank_details',
                                                   via: %i[get post]
-
+      match 'sat/repayment_evidence_upload', to: 'sat#repayment_evidence_upload', via: %i[get post]
+      match 'sat/upload_evidence', to: 'sat#upload_evidence', via: %i[get post]
       match 'sat/repayment_declaration', to: 'sat#repayment_declaration',
                                          via: %i[get post]
       get 'sat/confirm_data_import', to: 'sat#confirm_data_import', via: %i[get post]
@@ -190,7 +210,10 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
                                                    as: 'lbtt_about_the_party',                        via: %i[get post]
       match 'lbtt/organisation_type_details',      to: 'lbtt_parties#organisation_type_details',      via: %i[get post]
       match 'lbtt/organisation_details',           to: 'lbtt_parties#organisation_details',           via: %i[get post]
+      match 'lbtt/organisation_address_details', to: 'lbtt_parties#organisation_address_details',
+                                                 via: %i[get post]
       match 'lbtt/representative_contact_details', to: 'lbtt_parties#representative_contact_details', via: %i[get post]
+      match 'lbtt/representative_address_details', to: 'lbtt_parties#representative_address_details', via: %i[get post]
       match 'lbtt/party_details',                  to: 'lbtt_parties#party_details',                  via: %i[get post]
       match 'lbtt/party_address',                  to: 'lbtt_parties#party_address',                  via: %i[get post]
       match 'lbtt/party_alternate_address',        to: 'lbtt_parties#party_alternate_address',        via: %i[get post]
@@ -199,6 +222,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'lbtt/registered_company',             to: 'lbtt_parties#registered_company',             via: %i[get post]
       match 'lbtt/company_number',                 to: 'lbtt_parties#company_number',                 via: %i[get post]
       match 'lbtt/organisation_contact_details',   to: 'lbtt_parties#organisation_contact_details',   via: %i[get post]
+      match 'lbtt/organisation_contact_address_details', to: 'lbtt_parties#organisation_contact_address_details',
+                                                         via: %i[get post]
       resources :parties, only: %i[destroy], controller: :lbtt_parties, param: :party_id
 
       match 'lbtt/about_the_property', to: 'lbtt_properties#about_the_property', via: %i[get post]
@@ -230,7 +255,9 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'lbtt/repayment_claim',                to: 'lbtt_submit#repayment_claim',                  via: %i[get post]
       match 'lbtt/repayment_claim_amount',         to: 'lbtt_submit#repayment_claim_amount',           via: %i[get post]
       match 'lbtt/repayment_claim_bank_details',   to: 'lbtt_submit#repayment_claim_bank_details',     via: %i[get post]
-      match 'lbtt/repayment_claim_declaration',    to: 'lbtt_submit#repayment_claim_declaration',      via: %i[get post]
+      match 'lbtt/repayment_evidence_upload',      to: 'lbtt_submit#repayment_evidence_upload',        via: %i[get post]
+      match 'lbtt/upload_evidence',                to: 'lbtt_submit#upload_evidence',                  via: %i[get post]
+      match 'lbtt/repayment_claim_declaration',    to: 'lbtt_submit#repayment_claim_declaration', via: %i[get post]
       match 'lbtt/declaration',                    to: 'lbtt_submit#declaration',
                                                    via: %i[get post]
       match 'lbtt/declaration_submitted',          to: 'lbtt_submit#declaration_submitted',
@@ -280,7 +307,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'slft/repayment_bank_details',          to: 'slft#repayment_bank_details',          via: %i[get post]
       match 'slft/repayment_declaration',           to: 'slft#repayment_declaration',           via: %i[get post]
       match 'slft/repayment_submitted',             to: 'slft#repayment_submitted',             via: %i[get post]
-
+      match 'slft/repayment_evidence_upload',       to: 'slft#repayment_evidence_upload',       via: %i[get post]
+      match 'slft/upload_evidence',                 to: 'slft#upload_evidence', via: %i[get post]
       match 'slft/declaration_calculation',         to: 'slft#declaration_calculation',         via: %i[get post]
       match 'slft/declaration_repayment',           to: 'slft#declaration_repayment',           via: %i[get post]
       match 'slft/declaration',                     to: 'slft#declaration',                     via: %i[get post]
@@ -296,6 +324,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       match 'claim_payments/claiming_amount',            to: 'claim_payments#claiming_amount',      via: %i[get post]
       match 'claim_payments/claim_payment_bank_details', to: 'claim_payments#claim_payment_bank_details',
                                                          via: %i[get post]
+      match 'claim_payments/claim_evidence_upload', to: 'claim_payments#claim_evidence_upload',
+                                                    via: %i[get post]
       match 'claim_payments/main_residence_address',     to: 'claim_payments#main_residence_address',
                                                          via: %i[get post]
       match 'claim_payments/final_declaration',          to: 'claim_payments#final_declaration', via: %i[get post]
@@ -375,6 +405,12 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
           get 'download_pdf'
 
           get 'download-file', to: 'slft#download_file'
+
+          get 'upload_documents'
+          post 'upload_documents'
+
+          get 'your_uploaded_files'
+          post 'your_uploaded_files'
         end
         resource :sites, only: %i[new] do
           member do

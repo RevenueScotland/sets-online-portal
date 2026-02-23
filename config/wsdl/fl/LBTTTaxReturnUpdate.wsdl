@@ -551,6 +551,24 @@
 									<xs:element name="RepaymentBankName" type="xs:string" minOccurs="0"/>
 									<xs:element name="RepayAmountClaimed" type="xs:decimal" minOccurs="0"/>
 									<xs:element name="RepaymentAgentAuthInd" type="core:YesNoType" minOccurs="0"/>
+									<xs:element name="Documents" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Attached documents list.</xsd:documentation>
+										</xsd:annotation>
+										<xs:element name="Document" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Attached documents</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="FileName" type="xs:string"/>
+													<xs:element name="FileType" type="xs:string"/>
+													<xs:element name="Description" type="xs:string" minOccurs="0"/>
+													<xs:element name="BinaryData" type="xs:base64Binary"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:element>
 									<xs:element name="AdsSellResidenceInd" type="core:YesNoType" minOccurs="0"/>
 									<xs:element name="AdsAddress" type="core:AddressType" minOccurs="0"/>
 									<xs:element name="AdsConsideration" type="xs:decimal" minOccurs="0"/>

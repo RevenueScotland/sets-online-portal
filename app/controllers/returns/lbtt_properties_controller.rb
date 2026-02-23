@@ -4,14 +4,14 @@
 module Returns
   # Controller for LBTT properties management
   # It maintains all information about the properties related to LBTT return
-  class LbttPropertiesController < ApplicationController
+  class LbttPropertiesController < ApplicationController # rubocop:disable Metrics/ClassLength
     include Wizard
     include WizardAddressHelper
     include LbttTaxHelper
 
-    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public?
     # Allow unauthenticated/public access to properties actions
-    skip_before_action :require_user
+    skip_before_action :require_user?
 
     # Navigation page flow for property wizard
     # @see #about_the_property_next_step which skips the last step unless return type is CONVEY
@@ -33,6 +33,8 @@ module Returns
 
     # Property wizard step
     def about_the_property
+      setup_step
+      assign_local_authority
       wizard_step(nil) { { next_step: :about_the_property_next_step } }
     end
 
@@ -49,6 +51,19 @@ module Returns
     end
 
     private
+
+    # Assign the local authority based on selected property address local_auth_code
+    def assign_local_authority # rubocop:disable Metrics/CyclomaticComplexity,Metrics/AbcSize,Metrics/PerceivedComplexity
+      lac_code = @property&.address&.local_auth_code
+      cached_lau_data = ReferenceData::CodeXrefValue.lookup('OSCODEPOINT_FL_LAU_MAP', 'SYS', 'RSTU',
+                                                            safe_lookup: true)[lac_code]
+      @manually_added_addr = lac_code.blank? || cached_lau_data&.description.blank?
+      @lau_desc = cached_lau_data&.description
+      return if @property.nil?
+
+      @property.lau_code = cached_lau_data&.value if (lac_code.blank? && @property.lau_code.blank?) || lac_code.present?
+      wizard_save(@property)
+    end
 
     # Loads the parent return
     def load_return
@@ -177,7 +192,9 @@ module Returns
     def filter_params(_sub_object_attribute = nil)
       required = :returns_lbtt_property
       attribute_list = Lbtt::Property.attribute_list
-      params.require(required).permit(attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
   end
 end

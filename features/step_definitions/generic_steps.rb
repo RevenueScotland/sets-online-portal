@@ -6,6 +6,7 @@ not_present_wait = 1 # seconds to wait when checking an item is not present, thi
 js_processing_wait = 0.2 # seconds to wait when js processing is involved
 page_processing_wait = 1 # seconds to wait if a page is refreshed (e.g when a delete is triggered)
 download_file_wait = 5 # seconds to wait for a file to download
+return_processing_wait = 5 # seconds to wait when click on the submit return button
 
 # feature/step_definitions/generic_steps.rb
 
@@ -117,6 +118,11 @@ def sign_in(username, password)
   step 'I click on the "Sign in" button'
   # Check we are on the dashboard which will cause a wait
   step 'I should see the "Dashboard" page'
+end
+
+Given('I click on the submit return button') do
+  sleep(return_processing_wait) unless Capybara.current_driver == :rack_test
+  step 'I click on the "Submit return" button'
 end
 
 When('I go to the {string} page') do |string|
@@ -254,6 +260,7 @@ When('I click on the {int} st/nd/rd/th {string} link to download a file') do |in
 end
 
 When('I click on the {string} link') do |string|
+  sleep(js_processing_wait) unless Capybara.current_driver == :rack_test
   scroll_to(find_link(string), align: :center) unless Capybara.current_driver == :rack_test
   # This finds the link again, useful if the page is still processing
   click_link(string)
@@ -343,6 +350,8 @@ When('I enter {string} in the {string} select or text field') do |text, field|
     fill_in(field, with: text)
     sleep(js_processing_wait) # give time for the autocomplete to complete
     log('waiting for autocomplete text...')
+    page.send_keys(:arrow_down)
+    page.send_keys(:return)
   else
     assert false, "Cannot find #{field} to complete"
   end
@@ -434,6 +443,20 @@ end
 Then('I should store the generated value with id {string}') do |id|
   refer_value = page.find_by_id(id).text
   store_result(id, refer_value)
+end
+
+# Generates a random username and stores it to be retrieved during autotests
+Then('I should store the randomly generated username with the length of {string}') do |length|
+  refer_value = random_string(length.to_i)
+  store_result('random_username', refer_value)
+end
+
+# Retrieves the stored reference number
+# Note we have a specific step for this rather than using the parse string as the normal enter value
+# is responsible for generating strings in the first place
+When('I enter the stored username in field {string}') do |field|
+  ref_value = lookup_result('random_username')
+  fill_in(field, with: ref_value)
 end
 
 # Step allows storing the value consist by notification panel id
@@ -575,12 +598,9 @@ Then('I should not receive the message {string}') do |string|
 end
 
 Then('I should see the {string} page') do |string|
-  # The has_css waits for the page to be shown before checking for turbo
-  if has_css?('h1:first-of-type', text: string)
-    wait_for_turbo(js_processing_wait, page_processing_wait)
-  else
-    log('not waiting for turbo...')
-  end
+  sleep(page_processing_wait)
+  wait_for_turbo(js_processing_wait, page_processing_wait)
+
   # finds the first H1 in the parent
   find('h1:first-of-type', text: string)
 rescue Capybara::ElementNotFound => e
@@ -608,6 +628,29 @@ Then('I should not see the text {string}') do |string|
   assert !page.has_content?(string, wait: not_present_wait)
 end
 
+Then('I should not see the text {string} in the page url') do |string|
+  string = parse_string(string)
+  url = URI.parse(current_url).to_s
+  if url.include?(string)
+    assert false
+  else
+    assert true
+  end
+end
+
+Then('I should not see the conditional text {string}') do |string|
+  if %i[selenium_firefox selenium_remote_firefox].include?(Capybara.current_driver)
+    string = parse_string(string)
+    if page.has_content?(string, wait: not_present_wait)
+      log('waiting for text to go...')
+      sleep(page_processing_wait)
+    end
+    assert !page.has_content?(string, wait: not_present_wait)
+  else
+    true
+  end
+end
+
 Then('I should see a link with text {string}') do |string|
   assert has_link?(string)
 end
@@ -622,6 +665,18 @@ Then('I should not see a link with text {string}') do |string|
     sleep(page_processing_wait)
   end
   assert !has_link?(string, wait: not_present_wait)
+end
+
+Then('I should not see a conditional link with text {string}') do |string|
+  if %i[selenium_firefox selenium_remote_firefox].include?(Capybara.current_driver)
+    if has_link?(string, wait: not_present_wait)
+      log('waiting for link to go...')
+      sleep(page_processing_wait)
+    end
+    assert !has_link?(string, wait: not_present_wait)
+  else
+    true
+  end
 end
 
 Then('I should not see a link to the file {string}') do |string|

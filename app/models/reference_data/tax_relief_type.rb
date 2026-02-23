@@ -49,7 +49,7 @@ module ReferenceData
     # @param current_only [Boolean] if set means ony shown me current else show all
     # @param show_ads_reliefs [Boolean] if set means shown all relief types else show all but ads relief types
     # @return [Boolean] True if this is to be included
-    def filter_relief(return_type, current_only: false, show_ads_reliefs: false)
+    def filter_relief(return_type, current_only: false, show_ads_reliefs: false) # rubocop:disable Naming/PredicateMethod
       return false if current_only && @current_ind != 'yes'
       return false if @type_class == 'ADS' && show_ads_reliefs == false
       return false if !@return_types.nil? && @return_types.split(':').exclude?(return_type)

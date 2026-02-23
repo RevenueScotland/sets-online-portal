@@ -1,4 +1,7 @@
 <% content_for(:page_title, t('.title')) %>
 <% content_for(:navigation_link, :clear_stack) %>
-<%= ds_paragraph{ t('.description')} %>
+<%= ds_section_sub_title(section_sub_title:t('.subtitle_registration')) %>
+<%= ds_paragraph{ t('.registration_description')} %>
+<%= ds_section_sub_title(section_sub_title:t('.subtitle_password')) %>
+<%= ds_paragraph{ t('.password_description')} %>
 <%= ds_button(name: t('.continue'), url: login_path ) %>

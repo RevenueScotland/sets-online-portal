@@ -17,7 +17,7 @@ class ForgottenPassword < FLApplicationRecord
   end
 
   # Send forgotten password request to the back office
-  def save
+  def save?
     return false unless valid?
 
     call_ok?(:maintain_user, forgot_password_request)

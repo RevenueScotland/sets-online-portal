@@ -46,6 +46,7 @@ en:
         eligibility_checkers_after: "Please confirm the following criteria are met in order to proceed with the application"
         authenticated_declaration1_SAT: "I, the taxpayer, declare that this repayment or claim request is, to the best of my knowledge, correct and complete, and confirm that I am eligible for the repayment claimed, or I, the representative of the taxpayer certify that the taxpayer has declared that this claim is to the best of the taxpayer's knowledge correct and complete, and confirm they are eligible for the repayment claimed"
         authenticated_declaration2_SAT: "I, the taxpayer or I, the representative of the taxpayer, declare that Revenue Scotland can contact me regarding this repayment or claim request"
+        email_or_phone_text: "Please enter at least one of the email address or phone number fields."
 
     hints:
       claim/claim_payment:
@@ -61,6 +62,7 @@ en:
         claim/claim_payment:
           ads_amount: "Claim amount cannot be greater than the amount of ADS paid"
           evidence_files_missing_categories: "A document must be uploaded for each category in order to make a valid ADS Repayment request"
+          evidence_file_required: "Evidence document(s) required for an ADS repayment request"
           attributes:
             tare_reference:
               return_does_not_exist: "Return does not exist"

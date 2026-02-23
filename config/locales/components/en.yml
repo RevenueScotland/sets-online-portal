@@ -3,7 +3,7 @@ en:
     address_search_component:
       address_select: "Select an address"
       change_postcode_html: "Change <span class=\"visually-hidden\">your answer for: <q>Postcode</q></span>"
-      edit_address: "Or edit the selected address"
+      edit_address: "Or type the full address"
       manual_address: "Or type in your full address"
       postcode: "Postcode"
       search: "Find address"
@@ -13,8 +13,9 @@ en:
       select_address: "Select %{address}"
       previous_addresses: "Previously used addresses"
       previous_address: "Previous address"
-      select: "Use this address"
+      select: "Select"
       select_button: "Select"
+      use_address: "Use this address"
     base_item_component:
       change: "Change"
     summary_list_component:
@@ -72,6 +73,7 @@ en:
   rs:
     company_search_component:
       company_search: "Find company"
+      company_details: "Registered company details"
     file_upload_component:
       add_resource: Upload file
       add_resources: Upload files

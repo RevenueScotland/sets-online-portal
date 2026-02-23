@@ -44,6 +44,9 @@ module ServiceClient
     get_reference_values = { service: fl_endpoint, wsdl: 'GetReferenceValues.wsdl', endpoint: '/getReferenceValues',
                              operation: :get_reference_values_wsdl, response: :get_reference_values_response,
                              savon_log: false }
+    get_code_xref_values = { service: fl_endpoint, wsdl: 'GetCodeXrefValues.wsdl', endpoint: '/getCodeXrefValues',
+                             operation: :get_code_xref_values_wsdl, response: :code_xref_values_response,
+                             savon_log: false }
     get_return_periods_and_sites = { service: fl_endpoint, wsdl: 'GetReturnPeriodsAndSites.wsdl',
                                      endpoint: '/GetReturnPeriodsSites', operation: :get_return_periods_and_sites_wsdl,
                                      response: :get_return_periods_and_sites_response }
@@ -142,6 +145,10 @@ module ServiceClient
                            response: :get_sat_return_response }
     sat_calc = { service: fl_endpoint, wsdl: 'SatCalc.wsdl', endpoint: '/getSatCalculation',
                  operation: :sat_calc_wsdl, response: :sat_calc_response }
+    communication_authentication = { service: fl_endpoint, wsdl: 'CommunicationAuthentication.wsdl',
+                                     endpoint: '/CommunicationAuthentication',
+                                     operation: :communication_authentication_wsdl,
+                                     response: :communication_authentication_response }
 
     # Finally, map of all services used by this application
     @configuration = { add_attachment: add_attachment, add_document: add_document, address_detail: address_detail,
@@ -151,6 +158,7 @@ module ServiceClient
                        delete_draft_tax_return: delete_draft_tax_return,
                        get_attachment: get_attachment, get_party_details: get_party_details, get_pws_text: get_pws_text,
                        get_reference_values: get_reference_values,
+                       get_code_xref_values: get_code_xref_values,
                        get_return_periods_and_sites: get_return_periods_and_sites,
                        get_aggregate_type_rates: get_aggregate_type_rates,
                        get_previous_return_breakdown_periods: get_previous_return_breakdown_periods,
@@ -172,7 +180,8 @@ module ServiceClient
                        view_all_messages_pdf: view_all_messages_pdf,
                        view_return_pdf: view_return_pdf, sat_tax_return: sat_tax_return,
                        sat_return_details: sat_return_details, sat_calc: sat_calc,
-                       get_secure_message_alt_reference: get_secure_message_alt_reference }
+                       get_secure_message_alt_reference: get_secure_message_alt_reference,
+                       communication_authentication: communication_authentication }
 
     class << self
       attr_reader :configuration

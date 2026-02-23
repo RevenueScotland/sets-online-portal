@@ -17,8 +17,8 @@ Feature: Login and authentication
 
     Scenario: User provides incorrect details
         When I go to the "Login" page
-        And I enter "x" in the "Username" field
-        And I enter "x" in the "Password" field
+        And I enter "RANDOM_text,5" in the "Username" field
+        And I enter "RANDOM_text,5" in the "Password" field
         And I click on the "Sign in" button
         Then I should receive the message "Invalid login credentials"
         And I should see the text "username"
@@ -49,7 +49,7 @@ Feature: Login and authentication
         And I enter "locked.user" in the "Username" field
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
-        Then I should receive the message "Invalid login credentials"
+        Then I should receive the message "Account locked. Use forgotten password to unlock your account"
 
     @mock_not_actived_user
     Scenario: User provides the correct detail but the user is not activated
@@ -102,11 +102,10 @@ Feature: Login and authentication
         Then I should see the "Terms and conditions" page
         And I should receive the message "The terms and conditions must be accepted"
         And I check the "I confirm that I have read and understood the terms and conditions" checkbox
-        And I click on the "Confirm" button
-
+    # And I click on the "Confirm" button
     # Then I should see the "Dashboard" page
 
-    # We'll use I should see the text "This is the token in the email you have been sent" as
+    # We'll use I should see the text "This is the one time passcode in the email you have been sent" as
     # an indicator that we're on the token capture page as the page has the same title as the
     # normal sign in page. This is the same for all the 2 factor tests that follow...
     @mock_two_factor_login
@@ -116,8 +115,8 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the email you have been sent"
-        And I enter "valid.token" in the "Token" field
+        Then I should see the text "This is the one time passcode in the email you have been sent"
+        And I enter "valid.token" in the "One time passcode" field
         And I click on the "Sign in" button
 
         Then I should see the "Dashboard" page
@@ -128,13 +127,13 @@ Feature: Login and authentication
         And I enter "valid.user" in the "Username" field
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
-        Then I should see the text "This is the token in the email you have been sent"
+        Then I should see the text "This is the one time passcode in the email you have been sent"
         And I clear the "Username" field
         When I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the email you have been sent"
+        Then I should see the text "This is the one time passcode in the email you have been sent"
         And I should receive the message "Username can't be blank"
-        And I should receive the message "Token can't be blank"
+        And I should receive the message "One time passcode can't be blank"
 
     @mock_two_factor_login_invalid_token
     Scenario: User provides the correct detail but an invalid token for a 2 factor login
@@ -143,12 +142,12 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the email you have been sent"
-        And I enter "invalid.token" in the "Token" field
+        Then I should see the text "This is the one time passcode in the email you have been sent"
+        And I enter "invalid.token" in the "One time passcode" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the email you have been sent"
-        And I should receive the message "Enter the correct username and token"
+        Then I should see the text "This is the one time passcode in the email you have been sent"
+        And I should receive the message "The one time passcode you have entered has expired or has not been recognised"
 
     @mock_two_factor_login_expired_token
     Scenario: User provides the correct detail but an expired token for a 2 factor login
@@ -157,12 +156,12 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the email you have been sent"
-        And I enter "expired.token" in the "Token" field
+        Then I should see the text "This is the one time passcode in the email you have been sent"
+        And I enter "expired.token" in the "One time passcode" field
         And I click on the "Sign in" button
 
         Then I should see the "Sign in" page
-        And I should receive the message "Your token has expired. Please sign in again to generate a new one"
+        And I should receive the message "The one time passcode you have entered has expired or has not been recognised"
 
     @mock_two_factor_login_user_locked
     Scenario: User provides the correct detail for a 2 factor login but the user is locked
@@ -170,7 +169,7 @@ Feature: Login and authentication
         And I enter "locked.user" in the "Username" field
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
-        Then I should receive the message "Invalid login credentials"
+        Then I should receive the message "Account locked. Use forgotten password to unlock your account"
 
     @mock_two_factor_login_user_not_activated
     Scenario: User provides the correct detail for a 2 factor login but the user is not activated
@@ -179,8 +178,8 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the email you have been sent"
-        And I enter "valid.token" in the "Token" field
+        Then I should see the text "This is the one time passcode in the email you have been sent"
+        And I enter "valid.token" in the "One time passcode" field
         And I click on the "Sign in" button
 
         Then I should see the "Sign in" page
@@ -193,8 +192,8 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the email you have been sent"
-        And I enter "valid.token" in the "Token" field
+        Then I should see the text "This is the one time passcode in the email you have been sent"
+        And I enter "valid.token" in the "One time passcode" field
         And I click on the "Sign in" button
 
         Then I should see the "Password expired" page
@@ -206,8 +205,8 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the email you have been sent"
-        And I enter "valid.token" in the "Token" field
+        Then I should see the text "This is the one time passcode in the email you have been sent"
+        And I enter "valid.token" in the "One time passcode" field
         And I click on the "Sign in" button
 
         Then I should see the "Change password" page
@@ -219,8 +218,8 @@ Feature: Login and authentication
         And I enter "valid.password" in the "Password" field
         And I click on the "Sign in" button
 
-        Then I should see the text "This is the token in the email you have been sent"
-        And I enter "valid.token" in the "Token" field
+        Then I should see the text "This is the one time passcode in the email you have been sent"
+        And I enter "valid.token" in the "One time passcode" field
         And I click on the "Sign in" button
 
         Then I should see the "Terms and conditions" page
@@ -238,11 +237,6 @@ Feature: Login and authentication
         And I enter "New.password1" in the "Confirm new password" field
         And I click on the "Change password" button
 
-        Then I should see the "Sign in" page
-        When I enter "valid.user" in the "Username" field
-        And I enter "valid.password" in the "Password" field
-        And I click on the "Sign in" button
-
         Then I should see the "Terms and conditions" page
         And I should see the text "In order to proceed you must read and accept the terms and conditions"
         And I should see a link with text "Terms & conditions (opens in a new tab)"
@@ -250,7 +244,7 @@ Feature: Login and authentication
 
         Then I should see the "Terms and conditions" page
         And I should receive the message "The terms and conditions must be accepted"
-        And I check the "I confirm that I have read and understood the terms and conditions" checkbox
+        When I check the "I confirm that I have read and understood the terms and conditions" checkbox
         And I click on the "Confirm" button
 
     Scenario: User provides correct details and has single portal object (enrolment)

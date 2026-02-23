@@ -4,6 +4,8 @@
 module Returns
   # module to organise LBTT return models
   module Lbtt
+    extend ActiveSupport::Concern
+
     # Validation model for the LBTT return
     # This class is to validate complete lbtt model before submitting and to show general common error message
     # for wizard section instead of showing field specific error on summary page
@@ -130,19 +132,157 @@ module Returns
       end
 
       # Check if the return is valid for saving to the back office - adds errors any found.
-      def save_validation(model)
+      def save_validation(model) # rubocop:disable Metrics/AbcSize
         # clear previous error
         model.errors.clear
+        # Return shouldn't be submitted if
+        # 1. ADS is applicable
+        # 2. FIRSTTIME relief is added
+        # 3. It is a conveyance return
+        if model.convey? && model.show_ads? && model.first_time_relief_added?
+          model.errors.add(:base,
+                           :non_submittable_ads_ftb_relief,
+                           link_id:
+                           "#{model.ads.ads_consideration_yes_no.blank? ? 'add_ads' : 'edit_ads'}") # rubocop:disable Style/RedundantInterpolation
+        end
         save_common_validation(model)
         save_convey_validation(model) if model.flbt_type == 'CONVEY'
         save_lease_validation(model) if %w[LEASERET LEASEREV ASSIGN TERMINATE].include? model.flbt_type
       end
 
+      # cleans the data
+      # removes any non A-Z, a-z or 0-9 characters
+      # and downcases the result
+      # @param variable [String] the elements to be compared
+      # @return [String] a cleaned downcase version of the passed in value
+      def remove_special_charas(variable)
+        variable&.gsub(/[^A-Za-z0-9]/i, '')&.downcase
+      end
+
+      # generic method to compare two the non address variables in the model
+      # returns true if the values are the same (after being cleaned)
+      # @param model [model] the model
+      # @param party_type1 [String] the first party type for the elements to be compared
+      # @param party_type2 [String] the second party type for the elements to be compared
+      # @param variable [String] the elements to be compared
+      # @return [boolean]
+      def check_non_address_variables?(model, party_type1, party_type2, variable)
+        @account = Account.find(model.current_user)
+        model.send(party_type1).values.detect do |x|
+          party_type2 = party_type2.to_s
+          remove_special_charas(x.send(variable)) ==
+            remove_special_charas(if party_type2 == 'user'
+                                    @account.send(variable)
+                                  else
+                                    model.send(party_type2).send(variable)
+                                  end)
+        end.present?
+      end
+
+      # generic method to get all the address variables in the model for that party
+      # @param model [model] the model
+      # @return [array] array of addresses for that party
+      def get_party_address(model, party)
+        send(:"get_#{party}_addresses", model)
+      end
+
+      # generic method to compare two the address variables in the model
+      # merges the two arrays duplicate values only
+      # returns true if the values are the same (after being cleaned)
+      # @param model [model] the model
+      # @param party_type1 [String] the first party type for the elements to be compared
+      # @param party_type2 [String] the second party type for the elements to be compared
+      # @return [boolean]
+      def check_address_variables?(model, party_type1, party_type2)
+        party1_addresses = get_party_address(model, party_type1)
+        party2_addresses = get_party_address(model, party_type2)
+
+        party1_addresses.map! { |address| remove_special_charas(address) }
+        party2_addresses.map! { |address| remove_special_charas(address) }
+
+        party1_addresses.intersect?(party2_addresses)
+      end
+
+      # checks if the party type has data for that variable
+      def check_if_nil?(model, party_type2, variable)
+        return true if party_type2 != 'user' && model.send(party_type2).send(variable).blank?
+
+        return true if party_type2 == 'user' && @account&.send(variable).blank?
+
+        false
+      end
+
+      # generic method to compare two variables in the model
+      # returns true if the values are the same (after being cleaned)
+      # @param model [model] the model
+      # @param party_type1 [String] the first party type for the elements to be compared
+      # @param party_type2 [String] the second party type for the elements to be compared
+      # @param variable [String] the elements to be compared
+      # @return [boolean]
+      def check_model_values_are_same?(model, party_type1, party_type2, variable)
+        return false if check_if_nil?(model, party_type2, variable)
+
+        if variable.to_s == 'address'
+          return true if check_address_variables?(model, party_type1, party_type2)
+        elsif check_non_address_variables?(model, party_type1, party_type2, variable)
+          return true
+        else
+          return false
+        end
+
+        false
+      end
+
+      # checks what party type is populated and returns that party type
+      # can only ever have either a buyer(s) or tenant(s) never both at the same time
+      # @param model [model] the model
+      # @return [string] buyers or tenants
+      def get_party_type(model)
+        if model.buyers.present?
+          'buyers'
+        elsif model.tenants.present?
+          'tenants'
+        end
+      end
+
+      # Determines what model elements should be compared, if the comparison is true then
+      # Stops the comparison at the first hit it finds
+      # when both values are the same.
+      # @param model [model] the model
+      # @param expl_party_type [expl_party_type] : explicitly pass party type (used for tenants, new_tenants diff)
+      # @return [boolean]
+      def validate_buyer_agent_not_same(model, expl_party_type = '')
+        return unless Account.find(model.current_user).party_account_type == 'AGENT'
+
+        party = expl_party_type.present? ? expl_party_type : get_party_type(model) # rubocop:disable Rails/Presence
+        %i[fullname cleaned_telephone email address].each do |x|
+          return true if check_model_values_are_same?(model, party, 'agent', x)
+
+          return true if check_model_values_are_same?(model, party, 'user', x)
+        end
+        false
+      end
+
+      # Call the code to check if the data is the same for the agent and the buyer/tennant
+      # @param model [model] the model
+      # return [error] if the data is the same else returns blank
+      # TODO : fix rubocop
+      def add_error_same_details(model) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+        if model.buyers.present? && model.agent.present? && validate_buyer_agent_not_same(model)
+          model.errors.add(:base, :buyer_agent_same, link_id: 'add_a_buyer')
+        elsif model.tenants.present? && model.agent.present? && validate_buyer_agent_not_same(model)
+          model.errors.add(:base, :tenant_agent_same, link_id: 'add_a_tenant')
+        elsif model.new_tenants.present? && model.agent.present? && validate_buyer_agent_not_same(model, 'new_tenants')
+          model.errors.add(:base, :tenant_agent_same, link_id: 'add_a_new_tenant')
+        end
+      end
+
       # Save validation common to all LBTT return types
       def save_common_validation(model)
+        add_error_same_details(model) if model.validate_buyer_agent_details == 'Y'
         model.errors.add(:base, :missing_properties_entries, link_id: 'add_a_property') if model.properties.blank?
         transaction_validation(model)
-        # Since we do not prepopulate the relevant date details
+        # Since we do not prepopulated the relevant date details
         validate_relevant_date(model) if %w[ASSIGN TERMINATE LEASEREV].include? model.flbt_type
 
         return unless model.user_account_type != 'PUBLIC' && model.agent.blank?
@@ -162,16 +302,51 @@ module Returns
       # validation specific to transaction
       def transaction_validation(model)
         model.errors.add(:base, :recalc_return, link_id: 'edit_transaction_details') if model.recalc_required == 'Y'
-        return if model.effective_date.present?
+        return validate_effective_date(model) if model.effective_date.present?
 
         model.errors.add(:base, :missing_about_the_transaction, link_id: 'add_transaction_details')
       end
 
+      def date_crossed_submit_limit?(model, comp_date)
+        # the submission time is measured in months
+        max_return_submission_time = model.return_time_limit
+        return false if comp_date.nil? && (max_return_submission_time.nil? || max_return_submission_time.blank?)
+
+        parsed_limit = max_return_submission_time.to_i
+        if parsed_limit.positive?
+          future_date = Time.zone.today + parsed_limit.months
+          comp_date > future_date
+        else
+          false
+        end
+      end
+
+      # Validates if effective date is valid
+      def validate_effective_date(model)
+        return unless %w[CONVEY LEASERET].include? model.flbt_type
+
+        validate_date_cross_submission_limit(model, model.effective_date,
+                                             'effective_date')
+      end
+
       # Validates if the relevant date is not blank
       def validate_relevant_date(model)
-        return if model.relevant_date.present?
+        if model.relevant_date.present?
+          return validate_date_cross_submission_limit(model, model.relevant_date,
+                                                      'relevant_date')
+        end
 
         model.errors.add(:relevant_date, :cant_be_blank, link_id: 'edit_transaction_details')
+      end
+
+      # Validates if the passed date(cmp_date) crosses the max submission time limit
+      # If it's crossed, adds a error to base. A dynamic locale_key is generated
+      # by the passed key_name interpolation
+      def validate_date_cross_submission_limit(model, cmp_date, key_name)
+        locale_key = :"non_submitabble_#{key_name}"
+        model.errors.add(:base, locale_key, time_limit: model.return_time_limit) if date_crossed_submit_limit?(
+          model, cmp_date
+        )
       end
 
       # If there is at least one non individual buyer then ads is due on
@@ -199,6 +374,46 @@ module Returns
         return if model.non_residential_reason.present?
 
         model.errors.add(:non_residential_reason, :reason_must_be_provided, link_id: 'edit_transaction_details')
+      end
+
+      # @param model [model] the model
+      # @return [array] array of addresses for the buyers except for records with company_number
+      def get_buyers_addresses(model)
+        model.send(:buyers).values.map do |x|
+          next if x.company&.company_number.present?
+
+          [x&.full_address, x&.full_contact_address, x&.full_org_contact_address_address]
+        end.flatten.compact_blank
+      end
+
+      # @param model [model] the model
+      # @return [array] array of addresses for the tenants except for records with company_number
+      def get_tenants_addresses(model)
+        model.send(:tenants).values.map do |x|
+          next if x.company&.company_number.present?
+
+          [x&.full_address, x&.full_contact_address, x&.full_org_contact_address_address]
+        end.flatten.compact_blank
+      end
+
+      # @param model [model] the model
+      # @return [array] array of addresses for the tenants
+      def get_new_tenants_addresses(model)
+        model.send(:new_tenants).values.map do |x|
+          [x&.full_address, x&.full_contact_address, x&.full_org_contact_address_address]
+        end.flatten.compact_blank
+      end
+
+      # @param model [model] the model
+      # @return [array] array of addresses for the agent
+      def get_agent_addresses(model)
+        [model.agent&.full_address]
+      end
+
+      # @param model [model] the model
+      # @return [array] array of addresses for the user
+      def get_user_addresses(model)
+        [Account.find(model.current_user).full_address] << Account.find(model.current_user)&.org_address_humanised
       end
 
       # validation specific to lease LBTT returns

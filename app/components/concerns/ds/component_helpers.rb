@@ -81,8 +81,8 @@ module DS
         if method_defined?(:builder)
           define_method(name) do |*args, **kwargs, &block|
             capture do
-              render(klass.constantize.new(*args, **form_component_defaults(klass)
-                                                  .merge({ builder: builder }).merge(kwargs))) do |com|
+              render(klass.constantize.new(*args, **form_component_defaults(klass), builder: builder,
+                                                                                    **kwargs)) do |com|
                 block.call(com) if block.present?
               end
             end
@@ -90,7 +90,7 @@ module DS
         else
           define_method(name) do |*args, **kwargs, &block|
             capture do
-              render(klass.constantize.new(*args, **form_component_defaults(klass).merge(kwargs))) do |com|
+              render(klass.constantize.new(*args, **form_component_defaults(klass), **kwargs)) do |com|
                 block.call(com) if block.present?
               end
             end

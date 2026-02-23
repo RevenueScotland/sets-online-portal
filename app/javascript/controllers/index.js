@@ -20,6 +20,8 @@ import FileUploadController from "./file_upload_controller"
 application.register("file-upload", FileUploadController)
 import PrintController from "./print_controller"
 application.register("print", PrintController)
+import RadioButtonWarningController from "./radio_button_warning_controller"
+application.register("radio-button-warning", RadioButtonWarningController)
 import ReliefsController from "./reliefs_controller"
 application.register("reliefs", ReliefsController)
 import SelectController from "./select_controller"
@@ -28,3 +30,11 @@ import TimeoutWarningController from "./timeout_warning_controller"
 application.register("timeout-warning", TimeoutWarningController)
 import VisibilityController from "./visibility_controller"
 application.register("visibility", VisibilityController)
+import InputFilterController from "./input_filter_controller"
+application.register("input-filter", InputFilterController)
+import CustomSubmitController from "./custom_submit_controller"
+application.register("custom-submit", CustomSubmitController)
+import UpperTextController from "./upper_text_controller"
+application.register("upper-text", UpperTextController)
+import CleanUrlController from "./clean_url_controller"
+application.register("clean-url", CleanUrlController)

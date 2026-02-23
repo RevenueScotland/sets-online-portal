@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   # checking for user before checking access
   include Core::Timeout
 
-  before_action :require_user
+  before_action :require_user?
 
   include Core::Authorise
   include Error::WizardRedirectHandler
@@ -53,10 +53,28 @@ class ApplicationController < ActionController::Base
     { locale: I18n.locale }
   end
 
+  # returns the max files allowed limit based on back office parameter
+  def set_max_uploads_allowed
+    @max_file_upload_limit = ReferenceData::SystemParameter.lookup(
+      'PWS', 'SYS', 'RSTU', safe_lookup: true
+    )['QTY_FILE_UPLOAD']&.value.to_i
+    @max_file_upload_limit = 10 if @max_file_upload_limit.zero?
+    @max_file_upload_limit
+  end
+
+  # Returns span based on effective_date for claim i.e., 18 0R 36 months based on the BO parameter
+  # Accepts parameter as a object of return(LBTT, SLFT, SAT) or Claim
+  def period_span_for_claim(return_object)
+    comparison_date ||= ReferenceData::SystemParameter.lookup('COMMON', 'LBTT', 'RSTU',
+                                                              safe_lookup: true)['ADS_LEG_EFFECT_DATE']&.value
+    comparison_date = '31-MAR-2024' if comparison_date.nil? # Handle if the parameter value returns nil
+    return_object.effective_date <= Date.parse(comparison_date) ? 18 : 36
+  end
+
   private
 
   # set as a before_action to make sure the user is logged in when required
-  def require_user
+  def require_user?
     if current_user
       force_redirects
       true

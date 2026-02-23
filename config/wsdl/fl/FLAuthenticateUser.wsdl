@@ -5,7 +5,8 @@
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://northgate-is.com/FL/AuthenticateUser.wsdl" targetNamespace="http://northgate-is.com/FL/AuthenticateUser.wsdl" name="AuthenticateUser">
+	xmlns:tns="http://northgate-is.com/FL/AuthenticateUser.wsdl"
+	xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://northgate-is.com/FL/AuthenticateUser.wsdl" name="AuthenticateUser">
 	<wsdl:types>
 		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
 			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
@@ -131,6 +132,7 @@
 				</xsd:annotation>
 				<xsd:sequence>
 					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="ClientIP" type="xsd:string" minOccurs="0"/>
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
@@ -154,6 +156,11 @@
 					</xsd:sequence>
 				</xsd:complexType>
 			</xsd:element>
+		</xsd:schema>
+		<xsd:schema xmlns="http://northgate-is.com/FL/AuthenticateUser"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://northgate-is.com/FL/AuthenticateUser" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:import namespace="http://northgate-is.com/FL/Core"/>
 			<xsd:element name="AuthenticateUserResponse">
 				<xsd:complexType>
 					<xsd:complexContent>

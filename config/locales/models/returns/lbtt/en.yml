@@ -1,4 +1,7 @@
 en:
+  returns/lbtt/lbtt_document_detail:
+    answer:
+      cannot_be_blank: "%{que} can't be blank"
   activemodel:
     attributes:
       returns/lbtt/lbtt_return:
@@ -168,6 +171,11 @@ en:
       returns/lbtt/yearly_rent:
         rent: "Rent"
         year: "Year"
+      returns/lbtt/lbtt_document_detail:
+        download_option: ""
+        doc_type: "Document type"
+        doc_name: "Document name"
+        action: ""
     labels:  
       returns/lbtt/lbtt_return:
         flbt_type:
@@ -286,6 +294,7 @@ en:
             relevant_date:
               past_date_error: "%{attribute} must be on or after %{start_date}"
               triennial_date_error: "%{attribute} must be a triennial anniversary of the effective date"
+              leaserev_already_submitted: "Lease review %{ref} already exists for original lease %{orig_ref} and relevant date %{relevant_date}"
             contract_date:
               past_date_error: "%{attribute} must be on or after %{start_date}"
             lease_start_date:
@@ -302,6 +311,8 @@ en:
               missing_properties_entries: "At least one property must be present"
               missing_about_the_transaction: "Please fill in the 'About the transaction' section"
               missing_buyer_entries: "At least one buyer must be present"
+              buyer_agent_same: "You can't enter your own contact details in the buyer section. Please provide accurate buyer contact details."
+              tenant_agent_same: "You can't enter your own contact details in the tenant section. Please provide accurate tenant contact details."
               missing_seller_entries: "At least one seller must be present"
               missing_landlord_entries: "At least one landlord must be present"
               missing_tenant_entries: "At least one tenant must be present"
@@ -312,6 +323,10 @@ en:
               non_individual_no_ads: "ADS must apply to all properties on this return where at least one of the buyers is not a private individual and the transaction is residential"
               missing_pre_existing_tenant: "At least one of the pre-existing tenant(s) must remain on a lease review. If all pre-existing tenants need to be removed from the lease then an assignation return must be completed instead to include the details of the new tenants."
               recalc_return: "There have been transitional rate changes that affect this return. Ensure you go to the transaction section to recalculate and check all figures prior to submitting the return"
+              evidence_file_required: "Evidence document(s) required for an ADS repayment request"
+              non_submittable_ads_ftb_relief: "Returns that are subject to ADS are not entitled to First Time Buyers relief"
+              non_submitabble_relevant_date: "Returns with a relevant date more than %{time_limit} months in the future cannot be submitted"
+              non_submitabble_effective_date: "Returns with an effective date more than %{time_limit} months in the future cannot be submitted"
             non_residential_reason:
               reason_must_be_provided: "A reason must be given for a non-residential property transaction"
         returns/lbtt/relief_claim:
@@ -328,6 +343,14 @@ en:
               less_than_or_equal_to: "The amount you are claiming for reliefs cannot be more than the tax liability of £%<count>.2f"
             total_ads_reliefs:
               less_than_or_equal_to: "The amount you are claiming for ADS reliefs cannot be more than the ADS liability of £%<count>.2f"
+        returns/lbtt/lbtt_document_detail:
+          attributes:
+            base:
+              cannot_be_blank: "%{que} can't be blank"
+            passcode:
+              cannot_be_blank: "Passcode can't be blank"
+            download_option:
+              cannot_be_blank: "Download this document can't be blank"
     hidden_label:
       returns/lbtt/link_transactions:
         return_reference: "Return reference"

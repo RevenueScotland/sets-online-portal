@@ -54,7 +54,7 @@ module Returns
       end
 
       # get release date of ADS and compare with submission date of return's first version
-      def date_of_ads_sell_residence
+      def date_of_ads_sell_residence?
         @ads_leg_release_date ||= ReferenceData::SystemParameter.lookup(
           'COMMON', 'LBTT', 'RSTU', safe_lookup: true
         )['ADS_LEG_RELEASE_DATE']&.value
@@ -123,9 +123,9 @@ module Returns
       # @param _translation_options [Object] in this case the party type being processed passed from the page
       # @return [Symbol] the name of the translation attribute
       def translation_attribute(attribute, _translation_options = nil)
-        return :ads_relevant_disposal_period if attribute == :ads_sell_residence_ind && date_of_ads_sell_residence
+        return :ads_relevant_disposal_period if attribute == :ads_sell_residence_ind && date_of_ads_sell_residence?
 
-        return :ads_sell_residence_period if attribute == :ads_sell_residence_ind && !date_of_ads_sell_residence
+        return :ads_sell_residence_period if attribute == :ads_sell_residence_ind && !date_of_ads_sell_residence?
 
         attribute
       end

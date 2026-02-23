@@ -5,7 +5,8 @@
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://northgate-is.com/FL/MaintainUser.wsdl" targetNamespace="http://northgate-is.com/FL/MaintainUser.wsdl" name="MaintainUser">
+	xmlns:tns="http://northgate-is.com/FL/MaintainUser.wsdl"
+	xmlns:ns1="http://northgate-is.com/FL/Core" targetNamespace="http://northgate-is.com/FL/MaintainUser.wsdl" name="MaintainUser">
 	<wsdl:types>
 		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 			xmlns="http://northgateps.com/FLCommonTypes" targetNamespace="http://northgateps.com/FLCommonTypes" elementFormDefault="qualified" attributeFormDefault="unqualified">
@@ -169,6 +170,7 @@
 				</xsd:annotation>
 				<xsd:sequence>
 					<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+					<xsd:element name="ClientIP" type="xsd:string" minOccurs="0"/>
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
@@ -243,6 +245,10 @@
 						<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
 						<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
 						<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+						<xsd:element name="LocalEdAuthCode" type="xsd:string" minOccurs="0"/>
+					  <xsd:element name="LocalAuthCode" type="xsd:string" minOccurs="0"/>
+					  <xsd:element name="Udprn" type="xsd:string" minOccurs="0"/>
+					  <xsd:element name="DeliveryPointSuffix" type="xsd:string" minOccurs="0"/>
 						<!-- end of Correspondence Address elements -->
 						<xsd:element name="WorkplaceCode" type="xsd:string" minOccurs="0"/>
 						<xsd:element name="ServiceCode" type="xsd:string" minOccurs="0"/>
@@ -355,6 +361,13 @@
 					</xsd:sequence>
 				</xsd:complexType>
 			</xsd:element>
+		</xsd:schema>
+		<xsd:schema xmlns="http://northgate-is.com/FL/MaintainUser"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core"
+			xmlns:flc="http://northgateps.com/FLCommonTypes" targetNamespace="http://northgate-is.com/FL/MaintainUser" elementFormDefault="qualified" attributeFormDefault="unqualified">
+			<xsd:import namespace="http://northgate-is.com/FL/Core"/>
+			<xsd:import namespace="http://northgateps.com/FLCommonTypes"/>
 			<xsd:element name="MaintainUserResponse">
 				<xsd:complexType>
 					<xsd:complexContent>

@@ -1,12 +1,15 @@
 <% content_for(:page_title, t('.title')) %>
-  <%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post, button_label: t('.submit_return')) do |f| %>
-    <%= f.ds_radio_group(method: :fpay_method, options_list: @lbtt_return.list_payment_types(account_has_dd_instruction: account_has_dd_instruction?)) %>
-    <% if @lbtt_return.dd_not_available(account_has_dd_instruction: account_has_dd_instruction?) %>
-      <%= ds_paragraph{t('.dd_not_available')} %>
-    <% end %>
-    <%= ds_warning{t('.warning')} %>
-    <%= f.ds_radio_group(method: :authority_ind,options_list: @lbtt_return.list_ref_data(:authority_ind)) if User.account_type(current_user) == 'AGENT' %>
-    <%= f.ds_checkbox(method: :declaration) %>
-    <%= f.ds_checkbox(method: :lease_declaration) if @lbtt_return.flbt_type == 'LEASERET'%>
-    <%= f.ds_checkbox(method: :transaction_declaration) if @lbtt_return.show_trans_declaration? %>
+<%= ds_form_with(model: @lbtt_return, url: @post_path, method: :post, button_label: t('.submit_return')) do |f| %>
+  <%= rs_conditional_visibility(visible_value: "BACS") do |c| %>
+    <% c.with_visibility_control_radio_group(builder: f.builder, method: :fpay_method, options_list: @lbtt_return.list_payment_types(account_has_dd_instruction: account_has_dd_instruction?)) %>
+    <%= ds_warning{ t('.LBTT_fpay_warning', pay_link: ds_link(name: t('.LBTT_fpay_warning_link'), url: external_link_url('LBTT_PAYMENT'), target: '_blank')).html_safe } %>
   <% end %>
+  <% if @lbtt_return.dd_not_available(account_has_dd_instruction: account_has_dd_instruction?) %>
+    <%= ds_paragraph{t('.dd_not_available')} %>
+  <% end %>
+  <%= ds_warning{t('.warning')} %>
+  <%= f.ds_radio_group(method: :authority_ind,options_list: @lbtt_return.list_ref_data(:authority_ind)) if User.account_type(current_user) == 'AGENT' %>
+  <%= f.ds_checkbox(method: :declaration) %>
+  <%= f.ds_checkbox(method: :lease_declaration) if @lbtt_return.flbt_type == 'LEASERET'%>
+  <%= f.ds_checkbox(method: :transaction_declaration) if @lbtt_return.show_trans_declaration? %>
+<% end %>

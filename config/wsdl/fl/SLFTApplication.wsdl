@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 17-Oct-2013   Version 1.0  -->
-<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/SLFTApplication" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.northgateps.com/RSTS/SLFTApplication.wsdl" targetNamespace="http://www.northgateps.com/RSTS/SLFTApplication.wsdl" name="SLFTApplication">
+<wsdl:definitions xmlns:ns="http://www.northgateps.com/RSTS/SLFTApplication"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.northgateps.com/RSTS/SLFTApplication.wsdl" targetNamespace="http://www.northgateps.com/RSTS/SLFTApplication.wsdl" name="SLFTApplication">
 	<wsdl:types>
-		<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xsd:schema xmlns="http://northgate-is.com/FL/Core"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:complexType name="PersonNameType">
 				<xsd:sequence>
 					<xsd:element name="Title" minOccurs="0">
@@ -138,7 +144,9 @@
 				</xsd:sequence>
 			</xsd:complexType>
 		</xsd:schema>
-		<xs:schema xmlns="http://www.northgateps.com/RSTS/SLFTApplication" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/SLFTApplication" elementFormDefault="qualified" attributeFormDefault="unqualified">
+		<xs:schema xmlns="http://www.northgateps.com/RSTS/SLFTApplication"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgateps.com/RSTS/SLFTApplication" elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xs:import namespace="http://northgate-is.com/FL/Core"/>
 			<xs:element name="SLFTApplicationRequest">
 				<xs:complexType>
@@ -315,6 +323,24 @@
 									</xs:element>
 								</xs:sequence>
 							</xs:complexType>
+						</xs:element>
+						<xs:element name="Documents" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>Attached documents list.</xsd:documentation>
+							</xsd:annotation>
+							<xs:element name="Document" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Attached documents</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="FileName" type="xs:string"/>
+										<xs:element name="FileType" type="xs:string"/>
+										<xs:element name="Description" type="xs:string" minOccurs="0"/>
+										<xs:element name="BinaryData" type="xs:base64Binary"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>

@@ -6,32 +6,7 @@
 <%= ds_paragraph {t('.contact_us_html', link: ds_link(url: external_link_url('CONTACT_US'), name: t('.contact_us_link'),target: '_blank')).html_safe} %>
 <%= ds_print_link(name: t('.print'))  %>
 <%= ds_link(name: t('.download_application_pdf'), url: download_pdf_applications_slft_path, target: '_blank') %>
-<%= ds_section_title(section_title: t('.evidence_heading')) %>
-<%= ds_table(caption: t('.evidence_body'), id: 'supporting_documents') do |table| %>
-  <% table.with_header do |header| %>
-    <% header.with_cell do %>
-      <%= t('.code') %>
-    <% end %>
-    <% header.with_cell do %>
-      <%= t('.value') %>
-    <% end %>
-  <% end %>
-  <% @slft_application.display_supporting_document_list&.each do |doc| %>
-    <% table.with_row do |row| %>
-      <% row.with_cell do %>
-        <%= doc.code %>
-      <% end %>
-      <% row.with_cell do %>
-        <%= doc.value %>
-      <% end %>
-    <% end %>
-  <% end %>
-<% end %>
-<%= ds_paragraph {t('.file_upload_hint_default')} %>
-<%= ds_form_with( model: @slft_application, url: @post_path, file_upload: true, method: :post, button_action: :none ) do |f| %>
-  <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, multiple: true,
-                     description: true,  supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb) %>
-  <%= ds_paragraph { ds_button(name: t('ds.submit_component.finish'), url: external_link_url('CANCEL_HOME')) } %>
-  <%= ds_paragraph { ds_link(name: t('give_feed_back'), url: external_link_url('FDBK_UA_SLFT'),
+
+<%= ds_paragraph { ds_link(name: t('give_feed_back'), url: external_link_url('FDBK_UA_SLFT'),
                              target: '_blank', subtype: :centered)}%>
-<% end %>
+

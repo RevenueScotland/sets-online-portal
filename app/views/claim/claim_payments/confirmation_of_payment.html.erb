@@ -12,10 +12,6 @@
   <%= ds_link(name: t('.download_claim_details'), url: claim_download_claim_path, target: '_blank') %>
   <%= f.ds_section_title(section_title: t('.what_next')) %>
   <%= ds_paragraph {t('.contact_us_html', link: ds_link(url: external_link_url('CONTACT_US'), name: t('.contact_us_link'),target: '_blank')).html_safe} %>
-  <%= f.ds_section_title(section_title: t('.additional_documents')) %>
-  <%= ds_paragraph {t('.' + @claim_payment.translation_prefix + '_upload_note')} %>
-  <%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, multiple: true, optional: true,
-                     description: false,  supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb) %>
   <%= ds_button(name: t('ds.submit_component.finish'), url: external_link_url('CANCEL_HOME') ) unless current_user%>
   <%= ds_paragraph { ds_link(name: t('give_feed_back'), url: external_link_url('FDBK_ADS_REPAY'),
                              target: '_blank', subtype: :centered)}  unless current_user %>

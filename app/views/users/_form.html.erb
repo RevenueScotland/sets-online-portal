@@ -7,8 +7,8 @@
   <%= f.ds_radio_group(builder: f.builder, method: :user_is_current,
                     options_list:@user.list_ref_data(:user_is_current), alignment: :horizontal ) %>
   <%= f.ds_section_title(section_title: t('.user_details')) %>
-  <%= f.ds_text_field( method: :forename) %>
-  <%= f.ds_text_field( method: :surname) %>
+  <%= f.ds_text_field( method: :forename, data_options: { skip_special_chars: true }) %>
+  <%= f.ds_text_field( method: :surname, data_options: { skip_special_chars: true }) %>
   <%= f.ds_section_title(section_title: t('.contact_details')) %>
   <%= f.ds_text_field( method: :email_address) %>
   <%= f.ds_text_field( method: :email_address_confirmation) %>

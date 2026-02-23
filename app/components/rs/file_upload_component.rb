@@ -36,11 +36,11 @@ module RS
     # @param description [Boolean] Get a description of the file
     # @param supported_file_types [Array] Array of supported file types
     # @param max_file_size_mb [Integer] the maximum size of file that can be uploaded
-    def initialize(resource_items_hash:, resource_items:, builder: nil, fieldset_key: nil, interpolations: {}, # rubocop:disable  Metrics/MethodLength
+    def initialize(resource_items_hash:, resource_items:, builder: nil, fieldset_key: nil, interpolations: {}, # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
                    multiple: false, optional: false, description: true,
                    supported_file_types: nil, max_file_size_mb: nil, max_uploads: nil,
                    button_label: nil, button_type: nil, hide_upload_section: false,
-                   hide_uploaded_files_section: false)
+                   hide_uploaded_files_section: false, hide_table_header_caption: false, show_default_label: true)
       super()
 
       @builder = builder
@@ -59,6 +59,8 @@ module RS
       @button_type = button_type
       @hide_upload_section = hide_upload_section
       @hide_uploaded_files_section = hide_uploaded_files_section
+      @hide_table_header_caption = hide_table_header_caption
+      @show_default_label = show_default_label
     end
 
     private

@@ -102,4 +102,8 @@ Rails.application.configure do
   # Catch normal errors and display a nice "Something has gone wrong" message
   # rather than the RoR default.
   config.x.error_handler.rescue_standard_error = true
+
+  # `to_time` will always preserve the full timezone rather than offset of the receiver in Rails 8.1.
+  # To opt in to the new behavior
+  config.active_support.to_time_preserves_timezone = :zone
 end

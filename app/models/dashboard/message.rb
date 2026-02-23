@@ -19,13 +19,19 @@ module Dashboard
                   :srv_code, :read_indicator, :subject_domain, :has_attachment,
                   :read_datetime, :attachments, :forename, :surname, :status_update,
                   :subject_desc, :agent_reference, :prev_refno, :next_refno,
-                  :prev_page_number, :next_page_number
+                  :prev_page_number, :next_page_number, :upload_needed,
+                  :upload_more_files, :more_upload_requested, :max_allowed_upload, :upload_count
 
     validates :reference, presence: true, length: { maximum: 30 }
     validates :agent_reference, length: { maximum: 30 }
     validates :title, presence: true, length: { maximum: 255 }
     validates :body, presence: true, length: { maximum: 4000 }
+    validates :upload_needed, presence: true
     validates :subject_code, presence: true
+    # Validate upload_more_files only if the user lands on the Your uploaded files page
+    # else the validation isn't necessary, we use the more_upload_requested flag for this purpose
+    validates :upload_more_files, presence: true, if: :more_upload_requested
+    validate :upload_limit_reached
 
     # overrides the standard id parameters to smsg_refno
     def to_param
@@ -126,6 +132,26 @@ module Dashboard
       message
     end
 
+    # Returns radio options for the message wizard
+    def self.file_upload_options(more_upload_options)
+      options = more_upload_options ? %i[more_files no_more_files] : %i[yes_upload no_upload]
+      options.map do |x|
+        ReferenceData::ReferenceValue.new(code: x,
+                                          value: I18n.t(
+                                            x.to_s, scope: model_name.i18n_key
+                                          ))
+      end
+    end
+
+    # This method validates if the msg file upload limit has been reached
+    def upload_limit_reached
+      return true if @max_allowed_upload.nil? || @upload_count.nil?
+
+      return true unless @max_allowed_upload == @upload_count
+
+      errors.add(:upload_more_files, :upload_limit_reached, upload_limit: @max_allowed_upload)
+    end
+
     # Check if the service is SAT and assign the reference to the selected reference
     # if the user has clicked on the message link from a return, the reference will be populated and use that
     # else use the selected enrolment reference
@@ -222,14 +248,14 @@ module Dashboard
     # @param requested_by [Object] the user who requested to get access for the specific set of data.
     # @param doc_refno [String] document reference number to be delete from backoffice
     # @return [Boolean] true if document delete successfully from backoffice else false
-    def delete_attachment(requested_by, doc_refno)
+    def delete_attachment?(requested_by, doc_refno)
       call_ok?(:delete_attachment, request_delete_attachment(requested_by, doc_refno))
     end
 
     # sends the request to the bo to toggle the status of the message
     # @param smsg_refno [Number] the secure message refno
     # @param requested_by [String] who requested the status toggle
-    def self.toggle_read_status(smsg_refno, requested_by)
+    def self.toggle_read_status?(smsg_refno, requested_by)
       call_ok?(:secure_message_update, request_update_status(smsg_refno, requested_by))
     end
 
@@ -371,7 +397,6 @@ module Dashboard
                                         Title: @title, Body: @body, Reference: @reference,
                                         AltReference: @agent_reference }
       secure_message_create_request = request_user_instance(requested_by).merge!(secure_message_create_request)
-      # byebug
       secure_message_create_request[:Documents] = request_attachments_data(@attachments) unless @attachments.nil?
       secure_message_create_request[:Document] = request_document_create(@attachment) unless @attachment.nil?
       # return secure_message_create_request if @attachment.nil?

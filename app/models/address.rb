@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 # Model for address records
-class Address < FLApplicationRecord
+class Address < FLApplicationRecord # rubocop:disable Metrics/ClassLength
   include ActiveModel::Serializers::JSON
   include PrintData
+
   validates_with ScotlandPostcodeValidator, on: :scotland_postcode_selected
 
   # Attributes for this class, in list so can re-use as permitted params list in the controller
@@ -19,7 +20,6 @@ class Address < FLApplicationRecord
 
   attribute_list.each { |attr| attr_accessor attr }
 
-  # validates :address_line1, presence: true, on: :save
   validates :address_line1, presence: true, length: { maximum: 255 }, on: :save
   validates :address_line2, :address_line3, :address_line4, length: { maximum: 255 }, on: :save
   validates :town, presence: true, length: { maximum: 100 }, on: :save
@@ -79,6 +79,11 @@ class Address < FLApplicationRecord
   # @return [String] The formatted full address
   def full_address
     [address_line1, address_line2, address_line3, address_line4, town, county, postcode].compact_blank.join(', ')
+  end
+
+  # Returns full_address separated by a line break for display purposes in the browser
+  def decorated_full_address
+    [address_line1, address_line2, address_line3, address_line4, town, county, postcode].compact_blank.join('<br />')
   end
 
   # @return [String] line 1, town and postcode only
@@ -144,6 +149,16 @@ class Address < FLApplicationRecord
     xml_element_if_present(output, "#{prefix}:AddressPostcodeOrZip", postcode)
     xml_element_if_present(output, "#{prefix}:AddressCountryCode", country)
     xml_element_if_present(output, "#{prefix}:QASMoniker", address_identifier)
+    append_extra_address_info(output, prefix)
+  end
+
+  # Convert extra address fields local ed auth code, local auth code
+  # urpn and delivery point suffix in back-office format
+  def append_extra_address_info(output, prefix)
+    xml_element_if_present(output, "#{prefix}:LocalEdAuthCode", local_ed_auth_code)
+    xml_element_if_present(output, "#{prefix}:LocalAuthCode", local_auth_code)
+    xml_element_if_present(output, "#{prefix}:Udprn", udprn)
+    xml_element_if_present(output, "#{prefix}:DeliveryPointSuffix", delivery_point_suffix)
   end
 
   # Validation to check that the address has been selected - it's the same as checking the

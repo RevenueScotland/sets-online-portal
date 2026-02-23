@@ -85,7 +85,9 @@ module Returns
     # Return the parameter list filtered for the attributes of the Calculate model
     def filter_params(_sub_object_attribute = nil)
       required = :returns_lbtt_ads
-      output = params.require(required).permit(Lbtt::Ads.attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      output = params.require(required).permit(Lbtt::Ads.attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
       output
     end
 
@@ -94,7 +96,9 @@ module Returns
     def filter_list_params(list_attribute, _sub_object_attribute = nil)
       return unless params[:returns_lbtt_ads] && params[:returns_lbtt_ads][list_attribute]
 
-      params.require(:returns_lbtt_ads).permit(list_attribute => {})[list_attribute].values
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(:returns_lbtt_ads).permit(list_attribute => {})[list_attribute].values # rubocop:disable Rails/StrongParametersExpect
     end
   end
 end

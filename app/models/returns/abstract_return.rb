@@ -31,7 +31,7 @@ module Returns
     # This is doing optimistic locking where we assume the save latest will work. We have to do this in case the user
     # loses the connection. The return needs to be saved to the cache after calling this routine
     # @return [Boolean] true if the return is prepared
-    def prepare_to_save_latest
+    def prepare_to_save_latest?
       errors.add(:base, :has_already_been_submitted) && (return false) if @already_submitted
       @already_submitted = true
       true

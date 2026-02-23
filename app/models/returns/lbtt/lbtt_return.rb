@@ -24,7 +24,8 @@ module Returns
            repayment_ind repayment_amount_claimed repayment_declaration repayment_agent_declaration account_type
            ads change_reason orig_effective_date non_notifiable_submit_ind non_notifiable_explanation prepopulated
            pre_population_declaration orig_landlord_name taxpayer_email_id show_trans_declaration
-           edit_calc_reason uk_ind calculation_edited initial_submitted_date]
+           edit_calc_reason uk_ind calculation_edited initial_submitted_date evidence_files previous_returns
+           validate_buyer_agent_details]
       end
 
       attribute_list.each { |attr| attr_accessor attr }
@@ -37,7 +38,7 @@ module Returns
       # Holds items that are internal and not set by the user
       # LBTT tax calculations object to manage and store tax calculation results.
       # Not including in the attribute_list so it can't be posted to, ie not user editable from this object
-      attr_accessor :tax
+      attr_accessor :tax, :evidence_needed
 
       validates :flbt_type, presence: true, on: :flbt_type
       validates :orig_return_reference, presence: true, reference_number: true, on: :orig_return_reference
@@ -45,6 +46,7 @@ module Returns
       validates :orig_landlord_name, presence: true, length: { maximum: 200 }, on: :orig_landlord_name
       validates :taxpayer_email_id, presence: true, length: { maximum: 100 }, on: :taxpayer_email_id
       validate  :validate_return_reference, on: :orig_return_reference
+      validate :validate_if_evidence_required
 
       # Validation of the pre population declaration
       validates :pre_population_declaration, acceptance: { accept: ['Y'] }, on: :pre_population_declaration,
@@ -67,6 +69,7 @@ module Returns
                                  if: :terminate?
       validates :relevant_date, compare_date: { triennial_date_attr: :effective_date }, on: :relevant_date,
                                 if: :lease_review?
+      validate  :lease_review_already_submitted, on: :relevant_date, if: :lease_review?
       validates :previous_option_ind, :exchange_ind,
                 :uk_ind, presence: true, on: :previous_option_ind,
                          unless: :any_lease_review?
@@ -166,7 +169,7 @@ module Returns
         return if errors.any? # don't check validation unless model already valid
 
         call_ok?(:validate_return_reference, request_validate_element) do |response|
-          if not_filed_lease(response)
+          if not_filed_lease?(response)
             errors.add(:orig_return_reference, :return_not_filed_lease)
           elsif response[:status] == 'Y'
             errors.add(:orig_return_reference, :return_disregarded)
@@ -325,6 +328,15 @@ module Returns
           sale_include_option: comp_key('SALEOFBUSINESS', 'LBTT', 'RSTU'),
           form_type: comp_key('RETURN_STATUS', 'SYS', 'RSTU'),
           non_residential_reason: comp_key('NON RES REASON', 'LBTT', 'RSTU') }
+      end
+
+      # returns if we should validate the buyer/tenant and agent/user details
+      def validate_buyer_agent_details
+        @validate_buyer_agent_details = ReferenceData::SystemParameter.lookup(
+          'PWS', 'SYS', 'RSTU', safe_lookup: true
+        )['VAL_BUYER_AGT']&.value
+        @validate_buyer_agent_details = 'Y' if @validate_buyer_agent_details.nil?
+        @validate_buyer_agent_details
       end
 
       # Define the ref data codes associated with the attributes but which won't be cached in this model
@@ -649,6 +661,21 @@ module Returns
         @linked_ind == 'Y' && !convey?
       end
 
+      # Validates if return has already been submitted for given relevant date
+      def lease_review_already_submitted
+        return if @previous_returns.empty?
+
+        @previous_returns.each_pair do |relevant_date, ref|
+          @prev_relevant_date = Date.parse(relevant_date)
+          next if ref == @tare_reference
+
+          if @relevant_date.to_date == @prev_relevant_date
+            errors.add(:relevant_date, :leaserev_already_submitted, ref: ref, orig_ref: @orig_return_reference,
+                                                                    relevant_date: DateFormatting.to_display_date_format(@prev_relevant_date)) # rubocop:disable Layout/LineLength
+          end
+        end
+      end
+
       # Validation for transaction sale include options, user must have selected at least one non-blank option
       def sale_include_option_is_choosen
         return unless business_ind?
@@ -746,6 +773,19 @@ module Returns
         end
 
         address_list.compact.uniq(&:full_address)
+      end
+
+      # Returns the time restriction in months set as upper limit
+      # for effective & relevant date submission
+      def return_time_limit
+        ReferenceData::SystemParameter.lookup('COMMON', 'LBTT', 'RSTU', safe_lookup: true)['RETURN_TIME_LIMIT']&.value
+      end
+
+      # Returns if FIRSTTIME relief is added to the return
+      def first_time_relief_added?
+        return false if @relief_claims.nil?
+
+        @relief_claims.find { |rf| rf.relief_type == 'FIRSTTIME' }.present?
       end
 
       # The ADS section should only be shown if the user has specified that ADS applies to a property
@@ -846,6 +886,11 @@ module Returns
           output.delete(:recalc_required)
         end
 
+        # convert back office hash for previous return submitted for lease
+        if %w[LEASEREV].include?(lbtt[:lbtt_return_details][:flbt_type])
+          output[:previous_returns] = convert_previous_returns(lbtt)
+        end
+
         # convert back office yes/no to Y/N
         yes_nos_to_yns(output, %i[previous_option_ind exchange_ind uk_ind contingents_event_ind recalc_required])
         # derive yes no for transaction pages radio button based on the data now that we've finished moving it around
@@ -917,6 +962,20 @@ module Returns
                                    pre_population_declaration].include?(attribute)
 
         translation_attribute_declarations(attribute)
+      end
+
+      # @!method self.convert_previous_returns(raw_hash)
+      # Convert the previous returns data (raw hash) into object
+      # @param raw_hash [Hash] the back office data
+      # @return [Hash] previous returns along with their relevant date
+      private_class_method def self.convert_previous_returns(raw_hash)
+        output = {}
+        ServiceClient.iterate_element(raw_hash.delete(:previous_returns)) do |return_hash|
+          output[return_hash[:previous_relevant_date].to_s] =
+            return_hash[:previous_tare_reference]
+        end
+
+        output
       end
 
       # Convert the parties data received from back-office to our model specific format
@@ -1010,6 +1069,22 @@ module Returns
         @public_return_types.values.sort_by(&:sort_key)
       end
 
+      # Returns boolean if Evidence is required while amending the return based on following
+      # 'Does Additional Dwelling Supplement (ADS) apply to this transaction?' answer is set to Yes
+      # 'Are you amending the return because the buyer has sold or disposed of the previous main residence?'
+      #  answer is Yes
+      # 'Do you want to request a repayment from Revenue Scotland' answer is Yes
+      def evidence_upload_required?
+        return false unless amendment?
+
+        show_ads? && repayment_ind? && @ads.ads_repayment?
+      end
+
+      # Validates if evidence files are required
+      def validate_if_evidence_required
+        errors.add(:base, :evidence_file_required) if evidence_needed && evidence_files.blank?
+      end
+
       private
 
       # @return a hash suitable for use in validateReturnReference request to the back office
@@ -1074,7 +1149,7 @@ module Returns
       end
 
       # check that the validate return response is for the suitable lease
-      def not_filed_lease(response)
+      def not_filed_lease?(response)
         response.blank? || response[:flbt_type] != 'LEASERET' ||
           response[:effective_date].to_date != orig_effective_date.to_date
       end
@@ -1213,6 +1288,8 @@ module Returns
           output['ins0:RepaymentInd'] = 'no'
         end
 
+        output.merge!(save_evidence_files_elements) unless evidence_files.nil?
+
         # include ADS fields only if the user is currently shown the ADS wizard option (ie it could have been hidden
         # since ADS data was added)
         @ads.request_save(output) if show_ads?
@@ -1223,6 +1300,20 @@ module Returns
           'ins0:PrintData': print_data(:print_layout),
           'ins0:PrintDataReceipt': print_data(:print_layout_receipt),
           'ins0:Prepopulated': (@prepopulated == 'Y' ? 'yes' : 'no') }
+      end
+
+      # @return [Hash] elements used to specify what data we want to send to the back office
+      def save_evidence_files_elements
+        { 'ins0:Documents': { 'ins0:Document':
+            evidence_files.map { |evidence_file| request_document_create(evidence_file) } } }
+      end
+
+      # @return a hash suitable for use in store document request to the back office
+      def request_document_create(document)
+        { 'ins0:FileName': document.original_filename,
+          'ins0:FileType': document.content_type,
+          'ins0:Description': document.description,
+          'ins0:BinaryData': Base64.encode64(document.file_data) }
       end
 
       # Dynamically returns the translation key based on the flbt_type or user_account_type

@@ -6,6 +6,7 @@ module Returns
     class TaxableAggregate < FLApplicationRecord # rubocop:disable Metrics/ClassLength
       include NumberFormatting
       include PrintData
+
       # Attributes for this class, in list so can re-use
       def self.attribute_list
         %i[tlb_refno attribute_type aggregate_type comm_exploitation_type exploited_tonnage water_tonnage mixed_ind rate

@@ -25,8 +25,8 @@ module ReferenceData
     # @param display_page [String] The page being displayed
     # @return [Boolean] Is this valid based on the page and the current time
     def valid_notice?(display_page)
-      return true if Time.zone.now.between?(show_from, (show_till || Time.zone.now)) &&
-                     complete_ind != true && (page == display_page || page == 'ALL')
+      return true if Time.zone.now.between?(show_from, show_till || Time.zone.now) &&
+                     complete_ind != true && [display_page, 'ALL'].include?(page)
 
       false
     end

@@ -23,37 +23,41 @@
     top: 0.5rem;
 }
 
-.rs_view_link {
-    width: 15%;
-}
+#unread_messages,
+#messages,
+#view_messages {
+    .rs_view_link {
+        width: 15%;
+    }
 
-.rs_preview_text {
-    flex: 1;
-    width: auto;
-}
+    .rs_preview_text {
+        flex: 1;
+        width: auto;
+    }
 
-td,
-th {
-    flex: 1;
-}
+    td,
+    th {
+        flex: 1;
+    }
 
-tr {
-    display: flex;
-    flex-wrap: wrap;
-}
+    tr {
+        display: flex;
+        flex-wrap: wrap;
+    }
 
-tr>.rs_cell_as_row {
-    width: 100%;
-    flex: auto;
-}
+    tr>.rs_cell_as_row {
+        width: 100%;
+        flex: auto;
+    }
 
-tr>.rs_cell_as_header {
-    display: none;
-}
+    tr>.rs_cell_as_header {
+        display: none;
+    }
 
-.rs_cell {
-    display: flex;
-    flex-direction: row;
+    .rs_cell {
+        display: flex;
+        flex-direction: row;
+    }
 }
 
 .ds_table tfoot td {
@@ -72,5 +76,14 @@ tr>.rs_cell_as_header {
     .ds_table caption p,
     .ds_table caption a {
         font-size: px-to-rem($root-font-size--medium);
+    }
+}
+
+@include ds_media-query(small-down) {
+    .ds_table caption span {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 10px;
+        top: 0;
     }
 }

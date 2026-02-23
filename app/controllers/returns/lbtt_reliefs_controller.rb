@@ -9,9 +9,9 @@ module Returns
     include WizardListHelper
     include LbttTaxHelper
 
-    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public?
     # Allow unauthenticated/public access to reliefs actions
-    skip_before_action :require_user
+    skip_before_action :require_user?
 
     # store step flow of lbtt conveyance return transaction page name used for navigation
     STEPS = %w[reliefs_on_transaction multiple_dwellings_relief reliefs_calculation].freeze
@@ -105,13 +105,17 @@ module Returns
     # Return the parameter list filtered for the attributes of the LbttReturn model
     def filter_params(sub_object_attribute = nil)
       if sub_object_attribute == :md_relief
-        params.require(:returns_lbtt_relief_claim).permit(Lbtt::ReliefClaim.attribute_list)
+        # Rubocop disable added as this breaks the functionality
+        # https://github.com/rubocop/rubocop-rails/issues/1418
+        params.require(:returns_lbtt_relief_claim).permit(Lbtt::ReliefClaim.attribute_list) # rubocop:disable Rails/StrongParametersExpect
       else
         return {} unless params[:returns_lbtt_lbtt_return] # may have no reliefs
 
         permitted_attributes = Lbtt::ReliefClaim.attribute_list + [:relief_type_expanded]
         # Allow the relief claims but reject them as the relief claims are handled as part of the later list processing
-        params.require(:returns_lbtt_lbtt_return).permit(returns_lbtt_relief_claim: permitted_attributes)
+        # # Rubocop disable added as this breaks the functionality
+        # https://github.com/rubocop/rubocop-rails/issues/1418
+        params.require(:returns_lbtt_lbtt_return).permit(returns_lbtt_relief_claim: permitted_attributes) # rubocop:disable Rails/StrongParametersExpect
               .except(:returns_lbtt_relief_claim)
       end
     end
@@ -121,7 +125,9 @@ module Returns
       return unless params[:returns_lbtt_lbtt_return] && params[:returns_lbtt_lbtt_return][:returns_lbtt_relief_claim]
 
       permitted_attributes = [:relief_type_expanded] + Lbtt::ReliefClaim.attribute_list
-      params.require(:returns_lbtt_lbtt_return)
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(:returns_lbtt_lbtt_return) # rubocop:disable Rails/StrongParametersExpect
             .permit(returns_lbtt_relief_claim: permitted_attributes)[:returns_lbtt_relief_claim].values
     end
   end

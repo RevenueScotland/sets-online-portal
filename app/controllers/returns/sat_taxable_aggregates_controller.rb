@@ -22,7 +22,7 @@ module Returns
     def aggregate_tonnage
       wizard_step(nil) do
         { next_step: :site_summary_after_adding_aggregate,
-          after_merge: :dump_taxable_aggregate_into_sat_wizard }
+          after_merge: :dump_taxable_aggregate_into_sat_wizard? }
       end
     end
 
@@ -128,7 +128,7 @@ module Returns
     # Puts the SatTaxableAggregateController wizard data (ie @taxable_aggregate @see #setup_step)
     # into the main SAT Wizard cache
     # @return [Boolean] true if successful
-    def dump_taxable_aggregate_into_sat_wizard
+    def dump_taxable_aggregate_into_sat_wizard?
       # make sure we have the site set up
       load_site
       @site.taxable_aggregates = {} if @site.taxable_aggregates.nil?
@@ -156,7 +156,9 @@ module Returns
 
       return unless params[required]
 
-      params.require(required).permit(attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
   end
 end

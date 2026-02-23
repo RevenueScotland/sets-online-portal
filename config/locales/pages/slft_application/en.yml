@@ -28,6 +28,10 @@ en:
       supporting_documents:
         title: Supporting documentation
         description: Select all relevant documentation which you will be attaching to this application
+      upload_documents:
+        title: "Upload your supporting file"
+      your_uploaded_files:
+        title: "Your uploaded files"
       waste_producer_details:
         title: Waste producer details
         description: Provide the details of the waste producer for this application

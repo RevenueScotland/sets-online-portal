@@ -9,7 +9,8 @@ module Claim
 
     # Not included in the list allowed from forms so it can't be posted and changed, ie to prevent data injection.
     attr_accessor :srv_code, :version, :current_user, :ads_included, :ads_amount,
-                  :flbt_type, :submitted_date, :effective_date, :filing_date, :number_of_buyers
+                  :flbt_type, :submitted_date, :effective_date, :filing_date, :number_of_buyers,
+                  :ads_evidence_needed
 
     # Attributes for this class, in list so can re-use as permitted params list in the controller
     def self.attribute_list
@@ -49,6 +50,7 @@ module Claim
     validate :validate_eligibility_checker, on: :eligibility_checkers
     validate :validate_eligibility_checker_after, on: :eligibility_checkers_after
     validates :effective_date_checker, presence: true, on: :effective_date_checker
+    validate :validate_if_evidence_required
 
     # Layout to print the data in this model
     # This defines the sections that are to be printed and the content and layout of those sections
@@ -90,6 +92,11 @@ module Claim
       else
         list_ref_data(:reason).delete_if { |r| r.code =~ /ADS.*/ }
       end
+    end
+
+    # Validates if evidence files are required
+    def validate_if_evidence_required
+      errors.add(:base, :evidence_file_required) if ads_evidence_needed && evidence_files.blank?
     end
 
     # Validates that the reason chosen is valid
@@ -213,17 +220,6 @@ module Claim
       end
     end
 
-    # store individual document to back office
-    def add_additional_document(additional_document)
-      doc_refno = ''
-      success = call_ok?(:add_document, request_add_additional_document_elements(additional_document)) do |response|
-        break if response.blank?
-
-        doc_refno = response[:doc_refno]
-      end
-      [success, doc_refno]
-    end
-
     # saving data came from back office in response of validate_return_reference service
     def clear_back_office_data
       @flbt_type = nil
@@ -278,12 +274,6 @@ module Claim
       (date_of_sale_days_old > Rails.configuration.x.returns.amendable_days)
     end
 
-    # @return a hash suitable for use in a add additional_document to the back office
-    def request_add_additional_document_elements(additional_document)
-      add_attachment_request = request_user_instance
-      add_attachment_request.merge!(request_document_create(additional_document))
-    end
-
     # @return a hash suitable for use in all message request
     def request_user_instance
       if claim_public?
@@ -319,18 +309,6 @@ module Claim
         { Username: current_user.username, ParRefNo:  current_user.party_refno,
           UnAuthenticated: false, TareReference: @tare_reference, IncludeDisregardedReturns: false }
       end
-    end
-
-    # delete additional document from back-office
-    # @param doc_refno [String] additional document reference number to be delete from back-office
-    # @return [Boolean] true if additional document delete successfully from back-office else false
-    def delete_additional_document(doc_refno)
-      call_ok?(:delete_document, request_delete_additional_document_elements(doc_refno))
-    end
-
-    # @return a hash suitable for use in a delete additional document to the back office
-    def request_delete_additional_document_elements(doc_refno)
-      request_user_instance.merge!('ins1:DocRefNo': doc_refno.to_i)
     end
 
     # Checks whether a save can be done by checking the validations
@@ -388,7 +366,7 @@ module Claim
     end
 
     # @return [Hash] elements used to specify what data we want to send to the back office
-    def request_save_elements
+    def request_save_elements # rubocop:disable Metrics/MethodLength
       output = { ClaimType: pre_claim? ? 'PRE' : 'POST',
                  TareReference: @tare_reference,
                  Version: @version,
@@ -398,6 +376,7 @@ module Claim
       output[:OtherClaimReasonDescription] = @claim_desc if @reason == 'OTHER'
       output[:RepayAmountClaimed] = @ads_amount if @full_repayment_of_ads == 'Y'
       output.merge!(request_save_bank_details)
+      output.merge!(save_evidence_files_elements) unless evidence_files.nil?
 
       output
     end
@@ -422,8 +401,6 @@ module Claim
       output[:TaxPayer] = taxpayer_details(@taxpayers[0])
 
       output.merge!(additional_taxpayers_elements)
-
-      output.merge!(save_evidence_files_elements) unless evidence_files.nil?
 
       output
     end

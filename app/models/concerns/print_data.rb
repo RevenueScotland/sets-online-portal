@@ -302,7 +302,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
       next if section.nil?
 
       Rails.logger.debug { "Section #{section[:code]} Type #{section[:type]} Object Index: #{object_index}" }
-      next if skip_section(section, parent_section, object_index: object_index)
+      next if skip_section?(section, parent_section, object_index: object_index)
 
       section_list += process_section(layout, section, parent_section_options,
                                       use_parent_title: first_object && i.zero?, use_parent_footer: last_object,
@@ -475,7 +475,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
     list = []
 
     row_cells.each do |cell| # rubocop:disable Style/MapIntoArray,Lint/RedundantCopDisableDirective
-      list << if cell[:list_items].count == 1
+      list << if cell[:list_items].one?
                 item = cell[:list_items][0]
                 this_label(item[:code], item[:action_name], item[:label]) unless item[:label] == false
               else
@@ -677,7 +677,7 @@ module PrintData # rubocop:disable Metrics/ModuleLength
   # @param parent_section [Hash] The options for the parent section used when processing objects
   # @param object_index [Integer] The index of the object, returned if the method is object_index
   # @return [true] Should the section be skipped
-  def skip_section(section, parent_section, object_index:)
+  def skip_section?(section, parent_section, object_index:)
     return true if section.nil? # allows for suppressed sections
     # Skip sections which are restricted to certain parent codes for objects
     return true unless section[:parent_codes].nil? || parent_section.nil? ||

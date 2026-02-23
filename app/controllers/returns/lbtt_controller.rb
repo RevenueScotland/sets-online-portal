@@ -20,11 +20,11 @@ module Returns
                       declaration declaration_submitted download_pdf].freeze
 
     authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY
-    authorise routes: PUBLIC_PAGES, requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise routes: PUBLIC_PAGES, requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public?
     authorise route: :save_draft, requires: RS::AuthorisationHelper::LBTT_SAVE
     # Allow unauthenticated/public access to specific actions - NB do not put return_type here, want that
     # to require authentication so we don't mix the two up
-    skip_before_action :require_user, only: PUBLIC_PAGES
+    skip_before_action :require_user?, only: PUBLIC_PAGES
 
     # enforce the user isn't logged in on the public pages
     before_action :enforce_public, only: %w[public_landing public_return_type]
@@ -41,10 +41,10 @@ module Returns
                       return_pre_population_declaration summary].freeze
 
     # this can't be defined in authorise.rb, otherwise rails throws an error
-    helper_method :public
+    helper_method :public?
 
     # Summary of returns.
-    def summary
+    def summary # rubocop:disable Naming/PredicateMethod
       load_step
 
       clean_on_new_type
@@ -60,7 +60,7 @@ module Returns
       wizard_save(@lbtt_return)
 
       # manage the buttons AFTER wizard_save so we don't save the validation errors
-      manage_draft(@lbtt_return) || manage_submit
+      manage_draft?(@lbtt_return) || manage_submit?
     end
 
     # Setting lbtt return type - custom step which clears the wizard cache before it starts a new return
@@ -80,7 +80,9 @@ module Returns
     end
 
     # Public landing page, just renders the view
-    def public_landing; end
+    def public_landing
+      clear_caches
+    end
 
     # This is the public version of the #return_type page/step.  It's separate mainly so we can distinguish the links
     # between a version that needs login and one that doesn't (ie so we don't mix them up accidentally).
@@ -200,7 +202,7 @@ module Returns
 
     # Checks if submit button was pressed & redirects to the appropriate action if validation passes.
     # @return true if button was pressed, else false.
-    def manage_submit
+    def manage_submit?
       return true unless params[:submit_return]
 
       Rails.logger.debug('submit_return pressed')
@@ -209,7 +211,7 @@ module Returns
         redirect_submit
         true
       else
-        render(status: :unprocessable_entity)
+        render(status: :unprocessable_content)
         false
       end
     end
@@ -245,7 +247,7 @@ module Returns
     # Make sure tax calculations object is defined and up to date and stored in the wizard cache
     # @param save_wizard [Boolean] to handle wizard save
     # @return [Boolean] true if successful
-    def setup_sub_models(save_wizard: true)
+    def setup_sub_models(save_wizard: true) # rubocop:disable Naming/PredicateMethod
       Lbtt::Tax.setup_tax(@lbtt_return)
       Lbtt::Ads.setup_ads(@lbtt_return)
       wizard_save(@lbtt_return) if save_wizard
@@ -265,7 +267,9 @@ module Returns
     def filter_list_params(list_attribute, _sub_object_attribute = nil)
       return unless params[:returns_lbtt_lbtt_return] && params[:returns_lbtt_lbtt_return][list_attribute]
 
-      params.require(:returns_lbtt_lbtt_return).permit(list_attribute => {})[list_attribute].values
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(:returns_lbtt_lbtt_return).permit(list_attribute => {})[list_attribute].values # rubocop:disable Rails/StrongParametersExpect
     end
   end
 end

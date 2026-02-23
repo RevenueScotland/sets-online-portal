@@ -6,7 +6,7 @@ en:
         full_name: "Name"
         email_address: "Email address"
         email_address_confirmation: "Confirm email address"
-        registration_token: "Registration token"
+        registration_token: "One time passcode"
         company_name: "Name"
         COMPANY_company_name: "Company name"
         OTHER_company_name: "Organisation name"
@@ -33,10 +33,11 @@ en:
         tp_business_name: "Taxpayer's business name"
         tp_busi_postcode: "Taxpayer's business postcode"
         tp_busi_email_addr: "Taxpayer's business contact email address"
+        registration_type:  "Who are you signing up on behalf of"
         registration_notes: "A portal account has been requested for SAT enrolment reference %{enrolment_ref}. Check the details given for the taxpayer / aggregates operator match those showing on the SAT reference %{enrolment_ref}.\n Type of account holder: %{account_type}, Taxpayer / aggregates operator business name: %{taxpayer_name}, Taxpayer / aggregates operator postcode: %{taxpayer_postcode}, Taxpayer / aggregates operator email %{taxpayer_email}." 
     hints:
       account:
-        registration_token: "Enter the token from the registration email or from the password reset email"
+        registration_token: "Enter the one time passcode from the registration email or from the password reset email"
         new_password: "This must be a minimum of 9 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character, like, +, $, !"
         company_name: "If you enter a company name we will register the account for the company"
         country: "Start typing your country name and a list of matches will appear"

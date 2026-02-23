@@ -6,9 +6,10 @@ module Dashboard
     include Wizard
     include FileUploadHandler
     include DownloadHelper
+    include FileUploadHelper
 
-    before_action :load_step, only: %i[upload_documents send_message]
-    before_action :set_max_uploads_allowed, only: %i[upload_documents send_message]
+    before_action :load_step, only: %i[upload_documents send_message your_uploaded_files]
+    before_action :set_max_uploads_allowed, only: %i[upload_documents send_message your_uploaded_files]
 
     authorise route: :index, requires: RS::AuthorisationHelper::VIEW_MESSAGES
     authorise route: :new, requires: RS::AuthorisationHelper::CREATE_MESSAGE
@@ -41,7 +42,7 @@ module Dashboard
     # Processes some data to initially load up for the sending a message page.
     # If it is a reply then carry over the :subject, :origin_id, :title and :reference.
     def new
-      if params[:step1] || params[:smsg_refno].present?
+      if params[:step1] || params[:smsg_refno].present? || params[:reference].present?
         Rails.logger.debug('Starting new Message')
         clear_caches
       end
@@ -57,9 +58,9 @@ module Dashboard
       @reply_thread = @message.original_smsg_refno.present?
       wizard_save(@message) if @message.valid?
       if @message.valid?
-        redirect_to upload_documents_dashboard_messages_path
+        send_msg_or_upload_file
       else
-        render 'new', status: :unprocessable_entity unless @message.valid?
+        render 'new', status: :unprocessable_content unless @message.valid?
       end
     end
 
@@ -69,8 +70,8 @@ module Dashboard
       # Only handle a file upload if they can attach
       if can?(RS::AuthorisationHelper::CREATE_ATTACHMENT) &&
          handle_file_upload(parent_param: :dashboard_message, before_add: :add_document,
-                            before_delete: :delete_document)
-        render(status: :unprocessable_entity)
+                            before_delete: :delete_document?)
+        render(status: :unprocessable_content)
       else
         return unless params[:finish]
 
@@ -83,8 +84,8 @@ module Dashboard
     # Call delete attachment method of message to delete document from backoffice
     # @param doc_refno [String] document reference number to be delete from backoffice
     # @return [Boolean] true if document delete successfully from backoffice else false
-    def delete_document(doc_refno)
-      @message.delete_attachment(current_user, doc_refno)
+    def delete_document?(doc_refno)
+      @message.delete_attachment?(current_user, doc_refno)
     end
 
     # Send document to back office
@@ -118,7 +119,7 @@ module Dashboard
 
     # Toggles message read status
     def toggle_read_status
-      Message.toggle_read_status(params[:smsg_refno], current_user)
+      Message.toggle_read_status?(params[:smsg_refno], current_user)
       redirect_to dashboard_message_path
     end
 
@@ -147,7 +148,51 @@ module Dashboard
       end
     end
 
+    # Wizard step to view uploaded files
+    def your_uploaded_files
+      if params[:delete_resource].present? &&
+         handle_file_upload(parent_param: :dashboard_message)
+        render(status: :unprocessable_content) && return
+      elsif handle_file_upload(parent_param: :dashboard_message)
+        handle_file_upload(parent_param: :dashboard_message)
+      end
+
+      validate_and_redirect_files_upload
+    end
+
     private
+
+    # This method sends message if user doesn't want to upload documents
+    # else it moves to the upload documents page
+    def send_msg_or_upload_file
+      if @message.upload_needed == 'no_upload'
+        save_message_data
+      else
+        redirect_to upload_documents_dashboard_messages_path
+      end
+    end
+
+    # This method is responsible for managing data flow from your_uploaded_files page
+    def render_redirect_from_uploaded_files
+      if @message.valid?
+        no_more_upload = (@message.upload_more_files == 'no_more_files')
+        redirect_to no_more_upload ? send_message_dashboard_messages_path : upload_documents_dashboard_messages_path
+      else
+        handle_file_upload(parent_param: :dashboard_message)
+        render(status: :unprocessable_content) && return unless @message.valid?
+      end
+    end
+
+    # Validates the form on the your uploaded files page
+    def validate_and_redirect_files_upload
+      return unless params[:dashboard_message].present? && message_params.present?
+
+      @message.more_upload_requested = true
+      @message.upload_more_files = message_params[:upload_more_files]
+      @message.max_allowed_upload = @max_file_upload_limit if @message.upload_more_files == 'more_files'
+      @message.upload_count = @resource_items.count
+      render_redirect_from_uploaded_files
+    end
 
     # returns the max files allowed limit
     def set_max_uploads_allowed
@@ -182,9 +227,9 @@ module Dashboard
     # Check if user only added description and didn't attach file
     # Scenario : User adds file description but doesn't attach a file while upload
     def validate_description_only_added
-      if extract_file_desc.present? && (extract_uploaded_from_wizard.present? && extract_fd_obj.nil?)
+      if extract_file_desc.present? && extract_uploaded_from_wizard.present? && extract_fd_obj.nil?
         handle_file_upload(parent_param: :dashboard_message)
-        render('upload_documents', status: :unprocessable_entity) && return
+        render('upload_documents', status: :unprocessable_content) && return
       end
       true
     end
@@ -193,31 +238,30 @@ module Dashboard
     # in case file is uploaded it validates and save file
     def save_and_upload_file
       handle_file_upload(parent_param: :dashboard_message) if extract_uploaded_from_wizard.nil?
-      redirect_to send_message_dashboard_messages_path if upload_file_data_empty?
-      validate_description_only_added
+      # redirect_to send_message_dashboard_messages_path if upload_file_data_empty?
+      # validate_description_only_added
 
-      validate_and_save_uploaded_file(extract_uploaded_from_wizard, extract_fd_obj)
+      validate_and_save_uploaded_file(extract_uploaded_from_wizard)
     end
 
     # Validate and save uploaded file from step 2
     # This method accepts two parameters
     # uploaded_from_wizard -> indicates if file upload is triggered from wizard
-    # fd_obj (file_data object) -> used to check if file_data object is present
-    def validate_and_save_uploaded_file(uploaded_from_wizard, fd_obj)
+    def validate_and_save_uploaded_file(uploaded_from_wizard)
       return unless uploaded_from_wizard.present? # rubocop:disable Rails/Blank
 
-      process_uploaded_file(fd_obj)
+      process_uploaded_file
     end
 
-    # Process uploaded file using the fd_obj(file_data object)
     # Check if upload request is added. If yes, attach the document
     # If it is a delete request, remove the relevant attachment
-    def process_uploaded_file(fd_obj)
-      if fd_obj.present? && handle_file_upload(parent_param: :dashboard_message)
-        validate_and_add_attachment
-      elsif params[:delete_resource].present? &&
-            handle_file_upload(parent_param: :dashboard_message)
+    def process_uploaded_file
+      if params[:delete_resource].present? &&
+         handle_file_upload(parent_param: :dashboard_message)
         redirect_to send_message_dashboard_messages_path && return
+      elsif handle_file_upload(parent_param: :dashboard_message)
+        uploaded_file_list
+        validate_and_add_attachment
       end
     end
 
@@ -228,17 +272,17 @@ module Dashboard
       @message.attachments = nil if no_files_attached
       wizard_save(@message)
       render('send_message',
-             status: :unprocessable_entity) && return
+             status: :unprocessable_content) && return
     end
 
     # Checks if added attachment is valid. This method is sub-function of upload_documents
     def validate_and_add_attachment
       invalid_file = @resource_items_hash[:default].errors.any?
-      return render('upload_documents', status: :unprocessable_entity) if invalid_file
+      return render('upload_documents', status: :unprocessable_content) if invalid_file
 
       @message.attachments = @resource_items unless @resource_items.nil?
       wizard_save(@message)
-      redirect_to send_message_dashboard_messages_path
+      redirect_to your_uploaded_files_dashboard_messages_path
     end
 
     # Save @message data
@@ -250,10 +294,10 @@ module Dashboard
         success, msg_refno = @message.save(current_user)
         # need to call return
         return redirect_to_confirmation_page(msg_refno) if success
-        render(status: :unprocessable_entity) && return unless success
+        render(status: :unprocessable_content) && return unless success
       else
         handle_file_upload(parent_param: :dashboard_message)
-        render(status: :unprocessable_entity) && return unless @message.valid?
+        render(status: :unprocessable_content) && return unless @message.valid?
       end
     end
 
@@ -271,14 +315,16 @@ module Dashboard
       @message.has_attachment = true
     end
 
-    # which file types are allowed to be uploaded.
-    def content_type_allowlist
-      Rails.configuration.x.file_upload_content_type_allowlist.split(/\s*,\s*/)
-    end
-
-    # max finename length allowed for upload
+    # max filename length allowed for upload
     def max_filename_length
       Rails.configuration.x.file_upload_file_name_limit
+    end
+
+    # uploaded file name list
+    def uploaded_file_list
+      @uploaded_file_list ||= @resource_items.map(&:original_filename)
+
+      @uploaded_file_list
     end
 
     # Retrieve download file details
@@ -290,7 +336,7 @@ module Dashboard
     def message_params
       params.require(:dashboard_message).except(:resource_item)
             .permit(:original_smsg_refno, :subject_code, :subject_full_key_code, :reference, :agent_reference, :title,
-                    :body, :attachment, :smsg_refno, :subject_desc)
+                    :body, :attachment, :smsg_refno, :subject_desc, :upload_needed, :upload_more_files)
     end
 
     # Used specifically for show method to filter message
@@ -329,6 +375,7 @@ module Dashboard
     # Calls @see #wizard_end for SAT and sub-objects
     def clear_caches
       Rails.logger.debug('Clearing Message caches')
+      clear_resource_items
       wizard_end
     end
   end

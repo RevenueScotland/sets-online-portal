@@ -20,19 +20,13 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
   # Test version of the controller with methods to aid testing
   class StubController < ApplicationController
-    skip_before_action :require_user # cleared globally for testing
+    skip_before_action :require_user? # cleared globally for testing
 
     NORMAL_ERROR_MESSAGE = 'Connection error from back office'
 
     def raise_error
       raise Error::AppError.new('error code', NORMAL_ERROR_MESSAGE)
     end
-  end
-
-  # Create custom routing for this test
-  Rails.application.routes.disable_clear_and_finalize = true
-  Rails.application.routes.draw do
-    get 'raise_error', to: 'application_controller_test/stub#raise_error'
   end
 
   test 'exceptions are caught' do

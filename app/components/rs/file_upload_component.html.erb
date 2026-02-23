@@ -12,7 +12,7 @@
           <%= ds_fields_for(resource_item, index: type) do |ri| %>
             <% unless @hide_upload_section %>
               <% if control_hash[type][:show_upload] %>
-                <%= ri.ds_file_field(method: :file_data, optional: optional, 
+                <%= ri.ds_file_field(method: :file_data, optional: optional, show_label: @show_default_label,
                   interpolations: {supported_file_types: supported_file_types, max_file_size_mb: max_file_size_mb}) %>
                 <% if description %>
                   <%= ri.ds_text_field(method: :description, optional: true) %>
@@ -30,7 +30,7 @@
       
         <% unless @hide_uploaded_files_section %>          
           <%if control_hash[type][:resource_items].present?%>
-            <%= rs_resource_item_table(resource_items:control_hash[type][:resource_items], caption: t('.caption', count:control_hash[type][:resource_items].count ),
+            <%= rs_resource_item_table(resource_items:control_hash[type][:resource_items], caption: @hide_table_header_caption ? "" : t('.caption', count:control_hash[type][:resource_items].count ),
                           description: description, 
                           id: 'resource_item_file_data', small_screen: 'scrolling')%>
           <% end %>

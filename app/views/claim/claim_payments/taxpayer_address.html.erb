@@ -1,7 +1,7 @@
 <% count = params[:sub_object_index].to_i %>
 <% content_for(:page_title, t('.' + @claim_payment.translation_prefix(:party_title) + '_title', count: count, total: @claim_payment.number_of_buyers)) %>
 <%= ds_paragraph{t(translation_for_index('.' + @claim_payment.translation_prefix + '_description', count))}%>
-<%= ds_form_with( model: @party, url: @post_path, method: :post) do |f| %>
+<%= ds_form_with( model: @party, url: @post_path, method: :post, button_action: (@show_manual_address || count > 1 ? :continue : :none)) do |f| %>
   <% if count > 1 %>
     <%= rs_conditional_visibility(visible_value: "N") do |c| %>
       <% c.with_visibility_control_radio_group(builder: f.builder, method: :same_address, 

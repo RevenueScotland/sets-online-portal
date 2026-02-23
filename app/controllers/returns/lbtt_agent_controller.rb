@@ -7,9 +7,9 @@ module Returns
     include Wizard
     include WizardAddressHelper
 
-    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public
+    authorise requires: RS::AuthorisationHelper::LBTT_SUMMARY, allow_if: :public?
     # Allow unauthenticated/public access to parties actions
-    skip_before_action :require_user
+    skip_before_action :require_user?
 
     # store step flow of lbtt agent  page name used for navigation
     AGENT_STEPS = %w[agent_details agent_address summary].freeze
@@ -17,19 +17,19 @@ module Returns
     # wizard step lbtt/agent_details
     # First step in the wizard, sets up model etc
     def agent_details
-      wizard_step(AGENT_STEPS) { { setup_step: :setup_step } }
+      wizard_step(AGENT_STEPS) { { setup_step: :setup_step, after_merge: :store_agent_into_lbtt_wizard? } }
     end
 
     # wizard step lbtt/agent_address - last step in the wizard so #store_address also copies data into the Lbtt wizard
     def agent_address
-      wizard_address_step(returns_lbtt_summary_path, after_merge: :store_agent_into_lbtt_wizard)
+      wizard_address_step(returns_lbtt_summary_path, after_merge: :store_agent_into_lbtt_wizard?)
     end
 
     private
 
     # save agent into lbtt return wizard
     # @return [Boolean] true if successful
-    def store_agent_into_lbtt_wizard
+    def store_agent_into_lbtt_wizard?
       # load lbtt wizard and save agent details into it and finally save lbtt_return wizard in cache.
       lbtt_return = wizard_load_or_redirect(returns_lbtt_summary_url, nil, LbttController)
       lbtt_return.agent = @agent
@@ -65,7 +65,9 @@ module Returns
     def filter_params(_sub_object_attribute = nil)
       required = :returns_lbtt_party
       attribute_list = Lbtt::Party.attribute_list
-      params.require(required).permit(attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
   end
 end

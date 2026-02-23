@@ -17,7 +17,7 @@ Feature: Back Link
         When I check the "3 year lease review" radio button in answer to the question "Which return do you want to submit?"
         And I click on the "Continue" button
         # Now I should be in page C
-        Then I should see the "Return reference number" page
+        Then I should see the "Previous return details" page
         # Going back to page B
         When I click on the "Back" link
         Then I should see the "About the return" page
@@ -58,13 +58,13 @@ Feature: Back Link
         Then I should see the "Tenant address" page
         # This should re-load page B
         When I select "Royal Mail, Luton Delivery Office 9-11, Dunstable Road, LUTON, LU1 1AA" from the "search_results"
-        And I click on the "Use this address" button when available
+        And I click on the "Use this address" button
         Then I should see the "Tenant address" page
-        And I should see the text "Royal Mail" in field "address_address_line1"
-        And I should see the text "Luton Delivery Office 9-11" in field "address_address_line2"
-        And I should see the text "Dunstable Road" in field "address_address_line3"
-        And I should see the text "LUTON" in field "address_town"
-        And I should see the text "LU1 1AA" in field "address_postcode"
+        And I should see the text "Royal Mail"
+        And I should see the text "Luton Delivery Office 9-11"
+        And I should see the text "Dunstable Road"
+        And I should see the text "LUTON"
+        And I should see the text "LU1 1AA"
 
         When I click on the "Continue" button
         # Going to page C

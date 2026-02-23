@@ -58,7 +58,7 @@ module WizardListHelper
     end
 
     navigate = wizard_list_validate_and_save(list_action, wizard_cached_object, list_contents, delete_row, overrides)
-    render(status: :unprocessable_entity) && return unless navigate
+    render(status: :unprocessable_content) && return unless navigate
 
     wizard_navigation_step(steps, overrides, wizard_page_objects_size(wizard_cached_object, overrides))
   end

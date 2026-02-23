@@ -72,8 +72,8 @@ module AddressHelper # rubocop:disable Metrics/ModuleLength
     # Pick the action based on the parameters
     # Search here is an initial search based on postcode
     return do_address_identifier_search if params[:search]
-    # User has selected to do enter a manual address, or edit a searched address
-    return set_for_manual_address if params[:manual_address]
+    # User has selected to do enter a manual address, this will reset any selected address
+    return reset_for_manual_address if params[:manual_address]
     # User has selected to change the postcode from a previous search
     return set_for_postcode_search if params[:change_postcode]
     # user has selected address from the drop down list, get the full details for them
@@ -114,12 +114,15 @@ module AddressHelper # rubocop:disable Metrics/ModuleLength
     @address_detail = Address.new(default_country: params[:address][:default_country])
   end
 
-  # Sets the address search up for a manual search
-  def set_for_manual_address
+  # resets the address search up for a manual search
+  def reset_for_manual_address
     @show_manual_address = true
     @address_read_only = false
-    # clear the identifier as this address is no longer from the search
-    @address_detail.address_identifier = nil
+    # clear the address when they select the manual address button (RSTP-1649)
+    @address_detail = Address.new
+    # Have to reset the country here manually as it will default to the default country of GB
+    # we don't want to default anything when they enter manual address
+    @address_detail.country = ''
   end
 
   # Sets the address search up for a postcode search
@@ -167,12 +170,16 @@ module AddressHelper # rubocop:disable Metrics/ModuleLength
   # controls the permitted parameters to this controller to perform
   # a search
   def search_params
-    params.require(:address_summary).permit(:postcode) unless params[:address_summary].nil?
+    # Rubocop disable added as this breaks the functionality
+    # https://github.com/rubocop/rubocop-rails/issues/1418
+    params.require(:address_summary).permit(:postcode) unless params[:address_summary].nil? # rubocop:disable Rails/StrongParametersExpect
   end
 
   # controls the permitted parameters for address
   def address_params
-    params.require(:address).permit(Address.attribute_list) unless params[:address].nil?
+    # Rubocop disable added as this breaks the functionality
+    # https://github.com/rubocop/rubocop-rails/issues/1418
+    params.require(:address).permit(Address.attribute_list) unless params[:address].nil? # rubocop:disable Rails/StrongParametersExpect
   end
 
   # controls the permitted parameters to this controller to perform

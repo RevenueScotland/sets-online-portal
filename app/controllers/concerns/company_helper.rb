@@ -57,11 +57,15 @@ module CompanyHelper
   # controls the permitted parameters to this controller to perform
   # a search
   def company_search_params
-    params.require(:company).permit(:company_number)
+    # Rubocop disable added as this breaks the functionality
+    # https://github.com/rubocop/rubocop-rails/issues/1418
+    params.require(:company).permit(:company_number) # rubocop:disable Rails/StrongParametersExpect
   end
 
   # controls the permitted parameters to this controller to save company data
   def company_detail_params
-    params.require(:company).permit(Company.attribute_list)
+    # Rubocop disable added as this breaks the functionality
+    # https://github.com/rubocop/rubocop-rails/issues/1418
+    params.require(:company).permit(Company.attribute_list) # rubocop:disable Rails/StrongParametersExpect
   end
 end

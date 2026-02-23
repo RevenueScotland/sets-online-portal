@@ -1,0 +1,19 @@
+<% content_for(:page_title, t('.title')) %>
+<%= ds_warning{ t('.other_upload_description').html_safe } %>
+<%= ds_form_with(model: @slft_return, url: @post_path, file_upload: true, method: :post ) do |f| %>
+	<% if can? RS::AuthorisationHelper::CREATE_ATTACHMENT %>
+		<div class="grid-container">
+      <div class="ds_question <%= @resource_items.present? ? 'md-8-div' : 'md-9-div' %>">
+        <p class="ds_hint-text"> <%= t(".file_upload_hint") %> </p>
+      </div>
+
+      <div class="ds_question <%= @resource_items.present? ? 'md-2-div' : 'md-1-div' %> md-text-right xs-text-left">
+        <% unless @resource_items.count >= @max_file_upload_limit %>
+          <%= ds_link(url: returns_slft_upload_evidence_path, name: @resource_items.present? ? t(".add_additional_file") : t(".add_file")) %>
+        <% end %>
+      </div>
+    </div>	
+		<%= f.rs_file_upload(resource_items_hash: @resource_items_hash, resource_items: @resource_items, optional: true,
+                       supported_file_types: @supported_types, max_file_size_mb: @supported_max_size_mb, multiple: true, hide_upload_section: true, button_type: :primary) %>
+	<% end %>
+<% end %>

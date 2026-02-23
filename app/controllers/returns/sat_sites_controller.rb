@@ -53,7 +53,7 @@ module Returns
       sat_sites_params = params[:returns_sat_sites]
       return if sat_sites_params.nil? || sat_sites_params.blank?
 
-      return render(status: :unprocessable_entity) unless validate_nil_submission_form(sat_sites_params)
+      return render(status: :unprocessable_content) unless validate_nil_submission_form?(sat_sites_params)
 
       @site.tld_nil_submit = sat_sites_params[:tld_display_value] == 'Y' ? 'N' : 'Y'
       wizard_save(@sat_return, SatController)
@@ -62,19 +62,19 @@ module Returns
     end
 
     # Validate the nil submission form submission
-    def validate_nil_submission_form(sat_sites_params)
+    def validate_nil_submission_form?(sat_sites_params)
       @site.validate_nil_submit = true
       @site.tld_nil_submit = sat_sites_params[:tld_display_value] if sat_sites_params[:tld_display_value].present?
       @site.valid?
     end
 
-    # Rather than using ControllerHelper#manage_draft which redirects if need to save draft,
+    # Rather than using ControllerHelper#manage_draft? which redirects if need to save draft,
     # this method duplicates most of that one to validate the model and save the draft in site on the sites summary.
     def manage_save_draft
       return unless params[:save_draft]
 
       Rails.logger.debug('save_draft pressed')
-      render(status: :unprocessable_entity) && return unless @sat_return.valid?(:draft)
+      render(status: :unprocessable_content) && return unless @sat_return.valid?(:draft)
 
       Rails.logger.debug('  validation passed')
       @sat_return.save_draft(current_user)
@@ -84,7 +84,7 @@ module Returns
 
       # store the reference number in a temporary variable so we can confirm saving worked this time (only)
       @site_summary_save_reference = @sat_return.tare_reference
-      render(status: :unprocessable_entity)
+      render(status: :unprocessable_content)
     end
 
     # This method handles when the user clicks the delete all link to remove all aggregate/claim types.
@@ -97,7 +97,7 @@ module Returns
       delete_models(params)
       wizard_save(@sat_return, SatController)
       wizard_end
-      render status: :unprocessable_entity
+      render status: :unprocessable_content
     end
 
     # This method is to delete all the types of selected aggregate/claim type
@@ -149,7 +149,9 @@ module Returns
 
       return unless params[required]
 
-      params.require(required).permit(attribute_list) if params[required]
+      # Rubocop disable added as this breaks the functionality
+      # https://github.com/rubocop/rubocop-rails/issues/1418
+      params.require(required).permit(attribute_list) if params[required] # rubocop:disable Rails/StrongParametersExpect
     end
   end
 end

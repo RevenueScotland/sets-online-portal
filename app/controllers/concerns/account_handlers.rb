@@ -7,7 +7,8 @@ module AccountHandlers
 
   # Allow pages to be unauthenticated
   included do
-    skip_before_action :require_user, only: %I[activate_account process_activate_account activate_account_confirmation]
+    skip_before_action :require_user?, only: %I[activate_account process_activate_account activate_account_confirmation
+                                                token_link_expired]
   end
 
   # show account details
@@ -35,7 +36,7 @@ module AccountHandlers
 
     # Below is used to control post on generic layout
     @post_path = update_basic_account_path
-    render('edit_basic', status: :unprocessable_entity)
+    render('edit_basic', status: :unprocessable_content)
   end
 
   # display the address page
@@ -53,7 +54,7 @@ module AccountHandlers
     elsif @account.update_address(address_params, current_user, address_validation_contexts)
       redirect_to account_path
     else
-      render('edit_address', status: :unprocessable_entity)
+      render('edit_address', status: :unprocessable_content)
     end
   end
 
@@ -62,13 +63,18 @@ module AccountHandlers
     @account = Account.new
   end
 
+  # Show invalid token page
+  def token_link_expired; end
+
   # Perform activate account processing
   def process_activate_account
-    @account = Account.new(params.require(:account).permit(:registration_token))
-    if @account.activate
+    # Rubocop disable added as this breaks the functionality
+    # https://github.com/rubocop/rubocop-rails/issues/1418
+    @account = Account.new(params.require(:account).permit(:registration_token)) # rubocop:disable Rails/StrongParametersExpect
+    if @account.activate?
       redirect_to activate_account_confirmation_account_url
     else
-      render('activate_account', status: :unprocessable_entity)
+      render('token_link_expired', status: :unprocessable_entity)
     end
   end
 

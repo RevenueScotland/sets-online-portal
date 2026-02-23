@@ -8,6 +8,7 @@ module ReferenceData
   # @see BackOfficeDataCaching#lookup (and similar methods) for how to call this class.
   class ReferenceValue < SystemParameter # rubocop:disable Metrics/ClassLength
     include DateFormatting
+
     # additional fields
     attr_accessor :default, :sequence, :text, :usage
 

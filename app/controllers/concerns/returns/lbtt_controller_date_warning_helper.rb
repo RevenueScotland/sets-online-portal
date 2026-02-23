@@ -90,7 +90,7 @@ module Returns
     def days_ago_allowed
       @days_ago_allowed ||= ReferenceData::SystemParameter.lookup(
         'COMMON', 'LBTT', 'RSTU', safe_lookup: true
-      )['PWS_WARN_PAST_DAYS']&.value.to_i || 0
+      )['PWS_WARN_PAST_DAYS']&.value.to_i || 0 # rubocop:disable Lint/UselessOr
     end
 
     # Returns the cached number of days in the future that is allowed
@@ -98,7 +98,7 @@ module Returns
     def future_days_allowed
       @future_days_allowed ||= ReferenceData::SystemParameter.lookup(
         'COMMON', 'LBTT', 'RSTU', safe_lookup: true
-      )['PWS_WARN_FUTURE_DAYS']&.value.to_i || 0
+      )['PWS_WARN_FUTURE_DAYS']&.value.to_i || 0 # rubocop:disable Lint/UselessOr
     end
   end
 end

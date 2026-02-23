@@ -3,6 +3,7 @@
 # Class for calling methods on the Companies House API
 class CompaniesHouseApi
   include HTTParty
+
   base_uri Rails.configuration.x.ch_endpoint.root
 
   # Initialize this class, by setting the authorisation parameters

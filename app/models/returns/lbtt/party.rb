@@ -21,7 +21,7 @@ module Returns
           org_name job_title company org_type other_type_description
           contact_surname contact_firstname org_contact_address is_acting_as_trustee agent_dx_number
           contact_email contact_tel_no com_jurisdiction agent_reference same_address
-          party_refno authority_date hash_for_nino used_address_list pre_populated
+          party_refno authority_date hash_for_nino used_address_list pre_populated account
         ]
       end
 
@@ -61,7 +61,7 @@ module Returns
       # The party is used in both lbtt party and also in claim. The org_name is required in lbtt party but it is
       # optional in the claim flow. So this should only trigger for the lbtt party flow.
       validates :org_name, presence: true, on: :org_name, if: proc { |p| p.type == 'OTHERORG' }
-      # This is the common validation for botht he lbtt and claim flow.
+      # This is the common validation for both he lbtt and claim flow.
       validates :org_name, length: { maximum: 200 }, on: :org_name, if: proc { |p| p.type == 'OTHERORG' || p.claim? }
       validates :charity_number, presence: true, length: { maximum: 100 },
                                  on: :org_name, if: proc { |w| w.org_type == 'CHARITY' }
@@ -396,7 +396,7 @@ module Returns
         @buyer_seller_linked_ind == 'Y'
       end
 
-      # Retrieve agent details from account to prepoulate on summary page
+      # Retrieve agent details from account to prepopulated on summary page
       # Note the party type needs to be set before calling this routine
       # this is not the account type from the back office as we are always creating an agent for the return
       def populate_from_account(account)
@@ -458,6 +458,53 @@ module Returns
         return company.short_address if type == 'REG_COM'
 
         address&.short_address
+      end
+
+      # @return [String] the full address of the party as a displayable string
+      def full_address
+        address&.full_address
+      end
+
+      # @return [String] the contact address of the party as a displayable string
+      def full_contact_address # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
+        [contact_address&.address_line1, contact_address&.address_line2, contact_address&.address_line3,
+         contact_address&.address_line4, contact_address&.town, contact_address&.county, contact_address&.postcode]
+          .compact_blank.join(', ')
+      end
+
+      # @return [String] the contact org address of the party as a displayable string
+      def full_org_contact_address_address # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
+        [org_contact_address&.address_line1, org_contact_address&.address_line2, org_contact_address&.address_line3,
+         org_contact_address&.address_line4, org_contact_address&.town, org_contact_address&.county,
+         org_contact_address&.postcode].compact_blank.join(', ')
+      end
+
+      # @return [String] the full name of the party (used in the lbtt validator)
+      def fullname
+        [firstname, surname, contact_firstname, contact_surname].join(' ')
+      end
+
+      # @return [String] the email address of the account
+      def email
+        email_address || contact_email
+      end
+
+      # @return [String] the phone number in the 0XXXXXXXXXX format
+      def cleaned_telephone # rubocop:disable Metrics/MethodLength
+        return if @telephone.blank? && @contact_tel_no.blank?
+
+        number = @telephone || @contact_tel_no
+        number = number.gsub(/\D/, '')
+
+        if number.start_with?('440')
+          number = "0#{number[3..]}"
+        elsif number.start_with?('44')
+          number = "0#{number[2..]}"
+        elsif number.start_with?('0044')
+          number = "0#{number[4..]}"
+
+        end
+        number
       end
 
       # @return [String] the location of this party type in the lbtt return

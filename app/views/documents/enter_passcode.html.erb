@@ -1,0 +1,11 @@
+<% content_for(:navigation_link, :clear_stack) %>
+<% content_for(:page_title, t('.title')) %>
+<%= ds_paragraph{t('.subtitle')} %>
+
+<% if @document.token_verified %>
+	<%= ds_form_with(model: @document, url: @post_path, button_action: @document.token_verified ? :continue : :none) do |f| %>
+		<%= f.ds_password_field(method: :passcode, show_label: false) %>
+	<% end %>
+<% else %>
+	<%= t(".token_not_verified") %>
+<% end %>

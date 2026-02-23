@@ -293,6 +293,24 @@
             "itemcount": 3
         },
         {
+            "sectioncode": "supporting_documents",
+            "sectiontype": "list",
+            "sectiondivider": true,
+            "pagebreak": null,
+            "displaytitle": true,
+            "sectionfooter": null,
+            "sectiontitle": "Supporting documentation",
+            "listitem": [
+                {
+                    "itemcode": "supporting_document_list",
+                    "itemformat": "list",
+                    "itemlabel": "Supporting document list",
+                    "itemdata": "Evidence of the water content (naturally and added) of the waste (mandatory) : No\nDetails of how and why water is added to the waste : No\nDetails of water reduction or removal; or why this is not possible : No\nResults of the analysis referred to in your approval letter (Review/Renew only) : No\nOther : No"
+                }
+            ],
+            "itemcount": 1
+        },
+        {
             "sectioncode": "declaration",
             "sectiontype": "list",
             "sectiondivider": true,
